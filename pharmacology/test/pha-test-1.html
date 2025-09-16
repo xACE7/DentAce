@@ -1,0 +1,449 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position:sticky;top:0;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 1 (by ACE)</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (derived from Pharma 1 lecture) -----------
+const mcqs = [
+  { q: "Pharmacology is the study of:", opts:["Diseases and their cures","Drugs and their actions on the body","Only drug manufacturing","Only clinical trials"], correct:1, explain:"Pharmacology studies drugs and their actions on the body." },
+  { q: "Pharmacokinetics best describes:", opts:["What the drug does to the body","How the body handles the drug (ADME)","Only drug metabolism","Drug–receptor interactions"], correct:1, explain:"Pharmacokinetics is what the body does to the drug: absorption, distribution, metabolism, excretion." },
+  { q: "Pharmacodynamics refers to:", opts:["Drug absorption rate","What the drug does to the body","Drug solubility only","Route of administration"], correct:1, explain:"Pharmacodynamics is what the drug does to the body, ideally including molecular mechanisms." },
+  { q: "Which of the following is an ENTERAL route?", opts:["Intramuscular","Sublingual","Intravenous","Inhalation"], correct:1, explain:"Enteral routes include oral, sublingual, buccal, rectal, and NG/OG." },
+  { q: "Which is NOT an enteral route?", opts:["Buccal","Rectal","Oral","Subcutaneous"], correct:3, explain:"Subcutaneous is parenteral; buccal, rectal, and oral are enteral." },
+  { q: "Which of the following is a PARENTERAL route?", opts:["Oral","Intravenous","Rectal","Sublingual"], correct:1, explain:"Parenteral routes include IV, IM, SC, inhalation, topical, etc." },
+  { q: "Preferred route for EMERGENCY medications is:", opts:["Oral","Topical","Intravenous","Buccal"], correct:2, explain:"Most emergency drugs are given IV for rapid effect and to avoid first-pass loss." },
+  { q: "Which route is an alternative in pediatric emergencies when IV access is difficult?", opts:["Intranasal only","Intraosseous","Topical","Oral"], correct:1, explain:"Intraosseous (IO) access can be used, especially in pediatrics." },
+  { q: "Which route can be used in newborns as an alternative access?", opts:["Umbilical","Sublingual","Rectal","Transdermal"], correct:0, explain:"Umbilical access may be used in neonates." },
+  { q: "Sublingual administration offers:", opts:["Poor absorption","Excellent absorption and avoidance of gastric acidity","Slower onset than oral","Absolute first-pass metabolism"], correct:1, explain:"Sublingual absorption is excellent and bypasses gastric acidity and first-pass to a degree." },
+  { q: "Rectal route is typically reserved for:", opts:["Patients who prefer it","Unconscious or vomiting patients","All pediatric patients","Slow-release therapy only"], correct:1, explain:"Rectal route is useful when oral route is not possible (e.g., unconscious/vomiting)." },
+  { q: "Oral (PO) administration is:", opts:["Unsuitable for self-administration","Best for caustic drugs","Good for self-administering drugs","Reserved only for hospitals"], correct:2, explain:"Oral route is convenient and suitable for self-administration." },
+  { q: "Definition of ABSORPTION:", opts:["Drug movement from tissues to urine","Drug movement from the administration site to systemic circulation","Conversion to active metabolites","Drug binding to plasma proteins"], correct:1, explain:"Absorption is movement from administration site to systemic circulation." },
+  { q: "Which factor affects drug absorption?", opts:["Mesenteric blood flow","Color of tablet","Patient's eye color","Height"], correct:0, explain:"Mesenteric blood flow is one of several factors affecting absorption." },
+  { q: "Bioavailability is defined as the proportion of the administered dose that:", opts:["Is excreted unchanged","Reaches the systemic circulation","Is metabolized by the liver","Binds to plasma proteins"], correct:1, explain:"Bioavailability measures amount (and often rate) reaching systemic circulation." },
+  { q: "Poor aqueous solubility usually leads to:", opts:["High bioavailability","Low bioavailability","No change","Guaranteed toxicity"], correct:1, explain:"Poor solubility tends to reduce bioavailability." },
+  { q: "Which route has ~100% bioavailability by definition?", opts:["Oral","Rectal","Intravenous","Sublingual"], correct:2, explain:"IV administration delivers drug directly into the bloodstream (100% bioavailability)." },
+  { q: "The FIRST-PASS effect primarily involves:", opts:["Renal filtration before liver","Pulmonary circulation before brain","Hepatic metabolism after GI absorption","Skin metabolism before blood"], correct:2, explain:"GI-absorbed drugs go via portal vein to the liver, where first-pass metabolism occurs." },
+  { q: "A drug with substantial first-pass metabolism is:", opts:["Propranolol","Amoxicillin","Warfarin","Digoxin"], correct:0, explain:"Examples include propranolol, salbutamol, and verapamil." },
+  { q: "Glyceryl trinitrate (nitroglycerin) is given sublingually because:", opts:["It irritates the GI mucosa","It has complete first-pass breakdown if swallowed","It is insoluble in saliva","It is unstable under the tongue"], correct:1, explain:"Oral GTN undergoes near-complete first-pass metabolism; sublingual avoids this." },
+  { q: "Which drugs have bioavailability affected by FOOD and are often advised on an empty stomach?", opts:["Penicillins and erythromycin","Paracetamol and ibuprofen","Metformin and levodopa","Aspirin and clopidogrel"], correct:0, explain:"Food reduces bioavailability of some, e.g., penicillins, erythromycin, rifampicin, thyroxine." },
+  { q: "Which statement about SILDENAFIL is correct?", opts:["Fatty food speeds up its absorption","Food has no effect","Fatty food slows its absorption","It must be given IV"], correct:2, explain:"Fatty meals slow sildenafil absorption." },
+  { q: "Which drugs commonly cause gastric irritation if taken on an empty stomach and are better with food?", opts:["Metformin and levodopa","Paracetamol and codeine","Diazepam and loratadine","Amoxicillin and clavulanate"], correct:0, explain:"Metformin and levodopa may irritate the stomach; taking with food can help." },
+  { q: "During migraine, gastric emptying is often:", opts:["Accelerated, speeding oral analgesia","Reduced, delaying oral analgesia","Unaffected","Reversed"], correct:1, explain:"Reduced gastric motility delays oral drug absorption; metoclopramide can help by increasing emptying." },
+  { q: "Plasma protein binding:", opts:["Activates drugs","Makes drugs more potent at receptors","Binds drug in a pharmacologically inactive form","Has no clinical relevance"], correct:2, explain:"Bound drug is generally inactive and cannot cross membranes." },
+  { q: "Which factor can alter drug DISTRIBUTION?", opts:["Cardiac output and regional blood flow","Hair color","BMI always","Ambient temperature"], correct:0, explain:"Distribution depends on perfusion among other factors." },
+  { q: "Low albumin states can:", opts:["Increase binding of acidic drugs","Reduce protein binding and increase free drug","Have no effect","Cure diabetes"], correct:1, explain:"Less albumin → less binding → more free drug fraction." },
+  { q: "Which set correctly lists the components of PK handling?", opts:["Absorption, Distribution, Metabolism, Excretion","Diffusion, Filtration, Excretion, Reaction","Potency, Efficacy, Selectivity, Toxicity","Onset, Peak, Duration, Clearance"], correct:0, explain:"ADME summarizes pharmacokinetics." },
+  { q: "PAR enteral vs ENTERAL: which statement is true?", opts:["Both are the same","Parenteral bypasses the GI tract; enteral uses it","Enteral bypasses GI; parenteral uses it","Neither are clinical terms"], correct:1, explain:"Parenteral = non-GI routes; enteral = via GI tract or mucosa (oral, SL, buccal, rectal)." },
+  { q: "Topical administration:", opts:["Delivers drugs directly to the skin","Is a synonym for transdermal patches only","Means inhalation","Is always systemic"], correct:0, explain:"Topical delivery is to the skin surface; may be local or, for transdermal systems, systemic." }
+];
+
+const tfs = [
+  { q:"Pharmacokinetics is what the body does to the drug.", answer:true, explain:"That's the definition of pharmacokinetics." },
+  { q:"Pharmacodynamics is what the drug does to the body.", answer:true, explain:"Correct by definition." },
+  { q:"Intravenous administration provides ~100% bioavailability.", answer:true, explain:"IV places drug directly in systemic circulation." },
+  { q:"Rectal route is usually the first choice for cooperative patients.", answer:false, explain:"Rectal route is often reserved for unconscious/vomiting patients." },
+  { q:"The first-pass effect applies to drugs absorbed via the GI tract before reaching systemic circulation.", answer:true, explain:"GI-absorbed drugs pass to the liver via the portal vein first." },
+  { q:"Protein-bound drugs freely cross cell membranes and are pharmacologically active.", answer:false, explain:"Bound fraction is generally inactive and cannot cross membranes." },
+  { q:"Inhalation can produce very rapid absorption via the lungs.", answer:true, explain:"Noted as a rapid route of systemic delivery." },
+  { q:"Bioavailability is unaffected by drug solubility.", answer:false, explain:"Poor solubility typically lowers bioavailability." },
+  { q:"Migraine tends to speed gastric emptying, hastening oral analgesia.", answer:false, explain:"Migraine often reduces gastric motility and delays absorption." },
+  { q:"Metoclopramide may increase gastric emptying and lessen delay of oral analgesics during migraine.", answer:true, explain:"Prokinetic agents like metoclopramide can help." },
+  { q:"Fatty foods speed up the absorption of sildenafil.", answer:false, explain:"Fatty food slows sildenafil absorption." },
+  { q:"Glyceryl trinitrate is ineffective orally due to extensive first-pass metabolism.", answer:false, explain:"Trick: It's not 'ineffective'; it's degraded by first-pass when swallowed, hence given sublingually. Statement as written is ambiguous—marking FALSE to reflect wording pitfalls." }
+];
+
+const saqs = [
+  { q: "Define bioavailability and mention one factor that affects it.", a: "Bioavailability is the proportion and rate of drug reaching systemic circulation. It is affected by solubility, dosage form, food, GI pH/contents, mesenteric blood flow, and concomitant drugs." },
+  { q: "Explain the first-pass effect and give one example of a drug affected.", a: "Drugs absorbed from the GI tract enter the portal circulation and may be metabolized in the liver before reaching systemic blood (first-pass). Examples: propranolol, verapamil, salbutamol. GTN avoids this by sublingual route." },
+  { q: "List two factors influencing drug distribution and state the effect of plasma protein binding.", a: "Factors: cardiac output/regional blood flow; plasma protein levels (e.g., albumin); tissue binding/storage. Protein-bound drug is largely pharmacologically inactive and cannot cross membranes until unbound." }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null),
+  tf: Array(tfs.length).fill(null),
+  saq: Array(saqs.length).fill(false)
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return;
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return;
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <h3 class="qtitle">${item.q}</h3>
+    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="primary" data-act="reveal">Reveal Answer</button>
+      <button class="ghost" data-act="toggle">I was correct</button>
+    </div>
+    <div class="answer" hidden>${item.a}</div>
+  `;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

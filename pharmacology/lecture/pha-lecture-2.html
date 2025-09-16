@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>🦷 Dentistry 3rd year — Pharma 2 (Metabolism & Excretion)</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.5rem;
+    --glossary-glow:#8b5cf6;
+    --flash-glow:#06b6d4;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+  }
+
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:24px;}
+
+  /* Page-level language visibility (only affects elements that include .en/.ar spans) */
+  .lang-en .ar{display:none !important;}
+  .lang-ar .en{display:none !important;}
+
+  header{position:sticky;top:0;z-index:10;backdrop-filter:blur(8px);background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}  
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:20px 32px;}
+  .title{font-weight:800;font-size:clamp(1.6rem,1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.4),0 0 12px rgba(139,92,246,.35);} 
+  .subtitle{color:var(--muted);font-size:1rem;margin-top:6px;}
+  .lang-toggle{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--text);padding:.6rem 1rem;border-radius:999px;cursor:pointer;}
+
+  /* Match section look for dua, chip, glossary, flash headers */
+  .dua,
+  .chip-box,
+  .glossary-box,
+  .flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    box-shadow:0 20px 40px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);
+    padding:1.6rem;
+    margin:20px 0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .dua{font-size:1.1rem;text-align:center;}
+  .chip{font-weight:800;font-size:1.2rem;color:var(--muted);}
+  .glossary-box h3,.flashcards-box h3{margin:0;font-size:1.15rem;letter-spacing:.2px;opacity:.95;}
+
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}  
+  .section{
+    display:grid;grid-template-columns:2fr 1fr;column-gap:2.5rem;flex:1;min-height:240px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:1.6rem;
+    box-shadow:0 20px 40px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);
+  }  
+  .section>div{display:flex;flex-direction:column;}
+  .sec-head{
+    font-weight:800;
+    font-size:1.3rem;
+    margin:0 0 1rem 0;
+    padding:0.75rem 1rem;
+    border-radius:8px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    width:100%;
+    box-shadow:0 0 18px rgba(255,255,255,.06), 0 0 30px rgba(255,255,255,.15);
+    display:block;
+    box-sizing:border-box;
+  }
+  .sec-body p{margin:.5rem 0;font-size:1rem;line-height:1.65;}
+
+  .callouts{display:flex;flex-direction:column;gap:.75rem;align-self:center;width:100%;}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.3), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .callout.open .hdr{opacity:.8;}
+
+  /* Type-specific borders */
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);} 
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:150px;box-shadow:0 0 22px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);}  
+  .card.glossary{box-shadow:0 0 26px color-mix(in srgb,var(--glossary-glow)28%, transparent), 0 0 30px rgba(255,255,255,.15);} 
+  .card.flash{box-shadow:0 0 26px color-mix(in srgb,var(--flash-glow)28%, transparent), 0 0 30px rgba(255,255,255,.15);} 
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .3s;} 
+  .card.open .head{opacity:.6;} 
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;} 
+  .card .content[hidden]{display:none;} 
+
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;min-height:auto;padding:1.2rem;}
+    .dua,.chip-box,.glossary-box,.flashcards-box{padding:1.2rem;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);} 
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;} }
+
+  .dua,
+  .chip,
+  .sec-head,
+  .glossary-box h3,
+  .flashcards-box h3 {
+    font-weight:800;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.4), 0 0 12px rgba(139,92,246,.35);
+    text-align:center;
+  }
+
+  /* Tables */
+  table {width:100%;border-collapse:collapse;margin:1rem 0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);box-shadow:0 0 22px rgba(255,255,255,.08),0 0 30px rgba(255,255,255,.15);overflow:hidden;}
+  th,td{padding:.75rem 1rem;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;color:var(--text);}
+  th{background:rgba(255,255,255,.06);font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+</style>
+</head>
+<body class="lang-en">
+<header>
+  <div class="hdr wrap">
+    <div>
+      <div class="title">🦷 Dentistry 3rd year</div>
+      <div class="subtitle">Lecture 2 <b>(by ACE)</b></div>
+    </div>
+    <button id="langBtn" class="lang-toggle">EN / AR</button>
+  </div>
+</header>
+
+<main class="wrap" id="content">
+  <!-- Dua: ALWAYS Arabic (new each file) -->
+  <div class="dua">اللهم انفعنا بما علمتنا، وعلّمنا ما ينفعنا، وزِدْنا علمًا ونورًا وهدًى</div>
+
+  <!-- Topic chip: bilingual -->
+  <div class="chip-box">
+    <span class="chip">
+      <span class="en">📑 Topic: <b>Metabolism & Excretion of Drugs</b></span>
+      <span class="ar">📑 الموضوع: <b>استقلاب الأدوية وإطراحها</b></span>
+    </span>
+  </div>
+
+  <div class="sections">
+    <!-- ===== Section 1 ===== -->
+    <section class="section" id="s1">
+      <div>
+        <h2 class="sec-head"><span class="en">1) Where drug metabolism happens 🧪</span><span class="ar">١) أين يحدث استقلاب الدواء 🧪</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Drugs are metabolized mainly in the <b>liver</b>, but also in the <b>lungs, kidneys, blood,</b> and <b>intestines</b>. Lipophilicity helps drugs pass cell membranes; the more lipid-soluble a drug is, the faster it enters tissues. Metabolic rate determines drug action duration and dosing frequency.</p>
+          </div>
+          <div class="ar">
+            <p>يُستقلب الدواء أساسًا في <b>الكبد</b>، وأيضًا في <b>الرئتين والكليتين والدم والأمعاء</b>. تزيد <b>محبة الدهون</b> من عبور الأغشية؛ فكلما زادت ذوبانية الدواء في الدهون كان دخوله للأنسجة أسرع. ويحدد معدل الاستقلاب مدة التأثير وتواتر الجرعات.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Key metabolic organs: liver &gt; lungs, kidneys, blood, intestines.</div><div class="ar">أعضاء الاستقلاب: الكبد &gt; الرئتان، الكليتان، الدم، الأمعاء.</div></div></div>
+        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Site of metabolism predicts drug interactions and disease impact (e.g., hepatic disease).</div><div class="ar">موقع الاستقلاب يتنبأ بالتداخلات وتأثير الأمراض (مثل أمراض الكبد).</div></div></div>
+        <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“L-L-K-B-I” → Liver, Lungs, Kidneys, Blood, Intestines.</div><div class="ar">«ك ر ك د أ» → كبد، رئتان، كِلى، دم، أمعاء.</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Link organ pathology to dosing changes in vignettes.</div><div class="ar">اربط أمراض الأعضاء بتعديل الجرعات في السيناريوهات.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 2 ===== -->
+    <section class="section" id="s2">
+      <div>
+        <h2 class="sec-head"><span class="en">2) Lipophilicity vs. excretion 🌊🧴</span><span class="ar">٢) محبة الدهون مقابل الإطراح 🌊🧴</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>The kidney cannot efficiently eliminate highly <b>lipophilic</b> drugs; they diffuse back and are reabsorbed in distal tubules. To be excreted, drugs usually need to become more <b>hydrophilic</b> via metabolism.</p>
+          </div>
+          <div class="ar">
+            <p>لا تستطيع الكلية طرح الأدوية <b>الدهنيّة</b> بكفاءة؛ إذ تُعاد امتصاصها في النبيبات البعيدة. وللإطراح، يجب أن تصبح أكثر <b>محبة للماء</b> عبر الاستقلاب.</p>
+          </div>
+        </div>
+        <div class="sec-body">
+          <table>
+            <thead>
+              <tr>
+                <th><span class="en">Property</span><span class="ar">الخاصية</span></th>
+                <th><span class="en">Effect on Kidney</span><span class="ar">التأثير الكلوي</span></th>
+                <th><span class="en">Clinical Impact</span><span class="ar">الأثر السريري</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="en">Lipophilic</span><span class="ar">محب للدهن</span></td>
+                <td><span class="en">Reabsorbed in distal tubule</span><span class="ar">إعادة امتصاص بالنبيبات البعيدة</span></td>
+                <td><span class="en">Needs metabolism first</span><span class="ar">يتطلب استقلابًا أولًا</span></td>
+              </tr>
+              <tr>
+                <td><span class="en">Hydrophilic</span><span class="ar">محب للماء</span></td>
+                <td><span class="en">Excreted in urine</span><span class="ar">يُطرح في البول</span></td>
+                <td><span class="en">Shorter duration</span><span class="ar">مدة تأثير أقصر</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Lipophilic sedatives persist unless metabolized to polar forms.</div><div class="ar">المهدئات الدهنية تدوم حتى تُستقلب لأشكال قطبية.</div></div></div>
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Metabolic rate → dosing frequency.</div><div class="ar">معدل الاستقلاب ← تواتر الجرعات.</div></div></div>
+        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Explains why lipophilic agents rely on hepatic processing.</div><div class="ar">يوضح اعتماد الأدوية الدهنية على المعالجة الكبدية.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 3 ===== -->
+    <section class="section" id="s3">
+      <div>
+        <h2 class="sec-head"><span class="en">3) Phase I metabolism (CYP450) ⚙️</span><span class="ar">٣) الطور الأول (إنزيمات CYP450) ⚙️</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Phase I</b> reactions (oxidation/reduction/hydrolysis) are often catalyzed by the <b>cytochrome P450</b> (CYP) system—microsomal mixed-function oxidases. Major families include <b>CYP3A4, CYP2D6, CYP2C9/10, CYP2C19, CYP2E1, CYP1A2</b>.</p>
+          </div>
+          <div class="ar">
+            <p>تتضمن تفاعلات <b>الطور الأول</b> (أكسدة/إرجاع/تحلل) وتُحفَّز غالبًا بمنظومة <b>السيتوكروم P450</b> (CYP). من العائلات الهامة: <b>CYP3A4, CYP2D6, CYP2C9/10, CYP2C19, CYP2E1, CYP1A2</b>.</p>
+          </div>
+        </div>
+
+        <div class="sec-body">
+          <table>
+            <thead>
+              <tr>
+                <th><span class="en">CYP Isoenzyme</span><span class="ar">الآيزوإنزيم</span></th>
+                <th><span class="en">Notes (EN)</span><span class="ar">ملاحظات (عربي)</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr><td>CYP3A4</td><td><span class="en">Most abundant; many drug interactions</span><span class="ar">الأكثر وفرة؛ تداخلات دوائية كثيرة</span></td></tr>
+              <tr><td>CYP2D6</td><td><span class="en">Genetic polymorphism</span><span class="ar">تعدد أشكال وراثي</span></td></tr>
+              <tr><td>CYP2C9/10</td><td><span class="en">Metabolizes many acids</span><span class="ar">يستقلب العديد من الأحماض</span></td></tr>
+              <tr><td>CYP1A2/2E1</td><td><span class="en">Inducible by environment</span><span class="ar">قابل للتحريض بيئيًا</span></td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Phase I may yield active, inactive, or toxic metabolites.</div><div class="ar">قد ينتج عن الطور الأول مستقلبات فعالة أو غير فعالة أو سامة.</div></div></div>
+        <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Enzyme induction/inhibition changes drug levels markedly.</div><div class="ar">تحريض/تثبيط الإنزيم يغيّر مستويات الدواء بشكل واضح.</div></div></div>
+        <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Phase <b>I</b> → Introduces/Unmasks polar group.</div><div class="ar">«الطور <b>الأول</b>» يُدخل/يكشف مجموعة قطبية.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 4 ===== -->
+    <section class="section" id="s4">
+      <div>
+        <h2 class="sec-head"><span class="en">4) Phase II metabolism (Conjugation) 🧷</span><span class="ar">٤) الطور الثاني (الاقتران) 🧷</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Phase II</b> adds endogenous groups (e.g., <b>glucuronic acid, sulfuric acid, acetic acid, amino acids</b>) to create more <b>polar, water-soluble, usually inactive</b> products that are readily excreted.</p>
+          </div>
+          <div class="ar">
+            <p>في <b>الطور الثاني</b> تُضاف مجموعات داخلية (مثل <b>حمض الغلوكورونيك، الكبريتيك، الأسيتيك، الأحماض الأمينية</b>) لتكوين نواتج أكثر <b>قطبية وذوبانية</b> (غالبًا غير فعالة) تُطرح بسهولة.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Morphine → morphine-glucuronide (more water-soluble).</div><div class="ar">المورفين ← مورفين-غلوكورونيد (أكثر ذوبانًا في الماء).</div></div></div>
+        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Conjugation is the final common step for renal excretion.</div><div class="ar">الاقتران هو الخطوة النهائية المشتركة للإطراح الكلوي.</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Associate “Phase II = add two (a group).”</div><div class="ar">اربط «الطور الثاني = إضافة مجموعة».</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 5 ===== -->
+    <section class="section" id="s5">
+      <div>
+        <h2 class="sec-head"><span class="en">5) Microsomal vs. Non-microsomal enzymes 🧫</span><span class="ar">٥) إنزيمات مجهرية مقابل غير مجهرية 🧫</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Microsomal</b>: on smooth ER (mainly liver; also kidney, lungs, intestinal mucosa). <b>Inducible</b> by drugs/diet. Example: CYPs.</p>
+            <p><b>Non-microsomal</b>: cytoplasm/mitochondria/plasma; catalyze many <b>reductive, hydrolytic, conjugation</b> reactions. <b>Not inducible</b> but show polymorphism (e.g., esterases, amidases, protein oxidases).</p>
+          </div>
+          <div class="ar">
+            <p><b>مجهرية</b>: على الشبكة الهيولية الملساء (أساسًا الكبد؛ كذلك الكلية والرئة والمخاطية المعوية). <b>قابلة للتحريض</b> بالأدوية/الغذاء. مثال: إنزيمات CYP.</p>
+            <p><b>غير مجهرية</b>: في السيتوبلازم/الميتوكوندريا/البلازما؛ تقوم بتفاعلات <b>إرجاعية وتحللية واقترانية</b>. <b>غير قابلة للتحريض</b> لكنها متعددة الأشكال (مثل الإسترازات والأميداز).</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Location drives susceptibility to inducers.</div><div class="ar">الموقع يحدد قابلية التحريض.</div></div></div>
+        <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Microsomal = CYP; Non-microsomal = esterase/amidase.”</div><div class="ar">«مجهرية = CYP؛ غير مجهرية = إستراز/أميداز».</div></div></div>
+        <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Clinical genetics often explains non-microsomal variability.</div><div class="ar">الوراثة السريرية تفسر تفاوت الإنزيمات غير المجهرية.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 6 ===== -->
+    <section class="section" id="s6">
+      <div>
+        <h2 class="sec-head"><span class="en">6) Routes of excretion 🚪</span><span class="ar">٦) طرق الإطراح 🚪</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Primary route: <b>kidneys</b>. Others: <b>bile, intestine, lungs, breast milk</b>. In renal failure, <b>dialysis</b> can remove small molecules (including drugs).</p>
+          </div>
+          <div class="ar">
+            <p>الطريق الرئيسي: <b>الكليتان</b>. أخرى: <b>الصفراء، الأمعاء، الرئتان، حليب الأم</b>. في الفشل الكلوي قد تُستخدم <b>الديالزة</b> لإزالة الجزيئات الصغيرة.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Adjust dosing or choose alternatives in renal/hepatic impairment.</div><div class="ar">عدّل الجرعات أو غيّر الدواء عند قصور كلوي/كبدي.</div></div></div>
+        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en"><b>Ampicillin</b> reaches high biliary levels → useful in biliary tract infections.</div><div class="ar">يصل <b>الأمبيسيلين</b> لتركيزات صفراوية عالية ← مفيد في عدوى الطرق الصفراوية.</div></div></div>
+        <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Consider drug in breast milk for nursing mothers.</div><div class="ar">يجب أخذ طرح الدواء في حليب الأم بعين الاعتبار.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 7 ===== -->
+    <section class="section" id="s7">
+      <div>
+        <h2 class="sec-head"><span class="en">7) Urinary pH & ion trapping 🧯</span><span class="ar">٧) درجة حموضة البول واحتجاز الأيونات 🧯</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Urine pH alters reabsorption: <b>Acidification</b> ↑ reabsorption & ↓ excretion of <b>weak acids</b> but ↓ reabsorption of <b>weak bases</b>. <b>Alkalinization</b> does the opposite.</p>
+          </div>
+          <div class="ar">
+            <p>تغيُّر pH البول يُبدّل إعادة الامتصاص: <b>تحميض البول</b> ↑ إعادة امتصاص و ↓ طرح <b>الحمضات الضعيفة</b> لكنه ↓ إعادة امتصاص <b>القواعد الضعيفة</b>. <b>قلونة البول</b> تعكس ذلك.</p>
+          </div>
+        </div>
+        <div class="sec-body">
+          <table>
+            <thead>
+              <tr>
+                <th><span class="en">Urine pH</span><span class="ar">pH البول</span></th>
+                <th><span class="en">Weak Acid</span><span class="ar">حمض ضعيف</span></th>
+                <th><span class="en">Weak Base</span><span class="ar">قاعدة ضعيفة</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="en">Acidic</span><span class="ar">حمضي</span></td>
+                <td><span class="en">Non-ionized → reabsorbed ↑</span><span class="ar">غير متأين → ↑ إعادة الامتصاص</span></td>
+                <td><span class="en">Ionized → excretion ↑</span><span class="ar">متأين → ↑ الإطراح</span></td>
+              </tr>
+              <tr>
+                <td><span class="en">Alkaline</span><span class="ar">قلوي</span></td>
+                <td><span class="en">Ionized → excretion ↑</span><span class="ar">متأين → ↑ الإطراح</span></td>
+                <td><span class="en">Non-ionized → reabsorbed ↑</span><span class="ar">غير متأين → ↑ إعادة الامتصاص</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Urine alkalinization can enhance elimination of weak acids in overdose.</div><div class="ar">قلونة البول قد تعزز طرح الحموض الضعيفة في الجرعات الزائدة.</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Think “ionized = trapped = excreted.”</div><div class="ar">تذكّر «المتأين = محتجَز = مطروح».</div></div></div>
+        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Explains urine pH manipulation in toxicology.</div><div class="ar">يشرح التلاعب بـpH البول في علم السموم.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 8 ===== -->
+    <section class="section" id="s8">
+      <div>
+        <h2 class="sec-head"><span class="en">8) Special populations & prescribing 👵🏻🧒🏻</span><span class="ar">٨) فئات خاصة ووصف الأدوية 👵🏻🧒🏻</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Aging patients with reduced renal function are prone to <b>drug accumulation/toxicity</b>, especially with <b>narrow therapeutic index</b> agents (e.g., <i>digoxin</i>, some β-blockers like <i>sotalol</i>).</p>
+          </div>
+          <div class="ar">
+            <p>المرضى المسنون ذوو الوظيفة الكلوية المنخفضة أكثر عرضة لـ<b>تراكم الدواء/السمية</b> خاصة مع الأدوية ذات <b>الهامش العلاجي الضيق</b> (مثل <i>ديجوكسين</i> وبعض حاصرات بيتا كـ<i>سوتالول</i>).</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Check renal function (eGFR) and adjust dosing.</div><div class="ar">افحص الوظيفة الكلوية (eGFR) وعدّل الجرعات.</div></div></div>
+        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Dialysis may remove small drugs in renal failure.</div><div class="ar">قد تُزيل الديالزة الأدوية الصغيرة في الفشل الكلوي.</div></div></div>
+        <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Review medication lists for polypharmacy in elderly.</div><div class="ar">راجع قوائم الأدوية لتعدد العلاج عند المسنين.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 9 ===== -->
+    <section class="section" id="s9">
+      <div>
+        <h2 class="sec-head"><span class="en">9) Drug half-life (t<sub>1/2</sub>) ⏳</span><span class="ar">٩) عمر النصف الدوائي ⏳</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Half-life</b> is the time for plasma drug concentration to fall by half. It varies widely. In theory, the optimal dosing interval equals the drug’s half-life; practically, very short half-life drugs (e.g., penicillin) need more frequent dosing.</p>
+            <p><b>Examples:</b> Aspirin ≈ 6 h; Metronidazole ≈ 9 h; Digoxin ≈ 36 h.</p>
+          </div>
+          <div class="ar">
+            <p><b>عمر النصف</b> هو الزمن اللازم لانخفاض تركيز الدواء في البلازما إلى النصف. يختلف بشكل واسع. نظريًا يساوي فاصل الجرعات الأمثل عمر النصف؛ عمليًا تحتاج الأدوية ذات عمر نصف قصير (مثل البنسلين) لجرعات متكررة.</p>
+            <p><b>أمثلة:</b> الأسبرين ≈ ٦ ساعات؛ الميترونيدازول ≈ ٩ ساعات؛ الديجوكسين ≈ ٣٦ ساعة.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Half-life guides maintenance dosing schedules.</div><div class="ar">يُستخدم عمر النصف لتحديد جداول الجرعات.</div></div></div>
+        <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Short t½ → frequent dosing; Long t½ → less frequent (risk of accumulation).”</div><div class="ar">«t½ قصير → جرعات متقاربة؛ t½ طويل → أقل تقاربًا (خطر التراكم)».</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Practice converting t½ into practical dosing intervals.</div><div class="ar">تدرّب على تحويل عمر النصف إلى فواصل جرعات عملية.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 10 ===== -->
+    <section class="section" id="s10">
+      <div>
+        <h2 class="sec-head"><span class="en">10) Determinants of t<sub>1/2</sub> & loading dose 🎛️💉</span><span class="ar">١٠) محددات عمر النصف والجرعة التحميلية 🎛️💉</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Short t½</b>: extensive tissue uptake, rapid metabolism, rapid excretion. <b>Long t½</b>: extensive protein binding, slow metabolism, poor excretion. If intervals are too long → subtherapeutic; too short → toxicity.</p>
+            <p><b>Loading dose</b> is used when rapid high concentrations are required—give an initial dose ≈ <i>about twice</i> the maintenance dose (per lecture note).</p>
+          </div>
+          <div class="ar">
+            <p><b>عمر نصف قصير</b>: امتصاص نسيجي واسع، استقلاب سريع، إطراح سريع. <b>عمر نصف طويل</b>: ارتباط بروتيني واسع، استقلاب بطيء، إطراح ضعيف. الفواصل الطويلة جدًا → نقص الفعالية؛ القصيرة جدًا → سمية.</p>
+            <p><b>الجرعة التحميلية</b>: تُعطى عند الحاجة لتركيز عالٍ سريع—جرعة أولية ≈ <i>نحو ضعفي</i> الجرعة الداعمة (حسب الشريحة).</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Aligns pharmacokinetics with safe, effective dosing.</div><div class="ar">لربط الحرائك الدوائية بجرعات آمنة وفعّالة.</div></div></div>
+        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Loading dose for severe infection to reach therapeutic level quickly.</div><div class="ar">جرعة تحميلية في عدوى شديدة للوصول سريعًا للمستوى العلاجي.</div></div></div>
+        <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Loading dose depends on volume of distribution (conceptual link).</div><div class="ar">تعتمد الجرعة التحميلية على حجم التوزع (رابط مفاهيمي).</div></div></div>
+      </aside>
+    </section>
+  </div>
+
+  <!-- Glossary 1–9 -->
+  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+  <div class="grid g3x4" id="glossary">
+    <div class="card glossary"><div class="head">Metabolism / الاستقلاب</div><div class="content" hidden><div class="en">Biotransformation that alters drug to aid excretion.</div><div class="ar">تحويل حيوي يغيّر الدواء لتسهيل طرحه.</div></div></div>
+    <div class="card glossary"><div class="head">Phase I / الطور الأول</div><div class="content" hidden><div class="en">Oxidation/reduction/hydrolysis (often via CYP450).</div><div class="ar">أكسدة/إرجاع/تحلل (غالبًا عبر CYP450).</div></div></div>
+    <div class="card glossary"><div class="head">Phase II / الطور الثاني</div><div class="content" hidden><div class="en">Conjugation with endogenous groups → polar products.</div><div class="ar">اقتران بمجموعات داخلية → نواتج قطبية.</div></div></div>
+    <div class="card glossary"><div class="head">CYP450 / السيتوكروم P450</div><div class="content" hidden><div class="en">Microsomal enzymes catalyzing many Phase I reactions.</div><div class="ar">إنزيمات مجهرية تحفّز تفاعلات الطور الأول.</div></div></div>
+    <div class="card glossary"><div class="head">Hydrophilic / محب للماء</div><div class="content" hidden><div class="en">Water-soluble; favors renal excretion.</div><div class="ar">ذو ذوبانية مائية؛ يسهل طرحه كلويًا.</div></div></div>
+    <div class="card glossary"><div class="head">Lipophilic / محب للدهن</div><div class="content" hidden><div class="en">Lipid-soluble; crosses membranes; needs metabolism to excrete.</div><div class="ar">ذائب في الدهون؛ يعبر الأغشية؛ يحتاج استقلابًا للطرح.</div></div></div>
+    <div class="card glossary"><div class="head">Half-life (t½) / عمر النصف</div><div class="content" hidden><div class="en">Time for plasma concentration to drop by 50%.</div><div class="ar">الزمن اللازم لانخفاض التركيز إلى النصف.</div></div></div>
+    <div class="card glossary"><div class="head">Loading dose / جرعة تحميلية</div><div class="content" hidden><div class="en">Initial higher dose to rapidly reach target concentration.</div><div class="ar">جرعة أولية أعلى للوصول سريعًا للتركيز المطلوب.</div></div></div>
+    <div class="card glossary"><div class="head">Ion trapping / احتجاز الأيونات</div><div class="content" hidden><div class="en">Ionized drug remains in urine; excretion increases.</div><div class="ar">يبقى الدواء المتأين في البول؛ يزداد الطرح.</div></div></div>
+  </div>
+
+  <!-- Flashcards 1–9 -->
+  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+  <div class="grid g3x4" id="flashcards">
+    <div class="card flash"><div class="head">1 — Q: Main organ of drug metabolism?</div><div class="content" hidden>A: Liver (also lungs, kidneys, blood, intestines).</div></div>
+    <div class="card flash"><div class="head">2 — Q: Why must many drugs become hydrophilic?</div><div class="content" hidden>A: To avoid reabsorption and enable renal excretion.</div></div>
+    <div class="card flash"><div class="head">3 — Q: Phase I catalyzed by?</div><div class="content" hidden>A: CYP450 (microsomal oxidases).</div></div>
+    <div class="card flash"><div class="head">4 — Q: Phase II adds what?</div><div class="content" hidden>A: Endogenous groups (e.g., glucuronic acid) → polar products.</div></div>
+    <div class="card flash"><div class="head">5 — Q: Microsomal vs non-microsomal key feature?</div><div class="content" hidden>A: Microsomal inducible; non-microsomal generally not inducible (but polymorphic).</div></div>
+    <div class="card flash"><div class="head">6 — Q: Effect of acidic urine on weak acids?</div><div class="content" hidden>A: ↑ Reabsorption, ↓ Excretion.</div></div>
+    <div class="card flash"><div class="head">7 — Q: Drug with long t½ from list?</div><div class="content" hidden>A: Digoxin (~36 h).</div></div>
+    <div class="card flash"><div class="head">8 — Q: Loading dose purpose?</div><div class="content" hidden>A: Achieve therapeutic concentration quickly.</div></div>
+    <div class="card flash"><div class="head">9 — Q: Why elderly at risk of toxicity?</div><div class="content" hidden>A: Reduced renal capacity → accumulation, especially narrow TI drugs.</div></div>
+  </div>
+
+  <!-- References (from lecture slide) -->
+  <div class="chip-box" style="justify-content:center;">
+    <span class="chip">
+      <span class="en">📚 References: Pharmacology & Therapeutics for Dentistry (6e, 2011); Lippincott Illustrated Reviews: Pharmacology (6e, 2015).</span>
+      <span class="ar">📚 المراجع: علم الأدوية والعلاجيات لطب الأسنان (الطبعة ٦، ٢٠١١)؛ لبيـنكوت المراجعات المصورة: علم الأدوية (الطبعة ٦، ٢٠١٥).</span>
+    </span>
+  </div>
+</main>
+
+<script>
+// Language switcher
+const btn=document.getElementById('langBtn');
+btn.addEventListener('click',()=>{
+  document.body.classList.toggle('lang-ar');
+  document.body.classList.toggle('lang-en');
+});
+
+// Callout toggle
+document.querySelectorAll('.callout .hdr').forEach(h=>{
+  h.addEventListener('click',()=>{
+    const c=h.parentElement;
+    c.classList.toggle('open');
+    const body=c.querySelector('.body');
+    body.hidden=!body.hidden;
+  });
+});
+
+// Glossary toggle
+document.querySelectorAll('#glossary .card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    card.classList.toggle('open');
+    const cont=card.querySelector('.content');
+    cont.hidden=!cont.hidden;
+  });
+});
+
+// Flashcards toggle
+document.querySelectorAll('#flashcards .card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    card.classList.toggle('open');
+    const cont=card.querySelector('.content');
+    cont.hidden=!cont.hidden;
+  });
+});
+</script>
+</body>
+</html>

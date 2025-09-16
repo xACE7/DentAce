@@ -1,0 +1,456 @@
+<!-- Filename: RAD 1 & 2-test.html -->
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position:sticky;top:0;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd Year</h1>
+      <p class="subtitle">Test based on Lectures 1 & 2 (by ACE)</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (from lecture) -----------
+const mcqs = [
+  {q:"Who discovered X-rays on November 8, 1895?", opts:["Marie Curie","Sir J. J. Thomson","Sir Wilhelm Conrad Roentgen","Enrico Fermi"], correct:2, explain:"Roentgen discovered X-rays on Nov 8, 1895; he is called the Father of Radiology."},
+  {q:"X-rays belong to which category of radiation?", opts:["Particulate radiation","Electromagnetic radiation","Acoustic radiation","Thermal radiation"], correct:1, explain:"Slides: X-rays are high-energy, ionizing electromagnetic radiation that travel as waves."},
+  {q:"According to Bohr’s model (1913), electrons:", opts:["Are fixed inside the nucleus","Orbit the nucleus in shells/energy levels","Randomly appear anywhere","Have positive charge"], correct:1, explain:"Bohr viewed the atom like a miniature solar system with electrons in shells."},
+  {q:"Which statement about protons, neutrons, and electrons is correct?", opts:["Protons are negative","Neutrons are positive","Electrons are negative","Electrons and protons have the same positive charge"], correct:2, explain:"Protons +1, neutrons 0, electrons –1; neutral atom has equal electrons and protons."},
+  {q:"Maximum number of electron shells listed in the slides:", opts:["3","5","7","9"], correct:2, explain:"K–Q shells (up to 7): K,L,M,N,O,P,Q with characteristic capacities."},
+  {q:"Which two forces maintain electrons in orbit?", opts:["Electrostatic & centrifugal","Gravitational & frictional","Magnetic & nuclear","Elastic & viscous"], correct:0, explain:"Electrostatic attraction and centrifugal force balance to keep electrons in orbits."},
+  {q:"Ionization refers to:", opts:["Breaking the nucleus","Converting an atom into an ion by gaining/losing electrons","Heating an atom","Fusing two atoms"], correct:1, explain:"Ionization = atom becomes an ion by electron removal or addition."},
+  {q:"Relationship between wavelength and frequency:", opts:["Shorter wavelength → lower frequency","Shorter wavelength → higher frequency","No relation","Longer wavelength → higher energy"], correct:1, explain:"As wavelength decreases, frequency and energy increase."},
+  {q:"Which is NOT a property of X-rays listed?", opts:["No mass, no charge","Travel at speed of light","Can be focused to a point","Travel in straight lines"], correct:2, explain:"Slides: X-ray beam cannot be focused to a point."},
+  {q:"Typical intraoral unit settings (control panel):", opts:["20–30 kVp, 2–3 mA","60–70 kVp, 7–10 mA","90–110 kVp, 20–25 mA","40–50 kVp, 1–2 mA"], correct:1, explain:"Slides indicate tube voltage 60–70 kVp and tube current about 7–10 mA."},
+  {q:"Which component shapes and aims the X-ray beam?", opts:["Transformer","PID (Position Indicating Device)","Tubehead seal","Filament"], correct:1, explain:"PID (conical/rectangular/round) aims and shapes the beam; lead-lined to reduce scatter."},
+  {q:"Leaded glass housing purpose:", opts:["Generate X-rays","Prevent X-ray escape except at window","Increase kVp","Cool the anode"], correct:1, explain:"Leaded borosilicate housing prevents leakage; has a window for beam exit."},
+  {q:"Cathode principal parts:", opts:["Tungsten target & copper stem","Filament (tungsten) & focusing cup (molybdenum)","Lead collimator & aluminum filter","PID & arm"], correct:1, explain:"Filament emits electrons; focusing cup directs them to anode."},
+  {q:"Thermionic emission occurs when:", opts:["Anode is cooled","Filament is heated releasing electrons","kVp is zero","Filters are added"], correct:1, explain:"Heating filament liberates electrons that form an electron cloud."},
+  {q:"Anode target material and support:", opts:["Tungsten target in copper stem","Molybdenum target in lead block","Copper target in tungsten stem","Aluminum target in steel block"], correct:0, explain:"Tungsten target embedded in copper to dissipate heat."},
+  {q:"Line focus principle angle mentioned:", opts:["5–10°","12–15°","17–20°","25–30°"], correct:2, explain:"Target angled ~17–20° to create small effective focal spot for sharper images."},
+  {q:"Function of step-down transformer:", opts:["Increase voltage to anode","Decrease filament voltage/current for heating","Rectify AC","Stabilize exposure time"], correct:1, explain:"Step-down supplies low voltage/high current to heat filament (mA controlled)."},
+  {q:"Bremsstrahlung radiation arises when:", opts:["Outer shell electron fills inner vacancy","Incident electron slows near nucleus or hits it","Photon is scattered without energy loss","Neutron capture occurs"], correct:1, explain:"‘Direct hit’ or ‘near miss’ of high-speed electrons at tungsten nuclei → X-ray photons."},
+  {q:"Characteristic radiation is produced when:", opts:["Electron changes direction in field","Outer electron fills inner-shell vacancy","Photon passes without interaction","Filament cools"], correct:1, explain:"Electron knock-out creates vacancy; transition releases characteristic X-ray."},
+  {q:"Which primarily controls X-ray beam QUALITY (penetration)?", opts:["mA","kVp","Exposure time","Collimation"], correct:1, explain:"kVp controls beam energy/quality; mA & time affect quantity."},
+  {q:"Doubling mA will:", opts:["Double energy","Halve exposure time","Approximately double number of X-rays","Change focal spot size"], correct:2, explain:"mA governs filament heating → number of electrons → number of photons."},
+  {q:"Exposure time mainly affects:", opts:["Beam quality","Beam quantity","Focal spot angle","Filter thickness"], correct:1, explain:"Longer time → more electrons/photons produced (quantity)."},
+  {q:"Total filtration requirement up to 70 kVp:", opts:["0.2 mm Al","1.0 mm Al","1.5 mm Al","2.5 mm Al"], correct:2, explain:"Slides: total filtration = 1.5 mm Al ≤70 kVp; 2.5 mm Al above 70 kVp."},
+  {q:"Rectangular collimation at skin (~3.5×4.5 cm) can:", opts:["Increase exposure by 60%","Reduce exposure by ~60%","Have no effect","Eliminate need for filtration"], correct:1, explain:"Rectangular beam reduces exposed area and patient dose ~60% vs round."},
+  {q:"Inverse square law correctly expressed as:", opts:["I ∝ D","I ∝ 1/D","I ∝ D²","I ∝ 1/D²"], correct:3, explain:"Beam intensity inversely proportional to the square of distance from source."},
+  {q:"Coherent (Thomson) scattering involves:", opts:["Inner-shell ejection","Elastic scatter with no energy loss","Pair production","Photon absorption"], correct:1, explain:"Low-energy photon excites atom and is re-emitted with same energy but different direction."},
+  {q:"Photoelectric effect results in:", opts:["Only scattering","Outer-shell electron ejected","Bound electron (usually K-shell) ejected and photon absorbed","No ionization"], correct:2, explain:"Incident photon is fully absorbed; inner-shell electron ejected; characteristic radiation may follow."},
+  {q:"Compton scattering typically involves:", opts:["Inner-shell interaction and total absorption","Outer-shell electron ejection with scattered photon","Nuclear interaction","No energy transfer"], correct:1, explain:"Incident photon ejects outer electron and continues with reduced energy and altered path."},
+  {q:"Which component is an added filter material?", opts:["Lead","Copper","Aluminum","Tungsten"], correct:2, explain:"Added filtration uses aluminum discs to remove low-energy photons."},
+  {q:"Which PID option minimizes scatter most effectively?", opts:["Lead-lined rectangular PID","Conical non-lined PID","Plastic round PID","Any shape—no difference"], correct:0, explain:"Lead-lined rectangular PID confines beam profile and reduces scatter best."},
+];
+
+const tfs = [
+  {q:"X-rays have mass and carry a negative charge.", answer:false, explain:"They have no mass and no electrical charge."},
+  {q:"Shorter wavelength radiation has higher frequency and greater penetrating power.", answer:true, explain:"Energy ∝ frequency; shorter λ → higher f → higher energy."},
+  {q:"In a neutral atom, the number of electrons equals the number of protons.", answer:true, explain:"Charges balance in a neutral atom."},
+  {q:"The X-ray beam can be focused to a pinpoint using lenses.", answer:false, explain:"Slides explicitly state it cannot be focused to a point."},
+  {q:"Typical intraoral tube voltage is around 60–70 kVp.", answer:true, explain:"Given under control panel settings."},
+  {q:"The focusing cup is made of molybdenum and directs electrons to the target.", answer:true, explain:"Yes—molybdenum focusing cup around tungsten filament."},
+  {q:"Thermionic emission refers to ejection of electrons from the anode by cooling.", answer:false, explain:"It’s electron release from heated cathode filament."},
+  {q:"A smaller focal spot tends to sharpen the radiographic image.", answer:true, explain:"Line focus principle aims for small effective focal spot."},
+  {q:"Step-up transformer supplies high voltage for the tube potential (kVp).", answer:true, explain:"Step-up controls kVp; step-down heats filament."},
+  {q:"Bremsstrahlung radiation requires an inner-shell vacancy.", answer:false, explain:"That describes characteristic radiation; bremsstrahlung is deceleration near nucleus or direct hit."},
+  {q:"Total filtration must be at least 2.5 mm Al for units operating above 70 kVp.", answer:true, explain:"As specified on filtration slide."},
+  {q:"According to inverse square law, doubling the distance reduces intensity to one-quarter.", answer:true, explain:"I ∝ 1/D²; (2D) → I/4."},
+];
+
+const saqs = [
+  { q: "Define thermionic emission and state where it occurs in the dental X-ray tube.", a: "Thermionic emission is the release of electrons from a heated filament; it occurs at the tungsten filament in the cathode (within the molybdenum focusing cup)." },
+  { q: "Differentiate bremsstrahlung and characteristic radiation in dental X-ray production.", a: "Bremsstrahlung: high-speed electrons decelerate near/strike the nucleus (direct hit/near miss), emitting photons of varying energies. Characteristic: an incident electron ejects an inner-shell electron, and an outer-shell electron fills the vacancy, releasing a photon with characteristic energy." },
+  { q: "List the standard total filtration requirements and the purpose of filtration.", a: "Purpose: remove low-energy photons to reduce skin dose. Requirements: 1.5 mm Al total filtration at/under 70 kVp; 2.5 mm Al above 70 kVp." },
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <h3 class="qtitle">${item.q}</h3>
+    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="primary" data-act="reveal">Reveal Answer</button>
+      <button class="ghost" data-act="toggle">I was correct</button>
+    </div>
+    <div class="answer" hidden>${item.a}</div>
+  `;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

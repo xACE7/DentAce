@@ -1,0 +1,519 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>🦷 Dentistry 3rd year — 3.pdf</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.5rem;
+    --glossary-glow:#8b5cf6;
+    --flash-glow:#06b6d4;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+  }
+
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:24px;}
+
+  /* Page-level language visibility (only affects elements that include .en/.ar spans) */
+  .lang-en .ar{display:none !important;}
+  .lang-ar .en{display:none !important;}
+
+  header{position:sticky;top:0;z-index:10;backdrop-filter:blur(8px);background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}  
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:20px 32px;}
+  .title{font-weight:800;font-size:clamp(1.6rem,1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.4),0 0 12px rgba(139,92,246,.35);} 
+  .subtitle{color:var(--muted);font-size:1rem;margin-top:6px;}
+  .lang-toggle{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--text);padding:.6rem 1rem;border-radius:999px;cursor:pointer;}
+
+  /* Match section look for dua, chip, glossary, flash headers */
+  .dua,
+  .chip-box,
+  .glossary-box,
+  .flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    box-shadow:0 20px 40px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);
+    padding:1.6rem;
+    margin:20px 0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .dua{font-size:1.1rem;text-align:center;}
+  .chip{font-weight:800;font-size:1.2rem;color:var(--muted);}
+  .glossary-box h3,.flashcards-box h3{margin:0;font-size:1.15rem;letter-spacing:.2px;opacity:.95;}
+
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}  
+  .section{
+    display:grid;grid-template-columns:2fr 1fr;column-gap:2.5rem;flex:1;min-height:240px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:1.6rem;
+    box-shadow:0 20px 40px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);
+  }  
+  .section>div{display:flex;flex-direction:column;}
+  .sec-head{
+    font-weight:800;font-size:1.3rem;margin:0 0 1rem 0;padding:0.75rem 1rem;border-radius:8px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);width:100%;
+    box-shadow:0 0 18px rgba(255,255,255,.06), 0 0 30px rgba(255,255,255,.15);display:block;box-sizing:border-box;
+  }
+  .sec-body p{margin:.5rem 0;font-size:1rem;line-height:1.65;}
+
+  .callouts{display:flex;flex-direction:column;gap:.75rem;align-self:center;width:100%;}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.3), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .callout.open .hdr{opacity:.8;}
+
+  /* Type-specific borders */
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);} 
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:150px;box-shadow:0 0 22px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);}  
+  .card.glossary{box-shadow:0 0 26px color-mix(in srgb,var(--glossary-glow)28%, transparent), 0 0 30px rgba(255,255,255,.15);} 
+  .card.flash{box-shadow:0 0 26px color-mix(in srgb,var(--flash-glow)28%, transparent), 0 0 30px rgba(255,255,255,.15);} 
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .3s;} 
+  .card.open .head{opacity:.6;} 
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;} 
+  .card .content[hidden]{display:none;} 
+
+  /* Tables */
+  table{width:100%;border-collapse:separate;border-spacing:0;overflow:hidden;border-radius:12px;margin:.5rem 0 0 0;}
+  thead th{background:rgba(255,255,255,.06);font-weight:700;}
+  td,th{padding:.6rem .8rem;border-bottom:1px solid rgba(255,255,255,.08);}
+  tbody tr:nth-child(odd){background:rgba(255,255,255,.03);}
+
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;min-height:auto;padding:1.2rem;}
+    .dua,.chip-box,.glossary-box,.flashcards-box{padding:1.2rem;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);} 
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;} }
+
+  .dua,
+  .chip,
+  .sec-head,
+  .glossary-box h3,
+  .flashcards-box h3 {
+    font-weight:800;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.4),0 0 12px rgba(139,92,246,.35);
+    text-align:center;
+  }
+</style>
+</head>
+<body class="lang-en">
+<header>
+  <div class="hdr wrap">
+    <div>
+      <div class="title">🦷 Dentistry 3rd year</div>
+      <div class="subtitle">Lecture 3 <b>(by ACE)</b></div>
+    </div>
+    <button id="langBtn" class="lang-toggle">EN / AR</button>
+  </div>
+</header>
+
+<main class="wrap" id="content">
+  <!-- Dua: ALWAYS Arabic (different from template) -->
+  <div class="dua">رَّبِّ زِدْنِي عِلْمًا</div>
+
+  <!-- Topic chip: bilingual (follows language toggle) -->
+  <div class="chip-box">
+    <span class="chip">
+      <span class="en">📑 Topic: <b>Practical Orientation & Histology of Salivary Glands</b></span>
+      <span class="ar">📑 الموضوع: <b>التوجيه العملي وتشريح أنسجة الغدد اللعابية</b></span>
+    </span>
+  </div>
+
+  <div class="sections">
+    <!-- ===== Section 1: Practical Orientation & Portfolio ===== -->
+    <section class="section">
+      <div>
+        <h2 class="sec-head">
+          <span class="en">1) Practical Orientation, Portfolio & Rubric 🗂️</span>
+          <span class="ar">١) التوجيه العملي، الملف الدراسي ومعايير التقييم 🗂️</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Coordinator:</b> Dr. Sajda Gajdhar. Kindly collect your <b>Student Course Portfolio</b> from <b>Dr. Naif</b> to start exercises this week. Assessment uses an 8-parameter rubric (each 1–4): labelling, key features, identification, written answer, spellings, neatness, time management, ethics/professionalism. Total: 32 (student) + 32 (staff).</p>
+            <table>
+              <thead><tr><th>Parameter</th><th>Scale</th></tr></thead>
+              <tbody>
+                <tr><td>Labelling, Key features, Identification, Written answer</td><td>1–4 each</td></tr>
+                <tr><td>Spellings, Neatness, Time, Ethics/Professionalism</td><td>1–4 each</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="ar">
+            <p><b>المنسّق:</b> د. سَجْدَة جَجهدار. الرجاء استلام <b>ملف المقرر</b> من <b>د. نايف</b> لبدء التمارين هذا الأسبوع. التقييم عبر <b>٨ معايير</b> (١–٤ لكل معيار): الوسم، السمات الرئيسية، التعرف، الإجابة الكتابية، الإملاء، النظافة، إدارة الوقت، الأخلاقيات/الاحترافية. المجموع: ٣٢ (طالب) + ٣٢ (عضو هيئة).</p>
+            <table>
+              <thead><tr><th>المعيار</th><th>الدرجة</th></tr></thead>
+              <tbody>
+                <tr><td>الوسم، السمات، التعرف، الإجابة</td><td>١–٤ لكل منها</td></tr>
+                <tr><td>الإملاء، النظافة، الوقت، الأخلاقيات</td><td>١–٤ لكل منها</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Portfolio pickup: Dr. Naif; Coordinator: Dr. Sajda Gajdhar.</div><div class="ar">استلام الملف من د. نايف؛ المنسّق: د. سجدة ججهدار.</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Bring the portfolio to each practical; fill rubric self-scores before submission.</div><div class="ar">أحضر الملف لكل عملي؛ قيّم نفسك على المعايير قبل التسليم.</div></div></div>
+        <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Create a check-list page mirroring the 8 rubric lines to track progress.</div><div class="ar">أنشئ قائمة مرجعية بنفس معايير الروبرك لمتابعة تقدمك.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 2: Scope of Microscopic Examination ===== -->
+    <section class="section">
+      <div>
+        <h2 class="sec-head">
+          <span class="en">2) Microscopic Examination: Scope 🔬</span>
+          <span class="ar">٢) الفحص المجهري: النطاق 🔬</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Study on digital slides & microscopes: <b>salivary glands</b> (serous, mucous, mixed), <b>maxillary sinus</b>, <b>oral mucosa</b> (lining, gingiva, hard palate, tongue, taste buds), <b>tooth development</b> (bud, cap, early/advanced bell), <b>cementum</b> (cellular/acellular, CEJ types), <b>PDL</b> (principal fibers, interstitial tissue, cells), <b>alveolar bone</b> (bundle vs supporting), <b>enamel</b> (rods, Retzius lines, gnarled, lamellae, tufts, spindles), <b>dentin</b> (tubules, interglobular, DEJ, primary/secondary, dead tract, sclerotic), <b>pulp</b> (zones, pulp stones).</p>
+          </div>
+          <div class="ar">
+            <p>الدراسة على الشرائح الرقمية والمجهر: <b>الغدد اللعابية</b> (مصلي، مخاطي، مختلط)، <b>الجيب الفكي</b>، <b>الغشاء المخاطي الفموي</b> (البطانة، اللثة، الحنك الصلب، اللسان، الحليمات الذوقية)، <b>تطور السن</b> (برعم، قبعة، جرس مبكر/متقدم)، <b>الإسمنت</b> (الخلوِي/اللاحلولي، أنواع اتصال الميناء بالإسمنت)، <b>رباط السن</b> (الألياف الرئيسية، النسيج البيني، الخلايا)، <b>العظم السنخي</b> (الحزمي والداعم)، <b>الميناء</b> (العصي، خطوط رتزيوس، الميناء المعقود، الصفائح، الحزم، المغازل)، <b>العاج</b> (الأنابيب، العاج غير المتكلس بالكامل، وصل الميناء بالعاج، أولي/ثانوي، المسار الميت، العاج المتصلب)، <b>اللب</b> (المناطق، حصى اللب).</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Normal histology anchors your diagnostic eye before pathology.</div><div class="ar">فهم النسج السليم يثبّت رؤيتك التشخيصية قبل دراسة الأمراض.</div></div></div>
+        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Compare enamel spindles vs. tufts on the same slide.</div><div class="ar">قارن بين مغازل الميناء وحزم الميناء في نفس الشريحة.</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Build a “features list” per tissue: location, lining, cells, matrix, special lines.</div><div class="ar">أنشئ “قائمة سمات” لكل نسيج: الموقع، البطانة، الخلايا، المادة بين الخلوية، العلامات الخاصة.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 3: Radiology & Clinics ===== -->
+    <section class="section">
+      <div>
+        <h2 class="sec-head">
+          <span class="en">3) Oral Radiology & Clinic Visits 🩻🏥</span>
+          <span class="ar">٣) الأشعة الفموية والزيارات السريرية 🩻🏥</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Radiographic anatomy</b> to review: salivary glands, TMJ, maxillary sinus, jaw bones & periodontium, tooth structures & pulp cavity. Imaging includes <b>Orthopantomogram (OPG)</b>.</p>
+            <p><b>Clinic visits:</b> observe normal paraoral structures, oral mucosa, periodontal tissues, and teeth.</p>
+          </div>
+          <div class="ar">
+            <p><b>تشريح الأشعة</b> المطلوب: الغدد اللعابية، المفصل الفكي الصدغي، الجيب الفكي، عظام الفك واللثة الداعمة، بنى الأسنان وتجويف اللب. يشمل التصوير <b>بانوراما الأسنان (OPG)</b>.</p>
+            <p><b>زيارات العيادات:</b> ملاحظة المظاهر السريرية الطبيعية للبنى حول الفم، المخاطية الفموية، أنسجة اللثة، والأسنان.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">OPG gives a wide overview for jaw & sinus landmarks used in OSPE stations.</div><div class="ar">تصوير البانوراما يعطي نظرة عامة لمعالم الفك والجيب تُستخدم في محطات OSPE.</div></div></div>
+        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Correlate mucosal histology with radiographic margins near the periodontium.</div><div class="ar">اربط النسيج المخاطي بحواف الصورة الشعاعية قرب اللثة الداعمة.</div></div></div>
+        <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Don’t over-interpret physiologic spaces as pathology on OPG.</div><div class="ar">لا تُفسّر الفراغات الفسيولوجية كمرض في البانوراما.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 4: Assessments & OSPE ===== -->
+    <section class="section">
+      <div>
+        <h2 class="sec-head">
+          <span class="en">4) Assessments: OSPE-1 & OSPE-2 🧪</span>
+          <span class="ar">٤) التقييمات: OSPE-1 وOSPE-2 🧪</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Part 1:</b> MSE (OSPE-1) — 10 marks. <b>Part 2:</b> Final (OSPE-2) — 15 marks. ~10 stations using photomicrographs, microscopes, radiographs, and histologic slides. “Identify → Why?” is common.</p>
+          </div>
+          <div class="ar">
+            <p><b>الجزء الأول:</b> الاختبار النصفي (OSPE-1) — ١٠ درجات. <b>الجزء الثاني:</b> النهائي (OSPE-2) — ١٥ درجة. نحو ١٠ محطات بصور مجهرية، مجاهر، صور شعاعية وشرائح نسيجية. شائع: «عرّف → لماذا؟».</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Station Strategy</span><span class="ar">💡 إستراتيجية المحطة</span></div><div class="body" hidden><div class="en">1) Name tissue & gland type. 2) List 3 key features. 3) State the “Why?”.</div><div class="ar">١) سمّ النسيج ونوع الغدة. ٢) اذكر ٣ سمات. ٣) اشرح «لماذا؟».</div></div></div>
+        <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“S-S-S”: <u>S</u>erous → <u>S</u>mall lumen; <u>S</u>ecretory pyramids.</div><div class="ar">“م-م-ك”: <u>م</u>خاطي → <u>م</u>جال (لمعة) واسع؛ <u>ك</u>ثافة فاتحة.</div></div></div>
+        <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Carry a timer: 45–60 sec per station keeps you on rubric pace.</div><div class="ar">استخدم مؤقتًا: ٤٥–٦٠ ثانية لكل محطة لتلتزم بالوتيرة.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 5: Learning Outcomes (Session Focus) ===== -->
+    <section class="section">
+      <div>
+        <h2 class="sec-head">
+          <span class="en">5) Today’s Outcomes 🎯</span>
+          <span class="ar">٥) مخرجات جلسة اليوم 🎯</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li>Identify <b>parotid</b> (pure serous), <b>sublingual</b> (pure mucous), <b>submandibular</b> (mixed) by histology.</li>
+              <li>Illustrate differences between <b>serous vs. mucous acini</b>.</li>
+              <li>Compare <b>intra-lobular ducts</b> (intercalated, striated) vs. <b>inter-lobular (excretory)</b>.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li>تمييز <b>النكفية</b> (مصلي خالص)، <b>تحت اللسان</b> (مخاطي خالص)، <b>تحت الفك</b> (مختلط) نسيجيًا.</li>
+              <li>إيضاح الفروق بين <b>العنبات المصلية</b> و<b>المخاطية</b>.</li>
+              <li>مقارنة <b>القنوات داخل الفصيص</b> (بينية، مخططة) مع <b>القنوات بين الفصوص (النافذة)</b>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Pure vs Mixed</span><span class="ar">📌 خالص مقابل مختلط</span></div><div class="body" hidden><div class="en">Parotid = serous; Sublingual = mucous; Submandibular = mixed with serous demilunes.</div><div class="ar">النكفية = مصلي؛ تحت اللسان = مخاطي؛ تحت الفك = مختلط مع أنصاف أقمار مصلية.</div></div></div>
+        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Correct gland ID anchors OSPE answers and clinic correlations.</div><div class="ar">التعرّف الصحيح يثبّت إجابات OSPE والربط السريري.</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Scan lumina size & cytoplasm stain before nuclei shape.</div><div class="ar">افحص حجم اللمعة وشدة الصبغ قبل شكل الأنوية.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 6: Acini Morphology ===== -->
+    <section class="section">
+      <div>
+        <h2 class="sec-head">
+          <span class="en">6) Acini Morphology 🧫</span>
+          <span class="ar">٦) مورفولوجيا العنبات 🧫</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Serous acini (Parotid):</b> spherical, dark-staining; pyramidal cells with <u>basal rounded nuclei</u>, narrow central lumen; arranged in groups (acini). Striated ducts show <u>basal striations</u> with apical nuclei ring in columnar cells.</p>
+            <p><b>Mucous acini (Sublingual):</b> larger, tubular/irregular; cells have <u>pale granular abundant cytoplasm</u> and <u>basally flattened nuclei</u>; <u>large lumen</u>.</p>
+            <p><b>Mixed (Submandibular):</b> mucous tubules capped by <b>serous demilunes</b> (crescent-like serous caps).</p>
+          </div>
+          <div class="ar">
+            <p><b>العنبات المصلية (النكفية):</b> كروية شديدة الصبغ؛ خلايا هرمية بأنوية قاعدية مدوّرة ولمعة مركزية ضيقة؛ ترتيب على شكل عنبات. القنوات المخططة تُظهر <u>تخططات قاعدية</u> وأنوية قمية في خلايا عمودية.</p>
+            <p><b>العنبات المخاطية (تحت اللسان):</b> أكبر، أنبوبية/غير منتظمة؛ خلايا ذات <u>سيتوبلازم حُبيبي شاحب وافر</u> وأنوية <u>مسطّحة قاعدية</u>؛ <u>لمعة واسعة</u>.</p>
+            <p><b>المختلطة (تحت الفك):</b> أنابيب مخاطية مغطّاة بـ <b>أنصاف أقمار مصلية</b>.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout example"><div class="hdr"><span class="en">🔍 Slide Clues</span><span class="ar">🔍 دلائل الشريحة</span></div><div class="body" hidden><div class="en">Dark, granular cells + tiny lumen → serous; Pale, bubbly cells + wide lumen → mucous.</div><div class="ar">خلايا قاتمة حُبيبية ولمعة صغيرة → مصلي؛ خلايا باهتة فقاعية ولمعة واسعة → مخاطي.</div></div></div>
+        <div class="callout memory"><div class="hdr"><span class="en">🧠 Mnemonic</span><span class="ar">🧠 ذاكري</span></div><div class="body" hidden><div class="en">“<b>Paro-<u>tight</u></b> lumen” = Parotid has tight (narrow) lumen.</div><div class="ar">“<b>لسان = <u>واسع</u></b>” = تحت اللسان لمعة واسعة.</div></div></div>
+        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Viscosity differences affect sialography & flow obstruction patterns.</div><div class="ar">اختلاف اللزوجة يؤثر على تصوير القنوات وأنماط الانسداد.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 7: Ductal System ===== -->
+    <section class="section">
+      <div>
+        <h2 class="sec-head">
+          <span class="en">7) Ductal System 🚰</span>
+          <span class="ar">٧) جهاز القنوات 🚰</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li><b>Intercalated duct:</b> diameter <u>smaller</u> than endpiece; lined by <u>low cuboidal–cuboidal</u> cells.</li>
+              <li><b>Striated duct:</b> <u>simple columnar</u>; diameter usually <u>greater</u> than endpieces; numerous small blood vessels nearby; basal striations.</li>
+              <li><b>Excretory duct (interlobular):</b> in <u>interlobular septa</u>; small ones <u>pseudostratified</u> epithelium & larger lumen vs striated ducts; larger ones may be <u>stratified cuboidal/columnar</u>.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li><b>القناة البينية:</b> قطرها <u>أصغر</u> من نهاية العنبة؛ خلايا <u>مكعبة منخفضة–مكعبة</u>.</li>
+              <li><b>القناة المخططة:</b> <u>عمودية بسيطة</u>؛ قطرها عادة <u>أكبر</u> من نهايات العنبات؛ أوعية دموية صغيرة مجاورة؛ تخططات قاعدية.</li>
+              <li><b>القناة النافذة (بين الفصوص):</b> في <u>الحواجز بين الفصوص</u>؛ الصغيرة <u>كاذبة التطبق</u> وبلمعة أكبر من المخططة؛ الكبيرة قد تكون <u>مكعبة/عمودية مطبّقة</u>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Lumen & Lining</span><span class="ar">📌 اللمعة والبطانة</span></div><div class="body" hidden><div class="en">Intercalated (small, cuboidal) → Striated (bigger, columnar) → Excretory (pseudostratified/stratified).</div><div class="ar">بيني صغيرة مكعبة → مخططة أكبر عمودية → نافذة كاذبة/مُطبّقة.</div></div></div>
+        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Find vessels hugging striated ducts as a landmark.</div><div class="ar">ابحث عن أوعية دموية ملاصقة كدليل على القنوات المخططة.</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Tracing Trick</span><span class="ar">💡 حيلة تتبّع</span></div><div class="body" hidden><div class="en">Start at acini → follow to smallest duct (intercalated) → step up in size & complexity.</div><div class="ar">ابدأ من العنبات → اتبع إلى أصغر قناة (بينية) → تصاعد بالحجم والتعقيد.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 8: Case-Based Learning Topics ===== -->
+    <section class="section">
+      <div>
+        <h2 class="sec-head">
+          <span class="en">8) Case-Based Learning 🧩</span>
+          <span class="ar">٨) التعلّم القائم على الحالات 🧩</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <ol>
+              <li>TMJ & Maxillary sinus</li>
+              <li>Oral mucosa / OMM / Pulp</li>
+              <li>Tooth development, Enamel, Dentin</li>
+            </ol>
+          </div>
+          <div class="ar">
+            <ol>
+              <li>المفصل الفكي الصدغي والجيب الفكي</li>
+              <li>المخاطية الفموية / OMM / اللب</li>
+              <li>تطور السن، الميناء، العاج</li>
+            </ol>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout why"><div class="hdr"><span class="en">🎯 Integration</span><span class="ar">🎯 تكامل</span></div><div class="body" hidden><div class="en">Link histology to function & imaging for each case.</div><div class="ar">اربط النسج بالوظيفة والتصوير لكل حالة.</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Prep</span><span class="ar">💡 التحضير</span></div><div class="body" hidden><div class="en">One summary card per case: tissue, hallmark, clinical pearl.</div><div class="ar">بطاقة ملخص لكل حالة: النسيج، السمة المميزة، لمحة سريرية.</div></div></div>
+        <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Sketch duct sequences to speed station answers.</div><div class="ar">ارسم تسلسل القنوات لتسريع الإجابات.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 9: Identification Practice ===== -->
+    <section class="section">
+      <div>
+        <h2 class="sec-head">
+          <span class="en">9) Diagnosis / Identification 🧭</span>
+          <span class="ar">٩) التشخيص / التعرف 🧭</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Prompt style:</b> “Identify the picture — Why?” Train with serous, mucous, mixed glands and their ducts.</p>
+            <ul>
+              <li>Serous: dark acini, narrow lumen, rounded basal nuclei.</li>
+              <li>Mucous: pale, abundant cytoplasm, flattened basal nuclei, large lumen.</li>
+              <li>Mixed: mucous tubules with serous <i>demilunes</i>.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <p><b>أسلوب السؤال:</b> «حدّد الصورة — لماذا؟» تمرّن على الغدد المصلية والمخاطية والمختلطة وقنواتها.</p>
+            <ul>
+              <li>مصلي: عنبات قاتمة، لمعة ضيقة، أنوية قاعدية مستديرة.</li>
+              <li>مخاطي: باهت مع سيتوبلازم وفير، أنوية قاعدية مفلطحة، لمعة واسعة.</li>
+              <li>مختلط: أنابيب مخاطية مع <i>أنصاف أقمار مصلية</i>.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout example"><div class="hdr"><span class="en">🔍 Practice Cards</span><span class="ar">🔍 بطاقات تدريب</span></div><div class="body" hidden><div class="en">Make four “Identify → Why?” mini-cases mirroring OSPE.</div><div class="ar">أنشئ أربع حالات «عرّف → لماذا؟» تحاكي OSPE.</div></div></div>
+        <div class="callout warning"><div class="hdr"><span class="en">⚠️ Pitfall</span><span class="ar">⚠️ فخ</span></div><div class="body" hidden><div class="en">Don’t misread serous demilunes as mucous acini alone.</div><div class="ar">لا تُخطئ باعتبار أنصاف الأقمار المصلية عنبات مخاطية فقط.</div></div></div>
+        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Link</span><span class="ar">🩺 ارتباط</span></div><div class="body" hidden><div class="en">Gland type influences secretion and drug distribution in the mouth.</div><div class="ar">نوع الغدة يؤثر على الإفراز وتوزّع الأدوية فمويًا.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 10: Learning Resources ===== -->
+    <section class="section">
+      <div>
+        <h2 class="sec-head">
+          <span class="en">10) Learning Resources 📚</span>
+          <span class="ar">١٠) مصادر التعلّم 📚</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li>Tencate’s Oral Histology (pp. 278–310)</li>
+              <li>James K. Avery (pp. 177–194)</li>
+              <li>Orban’s Oral Histology; Satish Chandra; White & Pharoah (Oral Radiology)</li>
+              <li>Saudi Digital Library; PubMed</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li>تِنكيت – علم النسج الفموي (ص ٣١٠–٢٧٨)</li>
+              <li>جيمس ك. آفري (ص ١٩٤–١٧٧)</li>
+              <li>أوربان؛ ساتيش شاندرا؛ وايت وفارو (الأشعة الفموية)</li>
+              <li>المكتبة الرقمية السعودية؛ PubMed</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Reading Plan</span><span class="ar">💡 خطة قراءة</span></div><div class="body" hidden><div class="en">Skim figures first → list features → read captions → text.</div><div class="ar">تصفّح الأشكال أولًا → دوّن السمات → اقرأ الشروح → النص.</div></div></div>
+        <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Use institutional VPN for full-text access on SDL.</div><div class="ar">استخدم VPN الجامعي للوصول للنص الكامل في SDL.</div></div></div>
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Slide Modes</span><span class="ar">📌 أوضاع الشرائح</span></div><div class="body" hidden><div class="en">Microscopic exam + digital slide discussion are integral parts.</div><div class="ar">الفحص المجهري ومناقشة الشرائح الرقمية جزءان أساسيان.</div></div></div>
+      </aside>
+    </section>
+  </div>
+
+  <!-- Glossary 1–9 -->
+  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+  <div class="grid g3x4" id="glossary">
+    <div class="card glossary"><div class="head">Acinus / عنبة</div><div class="content" hidden><div class="en">Secretory unit of salivary gland (serous, mucous, or mixed).</div><div class="ar">الوحدة الإفرازية في الغدة اللعابية (مصلية أو مخاطية أو مختلطة).</div></div></div>
+    <div class="card glossary"><div class="head">Serous demilune / نصف قمر مصلي</div><div class="content" hidden><div class="en">Crescent of serous cells capping mucous tubules (mixed glands).</div><div class="ar">هلال من خلايا مصلية يغطي الأنابيب المخاطية في الغدة المختلطة.</div></div></div>
+    <div class="card glossary"><div class="head">Intercalated duct / قناة بينية</div><div class="content" hidden><div class="en">Smallest intralobular duct; low cuboidal lining.</div><div class="ar">أصغر القنوات داخل الفصيص؛ بطانة مكعبة منخفضة.</div></div></div>
+    <div class="card glossary"><div class="head">Striated duct / قناة مخططة</div><div class="content" hidden><div class="en">Simple columnar with basal striations; larger than endpieces.</div><div class="ar">عمودية بسيطة بتخططات قاعدية؛ أكبر من نهايات العنبات.</div></div></div>
+    <div class="card glossary"><div class="head">Excretory duct / قناة نافذة</div><div class="content" hidden><div class="en">Interlobular; epithelium from pseudostratified to stratified.</div><div class="ar">بين الفصوص؛ ظهارة من كاذبة التطبق إلى مطبّقة.</div></div></div>
+    <div class="card glossary"><div class="head">Parotid / الغدة النكفية</div><div class="content" hidden><div class="en">Pure serous gland with dark acini & narrow lumina.</div><div class="ar">غدة مصلية خالصة بعنبات قاتمة ولمعات ضيقة.</div></div></div>
+    <div class="card glossary"><div class="head">Sublingual / تحت اللسان</div><div class="content" hidden><div class="en">Pure mucous gland; pale acini with large lumina.</div><div class="ar">غدة مخاطية خالصة؛ عنبات باهتة ولمعات واسعة.</div></div></div>
+    <div class="card glossary"><div class="head">Submandibular / تحت الفك</div><div class="content" hidden><div class="en">Mixed gland; mucous tubules with serous demilunes.</div><div class="ar">غدة مختلطة؛ أنابيب مخاطية مع أنصاف أقمار مصلية.</div></div></div>
+    <div class="card glossary"><div class="head">OPG / بانوراما الأسنان</div><div class="content" hidden><div class="en">Orthopantomogram; panoramic dental radiograph.</div><div class="ar">تصوير بانورامي للفكين والأسنان.</div></div></div>
+  </div>
+
+  <!-- Flashcards 1–9 -->
+  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+  <div class="grid g3x4" id="flashcards">
+    <div class="card flash"><div class="head">1 — Q: Intercalated vs striated duct?</div><div class="content" hidden>A: Intercalated = smaller, low cuboidal. Striated = larger, simple columnar with basal striations.</div></div>
+    <div class="card flash"><div class="head">2 — Q: Key features of parotid?</div><div class="content" hidden>Pure serous; dark spherical acini; narrow lumen; rounded basal nuclei.</div></div>
+    <div class="card flash"><div class="head">3 — Q: Key features of sublingual?</div><div class="content" hidden>Pure mucous; pale granular cytoplasm; flattened basal nuclei; large lumen.</div></div>
+    <div class="card flash"><div class="head">4 — Q: What are serous demilunes?</div><div class="content" hidden>Crescents of serous cells capping mucous acini in mixed glands.</div></div>
+    <div class="card flash"><div class="head">5 — Q: Excretory duct lining?</div><div class="content" hidden>Small: pseudostratified; large: stratified cuboidal/columnar; in interlobular septa.</div></div>
+    <div class="card flash"><div class="head">6 — Q: Three OSPE steps?</div><div class="content" hidden>Identify tissue & gland → list 3 features → explain “Why?”.</div></div>
+    <div class="card flash"><div class="head">7 — Q: Enamel features to name?</div><div class="content" hidden>Rods, lines of Retzius, gnarled enamel, lamellae, tufts, spindles.</div></div>
+    <div class="card flash"><div class="head">8 — Q: Dentin features to name?</div><div class="content" hidden>Tubules, interglobular dentin, DEJ, primary/secondary, dead tract, sclerotic.</div></div>
+    <div class="card flash"><div class="head">9 — Q: CEJ types?</div><div class="content" hidden>Overlap, meet, gap (cementum–enamel junction variants).</div></div>
+  </div>
+</main>
+
+<script>
+// Language switcher: toggle a single class on <body>
+// Title & subtitle stay English; Dua stays Arabic
+const btn=document.getElementById('langBtn');
+btn.addEventListener('click',()=>{
+  document.body.classList.toggle('lang-ar');
+  document.body.classList.toggle('lang-en');
+});
+
+// Callout toggle (header only)
+document.querySelectorAll('.callout .hdr').forEach(h=>{
+  h.addEventListener('click',()=>{
+    const c=h.parentElement;
+    c.classList.toggle('open');
+    const body=c.querySelector('.body');
+    body.hidden=!body.hidden;
+  });
+});
+
+// Glossary toggle (card click)
+document.querySelectorAll('#glossary .card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    card.classList.toggle('open');
+    const cont=card.querySelector('.content');
+    cont.hidden=!cont.hidden;
+  });
+});
+
+// Flashcards toggle (card click)
+document.querySelectorAll('#flashcards .card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    card.classList.toggle('open');
+    const cont=card.querySelector('.content');
+    cont.hidden=!cont.hidden;
+  });
+});
+</script>
+</body>
+</html>

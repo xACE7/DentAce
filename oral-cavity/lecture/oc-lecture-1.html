@@ -1,0 +1,691 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>🦷 Salivary Glands — Offline Interactive Study Guide (1.pdf)</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.5rem;
+    --glossary-glow:#8b5cf6;
+    --flash-glow:#06b6d4;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+  }
+
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:24px;}
+
+  /* Page-level language visibility (only affects elements that include .en/.ar spans) */
+  .lang-en .ar{display:none !important;}
+  .lang-ar .en{display:none !important;}
+
+  header{position:sticky;top:0;z-index:10;backdrop-filter:blur(8px);background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}  
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:20px 32px;}
+  .title{font-weight:800;font-size:clamp(1.6rem,1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.4),0 0 12px rgba(139,92,246,.35);} 
+  .subtitle{color:var(--muted);font-size:1rem;margin-top:6px;}
+  .lang-toggle{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--text);padding:.6rem 1rem;border-radius:999px;cursor:pointer;}
+
+  /* Match section look for dua, chip, glossary, flash headers */
+  .dua,
+  .chip-box,
+  .glossary-box,
+  .flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    box-shadow:0 20px 40px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);
+    padding:1.6rem;
+    margin:20px 0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .dua{font-size:1.1rem;text-align:center;}
+  .chip{font-weight:800;font-size:1.1rem;color:var(--muted);}
+  .glossary-box h3,.flashcards-box h3{margin:0;font-size:1.15rem;letter-spacing:.2px;opacity:.95;}
+
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}  
+  .section{
+    display:grid;grid-template-columns:2fr 1fr;column-gap:2.5rem;flex:1;min-height:240px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:1.6rem;
+    box-shadow:0 20px 40px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);
+  }  
+  .section>div{display:flex;flex-direction:column;}
+  .sec-head{
+    font-weight:800;
+    font-size:1.3rem;
+    margin:0 0 1rem 0;
+    padding:0.75rem 1rem;
+    border-radius:8px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    width:100%;
+    box-shadow:0 0 18px rgba(255,255,255,.06), 0 0 30px rgba(255,255,255,.15);
+    display:block;
+    box-sizing:border-box;
+  }
+  .sec-body p{margin:.5rem 0;font-size:1rem;line-height:1.65;}
+  .sec-body ul{margin:.5rem 0 0 1.2rem;padding:0}
+  .sec-body li{margin:.25rem 0}
+
+  .callouts{display:flex;flex-direction:column;gap:.75rem;align-self:center;width:100%;}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.3), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .callout.open .hdr{opacity:.8;}
+
+  /* Type-specific borders */
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);} 
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:150px;box-shadow:0 0 22px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);}  
+  .card.glossary{box-shadow:0 0 26px color-mix(in srgb,var(--glossary-glow)28%, transparent), 0 0 30px rgba(255,255,255,.15);} 
+  .card.flash{box-shadow:0 0 26px color-mix(in srgb,var(--flash-glow)28%, transparent), 0 0 30px rgba(255,255,255,.15);} 
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .3s;} 
+  .card.open .head{opacity:.6;} 
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;} 
+  .card .content[hidden]{display:none;} 
+
+  table{width:100%;border-collapse:collapse;margin:.5rem 0;border-radius:12px;overflow:hidden}
+  th,td{border:1px solid rgba(255,255,255,.12);padding:.6rem .7rem;vertical-align:top}
+  th{background:rgba(255,255,255,.06);text-align:left}
+  caption{caption-side:top;margin-bottom:.5rem;font-weight:800;opacity:.9}
+
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;min-height:auto;padding:1.2rem;}
+    .dua,.chip-box,.glossary-box,.flashcards-box{padding:1.2rem;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);} 
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;} }
+
+  .dua,
+  .chip,
+  .sec-head,
+  .glossary-box h3,
+  .flashcards-box h3 {
+    font-weight:800;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.4),0 0 12px rgba(139,92,246,.35);
+    text-align:center;
+  }
+
+/* === Robust containment for Section 9 (and all sections) === */
+.section{
+  overflow:hidden; /* clip children to rounded box */
+  position:relative;
+}
+/* Prevent grid items from overflowing their tracks */
+.section > div,
+.section > aside{
+  min-width:0;
+}
+/* Keep bilingual tables inside the left column and wrap long content */
+.section table{
+  table-layout:fixed;
+  width:100%;
+}
+.section th,
+.section td{
+  overflow-wrap:anywhere;
+  word-break:break-word;
+}
+/* Ensure the content area can scroll horizontally if absolutely needed, but stays inside */
+.sec-body{
+  min-width:0;
+  overflow-x:auto;
+}
+/* Callouts column must stretch to the grid track, not float out */
+.section .callouts{
+  align-self:start;
+  justify-self:stretch;
+  width:auto;
+  margin-top:1rem;
+}
+/* Keep individual callout boxes visually contained */
+.section .callout{
+  border-radius:12px;
+  overflow:hidden;
+}
+
+</style>
+</head>
+<body class="lang-en">
+<header>
+  <div class="hdr wrap">
+    <div>
+      <div class="title">🦷 Dentistry 3rd year</div>
+      <div class="subtitle">Lecture 1 <b>(by ACE)</b></div>
+    </div>
+    <button id="langBtn" class="lang-toggle">EN / AR</button>
+  </div>
+</header>
+
+<main class="wrap" id="content">
+  <!-- Dua (different from template) -->
+  <div class="dua">رَبِّ زِدْنِي عِلْمًا 📖✨</div>
+
+  <!-- Topic chip: bilingual -->
+  <div class="chip-box">
+    <span class="chip">
+      <span class="en">📑 Topic: <b>Salivary Glands — Anatomy & Clinical Notes</b> (Dr. Mosaab Salah)</span>
+      <span class="ar">📑 الموضوع: <b>الغدد اللعابية — التشريح والجوانب السريرية</b> (د. مصعب صلاح)</span>
+    </span>
+  </div>
+
+  <div class="sections">
+    <!-- ===== Section 1 ===== -->
+    <section class="section" id="sec-overview">
+      <div>
+        <h2 class="sec-head"><span class="en">1) What are Salivary Glands? 🧪</span><span class="ar">١) ما هي الغدد اللعابية؟ 🧪</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Salivary glands are <b>exocrine glands</b> that produce saliva and deliver it into the oral cavity via ducts. They include <b>major</b> (parotid, submandibular, sublingual) and <b>minor</b> glands scattered throughout the oral mucosa.</p>
+          </div>
+          <div class="ar">
+            <p>الغدد اللعابية هي <b>غدد خارجية الإفراز</b> تُنتج اللعاب وتُفرغه في الفم عبر قنوات. تشمل <b>الغدد الرئيسية</b> (النكفية، تحت الفك، وتحت اللسان) و<b>الغدد الصغرى</b> المنتشرة في مخاطية الفم.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts">
+          <div class="hdr"><span class="en">📌 Facts — Types</span><span class="ar">📌 حقائق — الأنواع</span></div>
+          <div class="body" hidden><div class="en">Major: Parotid, Submandibular, Sublingual. Minor: numerous—labial, buccal, palatal, lingual.</div><div class="ar">الرئيسية: النكفية، تحت الفك، تحت اللسان. الصغرى: عديدة—الشّفوية، الخدية، الحنكية، اللسانية.</div></div>
+        </div>
+        <div class="callout why">
+          <div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم؟</span></div>
+          <div class="body" hidden><div class="en">Saliva maintains moisture, begins digestion, buffers pH, and protects oral tissues.</div><div class="ar">اللّعاب يحافظ على رطوبة الفم، يبدأ الهضم، يُعدل الحموضة، ويحمي أنسجة الفم.</div></div>
+        </div>
+        <div class="callout tips">
+          <div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة للمذاكرة</span></div>
+          <div class="body" hidden><div class="en">Link gland name to duct name: Parotid → Stensen’s; Submandibular → Wharton’s.</div><div class="ar">اربط اسم الغدة باسم القناة: النكفية → ستينسن، تحت الفك → وارتون.</div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 2 ===== -->
+    <section class="section" id="sec-parotid-location">
+      <div>
+        <h2 class="sec-head"><span class="en">2) Parotid Gland — Location & Surfaces 📍</span><span class="ar">٢) الغدة النكفية — الموقع والأسطح 📍</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li><b>Site</b>: Above—external auditory meatus; Below—extends below mandibular angle; Anterior—overlaps masseter; Posterior—overlaps sternomastoid.</li>
+              <li><b>Surfaces</b>: Superficial (lateral), anteromedial, posteromedial.</li>
+              <li><b>Borders</b>: Anterior & posterior; note relations at each end.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li><b>الموقع</b>: أعلى—الصماخ السمعي الخارجي؛ أسفل—يمتد أسفل زاوية الفك السفلي؛ أمام—يغطي الماضغة؛ خلف—يغطي القِترائي (القصي الترقوي الخشائي).</li>
+              <li><b>الأسطح</b>: سطحي (جانبي)، أمامي-إنسي، خلفي-إنسي.</li>
+              <li><b>الحواف</b>: أمامية وخلفية؛ مع علاقات عند الطرفين العلوي والسفلي.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout example">
+          <div class="hdr"><span class="en">🔍 Example — Ends</span><span class="ar">🔍 مثال — الأطراف</span></div>
+          <div class="body" hidden>
+            <div class="en">
+              <b>Lower end</b>: ECA out, retromandibular v. (or divisions), cervical branch of VII.<br/>
+              <b>Upper end</b>: Superficial temporal a./v., auriculotemporal n., temporal branch of VII.
+            </div>
+            <div class="ar">
+              <b>الطرف السفلي</b>: الشريان السباتي الظاهر، الوريد خلف الفك (أو فروعه)، الفرع العنقي للعصب الوجهي.<br/>
+              <b>الطرف العلوي</b>: الشريان/الوريد الصدغي السطحي، العصب الأذني الصدغي، الفرع الصدغي للعصب الوجهي.
+            </div>
+          </div>
+        </div>
+        <div class="callout facts">
+          <div class="hdr"><span class="en">📌 Facts — Relations</span><span class="ar">📌 حقائق — العلاقات</span></div>
+          <div class="body" hidden>
+            <div class="en"><b>Superficial</b>: skin, superficial fascia, superficial parotid LNs. <b>Anteromedial</b>: masseter, mandible, medial pterygoid. <b>Posteromedial</b>: mastoid + muscles, styloid + attachments, carotid sheath, facial n. entry.</div>
+            <div class="ar"><b>سطحية</b>: الجلد، اللفافة السطحية، عقد نكفية سطحية. <b>أمامية-إنسية</b>: الماضغة، الفك السفلي، الجناحي الإنسي. <b>خلفية-إنسية</b>: النتوء الخشائي وعضلاته، النتوء الإبري وارتباطاته، غمد السباتي، دخول العصب الوجهي.</div>
+          </div>
+        </div>
+        <div class="callout memory">
+          <div class="hdr"><span class="en">🧠 Memory — “MEeS” around Parotid</span><span class="ar">🧠 تذكّر — "م م س" حول النكفية</span></div>
+          <div class="body" hidden><div class="en">Mastoid–Ear–masseter–Sternomastoid landmarks encircle the gland.</div><div class="ar">معالم: الخُشَّائي–الأذن–الماضغة–القصي الترقوي الخُشائي تحيط بالغدة.</div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 3 ===== -->
+    <section class="section" id="sec-parotid-contents">
+      <div>
+        <h2 class="sec-head"><span class="en">3) Inside the Parotid — “N A V” 🧭</span><span class="ar">٣) مكوّنات النكفية — "ع ش و"</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Three key structures traverse the gland:</p>
+            <ul>
+              <li><b>Facial nerve (CN VII)</b> → divides into five terminal branches (temporal, zygomatic, buccal, mandibular, cervical).</li>
+              <li><b>External carotid artery</b> → divides into superficial temporal a. (exits superiorly) and maxillary a. (exits anteromedially).</li>
+              <li><b>Retromandibular vein</b> → formed by union of superficial temporal & maxillary vv.; divides into anterior/posterior divisions inferiorly.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <p>ثلاثة تراكيب رئيسية تمر عبر الغدة:</p>
+            <ul>
+              <li><b>العصب الوجهي (VII)</b> → ينقسم إلى خمسة فروع نهائية (صدغي، وجني، شدقي، فكي، عنقي).</li>
+              <li><b>الشريان السباتي الظاهر</b> → يتفرع إلى الصدغي السطحي (يخرج علوياً) والفكي العلوي (يخرج أمامياً إنسياً).</li>
+              <li><b>الوريد خلف الفك</b> → يتكوّن من اتحاد الوريدين الصدغي السطحي والفكي العلوي؛ ينقسم أمامي/خلفي سفلياً.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout warning">
+          <div class="hdr"><span class="en">⚠️ Surgical Warning</span><span class="ar">⚠️ تحذير جراحي</span></div>
+          <div class="body" hidden><div class="en">Parotidectomy risks facial nerve injury → facial paralysis.</div><div class="ar">استئصال النكفية قد يؤذي العصب الوجهي → شلل وجهي.</div></div>
+        </div>
+        <div class="callout clinical">
+          <div class="hdr"><span class="en">🩺 Clinical — Tumors & Mumps</span><span class="ar">🩺 سريري — الأورام والنكاف</span></div>
+          <div class="body" hidden><div class="en">Common site of pleomorphic adenoma; viral parotitis (mumps) inflames the gland.</div><div class="ar">موقع شائع للورم المختلط الحميد؛ النكاف يسبب التهاب الغدة.</div></div>
+        </div>
+        <div class="callout tips">
+          <div class="hdr"><span class="en">💡 Study Tip — “T Z B M C”</span><span class="ar">💡 تذكّر الفروع الخمسة</span></div>
+          <div class="body" hidden><div class="en">Facial branches: <b>T</b>emporal, <b>Z</b>ygomatic, <b>B</b>uccal, <b>M</b>andibular, <b>C</b>ervical.</div><div class="ar">فروع العصب الوجهي: صدغي، وجني، شدقي، فكي، عنقي.</div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 4 ===== -->
+    <section class="section" id="sec-parotid-duct">
+      <div>
+        <h2 class="sec-head"><span class="en">4) Parotid (Stensen’s) Duct ➡️</span><span class="ar">٤) قناة النكفية (ستينسن) ➡️</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li>Runs forward across <b>masseter</b> below the zygomatic arch, then turns medially to pierce:
+                <ol>
+                  <li>Buccal fat pad</li><li>Buccopharyngeal fascia</li><li>Buccinator</li><li>Buccal mucosa</li>
+                </ol>
+              </li>
+              <li><b>Opens opposite the maxillary 2nd molar</b> (parotid papilla).</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li>تسير أمامياً على <b>الماضغة</b> أسفل قوس الوجنة، ثم إنسياً لتثقب:
+                <ol>
+                  <li>وسادة الدهن الخدية</li><li>اللفافة البلعومية الفموية</li><li>عضلة المبوق</li><li>المخاطية الخدية</li>
+                </ol>
+              </li>
+              <li><b>تفتح مقابل الضرس العلوي الثاني</b> (حليمة النكفية).</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout clinical">
+          <div class="hdr"><span class="en">🩺 Clinical — Sialolithiasis 🪨</span><span class="ar">🩺 سريري — حصيات اللعاب 🪨</span></div>
+          <div class="body" hidden><div class="en">Stensen’s duct can be obstructed by stones → painful swelling during meals.</div><div class="ar">قد تُسد القناة بحصيات → تورم مؤلم أثناء الأكل.</div></div>
+        </div>
+        <div class="callout example">
+          <div class="hdr"><span class="en">🔍 Example — Spot the Papilla</span><span class="ar">🔍 مثال — تعرّف الحليمة</span></div>
+          <div class="body" hidden><div class="en">Look for a small elevation on the buccal mucosa near the <b>upper 2nd molar</b>.</div><div class="ar">ابحث عن نتوء صغير على المخاطية الخدية قرب <b>الضرس العلوي الثاني</b>.</div></div>
+        </div>
+        <div class="callout extra">
+          <div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div>
+          <div class="body" hidden><div class="en">Hydration and gentle massage may transiently relieve ductal obstruction.</div><div class="ar">الترطيب والتدليك اللطيف قد يخفف مؤقتاً انسداد القناة.</div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 5 ===== -->
+    <section class="section" id="sec-parotid-capsule-innervation">
+      <div>
+        <h2 class="sec-head"><span class="en">5) Parotid Capsules & Innervation 🧠</span><span class="ar">٥) محفظتا النكفية والتعصيب 🧠</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li><b>Capsules</b>: Inner (true, connective tissue) + Outer (false, from investing layer of deep cervical fascia).</li>
+              <li><b>Parasympathetic (secretomotor)</b>: CN IX → tympanic branch → tympanic plexus → lesser petrosal → <b>otic ganglion</b> → auriculotemporal n. → gland.</li>
+              <li><b>Sympathetic (vasomotor)</b>: plexus around external carotid artery.</li>
+              <li><b>Sensory</b>: gland—auriculotemporal n.; capsule—great auricular n.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li><b>المحفظتان</b>: داخلية (حقيقية ليفية) + خارجية (كاذبة من اللفافة العنقية العميقة).</li>
+              <li><b>الباراسمبثاوي (مفرز)</b>: العصب التاسع → فرع طبلي → ضفيرة طبلة → صخري أصغر → <b>العقدة الأذنية</b> → الأذني الصدغي → الغدة.</li>
+              <li><b>السمبثاوي (مقبض أوعية)</b>: ضفيرة حول الشريان السباتي الظاهر.</li>
+              <li><b>الحسي</b>: للغدة—الأذني الصدغي؛ للمحفظة—العصب الأذني الكبير.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout why">
+          <div class="hdr"><span class="en">🎯 Why Pain is Severe</span><span class="ar">🎯 لماذا الألم شديد؟</span></div>
+          <div class="body" hidden><div class="en">Tight parotid fascia limits expansion → infections cause marked pain/swelling.</div><div class="ar">شدّة المحفظة تحد التمدد → العدوى تُسبب ألماً وتورماً شديدين.</div></div>
+        </div>
+        <div class="callout memory">
+          <div class="hdr"><span class="en">🧠 Memory — “IX → Lesser Petrosal → Otic → ATN”</span><span class="ar">🧠 تذكّر — "٩ → صخري أصغر → أذنية → أذني صدغي"</span></div>
+          <div class="body" hidden><div class="en">AuriculoTemporal Nerve (ATN) delivers secretomotor fibers to the gland.</div><div class="ar">العصب الأذني الصدغي يحمل الألياف المفرزة للغدة.</div></div>
+        </div>
+        <div class="callout extra">
+          <div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div>
+          <div class="body" hidden><div class="en">Freý’s syndrome (gustatory sweating) may follow parotid surgery due to aberrant reinnervation.</div><div class="ar">قد يحدث تعرّق الذوق بعد جراحة النكفية بسبب تعصيب شاذ.</div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 6 ===== -->
+    <section class="section" id="sec-submandibular">
+      <div>
+        <h2 class="sec-head"><span class="en">6) Submandibular Region & Gland 🧩</span><span class="ar">٦) منطقة وتحت الفك السفلي 🧩</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Region contents</b>: submandibular & sublingual glands; suprahyoid muscles (digastric, stylohyoid, mylohyoid, geniohyoid); extrinsic tongue muscles (styloglossus, hyoglossus, genioglossus, palatoglossus).</p>
+            <p><b>Submandibular gland</b>: in the submandibular triangle; has true (fibrous) and false (investing fascia) capsules; two parts—<b>superficial</b> (over mylohyoid) and <b>deep</b> (between mylohyoid & hyoglossus).</p>
+          </div>
+          <div class="ar">
+            <p><b>محتويات المنطقة</b>: غدتا تحت الفك وتحت اللسان؛ عضلات فوق اللامي (البطنان للضيغام، الشوكي اللامي، الضرسّي اللامي، الذقني اللامي)؛ عضلات اللسان الخارجية (الإبري اللساني، اللامي اللساني، الذقني اللساني، الحنكي اللساني).</p>
+            <p><b>غدة تحت الفك</b>: ضمن مثلث تحت الفك؛ محفظة حقيقية وأخرى كاذبة؛ جزآن—<b>سطحي</b> فوق العضلة الضرسية اللامية و<b>عميق</b> بين الضرسية اللامية واللامية اللسانية.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts">
+          <div class="hdr"><span class="en">📌 Facts — Relations</span><span class="ar">📌 حقائق — العلاقات</span></div>
+          <div class="body" hidden>
+            <div class="en"><b>Superficial part</b>: medial—mylohyoid; lateral—mandibular fossa; inferolateral—skin, superficial fascia/platysma, submandibular LNs. <b>Deep part</b>: lateral—mylohyoid; medial—hyoglossus; superior—lingual n. & submandibular ganglion; inferior—hypoglossal n.</div>
+            <div class="ar"><b>الجزء السطحي</b>: إنسياً—الضرسية اللامية؛ وحشياً—حفرة الفك السفلي؛ أسفل وحشياً—الجلد واللفافة السطحية/العضلة تحت الجلد والعقد اللمفية. <b>الجزء العميق</b>: وحشياً—الضرسية اللامية؛ إنسياً—اللامي اللساني؛ علوياً—العصب اللساني والعقدة تحت الفك؛ سفلياً—العصب تحت اللسان.</div>
+          </div>
+        </div>
+        <div class="callout clinical">
+          <div class="hdr"><span class="en">🩺 Clinical — Duct & Nerves</span><span class="ar">🩺 سريري — القناة والأعصاب</span></div>
+          <div class="body" hidden><div class="en">Close relation to lingual & hypoglossal nerves → risk during excision.</div><div class="ar">قربها من العصبين اللساني وتحت اللسان يزيد خطر إصابتهما أثناء الاستئصال.</div></div>
+        </div>
+        <div class="callout tips">
+          <div class="hdr"><span class="en">💡 Study Tip — Two-Part Map</span><span class="ar">💡 تلميح — خريطة الجزأين</span></div>
+          <div class="body" hidden><div class="en">Visualize mylohyoid as the “shelf”: superficial gland above; deep part tucked behind it.</div><div class="ar">تخيّل الضرسية اللامية كـ“رف”: الجزء السطحي فوقها والعميق خلفها.</div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 7 ===== -->
+    <section class="section" id="sec-submandibular-duct-innervation">
+      <div>
+        <h2 class="sec-head"><span class="en">7) Submandibular (Wharton’s) Duct & Nerve Supply 🚰</span><span class="ar">٧) قناة وارتون وتعصيب تحت الفك 🚰</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li><b>Duct</b>: ~5 cm; opens at the <b>sublingual papilla</b> beside lingual frenulum (floor of mouth).</li>
+              <li><b>Innervation</b>:
+                <ul>
+                  <li>Parasympathetic (secretomotor): superior salivatory nucleus (CN VII) → via chorda tympani with <b>lingual n.</b> into gland.</li>
+                  <li>Sympathetic: plexus around facial artery.</li>
+                  <li>Sensory: lingual nerve.</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li><b>القناة</b>: نحو ٥ سم؛ تفتح عند <b>حليمة تحت اللسان</b> بجانب لجام اللسان.</li>
+              <li><b>التعصيب</b>:
+                <ul>
+                  <li>باراسمبثاوي (مفرز): نواة اللعاب العلوية (العصب السابع) عبر طبلة الحبل مع <b>العصب اللساني</b> إلى الغدة.</li>
+                  <li>سمبثاوي: ضفيرة حول الشريان الوجهي.</li>
+                  <li>حسي: العصب اللساني.</li>
+                </ul>
+              </li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout clinical">
+          <div class="hdr"><span class="en">🩺 Clinical — Wharton’s Stones</span><span class="ar">🩺 سريري — حصيات وارتون</span></div>
+          <div class="body" hidden><div class="en">Submandibular duct commonly develops stones → meal-time pain & swelling.</div><div class="ar">قناة وارتون شائعة الحصيات → ألم وتورم وقت الأكل.</div></div>
+        </div>
+        <div class="callout warning">
+          <div class="hdr"><span class="en">⚠️ Surgical Care</span><span class="ar">⚠️ عناية جراحية</span></div>
+          <div class="body" hidden><div class="en">Beware the <b>lingual</b> & <b>hypoglossal</b> nerves near the deep part and duct.</div><div class="ar">الحذر من العصبين <b>اللساني</b> و<b>تحت اللسان</b> قرب الجزء العميق والقناة.</div></div>
+        </div>
+        <div class="callout extra">
+          <div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div>
+          <div class="body" hidden><div class="en">Sialography or ultrasound helps localize stones; lemon drops may stimulate flow.</div><div class="ar">تصوير القنوات أو الإيكو يُحدد الحصيات؛ الحامض قد يحفّز التدفق.</div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 8 ===== -->
+    <section class="section" id="sec-sublingual">
+      <div>
+        <h2 class="sec-head"><span class="en">8) Sublingual Gland 🌊</span><span class="ar">٨) الغدة تحت اللسان 🌊</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li>Smallest major gland; lies beneath floor-of-mouth mucosa within the <b>sublingual fold</b> near midline.</li>
+              <li><b>Ducts</b>: 8–20 small ducts; most open directly into the floor of the mouth.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li>أصغر الغدد الرئيسية؛ تقع تحت مخاطية قاع الفم ضمن <b>الثنية تحت اللسان</b> قرب الخط الناصف.</li>
+              <li><b>القنوات</b>: من ٨ إلى ٢٠ قناة صغيرة؛ أغلبها يفتح مباشرة في أرضية الفم.</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout clinical">
+          <div class="hdr"><span class="en">🩺 Clinical — Ranula/Mucocele</span><span class="ar">🩺 سريري — رانولا/موكوسيل</span></div>
+          <div class="body" hidden><div class="en">Minor glands commonly form mucoceles; sublingual obstruction can cause ranula.</div><div class="ar">الغدد الصغرى كثيراً ما تُحدث موكوسيل؛ انسداد تحت اللسان قد يسبب رانولا.</div></div>
+        </div>
+        <div class="callout facts">
+          <div class="hdr"><span class="en">📌 Facts — Position</span><span class="ar">📌 حقائق — الموضع</span></div>
+          <div class="body" hidden><div class="en">Deep to mucosa, superficial to mylohyoid’s anterior portion.</div><div class="ar">عميقة للمخاطية وسطحية للجزء الأمامي من الضرسية اللامية.</div></div>
+        </div>
+        <div class="callout tips">
+          <div class="hdr"><span class="en">💡 Study Tip — “Many Tiny Ducts”</span><span class="ar">💡 تلميح — "قنوات عديدة صغيرة"</span></div>
+          <div class="body" hidden><div class="en">Unlike single long ducts of major pairs, sublinguals open via many small ducts.</div><div class="ar">بعكس القنوات الطويلة للغدد الأخرى، تحت اللسان تفتح عبر قنوات صغيرة عديدة.</div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 9 ===== -->
+    <section class="section" id="sec-major-vs-minor">
+      <div>
+        <h2 class="sec-head"><span class="en">9) Major vs Minor Salivary Glands — Bilingual Table 📊</span><span class="ar">٩) مقارنة الغدد الرئيسية والصغرى — جدول ثنائي اللغة 📊</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <table aria-label="Major vs Minor salivary glands">
+              <caption>Comparison</caption>
+              <thead><tr><th>Feature</th><th>Major Glands</th><th>Minor Glands</th></tr></thead>
+              <tbody>
+                <tr><td>Examples</td><td>Parotid, Submandibular, Sublingual</td><td>Labial, Buccal, Palatal, Lingual</td></tr>
+                <tr><td>Size/Number</td><td>Large; 3 pairs (6 total)</td><td>Small; numerous (hundreds)</td></tr>
+                <tr><td>Capsule</td><td>Encapsulated</td><td>Unencapsulated</td></tr>
+                <tr><td>Location</td><td>Outside oral mucosa; ducts open into cavity</td><td>Scattered in oral mucosa/submucosa</td></tr>
+                <tr><td>Duct system</td><td>Each with a distinct long duct</td><td>Short ducts opening directly</td></tr>
+                <tr><td>Secretion volume</td><td>~90% of saliva</td><td>~10% of saliva</td></tr>
+                <tr><td>Function</td><td>Moisture, digestion, buffering, protection</td><td>Continuous lubrication & protection</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="ar">
+            <table aria-label="مقارنة الغدد اللعابية">
+              <caption>مقارنة</caption>
+              <thead><tr><th>الميزة</th><th>الغدد الرئيسية</th><th>الغدد الصغرى</th></tr></thead>
+              <tbody>
+                <tr><td>أمثلة</td><td>النكفية، تحت الفك، تحت اللسان</td><td>الشفوية، الخدية، الحنكية، اللسانية</td></tr>
+                <tr><td>الحجم/العدد</td><td>كبيرة؛ ٣ أزواج (٦)</td><td>صغيرة؛ كثيرة (مئات)</td></tr>
+                <tr><td>المحفظة</td><td>مُحكَمة (ذات محفظة)</td><td>بدون محفظة</td></tr>
+                <tr><td>الموضع</td><td>خارج مخاطية الفم؛ قنواتها تفتح للفم</td><td>منتشرة في مخاطية/تحت مخاطية الفم</td></tr>
+                <tr><td>القنوات</td><td>لكل غدة قناة طويلة مميزة</td><td>قنوات قصيرة تفتح مباشرة</td></tr>
+                <tr><td>كمية الإفراز</td><td>حوالي ٩٠٪ من اللعاب</td><td>حوالي ١٠٪ من اللعاب</td></tr>
+                <tr><td>الوظيفة</td><td>ترطيب، هضم، موازنة pH، حماية</td><td>تزييت مستمر وحماية المخاطية</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout why">
+          <div class="hdr"><span class="en">🎯 Why Compare?</span><span class="ar">🎯 لماذا المقارنة؟</span></div>
+          <div class="body" hidden><div class="en">Guides differential diagnosis of swellings and stone locations.</div><div class="ar">تُوجّه التفريق بين الانتفاخات ومواقع الحصيات.</div></div>
+        </div>
+        <div class="callout memory">
+          <div class="hdr"><span class="en">🧠 Memory — “Major = Bulk”</span><span class="ar">🧠 تذكّر — "الرئيسية = الكَمّ"</span></div>
+          <div class="body" hidden><div class="en">Major glands produce ~90% of saliva; minors maintain baseline moisture.</div><div class="ar">الرئيسية تُنتج ~٩٠٪ من اللعاب؛ الصغرى تحافظ على الترطيب القاعدي.</div></div>
+        </div>
+        <div class="callout extra">
+          <div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div>
+          <div class="body" hidden><div class="en">Autoimmune disease (e.g., Sjögren’s) often targets multiple salivary glands.</div><div class="ar">الأمراض المناعية الذاتية (مثل شوغرِن) قد تصيب عدة غدد لعابية.</div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 10 ===== -->
+    <section class="section" id="sec-clinical-table">
+      <div>
+        <h2 class="sec-head"><span class="en">10) Clinical Relevance by Structure 🏥</span><span class="ar">١٠) الأهمية السريرية حسب البنية 🏥</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <table aria-label="Clinical relevance">
+              <caption>At-a-glance</caption>
+              <thead><tr><th>Anatomical Structure</th><th>Clinical Relevance</th></tr></thead>
+              <tbody>
+                <tr><td>Parotid gland</td><td>Parotidectomy risk to facial nerve; pleomorphic adenoma common; mumps (viral parotitis).</td></tr>
+                <tr><td>Parotid/Stensen’s duct</td><td>Opens opposite maxillary 2nd molar; may be obstructed by stones → meal-time swelling.</td></tr>
+                <tr><td>Submandibular gland</td><td>Close to lingual & hypoglossal nerves → surgical caution.</td></tr>
+                <tr><td>Wharton’s duct</td><td>Common site for submandibular stones.</td></tr>
+                <tr><td>Minor salivary glands</td><td>Common site of mucoceles (small mucous cysts).</td></tr>
+                <tr><td>Parotid capsule/fascia</td><td>Tight fascia → severe pain & swelling in infections.</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="ar">
+            <table aria-label="الأهمية السريرية">
+              <caption>نظرة سريعة</caption>
+              <thead><tr><th>البنية التشريحية</th><th>الأهمية السريرية</th></tr></thead>
+              <tbody>
+                <tr><td>الغدة النكفية</td><td>خطر إصابة العصب الوجهي في الاستئصال؛ ورم مختلط حميد شائع؛ النكاف (التهاب فيروسي).</td></tr>
+                <tr><td>قناة ستينسن</td><td>تفتح مقابل الضرس العلوي الثاني؛ قد تُسد بحصيات → تورم وقت الأكل.</td></tr>
+                <tr><td>غدة تحت الفك</td><td>قريبة من العصبين اللساني وتحت اللسان → حذر جراحي.</td></tr>
+                <tr><td>قناة وارتون</td><td>موقع شائع لحصيات تحت الفك.</td></tr>
+                <tr><td>الغدد اللعابية الصغرى</td><td>موقع شائع للموكوسيل (كيس مخاطي صغير).</td></tr>
+                <tr><td>محفظة/لفافة النكفية</td><td>شدّها يزيد الألم والتورم أثناء العدوى.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout clinical">
+          <div class="hdr"><span class="en">🩺 Clinical Pearl — Meals & Pain</span><span class="ar">🩺 لؤلؤة سريرية — الأكل والألم</span></div>
+          <div class="body" hidden><div class="en">Pain that worsens at mealtime suggests duct obstruction.</div><div class="ar">ألم يشتد وقت الأكل يوحي بانسداد القناة.</div></div>
+        </div>
+        <div class="callout warning">
+          <div class="hdr"><span class="en">⚠️ Red Flag</span><span class="ar">⚠️ علامة خطر</span></div>
+          <div class="body" hidden><div class="en">Progressive, firm, painless mass → evaluate for neoplasm.</div><div class="ar">كتلة صلبة غير مؤلمة متزايدة → قيّم لاحتمال ورم.</div></div>
+        </div>
+        <div class="callout tips">
+          <div class="hdr"><span class="en">💡 Study Tip — Table Drills</span><span class="ar">💡 تلميح — تكرار الجداول</span></div>
+          <div class="body" hidden><div class="en">Recreate these tables from memory, then check against the guide.</div><div class="ar">أعِد إنشاء هذه الجداول من الذاكرة، ثم قارِن بالمرجع.</div></div>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <!-- Glossary 1–9 -->
+  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+  <div class="grid g3x4" id="glossary">
+    <div class="card glossary"><div class="head">Parotid / النكفية</div><div class="content" hidden><div class="en">Largest major salivary gland near the ear.</div><div class="ar">أكبر غدة لعابية رئيسية قرب الأذن.</div></div></div>
+    <div class="card glossary"><div class="head">Stensen’s duct / قناة ستينسن</div><div class="content" hidden><div class="en">Parotid duct opening opposite upper 2nd molar.</div><div class="ar">قناة النكفية تفتح مقابل الضرس العلوي الثاني.</div></div></div>
+    <div class="card glossary"><div class="head">Wharton’s duct / قناة وارتون</div><div class="content" hidden><div class="en">Submandibular duct opening at sublingual papilla.</div><div class="ar">قناة تحت الفك تفتح عند حليمة تحت اللسان.</div></div></div>
+    <div class="card glossary"><div class="head">Auriculotemporal n. / العصب الأذني الصدغي</div><div class="content" hidden><div class="en">Carries secretomotor fibers to parotid (from otic ganglion).</div><div class="ar">يحمل الألياف المفرزة إلى النكفية من العقدة الأذنية.</div></div></div>
+    <div class="card glossary"><div class="head">Otic ganglion / العقدة الأذنية</div><div class="content" hidden><div class="en">Parasympathetic relay for parotid (CN IX).</div><div class="ar">محطة واصلة باراسمبثاوية للنكفية (العصب التاسع).</div></div></div>
+    <div class="card glossary"><div class="head">Retromandibular v. / الوريد خلف الفك</div><div class="content" hidden><div class="en">Formed in parotid by superficial temporal + maxillary vv.</div><div class="ar">يتكوّن في النكفية من اتحاد الصدغي السطحي والفكي العلوي.</div></div></div>
+    <div class="card glossary"><div class="head">Sialolithiasis / حصيات لعابية</div><div class="content" hidden><div class="en">Salivary duct stones, often submandibular.</div><div class="ar">حصيات بقنوات اللعاب، غالباً بقناة تحت الفك.</div></div></div>
+    <div class="card glossary"><div class="head">Pleomorphic adenoma / الورم المختلط</div><div class="content" hidden><div class="en">Common benign salivary tumor (often parotid).</div><div class="ar">ورم لعابي حميد شائع (غالباً بالنكفية).</div></div></div>
+    <div class="card glossary"><div class="head">Mumps / النكاف</div><div class="content" hidden><div class="en">Viral parotitis causing painful swelling.</div><div class="ar">التهاب نكفي فيروسي يسبب تورماً مؤلماً.</div></div></div>
+  </div>
+
+  <!-- Flashcards 1–9 -->
+  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+  <div class="grid g3x4" id="flashcards">
+    <div class="card flash"><div class="head">1 — Q: Name the major salivary glands. / ما الغدد اللعابية الرئيسية؟</div><div class="content" hidden>A: Parotid, Submandibular, Sublingual / النكفية، تحت الفك، تحت اللسان.</div></div>
+    <div class="card flash"><div class="head">2 — Q: Stensen’s duct opens opposite which tooth? / قناة ستينسن تفتح مقابل أي سن؟</div><div class="content" hidden>A: Maxillary 2nd molar / الضرس العلوي الثاني.</div></div>
+    <div class="card flash"><div class="head">3 — Q: Three structures in the parotid? / ثلاثُ بُنى تمر بالنكفية؟</div><div class="content" hidden>A: Facial n., ECA, Retromandibular v. / العصب الوجهي، السباتي الظاهر، الوريد خلف الفك.</div></div>
+    <div class="card flash"><div class="head">4 — Q: Parasympathetic path to parotid? / المسار نظير الودي للنكفية؟</div><div class="content" hidden>A: CN IX → lesser petrosal → otic ganglion → auriculotemporal n.</div></div>
+    <div class="card flash"><div class="head">5 — Q: Common tumor of parotid? / أكثر ورم شيوعاً؟</div><div class="content" hidden>A: Pleomorphic adenoma / الورم المختلط.</div></div>
+    <div class="card flash"><div class="head">6 — Q: Where does Wharton’s duct open? / أين تفتح قناة وارتون؟</div><div class="content" hidden>A: Sublingual papilla beside lingual frenulum / حليمة تحت اللسان قرب لجام اللسان.</div></div>
+    <div class="card flash"><div class="head">7 — Q: Minor glands mainly do what? / ما وظيفة الغدد الصغرى؟</div><div class="content" hidden>A: Continuous lubrication & protection / تزييت مستمر وحماية.</div></div>
+    <div class="card flash"><div class="head">8 — Q: Why is parotid infection painful? / لماذا عدوى النكفية مؤلمة؟</div><div class="content" hidden>A: Tight fascia limits expansion → pain/swelling / محفظة مشدودة تحد التمدد → ألم/تورم.</div></div>
+    <div class="card flash"><div class="head">9 — Q: Meal-time swelling suggests? / تورم وقت الأكل يوحي بـ؟</div><div class="content" hidden>A: Ductal obstruction (sialolithiasis) / انسداد القناة (حصيات).</div></div>
+  </div>
+</main>
+
+<script>
+// Language switcher
+const btn=document.getElementById('langBtn');
+btn.addEventListener('click',()=>{
+  document.body.classList.toggle('lang-ar');
+  document.body.classList.toggle('lang-en');
+});
+
+// Callout toggle
+document.querySelectorAll('.callout .hdr').forEach(h=>{
+  h.addEventListener('click',()=>{
+    const c=h.parentElement;
+    c.classList.toggle('open');
+    const body=c.querySelector('.body');
+    body.hidden=!body.hidden;
+  });
+});
+
+// Glossary toggle
+document.querySelectorAll('#glossary .card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    card.classList.toggle('open');
+    const cont=card.querySelector('.content');
+    cont.hidden=!cont.hidden;
+  });
+});
+
+// Flashcards toggle
+document.querySelectorAll('#flashcards .card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    card.classList.toggle('open');
+    const cont=card.querySelector('.content');
+    cont.hidden=!cont.hidden;
+  });
+});
+</script>
+</body>
+</html>

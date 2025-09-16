@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position:sticky;top:0;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}  
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 2 (by ACE)</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (from Lecture 2) -----------
+const mcqs = [
+  { q:"Which organs are involved in drug metabolism?", opts:["Only the liver","Liver, lungs, kidneys, blood, and intestines","Only kidneys and lungs","Only intestines"], correct:1, explain:"Metabolism occurs in multiple organs: liver, lungs, kidneys, blood and intestines." },
+  { q:"For a drug to cross lipid cell membranes efficiently, it must be:", opts:["Hydrophilic","Highly ionized","Lipophilic","Protein-bound"], correct:2, explain:"Membrane passage favors lipophilic drugs." },
+  { q:"Higher lipid vs. water solubility generally leads to:", opts:["Slower tissue entry","More rapid tissue entry","No change in entry","Drug inactivation"], correct:1, explain:"Greater lipid solubility accelerates tissue entry." },
+  { q:"What primarily determines the duration of a drug's action?", opts:["Molecular weight","Metabolic rate","Tablet color","Brand name"], correct:1, explain:"Faster metabolism shortens duration; slower metabolism prolongs it." },
+  { q:"To be excreted effectively, drugs usually must become more:", opts:["Lipophilic","Hydrophilic","Volatile","Protein-bound"], correct:1, explain:"Conversion to more water-soluble (hydrophilic) forms facilitates excretion." },
+  { q:"Which sequence correctly describes the general need before renal excretion of lipophilic drugs?", opts:["Direct filtration by glomerulus","Metabolism to polar forms","Binding to plasma proteins","Alveolar elimination"], correct:1, explain:"Lipophilic drugs are first metabolized (often in liver) to more polar compounds before renal excretion." },
+  { q:"Phase I reactions are most commonly catalyzed by:", opts:["UDP-glucuronyltransferase","Cytochrome P450 system","Amino acid transferases","Esterases"], correct:1, explain:"Phase I often uses CYP (microsomal mixed-function oxidase)." },
+  { q:"Cytochrome P450 is also known as:", opts:["Mitochondrial oxidase","Microsomal mixed-function oxidase","Peroxisomal oxidase","Cytosolic oxidase"], correct:1, explain:"CYP enzymes comprise the microsomal mixed-function oxidase system." },
+  { q:"Which of the following is a CYP family example?", opts:["CYP3A4","NADH dehydrogenase","Lactate dehydrogenase","ATP synthase"], correct:0, explain:"Examples include CYP3A4, CYP2D6, CYP2C9/10, CYP2C19, CYP2E1, CYP1A2." },
+  { q:"Phase II reactions are best described as:", opts:["Oxidations only","Reductions only","Conjugations with endogenous substrates","Hydrolyses only"], correct:2, explain:"Phase II forms polar conjugates (e.g., glucuronic, sulfuric, acetic, amino acid)." },
+  { q:"A Phase I metabolite that is sufficiently polar:", opts:["Must undergo Phase II","Can be excreted by kidneys","Is always reabsorbed","Becomes more lipophilic"], correct:1, explain:"If polar enough after Phase I, renal excretion can occur without Phase II." },
+  { q:"Common Phase II conjugating groups include all EXCEPT:", opts:["Glucuronic acid","Sulfuric acid","Acetic acid","Hydrochloric acid"], correct:3, explain:"Conjugation commonly uses glucuronic, sulfuric, acetic acids or amino acids—not hydrochloric acid." },
+  { q:"Microsomal drug-metabolizing enzymes are mainly located on:", opts:["Rough endoplasmic reticulum","Smooth endoplasmic reticulum","Nucleus","Golgi apparatus"], correct:1, explain:"Microsomal enzymes (e.g., CYPs) are on smooth ER, mainly in liver, also kidney, lungs, intestine." },
+  { q:"Which statement about microsomal enzymes is TRUE?", opts:["They are not inducible","They are inducible by drugs/diet","They exist only in kidneys","They lack polymorphism"], correct:1, explain:"Microsomal enzymes are inducible by drugs and diet." },
+  { q:"Non-microsomal enzymes are typically:", opts:["Inducible by diet","Located only in plasma","Non-specific and present in cytoplasm/mitochondria","Restricted to smooth ER"], correct:2, explain:"They are non-specific, found in cytoplasm & mitochondria of hepatic and other tissues, including plasma." },
+  { q:"Which is an example of a non-microsomal enzyme?", opts:["CYP3A4","Protein oxidases/esterases/amidases","Glucose-6-phosphatase","Na+/K+ ATPase"], correct:1, explain:"Examples: protein oxidases, esterases, amidases." },
+  { q:"The primary route of drug excretion is via:", opts:["Kidneys","Lungs","Bile only","Skin"], correct:0, explain:"Renal excretion is primary." },
+  { q:"Which is NOT a recognized route of drug excretion listed in the lecture?", opts:["Milk in nursing mothers","Intestine","Sweat glands as major route","Lung"], correct:2, explain:"Kidney is primary; others include bile, intestine, lung, and milk. Sweat was not emphasized as a route here." },
+  { q:"In renal failure, small molecules such as drugs may be removed by:", opts:["Hemostasis","Dialysis","Phlebotomy","Vaccination"], correct:1, explain:"Dialysis removes small molecules including drugs." },
+  { q:"Acidification of urine leads to which effect on weak acids?", opts:["Increases excretion of weak acids","Increases reabsorption and decreases excretion of weak acids","No effect","Converts acids to bases"], correct:1, explain:"Acid urine favors reabsorption of weak acids and reduces their excretion." },
+  { q:"Alkalinization of urine has what effect on weak bases?", opts:["Decreases reabsorption of weak bases","Increases reabsorption of weak bases","No effect","Always precipitates bases"], correct:1, explain:"Opposite of acidification: alkalinization increases weak base reabsorption and decreases their excretion." },
+  { q:"Lipophilic drugs are efficiently eliminated by the kidney without metabolism.", opts:["True","False","Only in neonates","Only in elderly"], correct:1, explain:"Lipophilic drugs cross membranes and are reabsorbed; they usually require metabolism first." },
+  { q:"Which statement about distal tubular reabsorption is CORRECT?", opts:["Polar metabolites are readily reabsorbed","Lipophilic drugs are reabsorbed unless metabolized","All drugs are trapped in urine","Proteins are reabsorbed easily"], correct:1, explain:"Lipophilic drugs are reabsorbed in distal tubules; metabolism to polar forms reduces this." },
+  { q:"Which drug characteristic is associated with a SHORT half-life?", opts:["Extensive protein binding","Rapid metabolism and rapid excretion","Poor excretion","Slow metabolism"], correct:1, explain:"Rapid metabolism/excretion shortens half-life." },
+  { q:"Which factor tends to PROLONG drug half-life?", opts:["Extensive tissue uptake","Rapid metabolism","Extensive protein binding with slow metabolism","Rapid excretion"], correct:2, explain:"Extensive protein binding + slow metabolism/poor excretion lengthens half-life." },
+  { q:"Define drug half-life (t1/2). It is the time required for:", opts:["Half of the dose to be swallowed","Plasma drug concentration to fall to half its initial value","Drug to be completely eliminated","Peak effect to occur"], correct:1, explain:"t1/2: time for plasma concentration to decrease by 50% of its initial value." },
+  { q:"Which pair correctly matches approximate half-lives?", opts:["Aspirin 9h, Metronidazole 6h, Digoxin 12h","Aspirin 6h, Metronidazole 9h, Digoxin 36h","Aspirin 36h, Metronidazole 6h, Digoxin 9h","All three are 24h"], correct:1, explain:"Given examples: aspirin ~6h, metronidazole ~9h, digoxin ~36h." },
+  { q:"In theory, the optimal dosage interval between administrations is:", opts:["Half the half-life","Equal to the half-life","Twice the half-life","Unrelated to half-life"], correct:1, explain:"Optimal interval ≈ the drug's half-life (practical exceptions exist)." },
+  { q:"Which clinical example reflects excretion-guided prescribing?", opts:["Digoxin for biliary infections","Ampicillin for biliary tract infection","Sotalol for anemia","Metronidazole for asthma"], correct:1, explain:"Ampicillin reaches high concentrations in bile; useful in biliary tract infection." },
+  { q:"Loading doses are used when:", opts:["A rapid high concentration is needed urgently","We wish to delay onset","We aim to reduce maintenance dose","We want to avoid any side effects"], correct:0, explain:"Loading dose gives high concentration quickly; typically about twice maintenance in this lecture context." }
+];
+
+const tfs = [
+  { q:"Lipophilic drugs are efficiently eliminated by the kidney without prior metabolism.", answer:false, explain:"They are reabsorbed in distal tubules; metabolism increases polarity for excretion." },
+  { q:"Cytochrome P450 is also called the microsomal mixed-function oxidase system.", answer:true, explain:"That is the alternative name used in the lecture." },
+  { q:"Phase II reactions usually increase water solubility and produce inactive metabolites.", answer:true, explain:"Conjugation (e.g., glucuronidation) yields polar, usually inactive products." },
+  { q:"Microsomal enzymes are primarily on the rough endoplasmic reticulum.", answer:false, explain:"They are on the smooth ER." },
+  { q:"Non-microsomal enzymes are generally inducible by drugs and diet.", answer:false, explain:"They are not inducible but exhibit polymorphism." },
+  { q:"Age-related decline in renal function increases risk of drug toxicity, especially for narrow-therapeutic-range drugs like digoxin.", answer:true, explain:"Reduced renal capacity predisposes to accumulation." },
+  { q:"Acidification of urine increases excretion of weak acids.", answer:false, explain:"It increases reabsorption and decreases excretion of weak acids." },
+  { q:"Alkalinization of urine decreases reabsorption of weak bases.", answer:false, explain:"Opposite occurs: it increases reabsorption of weak bases." },
+  { q:"Dialysis can remove small molecules such as drugs in renal failure.", answer:true, explain:"Yes, it removes small molecules." },
+  { q:"Ampicillin is excreted in high concentrations in bile.", answer:true, explain:"Hence it is a good choice for biliary tract infection." },
+  { q:"In theory, the optimal dosage interval equals the half-life of the drug.", answer:true, explain:"That was stated explicitly in the lecture." },
+  { q:"Extensive protein binding is associated with short half-life.", answer:false, explain:"Extensive protein binding tends to prolong half-life, not shorten it." }
+];
+
+const saqs = [
+  { q: "Define drug metabolism and distinguish between Phase I and Phase II reactions with examples.", a: "Drug metabolism is the biotransformation of drugs (mainly in liver, but also lungs, kidneys, blood, intestines). Phase I (often via CYP microsomal mixed-function oxidase) introduces/unmasks polar groups (e.g., oxidation). If sufficiently polar, metabolites can be excreted. Phase II conjugates drugs/metabolites with endogenous substrates (e.g., glucuronic, sulfuric, acetic acids or amino acids) to form more water‑soluble, usually inactive products." },
+  { q: "Enumerate routes of drug excretion and explain how urinary pH affects weak acids and bases.", a: "Primary route: kidney. Others: bile, intestine, lung, milk (nursing). Urinary pH: Acidification increases reabsorption and decreases excretion of weak acids, while decreasing reabsorption of weak bases. Alkalinization has the opposite effect (promotes excretion of weak acids and increases reabsorption of weak bases)." },
+  { q: "Explain drug half‑life and its dosing implications; include examples and when loading doses are used.", a: "Half‑life (t1/2) is the time for plasma concentration to fall by half its initial value. Theoretical optimal dosing interval ≈ t1/2. Examples: aspirin ~6 h, metronidazole ~9 h, digoxin ~36 h. Short t1/2: rapid metabolism/excretion; long t1/2: extensive protein binding, slow metabolism, poor excretion. If the interval is too long, effect may be lost; too short, toxicity can occur. Loading doses are used when rapid high concentrations are required (initial dose ≈ double maintenance)." }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null),
+  tf: Array(tfs.length).fill(null),
+  saq: Array(saqs.length).fill(false)
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <h3 class="qtitle">${item.q}</h3>
+    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="primary" data-act="reveal">Reveal Answer</button>
+      <button class="ghost" data-act="toggle">I was correct</button>
+    </div>
+    <div class="answer" hidden>${item.a}</div>
+  `;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

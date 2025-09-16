@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position:sticky;top:0;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 9 (by ACE)</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (lecture-based) -----------
+const mcqs = [
+  { q: "Root development begins when which tissues reach the future CEJ?", opts: ["Enamel and dentin", "Enamel only", "Dentin only", "Cementum and dentin"], correct: 0, explain: "Root formation starts once enamel and dentin reach the future cemento-enamel junction (CEJ)." },
+  { q: "Proliferation from the cervical loop forms a double epithelial membrane called:", opts: ["Reduced Enamel Epithelium (REE)", "Hertwig Epithelial Root Sheath (HERS)", "Dental lamina", "Periodontal ligament"], correct: 1, explain: "Inner + outer enamel epithelium proliferate from the cervical loop to form HERS." },
+  { q: "At the CEJ, HERS bends to form the epithelial diaphragm, producing:", opts: ["Widening of apical foramen", "Primary narrowing of the apical foramen", "Closure of pulp chamber", "Secondary dentin formation"], correct: 1, explain: "Epithelial diaphragm creates a primary narrowing of the apical foramen." },
+  { q: "Which BEST describes a function of HERS?", opts: ["Initiates enamel formation", "Shapes the root and induces root dentin formation", "Forms periodontal ligament fibers", "Deposits cementum directly"], correct: 1, explain: "HERS shapes the root and induces odontoblast differentiation for root dentin." },
+  { q: "HERS (inner enamel epithelium) induces undifferentiated ectomesenchymal cells of the dental papilla to become:", opts: ["Ameloblasts", "Cementoblasts", "Odontoblasts", "Fibroblasts"], correct: 2, explain: "Induction of odontoblast differentiation from dental papilla forms root dentin." },
+  { q: "After fulfilling its role, HERS largely:", opts: ["Mineralizes into enamel", "Degenerates; remnants become epithelial rests of Malassez", "Becomes REE", "Transforms into cementoblasts"], correct: 1, explain: "HERS fragments; remnants persist in PDL as the epithelial rests of Malassez." },
+  { q: "Cementoblasts that lay down cementum differentiate from:", opts: ["Dental papilla cells", "Reduced enamel epithelium", "Undifferentiated mesenchymal cells in the dental follicle", "Odontoblasts"], correct: 2, explain: "Root dentin contacting the follicle induces follicle cells to become cementoblasts." },
+  { q: "Reduced Enamel Epithelium (REE) forms when:", opts: ["Ameloblasts, stratum intermedium, stellate reticulum, and OEE collapse and fuse", "HERS fragments", "Dentinogenesis begins", "PDL fibers mature"], correct: 0, explain: "Those four layers flatten and fuse to form a thin REE." },
+  { q: "Primary role of the REE before eruption:", opts: ["Induce root dentin", "Protect enamel from resorption and connective tissue invasion", "Lay down cementum", "Form the epithelial diaphragm"], correct: 1, explain: "REE protects the completed enamel surface pre-eruption." },
+  { q: "In multi-rooted tooth formation, the epithelial diaphragm:", opts: ["Remains circular until eruption", "Produces tongue-like processes that grow and fuse to partition the root trunk", "Calcifies into cementum", "Is replaced by REE"], correct: 1, explain: "Processes from the diaphragm grow and fuse, dividing the trunk into 2 or 3 roots." },
+  { q: "During root formation, the portion of HERS that remains intact is found:", opts: ["Near the cervical loop only", "Random islands throughout PDL", "At the advancing root edge where induction continues", "It never remains intact"], correct: 2, explain: "HERS persists only at the growing edge as the root elongates." },
+  { q: "The epithelial rests of Malassez are found:", opts: ["In the pulp chamber", "Within the periodontal ligament (PDL)", "In enamel", "In the gingival epithelium"], correct: 1, explain: "ERM clusters persist in the PDL throughout life." },
+  { q: "A cause of accessory root canals is loss of continuity of HERS:", opts: ["After cementum formation", "Before odontoblast differentiation and dentin formation", "After REE formation", "After eruption"], correct: 1, explain: "Early discontinuity of HERS can prevent complete dentin formation in that area." },
+  { q: "Accessory canals may also form when:", opts: ["A large blood vessel interrupts HERS continuity", "Cervical loop fails to form", "REE is absent", "PDL matures early"], correct: 0, explain: "A large vessel can disturb the sheath, creating communication pathways." },
+  { q: "Enamel pearls can form if:", opts: ["Cementoblasts invade enamel", "HERS remains adherent and its inner cells differentiate into ameloblasts", "REE calcifies in furcation", "Dentin fails to mineralize"], correct: 1, explain: "Inner cells may become ameloblasts and produce ectopic enamel (pearls)." },
+  { q: "Dilaceration is most associated with:", opts: ["Early loss of REE", "Dislocation of HERS after partial root mineralization", "Hypercementosis", "Failure of cervical loop fusion"], correct: 1, explain: "Displacement during development bends or twists the forming root." },
+  { q: "Which sequence is correct for a single-rooted tooth?", opts: ["Cementum → HERS → Dentin → ERM", "HERS forms → Odontoblasts differentiate → Root dentin forms → HERS degenerates → Cementoblasts differentiate", "REE forms → HERS forms → Enamel forms", "PDL forms → Dentin forms → HERS forms"], correct: 1, explain: "This is the lecture’s described order for single-root development." },
+  { q: "The cervical loop is the junction of:", opts: ["Inner and outer enamel epithelium", "Ameloblasts and odontoblasts", "Cementoblasts and fibroblasts", "Dental papilla and follicle"], correct: 0, explain: "IEE meets OEE at the cervical loop—the source of HERS." },
+  { q: "The epithelial diaphragm at the CEJ forms an angle to the enamel organ that is:", opts: ["Acute", "Right", "Obtuse", "Straight"], correct: 2, explain: "HERS bends forming an obtuse angle with the enamel organ." },
+  { q: "Which occurs IMMEDIATELY after root dentin is formed?", opts: ["Enamel maturation", "HERS degeneration and appearance of ERM", "REE formation", "Alveolar bone formation"], correct: 1, explain: "After root dentin, HERS degenerates; remnants are ERM." },
+  { q: "Which tissue induces cementoblast differentiation?", opts: ["Dentin contacting the dental follicle", "Enamel contacting REE", "PDL fibers", "Odontoblast processes"], correct: 0, explain: "Root dentin’s contact with follicle induces cementoblasts from follicle cells." },
+  { q: "The root trunk of molars develops initially like:", opts: ["A multi-rooted pattern from the start", "A single-rooted tooth", "A crown-only structure", "A cementum cone"], correct: 1, explain: "Molars first form a trunk similar to single-rooted teeth." },
+  { q: "Chronic inflammation can cause epithelial rests of Malassez to:", opts: ["Differentiate into odontoblasts", "Proliferate into cysts or tumors", "Form enamel spurs", "Lay down dentin"], correct: 1, explain: "ERM can proliferate pathologically under chronic inflammation." },
+  { q: "Which layer is NOT part of REE formation?", opts: ["Outer enamel epithelium", "Stellate reticulum", "Stratum intermedium", "HERS"], correct: 3, explain: "REE forms from enamel organ layers; HERS is separate (root sheath)." },
+  { q: "HERS directly lays down:", opts: ["Cementum", "Enamel", "Dentin", "None of the above"], correct: 3, explain: "HERS induces odontoblasts but does not secrete mineralized tissues itself." },
+  { q: "Where does induction by HERS continue until root is complete?", opts: ["At the advancing root edge", "At the CEJ only", "At the furcation only", "At the cusp tips"], correct: 0, explain: "Induction persists at the growing edge during elongation." },
+  { q: "Multi-root formation involves fusion of:", opts: ["REE islands", "Tongue-like epithelial processes at the bifurcation area", "PDL fiber bundles", "Cementoblast cords"], correct: 1, explain: "Those processes partition the trunk into two or three roots." },
+  { q: "The primary effect of the epithelial diaphragm on root morphology is:", opts: ["Crown shape determination", "Apical constriction (primary narrowing) establishment", "Furcation height increase", "Cusp calcification"], correct: 1, explain: "It defines the initial apical constriction." },
+  { q: "Which statement about ERM is TRUE?", opts: ["They mineralize into enamel pearls", "They are continuous sheets around the root", "They are discrete epithelial clusters within PDL", "They become REE at eruption"], correct: 2, explain: "ERM persists as discrete epithelial cell clusters in PDL." },
+  { q: "REE forms:", opts: ["Before enamel formation", "After enamel formation is complete", "With HERS at the same time", "Only in multi-rooted teeth"], correct: 1, explain: "REE forms after enamel is completed as enamel organ layers flatten and fuse." }
+];
+
+const tfs = [
+  { q: "Root formation begins once enamel and dentin reach the future CEJ.", answer: true, explain: "This is the trigger point for root development." },
+  { q: "Reduced Enamel Epithelium forms before enamel formation is complete.", answer: false, explain: "REE forms after enamel formation is complete." },
+  { q: "Epithelial rests of Malassez are found in the pulp.", answer: false, explain: "ERM are found within the periodontal ligament, not pulp." },
+  { q: "In multi-rooted teeth, tongue-like epithelial processes partition the root trunk.", answer: true, explain: "Processes from the epithelial diaphragm grow and fuse to form multiple roots." },
+  { q: "Enamel pearls may occur at the CEJ or in molar furcations.", answer: true, explain: "If HERS adheres and inner cells become ameloblasts, enamel pearls can form." },
+  { q: "Accessory root canals may arise if HERS loses continuity before dentin forms.", answer: true, explain: "Discontinuity early can prevent complete dentin formation in that area." },
+  { q: "HERS remains intact throughout life around the root.", answer: false, explain: "HERS disintegrates; only fragments (ERM) persist." },
+  { q: "The root trunk of molars initially forms like a single-rooted tooth.", answer: true, explain: "Then it is partitioned by epithelial processes." },
+  { q: "Dilacerations are typically observed in primary teeth.", answer: false, explain: "They are usually seen in permanent teeth." },
+  { q: "Cementoblasts originate from the dental papilla.", answer: false, explain: "They differentiate from undifferentiated mesenchymal cells in the dental follicle." },
+  { q: "HERS helps shape the root.", answer: true, explain: "Root morphology is influenced by HERS." },
+  { q: "REE protects enamel from resorption and connective tissue invasion before eruption.", answer: true, explain: "This is a key function of REE pre-eruption." }
+];
+
+const saqs = [
+  { q: "Define Hertwig Epithelial Root Sheath (HERS) and list two of its roles.", a: "HERS is a double epithelial membrane formed by proliferation of inner and outer enamel epithelium from the cervical loop. Roles: shapes the root and induces odontoblast differentiation for root dentin." },
+  { q: "Outline the sequence of events in single-rooted tooth formation from HERS to cementum.", a: "HERS forms → induces odontoblasts → root dentin forms → HERS degenerates (ERM remain) → dentin contacting dental follicle induces cementoblast differentiation → cementum is laid down." },
+  { q: "Mention two clinical considerations related to HERS/ERM and briefly explain.", a: "Enamel pearls: if HERS remains adherent and inner cells become ameloblasts, enamel may form at CEJ/furcation. Dilaceration: dislocation of HERS after partial root mineralization can bend/twist the root; ERM can proliferate into cysts/tumors under chronic inflammation." }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <h3 class="qtitle">${item.q}</h3>
+    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="primary" data-act="reveal">Reveal Answer</button>
+      <button class="ghost" data-act="toggle">I was correct</button>
+    </div>
+    <div class="answer" hidden>${item.a}</div>
+  `;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

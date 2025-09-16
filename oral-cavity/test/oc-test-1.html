@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>1-test</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position:sticky;top:0;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Salivary Glands – Interactive Exam</h1>
+      <p class="subtitle">Test based on Lecture 1 (by ACE)</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (from lecture) -----------
+const mcqs = [
+  { q: "Salivary glands are what type of glands?", opts:["Endocrine","Exocrine","Apocrine","Paracrine"], correct:1, explain:"They secrete saliva via ducts into the oral cavity (exocrine)." },
+  { q: "Which are the three pairs of major salivary glands?", opts:["Parotid, sublingual, submandibular","Parotid, buccal, palatal","Sublingual, lingual, labial","Submandibular, palatal, lingual"], correct:0, explain:"Major pairs: parotid, submandibular, and sublingual." },
+  { q: "Above the parotid gland lies the:", opts:["Zygomatic arch","External auditory meatus","Angle of mandible","Hyoid bone"], correct:1, explain:"Superior relation is the external auditory meatus." },
+  { q: "Anteriorly the parotid gland overlaps which muscle?", opts:["Buccinator","Masseter","Medial pterygoid","Sternomastoid"], correct:1, explain:"The anterior part overlaps the masseter muscle." },
+  { q: "Posteriorly the parotid gland overlaps:", opts:["Digastric","Mylohyoid","Sternomastoid","Platysma"], correct:2, explain:"Posterior relation includes the sternomastoid muscle." },
+  { q: "How many main surfaces does the parotid gland have?", opts:["Two","Three","Four","Five"], correct:1, explain:"Surfaces: superficial (lateral), anteromedial, and posteromedial." },
+  { q: "Structures that pass inside the parotid gland include all EXCEPT:", opts:["Facial nerve","External carotid artery","Retromandibular vein","Internal jugular vein"], correct:3, explain:"IJV is in the carotid sheath, not within the gland." },
+  { q: "Within the parotid, the external carotid artery divides into:", opts:["Facial and lingual arteries","Maxillary and superficial temporal arteries","Occipital and posterior auricular arteries","Transverse facial and maxillary arteries"], correct:1, explain:"ECA bifurcates into the superficial temporal and maxillary arteries in the gland." },
+  { q: "The retromandibular vein is formed by union of:", opts:["Facial and lingual veins","Superficial temporal and maxillary veins","External jugular and facial veins","Occipital and posterior auricular veins"], correct:1, explain:"It forms within the parotid from superficial temporal + maxillary veins." },
+  { q: "The facial nerve enters the parotid at which surface?", opts:["Anteromedial","Posteromedial","Superficial","Inferior"], correct:1, explain:"CN VII enters at the posteromedial surface and then branches." },
+  { q: "Which is NOT a terminal branch of the facial nerve in the parotid?", opts:["Temporal","Zygomatic","Buccal","Greater auricular"], correct:3, explain:"Greater auricular is sensory to the capsule; not a CN VII branch." },
+  { q: "The parotid duct first runs:", opts:["Medially deep to buccinator","Forwards across masseter below zygomatic arch","Inferiorly to submandibular region","Posteriorly to sternomastoid"], correct:1, explain:"Course: forward across masseter below the zygomatic arch before turning medially." },
+  { q: "Correct order the parotid duct pierces on turning medially:", opts:["Buccinator → buccal mucosa → fat pad → fascia","Fat pad → buccopharyngeal fascia → buccinator → mucosa","Mucosa → buccinator → fascia → fat pad","Fascia → mucosa → buccinator → fat pad"], correct:1, explain:"Sequence: buccal fat pad → buccopharyngeal fascia → buccinator → mucosa." },
+  { q: "The parotid duct opens opposite which tooth?", opts:["Lower first molar","Upper second molar","Upper first premolar","Lower second molar"], correct:1, explain:"Opens into the vestibule opposite the maxillary 2nd molar." },
+  { q: "The outer (false) capsule of the parotid is derived from:", opts:["Parotid fascia","Investing layer of deep cervical fascia","Pretracheal fascia","Carotid sheath"], correct:1, explain:"False capsule comes from the investing layer of deep cervical fascia." },
+  { q: "Severe pain with parotid infection is largely due to:", opts:["Stone in Wharton’s duct","Tight parotid capsule","Facial nerve palsy","Mumps vaccine"], correct:1, explain:"Tight fascia-bound capsule limits swelling causing pain." },
+  { q: "Parasympathetic secretomotor to the PAROTID travels finally via:", opts:["Chorda tympani","Lingual nerve directly","Auriculotemporal nerve","Hypoglossal nerve"], correct:2, explain:"Glossopharyngeal fibers relay in otic ganglion then hitchhike on auriculotemporal nerve." },
+  { q: "Sensory supply to the parotid GLAND proper is mainly:", opts:["Great auricular nerve","Auriculotemporal nerve","Lingual nerve","Facial nerve"], correct:1, explain:"Auriculotemporal carries sensory to the gland; great auricular to the capsule." },
+  { q: "The submandibular gland lies primarily in which triangle?", opts:["Carotid triangle","Submental triangle","Submandibular triangle","Occipital triangle"], correct:2, explain:"Anatomically located within the submandibular triangle." },
+  { q: "The submandibular gland has:", opts:["Only a deep part","Only a superficial part","Superficial and deep parts around mylohyoid","Three equal lobes"], correct:2, explain:"A superficial part superficial to mylohyoid and a deep part between mylohyoid & hyoglossus." },
+  { q: "Which structure lies superior to the deep part of submandibular gland?", opts:["Hypoglossal nerve","Lingual nerve and submandibular ganglion","Facial artery","Mylohyoid"], correct:1, explain:"Lingual nerve with the submandibular ganglion is superior." },
+  { q: "Wharton’s duct opens at:", opts:["Parotid papilla opposite upper 2nd molar","Sublingual caruncle beside lingual frenulum","Soft palate","Tonsillar fossa"], correct:1, explain:"It opens at the sublingual papilla beside the frenulum." },
+  { q: "Approximate length of the submandibular duct is:", opts:["1 cm","3 cm","5 cm","8 cm"], correct:2, explain:"Given length in the lecture ≈ 5 cm." },
+  { q: "Parasympathetic secretomotor to SUBMANDIBULAR gland arises from:", opts:["Glossopharyngeal nerve via otic","Facial nerve via chorda tympani (superior salivatory nucleus)","Vagus nerve","Hypoglossal nerve"], correct:1, explain:"CN VII via chorda tympani to lingual nerve to the gland." },
+  { q: "The sublingual gland is:", opts:["Largest major gland","Smallest major gland","Not a salivary gland","Primarily serous only"], correct:1, explain:"Sublingual is the smallest of the three major glands." },
+  { q: "Number of sublingual ducts is typically:", opts:["1","2–3","8–20","40–50"], correct:2, explain:"Multiple (8–20) small ducts open into the floor of mouth." },
+  { q: "Major salivary glands produce about what percentage of saliva?", opts:["10%","30%","60%","~90%"], correct:3, explain:"They produce the bulk of saliva (~90%)." },
+  { q: "Minor salivary glands are typically:", opts:["Encapsulated and large","Unencapsulated and numerous","Only in the palate","Have long single ducts"], correct:1, explain:"They are numerous, small, and lack a capsule." },
+  { q: "A common benign tumor of the parotid is:", opts:["Warthin tumor","Hemangioma","Pleomorphic adenoma","Adenoid cystic carcinoma"], correct:2, explain:"Pleomorphic adenoma is the most common benign parotid tumor." },
+  { q: "A stone causing meal-time pain in Stensen’s duct is termed:", opts:["Mucocele","Sialolithiasis","Ranula","Aphthous ulcer"], correct:1, explain:"Sialolithiasis can obstruct the parotid duct, causing painful swelling during meals." },
+];
+
+const tfs = [
+  { q:"Parotid gland has superficial, anteromedial, and posteromedial surfaces.", answer:true, explain:"These are the three described surfaces." },
+  { q:"The internal jugular vein runs through the parotid gland.", answer:false, explain:"It lies in the carotid sheath, not within the gland." },
+  { q:"The parotid duct pierces the buccinator before opening into the vestibule.", answer:true, explain:"Sequence includes buccinator then mucosa." },
+  { q:"The parotid duct opens opposite the mandibular second molar.", answer:false, explain:"It opens opposite the MAXILLARY (upper) second molar." },
+  { q:"Great auricular nerve supplies sensation to the parotid capsule.", answer:true, explain:"Capsular sensory is via great auricular nerve." },
+  { q:"Auriculotemporal nerve carries postganglionic parasympathetic fibers to the parotid.", answer:true, explain:"From otic ganglion to the gland." },
+  { q:"The deep part of the submandibular gland lies between mylohyoid and hyoglossus.", answer:true, explain:"That is its relation." },
+  { q:"Hypoglossal nerve lies superior to the deep part of submandibular gland.", answer:false, explain:"It is inferior; superiorly are the lingual nerve and submandibular ganglion." },
+  { q:"Sublingual gland lies within the sublingual fold beneath oral mucosa.", answer:true, explain:"It is the smallest major salivary gland in the floor of mouth." },
+  { q:"Minor salivary glands contribute the majority of daily saliva.", answer:false, explain:"They contribute ~10%, not the majority." },
+  { q:"Parotidectomy risks injury to facial nerve branches.", answer:true, explain:"Branches run through the gland → risk of facial palsy if damaged." },
+  { q:"Mucocele commonly arises from minor salivary glands.", answer:true, explain:"Mucoceles are small mucous cysts often from minor glands." },
+];
+
+const saqs = [
+  { q: "Outline the parasympathetic pathway to the parotid gland.", a: "Glossopharyngeal (CN IX) → tympanic branch → tympanic plexus → lesser petrosal nerve → otic ganglion (synapse) → hitchhike on auriculotemporal nerve → parotid gland." },
+  { q: "Describe the course and termination of Stensen’s (parotid) duct.", a: "Runs forward across masseter below the zygomatic arch, turns medially piercing buccal fat pad → buccopharyngeal fascia → buccinator → buccal mucosa, and opens opposite the upper second molar as the parotid papilla." },
+  { q: "List three differences between major and minor salivary glands.", a: "Major: large, encapsulated, 3 pairs with long named ducts, produce ~90% of saliva. Minor: numerous microscopic, unencapsulated, short small ducts opening directly, contribute ~10% and provide continuous mucosal lubrication." },
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <h3 class="qtitle">${item.q}</h3>
+    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="primary" data-act="reveal">Reveal Answer</button>
+      <button class="ghost" data-act="toggle">I was correct</button>
+    </div>
+    <div class="answer" hidden>${item.a}</div>
+  `;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

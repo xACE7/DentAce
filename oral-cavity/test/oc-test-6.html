@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position:sticky;top:0;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 6 (by ACE)</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (filled from Lecture L-6: Tooth Development) -----------
+const mcqs = [
+  { q: "The primitive oral cavity is also known as:", opts:["Stomodeum","Proctodeum","Pharyngeal pouch","Choana"], correct:0, explain:"The primitive oral cavity is the stomodeum." },
+  { q: "The stomodeum is lined by:", opts:["Simple cuboidal epithelium","Pseudostratified columnar epithelium","Stratified squamous oral ectoderm","Endoderm"], correct:2, explain:"It is lined by stratified squamous epithelium (oral ectoderm)." },
+  { q: "The buccopharyngeal membrane forms where oral ectoderm contacts:", opts:["Mesoderm","Neuroectoderm","Endoderm of the foregut","Ectomesenchyme"], correct:2, explain:"Oral ectoderm meets foregut endoderm to form the membrane." },
+  { q: "Approximate time of buccopharyngeal membrane rupture:", opts:["2nd week (day 10)","4th week (around day 27)","6th week (day 42)","8th week (day 56)"], correct:1, explain:"It ruptures in the 4th week, about day 27 of IUL." },
+  { q: "Epithelial–mesenchymal interaction in odontogenesis best described as:", opts:["Random cell mingling","Unidirectional signal from epithelium","Sequential, reciprocal signaling leading to cell differentiation","Apoptosis without signaling"], correct:2, explain:"It is programmed, sequential, reciprocal communication essential for tooth development." },
+  { q: "At 5–6 weeks intrauterine, the oral ectoderm consists of:", opts:["A single layer of cuboidal cells","2–3 layers: basal columnar and superficial flat cells","Keratinized stratified squamous only","Ciliated pseudostratified"], correct:1, explain:"The oral ectoderm has basal columnar and superficial flat layers (2–3 layers)." },
+  { q: "Which cells induce ectodermal proliferation in specific jaw areas?", opts:["Dermatomal mesoderm","Ectomesenchyme (neural crest–derived)","Somitic mesoderm","Endodermal cells"], correct:1, explain:"Ectomesenchyme derived from neural crest drives the proliferation." },
+  { q: "Primary epithelial bands first appear around:", opts:["4 W.I.U.","6 W.I.U.","10 W.I.U.","12 W.I.U."], correct:1, explain:"The primary epithelial bands are evident around 6 weeks intrauterine." },
+  { q: "The shape/location of the primary epithelial band:", opts:["Circular in palate only","Linear in a single arch","Horseshoe-shaped bands in both future dental arches","Random clusters"], correct:2, explain:"They form horseshoe-shaped bands in maxillary and mandibular arches." },
+  { q: "Primary epithelial band gives rise to:", opts:["Dental lamina only","Vestibular lamina only","Both dental and vestibular laminae","Successional lamina only"], correct:2, explain:"It splits into dental and vestibular laminae." },
+  { q: "The dental lamina primarily gives rise to:", opts:["The oral vestibule","Teeth (tooth buds)","The tongue","Salivary ducts"], correct:1, explain:"Dental lamina forms tooth buds." },
+  { q: "How many tooth buds of the primary dentition appear on the dental lamina?", opts:["10","16","20","24"], correct:2, explain:"Twenty primary tooth buds develop on the dental lamina." },
+  { q: "Correct order of morphological stages:", opts:["Cap → Bud → Bell","Bud → Cap → Bell","Bell → Bud → Cap","Initiation → Proliferation → Apposition"], correct:1, explain:"Morphological sequence is Bud, Cap, then Bell." },
+  { q: "Which is NOT a histophysiological stage?", opts:["Initiation","Proliferation","Histodifferentiation","Keratinization"], correct:3, explain:"Histophysiological stages: initiation, proliferation, histodifferentiation, morphodifferentiation, apposition." },
+  { q: "Successional lamina forms which permanent teeth?", opts:["Molars only","Premolars, canines, and incisors","Canines and molars","Premolars and molars"], correct:1, explain:"Successional lamina forms permanent successors: incisors, canines, premolars." },
+  { q: "Permanent molars develop from:", opts:["Successional lamina","Vestibular lamina","Distal extension of the main dental lamina","Cell rests of Serres"], correct:2, explain:"Molars are non-successional; they come from a distal extension of the dental lamina." },
+  { q: "As a tooth reaches the bell stage, the connection with dental lamina:", opts:["Strengthens anteriorly first","Begins to break down, first in anteriors","Remains unchanged","Begins in molar region only"], correct:1, explain:"The connection breaks down starting anteriorly and spreads posteriorly." },
+  { q: "The 'lateral lamina' refers to:", opts:["Vestibular lamina after degeneration","Primary tooth lamina after connection narrows, named relative to successional lamina","A mesenchymal band lateral to dental papilla","Another name for successional lamina"], correct:1, explain:"As connections narrow during bell stage, the primary tooth lamina is termed lateral lamina (relative to successional lamina)." },
+  { q: "Fate of the dental lamina includes formation of:", opts:["Cell rests of Serres in the jaws and gingiva","Meckel's cartilage","Rathke's pouch","Pharyngeal pouches"], correct:0, explain:"After degeneration, epithelial islands remain as rests of Serres." },
+  { q: "Approximate time dental lamina persists in third molar region:", opts:["At birth","1 year","5 years","10 years"], correct:2, explain:"In the third molar region, dental lamina may persist until about 5 years." },
+  { q: "Vestibular lamina ultimately forms:", opts:["Tongue papillae","Oral vestibule separating cheek/lip from teeth-bearing area","Hard palate","Gingival sulcus"], correct:1, explain:"Clefting/degeneration within vestibular lamina forms the oral vestibule." },
+  { q: "Mechanism inside vestibular lamina that creates the vestibule:", opts:["Proliferation without apoptosis","Epithelial degeneration and clefting","Ossification","Keratin plug formation"], correct:1, explain:"Degeneration and clefting produce the groove (future vestibule)." },
+  { q: "Between oral ectoderm and underlying mesoderm lies:", opts:["No boundary","A basement membrane","A synovial layer","Cartilage"], correct:1, explain:"A basement membrane separates ectoderm from mesoderm with ectomesenchyme." },
+  { q: "Ectomesenchymal cells involved in early odontogenesis derive mainly from:", opts:["Somites","Neural crest","Endoderm","Splanchnic mesoderm"], correct:1, explain:"Ectomesenchyme is neural crest–derived." },
+  { q: "Direction of breakdown of dental lamina connections:", opts:["Posterior to anterior","Random","Anterior to posterior","Only in maxilla"], correct:2, explain:"Breakdown begins anteriorly and spreads posteriorly." },
+  { q: "Which pairing is INCORRECT?", opts:["Dental lamina → teeth","Vestibular lamina → oral vestibule","Successional lamina → permanent molars","Distal extension of dental lamina → permanent molars"], correct:2, explain:"Permanent molars are not formed by the successional lamina." },
+  { q: "Number of primary tooth buds in each arch:", opts:["10 per arch","20 per arch","8 per arch","5 per arch"], correct:0, explain:"There are 20 total primary buds, i.e., 10 per arch." },
+  { q: "Morphodifferentiation refers to:", opts:["Cells acquiring specific functions","Shape determination of the developing tooth","Matrix deposition","Initiation of tooth site"], correct:1, explain:"Morphodifferentiation determines tooth shape prior to matrix deposition." },
+  { q: "Odontogenesis critically depends on:", opts:["Endochondral ossification","Epithelial–mesenchymal reciprocal interactions","Cartilage template formation","Lymphatic induction"], correct:1, explain:"These reciprocal interactions are essential for tooth development." },
+  { q: "The primary epithelial band appears as:", opts:["A single midline ridge","Two horseshoe-shaped epithelial thickenings in both jaws","Multiple dots on palate","A vertical septum"], correct:1, explain:"Two horseshoe-shaped bands correspond to future dental arches." },
+];
+
+const tfs = [
+  { q:"The stomodeum is lined by endoderm.", answer:false, explain:"It is lined by stratified squamous oral ectoderm." },
+  { q:"The buccopharyngeal membrane ruptures around the 4th week (~day 27).", answer:true, explain:"Correct timing per embryology details." },
+  { q:"Primary epithelial bands are evident around 6 weeks intrauterine.", answer:true, explain:"They appear about 6 W.I.U." },
+  { q:"Vestibular lamina forms the tongue.", answer:false, explain:"It forms the oral vestibule, not the tongue." },
+  { q:"Dental lamina gives rise directly to the oral vestibule.", answer:false, explain:"The vestibular lamina forms the vestibule; dental lamina forms teeth." },
+  { q:"Twenty primary tooth buds develop on the dental lamina.", answer:true, explain:"There are 20 primary buds (10 per arch)." },
+  { q:"Morphological stages proceed as Bud → Cap → Bell.", answer:true, explain:"That is the classic sequence." },
+  { q:"Histophysiological stages include initiation, proliferation, histodifferentiation, morphodifferentiation, and apposition.", answer:true, explain:"These are the listed stages." },
+  { q:"Permanent molars arise from the successional lamina.", answer:false, explain:"They arise from a distal extension of the main dental lamina (non-successional)." },
+  { q:"Dental lamina connections begin to break first in posterior teeth.", answer:false, explain:"They begin to break in the anteriors and spread posteriorly." },
+  { q:"Rests of Serres are epithelial remnants of degenerating dental lamina.", answer:true, explain:"Islands remain in jaws/gingiva as cell rests of Serres." },
+  { q:"Ectomesenchyme that induces odontogenesis is neural crest–derived.", answer:true, explain:"Neural crest origin is emphasized." },
+];
+
+const saqs = [
+  { q: "Define epithelial–mesenchymal interaction in odontogenesis and explain why it is essential.", a: "It refers to programmed, sequential, reciprocal communications between oral epithelium and ectomesenchyme that drive differentiation of one or both tissues; this reciprocal signaling is essential for initiating, shaping, and differentiating tooth structures." },
+  { q: "List the morphological and histophysiological stages of tooth development.", a: "Morphological: Bud → Cap → Bell. Histophysiological: initiation, proliferation, histodifferentiation, morphodifferentiation, apposition." },
+  { q: "Describe dental, vestibular, and successional laminae and state the origin of permanent molars.", a: "Dental lamina forms tooth buds; vestibular lamina undergoes epithelial degeneration/clefting to form the oral vestibule; successional lamina forms permanent successors (incisors, canines, premolars). Permanent molars are non‑successional, arising from a distal extension of the main dental lamina; dental lamina later degenerates leaving rests of Serres." },
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <h3 class="qtitle">${item.q}</h3>
+    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="primary" data-act="reveal">Reveal Answer</button>
+      <button class="ghost" data-act="toggle">I was correct</button>
+    </div>
+    <div class="answer" hidden>${item.a}</div>
+  `;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

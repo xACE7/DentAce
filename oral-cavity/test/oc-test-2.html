@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position:sticky;top:0;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 2 (by ACE)</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (filled from the PDF lecture) -----------
+const mcqs = [
+  { q: "Which statement best defines a gland?", opts:["An organ of filtration derived from mesenchyme","An organ of secretion made of specialized cells opening onto a surface epithelium","A collection of neurons that modulate hormones","A connective tissue capsule around an organ"], correct:1, explain:"A gland is an organ of secretion made up of specialized secretory cells derived from surface epithelium and opening onto it." },
+  { q: "The secretory end pieces of glands are functionally active units called:", opts:["Lobules","Sinusoids","Acini or tubular end pieces","Trabeculae"], correct:2, explain:"Secretory cells form functional units called secretory end pieces, which may be flask-shaped (acinus) or tubular." },
+  { q: "Secretory end pieces may be:", opts:["Only flask-shaped (acinus)","Only tubular","Flask (acinus) or tubular","Saccular only"], correct:2, explain:"They can be flask (acinus) or cylindrical (tubular) shaped." },
+  { q: "Salivary gland secretions are modulated primarily by:", opts:["Only hormonal control","Nervous and hormonal influences","Local blood pressure only","Lymphatic drainage"], correct:1, explain:"Secretion is modulated by both nervous and hormonal influences." },
+  { q: "Myoepithelial cells are best described as:", opts:["Flat endothelial cells lining ducts","Star-shaped contractile cells between secretory cells and basement membrane","Neurons innervating acini","Adipocytes within lobules"], correct:1, explain:"Myoepithelial cells are star-shaped, contractile, and lie between secretory cells and the basement membrane." },
+  { q: "Primary function of myoepithelial cells is to:", opts:["Secrete mucin","Form the basement membrane","Contract to expel secretions from acini","Produce hormones"], correct:2, explain:"They contract and expel the secretory products from the acini." },
+  { q: "During development, salivary glands arise as:", opts:["Mesenchymal condensations","Invaginations of surface epithelium into underlying connective tissue","Neural crest cell clusters","Endothelial sprouts"], correct:1, explain:"They develop as invaginations of epithelium into the vascular connective tissue." },
+  { q: "In development, the distal part of the epithelial bud forms the:", opts:["Excretory duct","Secretory end piece (glandular portion)","Capsule","Striated duct"], correct:1, explain:"Distal part becomes the secretory end piece (functionally active)." },
+  { q: "In development, the proximal part of the epithelial bud becomes the:", opts:["Lymphatic channel","Excretory duct opening on the surface","Adipose tissue","Nerve plexus"], correct:1, explain:"Proximal part forms the excretory duct which opens on the epithelial surface." },
+  { q: "Which combination correctly lists basic histologic components of salivary glands?", opts:["Acini, ducts, basement membrane, myoepithelial cells","Lobules, septa, capsule only","Endothelium, sinusoids, macrophages","Chondrocytes, lacunae, perichondrium"], correct:0, explain:"Key components highlighted include acini, ducts, basement membrane, and myoepithelial cells." },
+  { q: "Serous acini typically have nuclei that are:", opts:["Flat and peripheral","Round and central","Multilobed","Absent"], correct:1, explain:"Serous cells have round, centrally placed nuclei." },
+  { q: "Mucous acini typically have nuclei that are:", opts:["Round and central","Flat and peripheral","Segmented","Binucleate"], correct:1, explain:"Mucous cells have flat, basally/peripherally placed nuclei." },
+  { q: "Which has the larger lumen?", opts:["Serous acinus","Mucous acinus","Both equal","Neither has a lumen"], correct:1, explain:"Mucous acini have larger lumina than serous acini." },
+  { q: "H&E staining reaction is typically _____ in serous acini and _____ in mucous acini.", opts:["Light; deeply stained","Deeply stained; lightly stained","Colorless; eosinophilic","Basophilic; acidophilic only"], correct:1, explain:"Serous acini stain more deeply; mucous acini are lighter with H&E." },
+  { q: "Consistency of secretion: serous vs mucous is:", opts:["Thick vs thin","Thin watery vs thick viscous","Viscous vs serous","Identical"], correct:1, explain:"Serous secretions are thin and watery; mucous is thick and viscous." },
+  { q: "Example of a predominantly serous major salivary gland:", opts:["Parotid","Sublingual","Minor labial glands","Von Ebner's"], correct:0, explain:"Parotid gland is serous." },
+  { q: "Example of a predominantly mucous major salivary gland:", opts:["Parotid","Submandibular","Sublingual","Parathyroid"], correct:2, explain:"Sublingual gland is mainly mucous." },
+  { q: "Which feature is characteristic of parotid gland histology?", opts:["Many mucous acini and few ducts","Serous acini, numerous ducts, adipocyte infiltration","Pure mucous with serous demilunes","Absence of ducts"], correct:1, explain:"Parotid shows serous acini, many ducts, and adipocytes within the parenchyma." },
+  { q: "Submandibular gland typically contains:", opts:["Only mucous acini","Only serous acini","Many serous and few mucous acini with striated ducts","No striated ducts"], correct:2, explain:"Submandibular is mixed with many serous, few mucous, and many striated ducts; serous demilunes may be seen." },
+  { q: "Sublingual gland typically contains:", opts:["Many mucous acini and few striated ducts","Only serous acini","Adipocyte-rich serous parenchyma","No myoepithelial cells"], correct:0, explain:"Sublingual is predominantly mucous and has few striated ducts." },
+  { q: "Serous demilunes are commonly noted in:", opts:["Parotid gland","Submandibular gland","Sublingual gland only","Thyroid gland"], correct:1, explain:"Classically described at the ends of mucous tubules in mixed glands like submandibular." },
+  { q: "Which cell organelles content marks serous cells at their apices?", opts:["Mucigen droplets","Zymogen granules","Melanin granules","Lipofuscin"], correct:1, explain:"Serous acini often show zymogen granules toward the lumen." },
+  { q: "Which droplets are typical of mucous cells?", opts:["Mucigen droplets","Zymogen granules","Glycogen only","Hemosiderin"], correct:0, explain:"Mucous acini contain mucigen droplets (precursors of mucin)." },
+  { q: "Where do myoepithelial cells lie?", opts:["Inside the lumen","Between secretory cells and basement membrane","Within the connective tissue capsule","Inside nerve sheaths"], correct:1, explain:"They lie between the secretory epithelium and the basement membrane." },
+  { q: "Which statement about development timing is MOST accurate?", opts:["Initial epithelial invagination appears around 4–6 weeks, with further branching by ~8 weeks","All salivary glands form after birth","Parotid forms at 20 weeks only","First appearance is 2 weeks"], correct:0, explain:"The slide sequence shows 4, 6, 8 weeks aligned to early invagination and growth." },
+  { q: "Which pair is correctly matched?", opts:["Parotid—mucous; Sublingual—serous","Submandibular—mixed; Parotid—serous","Sublingual—serous; Submandibular—mucous","All three are purely serous"], correct:1, explain:"Submandibular is mixed; Parotid is serous." },
+  { q: "The basement membrane in salivary glands is located:", opts:["External to the capsule only","Between epithelium (acini/ducts) and surrounding connective tissue","Inside the lumen covering saliva","Between adipocytes"], correct:1, explain:"A basement membrane underlies the secretory and ductal epithelium." },
+  { q: "Which statement about ducts is correct?", opts:["Excretory duct opens onto the surface epithelium","Intercalated ducts deliver saliva directly to blood","Striated ducts are absent in all major glands","Ducts are not present in parotid"], correct:0, explain:"The proximal developing part becomes an excretory duct that opens on the epithelial surface." },
+  { q: "Adipocyte infiltration within the gland is a noted feature especially in:", opts:["Parotid","Submandibular","Sublingual","Minor palatine glands"], correct:0, explain:"Slides mention adipocytes within parotid parenchyma." },
+  { q: "Compared with serous acini, mucous acini generally have:", opts:["Smaller lumen and deeper staining","Larger lumen and lighter staining","No basement membrane","Central nuclei"], correct:1, explain:"Mucous: larger lumen, flat peripheral nuclei, lighter H&E staining." }
+];
+
+const tfs = [
+  { q:"Glands are derived from surface epithelium.", answer:true, explain:"Slides emphasize epithelial origin and opening onto the epithelium." },
+  { q:"Secretory units in all salivary glands are exclusively tubular.", answer:false, explain:"They may be acinar or tubular." },
+  { q:"Myoepithelial cells help expel secretory product by contraction.", answer:true, explain:"Function: contract & expel contents from acini." },
+  { q:"During development the proximal part becomes the secretory end piece.", answer:false, explain:"Distal part becomes secretory; proximal forms excretory duct." },
+  { q:"Serous secretion is thick and viscous compared to mucous.", answer:false, explain:"Serous is thin and watery; mucous is thick and viscous." },
+  { q:"Mucous acini have flat, peripherally placed nuclei.", answer:true, explain:"Characteristic feature of mucous cells." },
+  { q:"Parotid gland shows numerous ducts and adipocytes.", answer:true, explain:"Noted features in parotid histology." },
+  { q:"Submandibular gland lacks striated ducts.", answer:false, explain:"Submandibular has many striated ducts." },
+  { q:"Sublingual gland is predominantly mucous.", answer:true, explain:"Sublingual contains many mucous acini." },
+  { q:"Zymogen granules are typical of serous cells.", answer:true, explain:"Apical zymogen granules in serous acini." },
+  { q:"Mucigen droplets are typical of serous acini.", answer:false, explain:"They typify mucous cells." },
+  { q:"All major salivary glands are purely serous.", answer:false, explain:"Only parotid is serous; submandibular mixed; sublingual mucous-predominant." }
+];
+
+const saqs = [
+  { q: "Define a gland and state its epithelial origin.", a: "A gland is an organ of secretion composed of specialized secretory cells derived from surface epithelium and opening onto it." },
+  { q: "List four key differences between serous and mucous acini.", a: "Serous: thin watery secretion, round central nucleus, small lumen, deeper H&E staining, zymogen granules. Mucous: thick viscous secretion, flat peripheral nucleus, large lumen, lighter H&E staining, mucigen droplets." },
+  { q: "Outline the early development of a salivary gland.", a: "Epithelium invaginates into vascular connective tissue (≈4–6 weeks); distal bud forms secretory end pieces; proximal portion forms excretory duct that opens onto the surface (further branching by ≈8 weeks)." }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+ tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <h3 class="qtitle">${item.q}</h3>
+    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="primary" data-act="reveal">Reveal Answer</button>
+      <button class="ghost" data-act="toggle">I was correct</button>
+    </div>
+    <div class="answer" hidden>${item.a}</div>
+  `;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

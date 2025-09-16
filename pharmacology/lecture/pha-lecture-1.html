@@ -1,0 +1,634 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>🦷 Dentistry 3rd year — Pharma 1</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.5rem;
+    --glossary-glow:#8b5cf6;
+    --flash-glow:#06b6d4;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+  }
+
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:24px;}
+
+  /* Page-level language visibility (only affects elements that include .en/.ar spans) */
+  .lang-en .ar{display:none !important;}
+  .lang-ar .en{display:none !important;}
+
+  header{position:sticky;top:0;z-index:10;backdrop-filter:blur(8px);background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}  
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:20px 32px;}
+  .title{font-weight:800;font-size:clamp(1.6rem,1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.4),0 0 12px rgba(139,92,246,.35);} 
+  .subtitle{color:var(--muted);font-size:1rem;margin-top:6px;}
+  .lang-toggle{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--text);padding:.6rem 1rem;border-radius:999px;cursor:pointer;}
+
+  /* Matched boxes */
+  .dua,
+  .chip-box,
+  .glossary-box,
+  .flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    box-shadow:0 20px 40px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);
+    padding:1.6rem;
+    margin:20px 0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .dua{font-size:1.1rem;text-align:center;}
+  .chip{font-weight:800;font-size:1.05rem;color:var(--muted);}
+
+  .glossary-box h3,.flashcards-box h3{margin:0;font-size:1.15rem;letter-spacing:.2px;opacity:.95;}
+
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}  
+  .section{
+    display:grid;grid-template-columns:2fr 1fr;column-gap:2.5rem;flex:1;min-height:240px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:1.6rem;
+    box-shadow:0 20px 40px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);
+  }  
+  .section>div{display:flex;flex-direction:column;}
+  .sec-head{
+    font-weight:800;font-size:1.3rem;margin:0 0 1rem 0;padding:0.75rem 1rem;border-radius:8px;
+    background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);width:100%;
+    box-shadow:0 0 18px rgba(255,255,255,.06), 0 0 30px rgba(255,255,255,.15);display:block;box-sizing:border-box;
+  }
+  .sec-body p{margin:.5rem 0;font-size:1rem;line-height:1.65;}
+
+  .callouts{display:flex;flex-direction:column;gap:.75rem;align-self:center;width:100%;}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.3), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .callout.open .hdr{opacity:.8;}
+
+  /* Type-specific borders */
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);} 
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:150px;box-shadow:0 0 22px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);}  
+  .card.glossary{box-shadow:0 0 26px color-mix(in srgb,var(--glossary-glow)28%, transparent), 0 0 30px rgba(255,255,255,.15);} 
+  .card.flash{box-shadow:0 0 26px color-mix(in srgb,var(--flash-glow)28%, transparent), 0 0 30px rgba(255,255,255,.15);} 
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .3s;} 
+  .card.open .head{opacity:.6;} 
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;} 
+  .card .content[hidden]{display:none;} 
+
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;min-height:auto;padding:1.2rem;}
+    .dua,.chip-box,.glossary-box,.flashcards-box{padding:1.2rem;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);} 
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;} }
+
+  /* Gradient headings & chip */
+  .dua,.chip,.sec-head,.glossary-box h3,.flashcards-box h3 {
+    font-weight:800;background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.4),0 0 12px rgba(139,92,246,.35);text-align:center;
+  }
+
+  /* Table styling */
+  table{width:100%;border-collapse:collapse;margin:1rem 0;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);box-shadow:0 0 22px rgba(255,255,255,.08),0 0 30px rgba(255,255,255,.15);overflow:hidden;}
+  table th,table td{padding:.75rem 1rem;border-bottom:1px solid rgba(255,255,255,.08);text-align:left;color:var(--text);}
+  table th{background:rgba(255,255,255,.06);font-weight:700;}
+  table tr:last-child td{border-bottom:none;}
+</style>
+</head>
+<body class="lang-en">
+<header>
+  <div class="hdr wrap">
+    <div>
+      <div class="title">🦷 Dentistry 3rd year</div>
+      <div class="subtitle">Lecture 1 <b>(by ACE)</b></div>
+    </div>
+    <button id="langBtn" class="lang-toggle">EN / AR</button>
+  </div>
+</header>
+
+<main class="wrap" id="content">
+  <!-- Dua: ALWAYS Arabic (different every time) -->
+  <div class="dua">رَبِّ زِدْنِي عِلْمًا وَارْزُقْنِي فَهْمًا</div>
+
+  <!-- Topic chip: bilingual -->
+  <div class="chip-box">
+    <span class="chip">
+      <span class="en">📑 Topic: <b>Pharmacokinetics & Pharmacodynamics — Routes of Administration & Distribution</b></span>
+      <span class="ar">📑 الموضوع: <b>الحركيات والديناميكا الدوائية — طُرُق الإعطاء والتوزيع</b></span>
+    </span>
+  </div>
+
+  <div class="sections">
+    <!-- ===== Section 1 ===== -->
+    <section class="section" id="sec1">
+      <div>
+        <h2 class="sec-head">
+          <span class="en">1) What are Drugs & Pharmacology? 💊</span>
+          <span class="ar">١) ما هي الأدوية وما هو علم الأدوية؟ 💊</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Drugs are chemicals used to diagnose, treat, and prevent disease. Pharmacology studies drugs and their actions on the body. It spans <b>pharmacokinetics</b> (what the body does to the drug) and <b>pharmacodynamics</b> (what the drug does to the body).</p>
+          </div>
+          <div class="ar">
+            <p>الأدوية هي مواد كيميائية تُستخدم للتشخيص والعلاج والوقاية من الأمراض. علم الأدوية يدرس الأدوية وتأثيراتها على الجسم، ويشمل <b>الحركيات الدوائية</b> (ما يفعله الجسم بالدواء) و<b>الديناميكا الدوائية</b> (ما يفعله الدواء بالجسم).</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts">
+          <div class="hdr"><span class="en">📌 Facts — PK vs PD</span><span class="ar">📌 حقائق — الحركيات مقابل الديناميكا</span></div>
+          <div class="body" hidden>
+            <div class="en">PK determines drug <i>concentration</i> at the site of action; PD determines the <i>effect</i> produced at that concentration.</div>
+            <div class="ar">الحركيات تحدد <i>تركيز</i> الدواء في موقع التأثير؛ الديناميكا تحدد <i>الأثر</i> الناتج عند ذلك التركيز.</div>
+          </div>
+        </div>
+        <div class="callout why">
+          <div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div>
+          <div class="body" hidden>
+            <div class="en">Understanding both explains variability in response and guides dose/route choices.</div>
+            <div class="ar">فهم الاثنين يفسر اختلاف الاستجابة ويُوجّه اختيار الجرعة وطريقة الإعطاء.</div>
+          </div>
+        </div>
+        <div class="callout memory">
+          <div class="hdr"><span class="en">🧠 Memory hook</span><span class="ar">🧠 معلومة للتذكر</span></div>
+          <div class="body" hidden>
+            <div class="en">PK = <b>P</b>rocess the body does; PD = <b>D</b>rug’s <b>D</b>oing.</div>
+            <div class="ar">PK = ما يفعله <b>الجسم</b>؛ PD = ما <b>يفعله الدواء</b>.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 2 ===== -->
+    <section class="section" id="sec2">
+      <div>
+        <h2 class="sec-head"><span class="en">2) ADME Roadmap 🛣️</span><span class="ar">٢) خريطة ADME 🛣️</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>To produce an effect, a drug (unless acting locally) must be in a suitable form, given by an appropriate route, then be <b>absorbed</b>, <b>distributed</b>, possibly <b>metabolized</b>, and <b>excreted</b>.</p>
+          </div>
+          <div class="ar">
+            <p>لتحقيق التأثير (ما لم يعمل موضعيًا) يجب أن يكون الدواء بشكل مناسب، ويُعطى بالطريق المناسب، ثم يتم <b>امتصاصه</b> و<b>توزيعه</b> وقد <b>استقلابه</b> و<b>طرحه</b>.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout example">
+          <div class="hdr"><span class="en">🔍 Example — Emergency meds</span><span class="ar">🔍 مثال — أدوية الطوارئ</span></div>
+          <div class="body" hidden>
+            <div class="en">Emergency drugs are commonly given <b>IV</b> to bypass delays and hepatic degradation.</div>
+            <div class="ar">أدوية الطوارئ تُعطى غالبًا <b>وريديًا</b> لتجنب التأخير والتحطم الكبدي.</div>
+          </div>
+        </div>
+        <div class="callout tips">
+          <div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div>
+          <div class="body" hidden>
+            <div class="en">Trace any drug’s path with “Form → Route → Absorption → Distribution → Metabolism → Excretion”.</div>
+            <div class="ar">تتبّع مسار أي دواء: «الشكل → الطريق → الامتصاص → التوزيع → الاستقلاب → الإطراح».</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 3 ===== -->
+    <section class="section" id="sec3">
+      <div>
+        <h2 class="sec-head"><span class="en">3) Absorption: Definition & Key Factors 📥</span><span class="ar">٣) الامتصاص: التعريف والعوامل الرئيسية 📥</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Absorption</b> is drug movement from the administration site to the systemic circulation. The amount and rate depend on dosage form, food in stomach, GI contents, GI pH, mesenteric blood flow, and co-administered drugs.</p>
+          </div>
+          <div class="ar">
+            <p><b>الامتصاص</b> هو انتقال الدواء من موقع الإعطاء إلى الدوران الجهازي. الكمية والسرعة تتأثر بشكل الجرعة، وجود الطعام، محتويات القناة الهضمية، درجة الحموضة، جريان الدم المساريقي، والأدوية المصاحبة.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout clinical">
+          <div class="hdr"><span class="en">🩺 Clinical — Migraine case</span><span class="ar">🩺 سريري — حالة الشقيقة</span></div>
+          <div class="body" hidden>
+            <div class="en">Delayed gastric emptying in migraine slows oral analgesic response; metoclopramide can hasten gastric emptying.</div>
+            <div class="ar">إبطاء إفراغ المعدة في الشقيقة يؤخر استجابة المسكنات الفموية؛ يمكن للميتوكلوبراميد تسريع الإفراغ.</div>
+          </div>
+        </div>
+        <div class="callout extra">
+          <div class="hdr"><span class="en">📝 Extra Notes — Membrane passage</span><span class="ar">📝 ملاحظات إضافية — عبور الأغشية</span></div>
+          <div class="body" hidden>
+            <div class="en">Common mechanisms: passive diffusion, facilitated diffusion, active transport, endocytosis. (Outside the slide—helps context.)</div>
+            <div class="ar">الآليات الشائعة: الانتشار البسيط، والانتشار المسيّر، والنقل الفعّال، والبلعمة. (خارج الشريحة—للتوضيح.)</div>
+          </div>
+        </div>
+        <div class="callout memory">
+          <div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div>
+          <div class="body" hidden>
+            <div class="en">“<b>F-F-P-B-D</b>” → Form, Food, pH, Blood flow, Drugs.</div>
+            <div class="ar">«<b>ش ط ح د أ</b>» → الشكل، الطعام، الحموضة، الدم، الأدوية.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 4 ===== -->
+    <section class="section" id="sec4">
+      <div>
+        <h2 class="sec-head"><span class="en">4) Bioavailability (F) 📈</span><span class="ar">٤) التوافر الحيوي (F) 📈</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Bioavailability</b> is the proportion of an administered dose reaching systemic circulation—amount and rate. Oral bioavailability correlates with solubility: poor solubility → low F. IV administration has ~100% bioavailability.</p>
+          </div>
+          <div class="ar">
+            <p><b>التوافر الحيوي</b> هو نسبة الجرعة التي تصل إلى الدوران — كمية وسرعة. يرتبط التوافر الحيوي الفموي بالذوبانية: ذوبانية ضعيفة → F منخفض. الإعطاء الوريدي ≈ ١٠٠٪.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts">
+          <div class="hdr"><span class="en">📌 Facts — Same drug, different brands</span><span class="ar">📌 حقائق — نفس الدواء، شركات مختلفة</span></div>
+          <div class="body" hidden>
+            <div class="en">Compression and excipients can change disintegration/dissolution → different F between manufacturers.</div>
+            <div class="ar">الضغط والمُضافات قد تغيّر الانحلال/التفكك → اختلاف التوافر بين الشركات.</div>
+          </div>
+        </div>
+        <div class="callout warning">
+          <div class="hdr"><span class="en">⚠️ Warnings — Food impact</span><span class="ar">⚠️ تحذير — تأثير الطعام</span></div>
+          <div class="body" hidden>
+            <div class="en">Food reduces F for some drugs (e.g., penicillins, erythromycin, rifampicin, thyroxine). High-fat meals slow sildenafil absorption.</div>
+            <div class="ar">الطعام يُنقص F لبعض الأدوية (مثل البنسيلينات، الإريثرومايسين، الريفامبيسين، الثايروكسين). الوجبات الدسمة تُبطئ امتصاص السيلدينافيل.</div>
+          </div>
+        </div>
+        <div class="callout clinical">
+          <div class="hdr"><span class="en">🩺 Clinical — GI irritation</span><span class="ar">🩺 سريري — تهيّج المعدة</span></div>
+          <div class="body" hidden>
+            <div class="en">Metformin & levodopa often better with food to reduce gastric upset.</div>
+            <div class="ar">الميتفورمين والليفودوبا غالبًا يُعطيان مع الطعام لتقليل تهيّج المعدة.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 5 ===== -->
+    <section class="section" id="sec5">
+      <div>
+        <h2 class="sec-head"><span class="en">5) First-Pass Effect 🏁→🛣️→🧪</span><span class="ar">٥) تأثير العبور الأول (First Pass) 🏁→🛣️→🧪</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Drugs absorbed from the GIT first pass to the <b>liver via the portal vein</b>, where a fraction is removed before reaching systemic circulation.</p>
+          </div>
+          <div class="ar">
+            <p>الأدوية الممتصة من القناة الهضمية تمر أولًا إلى <b>الكبد عبر الوريد البابي</b> حيث يُزال جزء منها قبل الوصول للدوران الجهازي.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout example">
+          <div class="hdr"><span class="en">🔍 Example — Dosing differences</span><span class="ar">🔍 مثال — اختلاف الجرعات</span></div>
+          <div class="body" hidden>
+            <div class="en">Propranolol, salbutamol, verapamil undergo substantial first-pass metabolism → oral dose > parenteral dose.</div>
+            <div class="ar">البروبرانولول والسالبوتامول والفِيراباميل تتعرض لاستقلاب عبور أولي كبير → الجرعة الفموية أكبر من الحقنية.</div>
+          </div>
+        </div>
+        <div class="callout facts">
+          <div class="hdr"><span class="en">📌 Facts — GTN</span><span class="ar">📌 حقائق — النترات (الـ GTN)</span></div>
+          <div class="body" hidden>
+            <div class="en">Glyceryl trinitrate is completely inactivated orally; given <b>sublingually</b>.</div>
+            <div class="ar">النيتروغليسرين يتحطم تمامًا فمويًا؛ لذلك يُعطى <b>تحت اللسان</b>.</div>
+          </div>
+        </div>
+        <div class="callout tips">
+          <div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div>
+          <div class="body" hidden>
+            <div class="en">“Portal before systemic” = think <b>dose ↑</b> or <b>alternate route</b>.</div>
+            <div class="ar">«بابي قبل جهازي» = فكّر في <b>زيادة الجرعة</b> أو <b>تغيير الطريق</b>.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 6 ===== -->
+    <section class="section" id="sec6">
+      <div>
+        <h2 class="sec-head"><span class="en">6) Drug Routes — Enteral vs Parenteral 🧭</span><span class="ar">٦) طُرُق الإعطاء — معوي مقابل حقني 🧭</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Enteral</b>: absorption through the GIT (oral, NG/OG, sublingual, buccal, rectal). <b>Parenteral</b>: routes other than GIT (IV, IM, SC, inhalation, topical, plus emergency alternatives like IO/ET/umbilical in neonates).</p>
+          </div>
+          <div class="ar">
+            <p><b>المعوي</b>: امتصاص عبر القناة الهضمية (فموي، أنفي/فموي معدي، تحت اللسان، خدّي، شرجي). <b>الحقني/خارج المعوي</b>: غير هضمي (وريدي، عضلي، تحت الجلد، استنشاقي، موضعي، مع بدائل إسعافية مثل داخل العظم/الأنبوب الرغامي/السري).</p>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th><span class="en">Route</span><span class="ar">الطريق</span></th>
+                <th><span class="en">Key points</span><span class="ar">نِّقاط أساسية</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Oral / فموي</td>
+                <td><span class="en">Convenient; variable F; 1st pass</span><span class="ar">مريح؛ توافر متباين؛ عبور أول</span></td>
+              </tr>
+              <tr>
+                <td>Sublingual / تحت اللسان</td>
+                <td><span class="en">Rapid; avoids 1st pass</span><span class="ar">سريع؛ يتجنب العبور الأول</span></td>
+              </tr>
+              <tr>
+                <td>Rectal / شرجي</td>
+                <td><span class="en">Useful if vomiting/unconscious</span><span class="ar">نافع مع القيء/فقدان الوعي</span></td>
+              </tr>
+              <tr>
+                <td>IV / وريدي</td>
+                <td><span class="en">Immediate; 100% F</span><span class="ar">فوري؛ توافر ١٠٠٪</span></td>
+              </tr>
+              <tr>
+                <td>IM / عضلي</td>
+                <td><span class="en">Slower than IV</span><span class="ar">أبطأ من الوريدي</span></td>
+              </tr>
+              <tr>
+                <td>SC / تحت الجلد</td>
+                <td><span class="en">Slower than IM</span><span class="ar">أبطأ من العضلي</span></td>
+              </tr>
+              <tr>
+                <td>Inhalation / استنشاق</td>
+                <td><span class="en">Very rapid via lungs</span><span class="ar">سريع جدًا عبر الرئتين</span></td>
+              </tr>
+              <tr>
+                <td>Topical / موضعي</td>
+                <td><span class="en">Local delivery to skin</span><span class="ar">تأثير موضعي على الجلد</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts">
+          <div class="hdr"><span class="en">📌 Facts — Emergency access</span><span class="ar">📌 حقائق — وصول إسعافي</span></div>
+          <div class="body" hidden>
+            <div class="en">IO is useful in pediatrics; ET and umbilical routes are alternatives in select scenarios.</div>
+            <div class="ar">إعطاء داخل العظم مفيد لدى الأطفال؛ الطريق الرغامي والسري بدائل في مواقف محددة.</div>
+          </div>
+        </div>
+        <div class="callout extra">
+          <div class="hdr"><span class="en">📝 Extra Notes — Choosing a route</span><span class="ar">📝 ملاحظات إضافية — اختيار الطريق</span></div>
+          <div class="body" hidden>
+            <div class="en">Balance speed, safety, patient state, and need to avoid first-pass.</div>
+            <div class="ar">وازن بين السرعة والسلامة وحالة المريض والحاجة لتجنب العبور الأول.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 7 ===== -->
+    <section class="section" id="sec7">
+      <div>
+        <h2 class="sec-head"><span class="en">7) Enteral: Practical Examples 🍽️</span><span class="ar">٧) المعوي: أمثلة عملية 🍽️</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Oral</b> — convenient for self-administration. <b>NG/OG</b> — alternative for PO. <b>Sublingual/Buccal</b> — excellent absorption, avoids gastric acidity. <b>Rectal</b> — for unconscious/vomiting patients.</p>
+          </div>
+          <div class="ar">
+            <p><b>فموي</b> — مناسب للتناول الذاتي. <b>أنفي/فموي معدي</b> — بديل للفموي. <b>تحت اللسان/خدّي</b> — امتصاص ممتاز ويتجنب حموضة المعدة. <b>شرجي</b> — للحالات غير الواعية/القيء.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout memory">
+          <div class="hdr"><span class="en">🧠 Memory — “S/B = Speedy/Bypass”</span><span class="ar">🧠 تذكّر — «ت/خ = سريع/يتجاوز»</span></div>
+          <div class="body" hidden>
+            <div class="en">Sublingual/Buccal are fast and bypass first-pass.</div>
+            <div class="ar">تحت اللسان/الخدّي سريعان ويتجاوزان العبور الأول.</div>
+          </div>
+        </div>
+        <div class="callout tips">
+          <div class="hdr"><span class="en">💡 Study Tips — Rectal</span><span class="ar">💡 نصائح — الشرجي</span></div>
+          <div class="body" hidden>
+            <div class="en">Think about patients who cannot swallow or are vomiting.</div>
+            <div class="ar">فكّر في المرضى غير القادرين على البلع أو الذين يعانون من القيء.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 8 ===== -->
+    <section class="section" id="sec8">
+      <div>
+        <h2 class="sec-head"><span class="en">8) Parenteral: Practical Examples 💉</span><span class="ar">٨) الحقني: أمثلة عملية 💉</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>IV</b> — preferred in emergencies. <b>IM</b> — slower than IV. <b>SC</b> — slower than IM. <b>Inhalation</b> — very rapid via lungs. <b>Topical</b> — direct to skin. <b>ET/IO/Umbilical</b> — special emergency access.</p>
+          </div>
+          <div class="ar">
+            <p><b>وريدي</b> — مفضل في الطوارئ. <b>عضلي</b> — أبطأ من الوريدي. <b>تحت الجلد</b> — أبطأ من العضلي. <b>استنشاق</b> — سريع جدًا عبر الرئتين. <b>موضعي</b> — مباشرة للجلد. <b>رغامي/داخل العظم/سُرّي</b> — وصول إسعافي خاص.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout clinical">
+          <div class="hdr"><span class="en">🩺 Clinical — Why IV?</span><span class="ar">🩺 سريري — لماذا وريدي؟</span></div>
+          <div class="body" hidden>
+            <div class="en">Rapid onset, titratable dosing, and avoids first-pass.</div>
+            <div class="ar">بداية سريعة، جرعات قابلة للمعايرة، ويتجنب العبور الأول.</div>
+          </div>
+        </div>
+        <div class="callout warning">
+          <div class="hdr"><span class="en">⚠️ Warnings — Parenteral risks</span><span class="ar">⚠️ تحذيرات — مخاطر الحقن</span></div>
+          <div class="body" hidden>
+            <div class="en">Infection, pain, skill requirement; ensure asepsis and correct technique.</div>
+            <div class="ar">عدوى، ألم، حاجة للمهارة؛ احرص على التعقيم والتقنية الصحيحة.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 9 ===== -->
+    <section class="section" id="sec9">
+      <div>
+        <h2 class="sec-head"><span class="en">9) Distribution: Concept 🧭🩸</span><span class="ar">٩) التوزيع: المفهوم 🧭🩸</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Distribution</b> is movement of drug from blood to tissues. It is influenced by cardiac output and regional blood flow.</p>
+          </div>
+          <div class="ar">
+            <p><b>التوزيع</b> هو انتقال الدواء من الدم إلى الأنسجة. يتأثر بالقلب وجريان الدم الموضعي.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts">
+          <div class="hdr"><span class="en">📌 Facts — Plasma proteins</span><span class="ar">📌 حقائق — البروتينات البلازمية</span></div>
+          <div class="body" hidden>
+            <div class="en">Protein binding limits tissue transfer. Only <b>free</b> drug crosses membranes.</div>
+            <div class="ar">الارتباط بالبروتين يحد من انتقال النسيج. فقط الدواء <b>الحر</b> يعبر الأغشية.</div>
+          </div>
+        </div>
+        <div class="callout example">
+          <div class="hdr"><span class="en">🔍 Example — Low albumin</span><span class="ar">🔍 مثال — ألبومين منخفض</span></div>
+          <div class="body" hidden>
+            <div class="en">In hypoalbuminemia, higher free fraction → stronger effect/toxicity risk at same total level.</div>
+            <div class="ar">عند نقص الألبومين، ترتفع النسبة الحرة → تأثير/سمية أعلى عند نفس المستوى الكلي.</div>
+          </div>
+        </div>
+        <div class="callout extra">
+          <div class="hdr"><span class="en">📝 Extra Notes — Polypharmacy</span><span class="ar">📝 ملاحظات إضافية — تعدد الأدوية</span></div>
+          <div class="body" hidden>
+            <div class="en">Drugs can displace each other from proteins → transient increase in free levels.</div>
+            <div class="ar">قد تُزيح الأدوية بعضها من البروتينات → زيادة عابرة في النسبة الحرة.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 10 ===== -->
+    <section class="section" id="sec10">
+      <div>
+        <h2 class="sec-head"><span class="en">10) Quick Reference: Enteral vs Parenteral vs Special 📋</span><span class="ar">١٠) مرجع سريع: معوي/حقني/خاصة 📋</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Use this bilingual table to cement the routes and standout features from this lecture.</p>
+          </div>
+          <div class="ar">
+            <p>استخدم هذا الجدول لترسيخ الطرق وأهم النقاط من هذه المحاضرة.</p>
+          </div>
+          <table>
+            <thead>
+              <tr>
+                <th><span class="en">Category</span><span class="ar">الفئة</span></th>
+                <th><span class="en">Routes</span><span class="ar">الطرق</span></th>
+                <th><span class="en">Highlights</span><span class="ar">مزايا/ملاحظات</span></th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>Enteral / معوي</td>
+                <td><span class="en">PO, NG/OG, SL, Buccal, PR</span><span class="ar">فموي، أنفي/فموي معدي، تحت اللسان، خدّي، شرجي</span></td>
+                <td><span class="en">Convenience; variable F; SL/Buccal avoid acidity</span><span class="ar">سهولة؛ F متغير؛ تحت اللسان/خدّي يتجنبان الحموضة</span></td>
+              </tr>
+              <tr>
+                <td>Parenteral / حقني</td>
+                <td><span class="en">IV, IM, SC</span><span class="ar">وريدي، عضلي، تحت الجلد</span></td>
+                <td><span class="en">Speed tiers: IV &gt; IM &gt; SC</span><span class="ar">السرعة: وريدي &gt; عضلي &gt; تحت الجلد</span></td>
+              </tr>
+              <tr>
+                <td>Other / أخرى</td>
+                <td><span class="en">Inhalation, Topical, IO, ET, Umbilical</span><span class="ar">استنشاق، موضعي، داخل العظم، رغامي، سُرّي</span></td>
+                <td><span class="en">Rapid respiratory; skin-local; emergency access</span><span class="ar">سريع عبر الرئة؛ تأثير موضعي؛ وصول إسعافي</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout why">
+          <div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div>
+          <div class="body" hidden>
+            <div class="en">Route selection drives onset, intensity, and safety—core to clinical decision-making.</div>
+            <div class="ar">اختيار الطريق يحدد البداية والشدة والسلامة—وهو جوهري في القرار السريري.</div>
+          </div>
+        </div>
+        <div class="callout tips">
+          <div class="hdr"><span class="en">💡 Study Tips — “3 B’s”</span><span class="ar">💡 نصائح — «٣ ب»</span></div>
+          <div class="body" hidden>
+            <div class="en">Think <b>Barrier</b> (membranes), <b>Blood flow</b>, <b>Biotransformation</b> to predict F and effect.</div>
+            <div class="ar">فكّر في <b>الحاجز</b> و<b>جريان الدم</b> و<b>الاستقلاب</b> لتوقّع التوافر والأثر.</div>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <!-- Glossary 1–9 -->
+  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+  <div class="grid g3x4" id="glossary">
+    <div class="card glossary"><div class="head">Pharmacokinetics / الحركيات الدوائية</div><div class="content" hidden><div class="en">What the body does to the drug (ADME).</div><div class="ar">ما يفعله الجسم بالدواء (امتصاص، توزيع، استقلاب، طرح).</div></div></div>
+    <div class="card glossary"><div class="head">Pharmacodynamics / الديناميكا الدوائية</div><div class="content" hidden><div class="en">What the drug does to the body; mechanism and effect.</div><div class="ar">ما يفعله الدواء بالجسم؛ الآلية والتأثير.</div></div></div>
+    <div class="card glossary"><div class="head">Bioavailability (F) / التوافر الحيوي</div><div class="content" hidden><div class="en">Fraction of dose reaching systemic circulation.</div><div class="ar">جزء الجرعة الذي يصل إلى الدوران الجهازي.</div></div></div>
+    <div class="card glossary"><div class="head">First-Pass Effect / تأثير العبور الأول</div><div class="content" hidden><div class="en">Pre-systemic metabolism in the liver after GIT absorption.</div><div class="ar">استقلاب قبل جهازي يحدث في الكبد بعد الامتصاص من القناة الهضمية.</div></div></div>
+    <div class="card glossary"><div class="head">Enteral / معوي</div><div class="content" hidden><div class="en">Through the GIT: PO, SL, buccal, PR, NG/OG.</div><div class="ar">عبر السبيل الهضمي: فموي، تحت اللسان، خدّي، شرجي، أنفي/فموي معدي.</div></div></div>
+    <div class="card glossary"><div class="head">Parenteral / حقني</div><div class="content" hidden><div class="en">Non-GIT routes: IV, IM, SC, inhalation, topical, etc.</div><div class="ar">طرق غير هضمية: وريدي، عضلي، تحت الجلد، استنشاق، موضعي…</div></div></div>
+    <div class="card glossary"><div class="head">Distribution / التوزيع</div><div class="content" hidden><div class="en">Movement from blood to tissues; affected by flow & binding.</div><div class="ar">انتقال من الدم إلى الأنسجة؛ يتأثر بالجريان والارتباط البروتيني.</div></div></div>
+    <div class="card glossary"><div class="head">Protein Binding / الارتباط البروتيني</div><div class="content" hidden><div class="en">Only free drug is active and crosses membranes.</div><div class="ar">الدواء الحر فقط فعّال ويعبر الأغشية.</div></div></div>
+    <div class="card glossary"><div class="head">Sublingual / تحت اللسان</div><div class="content" hidden><div class="en">Rapid absorption, avoids first-pass (e.g., GTN).</div><div class="ar">امتصاص سريع ويتجنب العبور الأول (مثل النترات).</div></div></div>
+  </div>
+
+  <!-- Flashcards 1–9 -->
+  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+  <div class="grid g3x4" id="flashcards">
+    <div class="card flash"><div class="head">1 — Q: Define bioavailability (F). / ما هو التوافر الحيوي؟</div><div class="content" hidden>A: Fraction of administered dose reaching systemic circulation (amount + rate). / جزء الجرعة الذي يصل إلى الدوران (كمية + سرعة).</div></div>
+    <div class="card flash"><div class="head">2 — Q: Name two enteral routes. / اذكر طريقين معويين.</div><div class="content" hidden>A: Oral, sublingual, buccal, rectal, NG/OG (any two). / فموي، تحت اللسان، خدّي، شرجي، أنفي/فموي معدي.</div></div>
+    <div class="card flash"><div class="head">3 — Q: Which route has ~100% F? / أي طريق يحقق ~١٠٠٪ توافر؟</div><div class="content" hidden>A: Intravenous (IV). / الوريدي.</div></div>
+    <div class="card flash"><div class="head">4 — Q: What is first-pass effect? / ما هو العبور الأول؟</div><div class="content" hidden>A: Hepatic metabolism before systemic circulation after GIT absorption. / استقلاب كبدي قبل الوصول للدوران بعد الامتصاص المعوي.</div></div>
+    <div class="card flash"><div class="head">5 — Q: List two factors affecting absorption. / عاملان يؤثران على الامتصاص؟</div><div class="content" hidden>A: Dosage form, food, GI pH, mesenteric flow, other drugs. / شكل الجرعة، الطعام، حموضة المعدة/الأمعاء، الجريان المساريقي، أدوية أخرى.</div></div>
+    <div class="card flash"><div class="head">6 — Q: Why give GTN sublingually? / لماذا تُعطى النترات تحت اللسان؟</div><div class="content" hidden>A: Complete first-pass inactivation orally; SL avoids it. / يتحطم تمامًا فمويًا؛ تحت اللسان يتجاوزه.</div></div>
+    <div class="card flash"><div class="head">7 — Q: Enteral vs Parenteral? / معوي أم حقني؟</div><div class="content" hidden>A: Enteral via GIT; Parenteral non-GIT (IV/IM/SC etc.). / المعوي عبر الهضم؛ الحقني غير هضمي (وريدي/عضلي/تحت الجلد…).</div></div>
+    <div class="card flash"><div class="head">8 — Q: What determines PD effect? / ما الذي يحدد تأثير PD؟</div><div class="content" hidden>A: Drug’s action at receptors at given concentration. / فعل الدواء على المستقبلات عند تركيز معين.</div></div>
+    <div class="card flash"><div class="head">9 — Q: Free vs bound drug? / حر أم مرتبط؟</div><div class="content" hidden>A: Only free drug is pharmacologically active and can cross membranes. / الدواء الحر فقط فعّال ويمكنه عبور الأغشية.</div></div>
+  </div>
+</main>
+
+<script>
+// Language switcher
+const btn=document.getElementById('langBtn');
+btn.addEventListener('click',()=>{
+  document.body.classList.toggle('lang-ar');
+  document.body.classList.toggle('lang-en');
+});
+
+// Callout toggle
+document.querySelectorAll('.callout .hdr').forEach(h=>{
+  h.addEventListener('click',()=>{
+    const c=h.parentElement;
+    c.classList.toggle('open');
+    const body=c.querySelector('.body');
+    body.hidden=!body.hidden;
+  });
+});
+
+// Glossary toggle
+document.querySelectorAll('#glossary .card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    card.classList.toggle('open');
+    const cont=card.querySelector('.content');
+    cont.hidden=!cont.hidden;
+  });
+});
+
+// Flashcards toggle
+document.querySelectorAll('#flashcards .card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    card.classList.toggle('open');
+    const cont=card.querySelector('.content');
+    cont.hidden=!cont.hidden;
+  });
+});
+</script>
+</body>
+</html>

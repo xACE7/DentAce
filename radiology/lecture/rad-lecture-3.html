@@ -1,0 +1,520 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>🦷 Dentistry 3rd year — Radiation Biology (RAD 3)</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.5rem;
+    --glossary-glow:#8b5cf6;
+    --flash-glow:#06b6d4;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+  }
+
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:24px;}
+
+  /* Page-level language visibility (only affects elements that include .en/.ar spans) */
+  .lang-en .ar{display:none !important;}
+  .lang-ar .en{display:none !important;}
+
+  header{position:sticky;top:0;z-index:10;backdrop-filter:blur(8px);background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}  
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:20px 32px;}
+  .title{font-weight:800;font-size:clamp(1.6rem,1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.4),0 0 12px rgba(139,92,246,.35);} 
+  .subtitle{color:var(--muted);font-size:1rem;margin-top:6px;}
+  .lang-toggle{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--text);padding:.6rem 1rem;border-radius:999px;cursor:pointer;}
+
+  .dua,
+  .chip-box,
+  .glossary-box,
+  .flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    box-shadow:0 20px 40px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);
+    padding:1.6rem;
+    margin:20px 0;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .dua{font-size:1.1rem;text-align:center;}
+  .chip{font-weight:800;font-size:1.2rem;color:var(--muted);}
+  .glossary-box h3,.flashcards-box h3{margin:0;font-size:1.15rem;letter-spacing:.2px;opacity:.95;}
+
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}  
+  .section{
+    display:grid;grid-template-columns:2fr 1fr;column-gap:2.5rem;flex:1;min-height:240px;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:1.6rem;
+    box-shadow:0 20px 40px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);
+  }  
+  .section>div{display:flex;flex-direction:column;}
+  .sec-head{
+    font-weight:800;
+    font-size:1.3rem;
+    margin:0 0 1rem 0;
+    padding:0.75rem 1rem;
+    border-radius:8px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    width:100%;
+    box-shadow:0 0 18px rgba(255,255,255,.06), 0 0 30px rgba(255,255,255,.15);
+    display:block;
+    box-sizing:border-box;
+  }
+  .sec-body p{margin:.5rem 0;font-size:1rem;line-height:1.65;}
+
+  .callouts{display:flex;flex-direction:column;gap:.75rem;align-self:center;width:100%;}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.3), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .callout.open .hdr{opacity:.8;}
+
+  /* Type-specific borders */
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);} 
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:150px;box-shadow:0 0 22px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);}  
+  .card.glossary{box-shadow:0 0 26px color-mix(in srgb,var(--glossary-glow)28%, transparent), 0 0 30px rgba(255,255,255,.15);} 
+  .card.flash{box-shadow:0 0 26px color-mix(in srgb,var(--flash-glow)28%, transparent), 0 0 30px rgba(255,255,255,.15);} 
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .3s;} 
+  .card.open .head{opacity:.6;} 
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;} 
+  .card .content[hidden]{display:none;} 
+
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;min-height:auto;padding:1.2rem;}
+    .dua,.chip-box,.glossary-box,.flashcards-box{padding:1.2rem;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);} 
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;} }
+
+  .dua,
+  .chip,
+  .sec-head,
+  .glossary-box h3,
+  .flashcards-box h3 {
+    font-weight:800;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.4),0 0 12px rgba(139,92,246,.35);
+    text-align:center;
+  }
+
+  /* Keep tables styled inside boxes */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 1rem 0;
+    background: rgba(255,255,255,.04);
+    border: 1px solid rgba(255,255,255,.12);
+    border-radius: var(--radius);
+    box-shadow: 0 0 22px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);
+    overflow: hidden;
+  }
+  table th, table td {
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid rgba(255,255,255,.08);
+    text-align: left;
+    color: var(--text);
+  }
+  table th { background: rgba(255,255,255,.06); font-weight: 700; }
+  table tr:last-child td { border-bottom: none; }
+</style>
+</head>
+<body class="lang-en">
+<header>
+  <div class="hdr wrap">
+    <div>
+      <div class="title">🦷 Dentistry 3rd year</div>
+      <div class="subtitle">Lecture 3 <b>(by ACE)</b></div>
+    </div>
+    <button id="langBtn" class="lang-toggle">EN / AR</button>
+  </div>
+</header>
+
+<main class="wrap" id="content">
+  <!-- Dua: ALWAYS Arabic (new each time) -->
+  <div class="dua">رَبِّ زِدْنِي عِلْمًا وَارْزُقْنِي فَهْمًا وَحِكْمَةً</div>
+
+  <!-- Topic chip: bilingual -->
+  <div class="chip-box">
+    <span class="chip">
+      <span class="en">📑 Topic: <b>Radiation Biology & Oral Complications</b></span>
+      <span class="ar">📑 الموضوع: <b>أحياء الإشعاع ومضاعفاته الفموية</b></span>
+    </span>
+  </div>
+
+  <div class="sections">
+    <!-- ===== Section 1 ===== -->
+    <section class="section" id="s1">
+      <div>
+        <h2 class="sec-head"><span class="en">1) What is Radiation Biology? 🧬</span><span class="ar">١) ما هي أحياء الإشعاع؟ 🧬</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Radiation biology studies how <b>ionizing radiation</b> affects living systems and cells. Interaction is ultra-fast (≈10⁻¹³ s) yet consequences can last from hours to decades—even across generations.</p>
+            <p>Interaction models evolved from the classic <b>Hit Theory</b> (only the “hit” cell is injured) to modern <b>Bystander Effects</b> (signals & free radicals also affect nearby non-hit cells).</p>
+          </div>
+          <div class="ar">
+            <p>تبحث أحياء الإشعاع في تأثير <b>الإشعاع المؤيّن</b> على الكائنات الحيّة. يحدث التفاعل خلال زمن بالغ القِصر (≈10⁻¹³ ثانية) لكن آثاره قد تمتد لساعات أو عقود وربما أجيال.</p>
+            <p>تطورت النماذج من <b>نظرية الضربة</b> الكلاسيكية إلى <b>تأثير الجار (البايستاندر)</b> حيث تنتقل الإشارات والجذور الحرة لتؤذي خلايا لم تُضرب مباشرة.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Initial interaction ~10⁻¹³ s; effects may persist for years.</div><div class="ar">زمن التفاعل ~10⁻¹³ ث؛ والآثار قد تستمر لسنوات.</div></div></div>
+        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Bystander signaling can trigger damage in non-irradiated neighboring cells.</div><div class="ar">إشارات البايستاندر قد تُحدث أذية في الخلايا المجاورة غير المُعرَّضة.</div></div></div>
+        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Explains tissue injury patterns beyond the directly exposed field.</div><div class="ar">يُفسّر أنماط الأذى خارج الحقل المُعرّض مباشرة.</div></div></div>
+        <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">Hit = direct only; Bystander = signaling spreads.</div><div class="ar">الضربة = مباشر فقط؛ الجار = انتشار الإشارات.</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Sketch a timeline from femtoseconds (interaction) to years (late effects).</div><div class="ar">ارسُم خطًا زمنيًا من فيمتو ثانية حتى السنوات لتثبيت المعلومة.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 2 ===== -->
+    <section class="section" id="s2">
+      <div>
+        <h2 class="sec-head"><span class="en">2) Deterministic vs Stochastic ☢️</span><span class="ar">٢) محدَّد مقابل احتمالي ☢️</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Deterministic</b>: definite tissue damage above a dose threshold (severity ↑ with dose)—e.g., <i>radiation mucositis</i>.</p>
+            <p><b>Stochastic</b>: probability (not severity) increases with dose; no threshold—e.g., <i>radiation-induced cancer</i>.</p>
+          </div>
+          <div class="ar">
+            <p><b>المحدَّدة</b>: أذى نسيجي مؤكّد عند تجاوز عتبة الجرعة (تزداد الشدة مع الجرعة) مثل <i>التهاب الغشاء المخاطي الإشعاعي</i>.</p>
+            <p><b>الاحتمالية</b>: يزداد الاحتمال مع الجرعة دون عتبة واضحة مثل <i>السرطان المُستحث إشعاعياً</i>.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Deterministic = threshold; Stochastic = risk only.</div><div class="ar">المحدّدة = عتبة؛ الاحتمالية = احتمال فقط.</div></div></div>
+        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Patient counseling differs: acute mucositis vs long-term carcinogenesis.</div><div class="ar">التثقيف يختلف: التهاب حاد مقابل سرطنة بعيدة المدى.</div></div></div>
+        <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Do not assume “safe” low dose eliminates stochastic risk.</div><div class="ar">لا تفترض أن الجرعات المنخفضة خالية من الخطر الاحتمالي.</div></div></div>
+        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Guides protection strategies and consent discussions.</div><div class="ar">يُوجّه استراتيجيات الوقاية والموافقة المستنيرة.</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Mnemonic: <b>DeTer</b> = <b>T</b>hreshold; <b>Sto</b>chastic = <b>S</b>eeds risk.</div><div class="ar">قاعدة: المحدَّد = عتبة؛ الاحتمالي = احتمال.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 3 ===== -->
+    <section class="section" id="s3">
+      <div>
+        <h2 class="sec-head"><span class="en">3) Chemistry & Mechanisms: Direct vs Indirect ⚛️</span><span class="ar">٣) الكيمياء والآليات: مباشر أم غير مباشر ⚛️</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Direct effect</b>: photons/electrons ionize biomolecules → free radical (R*). R* stabilizes via <i>dissociation</i> or <i>cross-linking</i>. ~1/3 of injury is direct.</p>
+            <p><b>Indirect effect</b>: water radiolysis → <b>•OH</b> and <b>•H</b>; these attack organics → organic radicals. ~2/3 of injury is indirect; <b>•OH</b> is the major culprit.</p>
+          </div>
+          <div class="ar">
+            <p><b>الأثر المباشر</b>: تأيّن الجزيئات الحيوية مباشرة وتكوين جذور حرة (R*) تُستقر عبر <i>تفكك</i> أو <i>ترابط تشابكي</i>. يقارب ثلث الأذى.</p>
+            <p><b>الأثر غير المباشر</b>: تحلُّل الماء إشعاعياً يُنتج <b>•OH</b> و<b>•H</b> اللذين يهاجمان الجزيئات العضوية. يقارب ثلثي الأذى؛ <b>•OH</b> الأهم.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout example"><div class="hdr"><span class="en">🔍 Example (Radiolysis)</span><span class="ar">🔍 مثال (تحلل الماء)</span></div><div class="body" hidden><div class="en">e⁻ + H₂O → H₂O⁻ → OH⁻ + H•, etc.</div><div class="ar">e⁻ + H₂O → H₂O⁻ → OH⁻ + H• ...</div></div></div>
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Free radical generation occurs in &lt;10⁻¹⁰ s; very reactive, short-lived.</div><div class="ar">تتكوّن الجذور الحرة خلال &lt;10⁻¹⁰ ث؛ شديدة التفاعل قصيرة العمر.</div></div></div>
+        <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Water wins”: most damage is via water → •OH.</div><div class="ar">«الماء يغلب»: معظم الأذى عبر •OH الناتج من الماء.</div></div></div>
+        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Explains oxygen effect and radiosensitization strategies.</div><div class="ar">يُفسّر تأثير الأكسجين واستراتيجيات التحسيس الإشعاعي.</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Draw a flowchart from photon → water → radicals → biomolecule damage.</div><div class="ar">ارسم مخطط تدفق من الفوتون → الماء → الجذور → أذية الجزيئات الحيوية.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 4 ===== -->
+    <section class="section" id="s4">
+      <div>
+        <h2 class="sec-head"><span class="en">4) Radiosensitivity of Cells 🧫</span><span class="ar">٤) حساسية الخلايا للإشعاع 🧫</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Radiosensitivity ↑ with: (1) high <b>mitotic rate</b>, (2) potential for future division, (3) primitive differentiation status.</p>
+            <p><b>Histologic classes</b> (most → least sensitive): Vegetative intermitotic → Differentiating intermitotic → Multipotential connective tissue → Reverting post-mitotic → Fixed post-mitotic.</p>
+            <table>
+              <thead><tr><th>Sensitivity</th><th>Examples</th></tr></thead>
+              <tbody>
+                <tr><td>High</td><td>Lymphoid organs, bone marrow, testes, intestine, mucosa</td></tr>
+                <tr><td>Intermediate</td><td>Fine vasculature, growing cartilage/bone, salivary glands, lungs, kidney, liver</td></tr>
+                <tr><td>Low</td><td>Optic lens, mature RBCs, muscle, nerves</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="ar">
+            <p>تزداد الحساسية مع: (١) <b>معدل انقسام</b> عالٍ، (٢) قابلية مستقبلية للانقسام، (٣) بدائية التمايز.</p>
+            <p><b>تصنيفات نسيجية</b> (من الأكثر إلى الأقل): الخلايا المنقسمة باستمرار → المنقسمة مع تمايز → خلايا نسيج ضام متعددة القدرات → ما بعد انقسام نادر → ثابتة ما بعد الانقسام.</p>
+            <table>
+              <thead><tr><th>الحساسية</th><th>أمثلة</th></tr></thead>
+              <tbody>
+                <tr><td>عالية</td><td>الأعضاء اللمفاوية، نقي العظم، الخصى، الأمعاء، المخاطية</td></tr>
+                <tr><td>متوسطة</td><td>الأوعية الدقيقة، الغضروف/العظم النامي، الغدد اللعابية، الرئة، الكلية، الكبد</td></tr>
+                <tr><td>منخفضة</td><td>عدسة العين، الكريات الحمر الناضجة، العضلات، الأعصاب</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Basal oral mucosal cells are among the sensitive (precursor/vegetative).</div><div class="ar">الخلايا القاعدية للغشاء المخاطي الفموي من الأكثر حساسية.</div></div></div>
+        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Parotid acini (serous) are more sensitive than mucous acini.</div><div class="ar">أُسيني الغدة النكفية المصلية أكثر حساسية من المخاطية.</div></div></div>
+        <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Mitotic + immature = most sensitive.”</div><div class="ar">«انقسام + بدائية = حساسية عالية».</div></div></div>
+        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Predict which tissues fail first during therapy.</div><div class="ar">تُساعد في توقع الأنسجة المتضررة أولاً أثناء العلاج.</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Make a ladder diagram from vegetative→fixed post-mitotic.</div><div class="ar">اصنع سلّمًا من الأكثر للأقل حساسية.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 5 ===== -->
+    <section class="section" id="s5">
+      <div>
+        <h2 class="sec-head"><span class="en">5) Molecular Targets: DNA & Proteins 🧪</span><span class="ar">٥) الأهداف الجزيئية: DNA والبروتينات 🧪</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Nucleic acids</b>: base loss/changes, H-bond disruption, strand breaks → mutation, carcinogenesis, or cell death.</p>
+            <p><b>Proteins</b>: altered secondary/tertiary structure; broken side chains H-/disulfide bonds → enzyme systems amplified or retarded.</p>
+          </div>
+          <div class="ar">
+            <p><b>الأحماض النووية</b>: فقد/تبدل قواعد، تفكك الروابط الهيدروجينية، انقطاعات السلسلة → طفرة أو سرطان أو موت خلوي.</p>
+            <p><b>البروتينات</b>: تغيّر البنى الثانوية/الثالثية؛ كسر سلاسل جانبية وروابط H/ثنائية الكبريتيد → تغيّر عمل الإنزيمات.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">DNA is the most radiosensitive cellular target.</div><div class="ar">DNA هو الهدف الخلوي الأكثر حساسية للإشعاع.</div></div></div>
+        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Intra-strand cross-linking can block replication.</div><div class="ar">الترابط داخل السلسلة قد يمنع التضاعف.</div></div></div>
+        <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">D = DNA → Damage → Death (or mutation).</div><div class="ar">D = DNA → Damage → Death/Mutation.</div></div></div>
+        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Underpins radiotherapy’s tumor-killing and normal-tissue toxicity.</div><div class="ar">أساس قتل الأورام في العلاج الإشعاعي وأذية الأنسجة السليمة.</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Make a two-column cheat sheet: DNA changes vs protein changes.</div><div class="ar">اصنع ورقة سريعة بعمودين: تغيّرات DNA مقابل البروتين.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 6 ===== -->
+    <section class="section" id="s6">
+      <div>
+        <h2 class="sec-head"><span class="en">6) Cellular & Chromosomal Effects 🧫🧬</span><span class="ar">٦) التأثيرات الخلوية والصبغية 🧫🧬</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Nucleus</b> is highly radiosensitive. DNA lesions include single/ double-strand breaks and cross-linking.</p>
+            <p><b>Chromosome aberrations</b> depend on cell cycle timing: exposure <i>before</i> DNA synthesis (G₁/early S) → <b>chromosome</b> aberrations (both arms); exposure <i>after</i> DNA synthesis (G₂/late S) → <b>chromatid</b> aberrations (one arm). Chromatids often repaired; chromosome-level errors persist → mutation.</p>
+            <p><b>Cytoplasm</b>: organelles require higher doses (≈30–50 Gy); mitochondria swell, cristae disorganize; permeability increases.</p>
+            <table>
+              <thead><tr><th>Cell cycle phase</th><th>Aberration</th></tr></thead>
+              <tbody>
+                <tr><td>G₁ / early S</td><td>Chromosome (two arms affected)</td></tr>
+                <tr><td>G₂ / late S</td><td>Chromatid (one arm affected)</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="ar">
+            <p><b>النواة</b> شديدة الحساسية. آفات DNA: كسور أحادية/مزدوجة وروابط متشابكة.</p>
+            <p><b>الاضطرابات الصبغية</b> تعتمد على توقيت الدورة الخلوية: التعرض <i>قبل</i> تضاعف الـDNA (G₁/بداية S) ← شذوذ <b>صبغي</b> (ذراعان)؛ <i>بعد</i> التضاعف (G₂/نهاية S) ← شذوذ <b>كروماتيدي</b> (ذراع واحد). غالبًا تُصلَح الكروماتيدات، بينما تبقى الصبغيات → طفرة.</p>
+            <p><b>السيتوبلازم</b>: يحتاج جرعات أعلى (≈50-30 غراي)؛ تورم الميتوكوندريا واضطراب الكريستا وزيادة النفاذية.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Chromosomal damage is most evident at cell division.</div><div class="ar">تظهر اضطرابات الصبغيات بوضوح أثناء الانقسام الخلوي.</div></div></div>
+        <div class="callout example"><div class="hdr"><span class="en">🔍 Example (Cycle)</span><span class="ar">🔍 مثال (الدورة)</span></div><div class="body" hidden><div class="en">HeLa Ts≈8 h; CHO Ts≈6 h (variation greatest in G₁).</div><div class="ar">مدة طور S لهِيلا ≈ ٨ س، ولـCHO ≈ ٦ س (أكبر اختلاف في G₁).</div></div></div>
+        <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“G₁ → Chromosome; G₂ → Chromatid.”</div><div class="ar">«G₁ صبغي؛ G₂ كروماتيدي».</div></div></div>
+        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Links scheduling of therapy to radiosensitivity windows.</div><div class="ar">يربط توقيت العلاج بفترات الحساسية.</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Use a 2-row table to cement phase vs lesion type.</div><div class="ar">جدول ثنائي الصفوف لتثبيت العلاقة بين الطور ونوع الأذية.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 7 ===== -->
+    <section class="section" id="s7">
+      <div>
+        <h2 class="sec-head"><span class="en">7) Early vs Late Effects in Humans ⏳</span><span class="ar">٧) التأثيرات المبكرة والمتأخرة عند الإنسان ⏳</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Early (deterministic)</b>: very high dose in short time (e.g., radiotherapy) → hematologic, GI, CNS syndromes; tissue erythema/desquamation; hematologic & cytogenetic damage.</p>
+            <p><b>Late (stochastic)</b>: low dose over time (diagnostics) → leukemia; bone/breast/thyroid cancers; local tissue damage; lifespan shortening; genetic & cytogenetic effects.</p>
+            <p><b>Short-term vs Long-term</b>: short-term reflects loss of proliferating cells; long-term driven by fine-vasculature injury → permeability ↑, fibrosis ↑, nutrient/waste exchange ↓ → cell death.</p>
+          </div>
+          <div class="ar">
+            <p><b>مبكرة (محدَّدة)</b>: جرعات عالية بزمن قصير → متلازمات دموية وهضمية وعصبية؛ حمامى وتقشّر؛ أذى دموي وخَلَوي-جيني.</p>
+            <p><b>متأخرة (احتمالية)</b>: جرعات منخفضة مزمنة → ابيضاض الدم؛ سرطانات العظم/الثدي/الغدة الدرقية؛ أذى موضعي؛ قِصر العمر؛ تأثيرات وراثية وخلوية-جينية.</p>
+            <p><b>قصير مقابل طويل الأمد</b>: القصير نتيجة فقدان الخلايا المُتجددة؛ الطويل بسبب أذية الأوعية الدقيقة → ارتشاح وليف وتدهور التغذية → موت خلوي.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Long-term changes center on microvasculature damage and fibrosis.</div><div class="ar">التغيّرات المتأخرة تتمحور حول أذية الأوعية الدقيقة والتليّف.</div></div></div>
+        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Expect mucositis acutely; xerostomia and caries chronically.</div><div class="ar">توقّع التهاب المخاطية حاداً؛ وجفاف الفم وتسوساً لاحقاً.</div></div></div>
+        <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">High single doses can trigger GI/CNS syndromes.</div><div class="ar">الجرعات العالية المفردة قد تُحدث متلازمات هضمية/عصبية.</div></div></div>
+        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Guides acute care vs survivorship planning.</div><div class="ar">يوجّه الرعاية الحادة وخطط النجاة طويلة الأمد.</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Make a T-chart: “Early—Deterministic” vs “Late—Stochastic”.</div><div class="ar">ارسم جدول T: «مبكر-محدد» مقابل «متأخر-احتمالي».</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 8 ===== -->
+    <section class="section" id="s8">
+      <div>
+        <h2 class="sec-head"><span class="en">8) Oral Mucosa: Pathology & Care 👄</span><span class="ar">٨) الغشاء المخاطي الفموي: المرض والعناية 👄</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Basal layer (vegetative/differentiating cells) is radiosensitive. By end of week 2 → basal cell death; mucosa breaks down with white-yellow <b>pseudomembrane</b>. Sequelae: severe pain, ↑ infection risk, impaired swallowing/speech, oral bleeding. Healing ~2 months; mucosa may remain thin/atrophic/avascular for months–years.</p>
+            <p><b>Treatment</b>: oral hygiene; topical anesthetics (benzocaine, lidocaine, benzydamine HCl); chlorhexidine rinse; coating agents (milk of magnesia, kaopectate).</p>
+          </div>
+          <div class="ar">
+            <p>الطبقة القاعدية حساسة. بنهاية الأسبوع الثاني يموت الكثير من الخلايا؛ تتشكل <b>غشاء كاذب</b> أبيض-مصفر. المُضاعفات: ألم شديد، ↑ خطر العدوى، صعوبة بلع/نطق، نزف فموي. الشفاء ≈ شهرين وقد تبقى المخاطية رقيقة/متatroفة/ناقصة التروية.</p>
+            <p><b>العلاج</b>: نظافة فموية؛ مخدرات موضعية؛ غسول كلورهيكسيدين؛ عوامل مُغلفة مثل حليب المغنيسيا وكاوبيكتات.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Assess pain, hydration, nutrition; manage secondary infections.</div><div class="ar">قيّم الألم والترطيب والتغذية؛ عالج الانتانات الثانوية.</div></div></div>
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Pseudomembrane forms as epithelium sloughs.</div><div class="ar">يتكوّن غشاء كاذب نتيجة تساقط الظهارة.</div></div></div>
+        <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Bleeding risk in severe mucositis—use gentle hygiene.</div><div class="ar">خطر نزف—طبّق نظافة لطيفة.</div></div></div>
+        <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Ice chips during some RT sessions may reduce mucosal injury (outside-PDF tip).</div><div class="ar">قد تُقلّل مكعّبات الثلج أثناء بعض الجلسات من الأذية (معلومة إضافية).</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Timeline flashcard: Wk2 breakdown → 2 mo healing.</div><div class="ar">بطاقة زمنية: انهيار بالأسبوع ٢ → شفاء خلال شهرين.</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 9 ===== -->
+    <section class="section" id="s9">
+      <div>
+        <h2 class="sec-head"><span class="en">9) Taste Buds & Salivary Glands 👅💧</span><span class="ar">٩) براعم التذوّق والغدد اللعابية 👅💧</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Taste</b>: affected in week 2–3; may be due to direct bud injury or secondary to hyposalivation/infections; usually recovers in 2–4 months; high doses can cause permanent loss. <b>Zinc sulfate 220 mg BID</b> may help.</p>
+            <p><b>Salivary glands</b>: serous acini &gt; mucous in sensitivity; parotid &gt; submandibular/sublingual; parenchyma &gt; ducts. Damage is dose-dependent → fibrosis, adiposis, vascular loss, inflammation → <b>xerostomia</b>, acidic flora shift, candidiasis/viral infections, speech/swallowing issues.</p>
+            <p><b>Management</b>: meticulous hygiene; topical fluoride; frequent sips/saliva substitutes; sialogogues (pilocarpine 15 mg/day; bethanechol 75–200 mg/day).</p>
+          </div>
+          <div class="ar">
+            <p><b>التذوّق</b>: يتأثر في الأسبوع ٢–٣؛ قد يكون مباشرًا أو ثانوياً بسبب نقص اللعاب/العدوى؛ غالباً يعود خلال ٢–٤ أشهر؛ الجرعات العالية قد تُحدث فقداً دائماً. قد يفيد <b>كبريتات الزنك 220 ملغ مرتين يومياً</b>.</p>
+            <p><b>الغدد اللعابية</b>: حساسية الأُسيني المصلية &gt; المخاطية؛ النكفية &gt; تحت الفك/اللسان؛ المت parenchyma &gt; القنوات. الضرر حسب الجرعة → تليّف، تنكس دهني، فقد وعائي، التهاب → <b>جفاف الفم</b>، تبدّل فلورا نحو الحموضة، كانديدا/فيروسات، صعوبة نطق/بلع.</p>
+            <p><b>التدبير</b>: نظافة دقيقة؛ فلورايد موضعي؛ رشفات متكررة/بدائل لعاب؛ مُدرّات لعابية (بيلوكاربين؛ بيثانيكول).</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Expect acidic plaque and rampant caries—plan fluoride trays.</div><div class="ar">توقّع لُويحة حمضية وتسوساً معممًا—خطط لقوالب فلورايد.</div></div></div>
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Parotid damage drives much of the xerostomia.</div><div class="ar">أذية النكفية تُسهم بقوة في جفاف الفم.</div></div></div>
+        <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Monitor for candidiasis; treat promptly.</div><div class="ar">راقب داء المبيضات وعالجه سريعاً.</div></div></div>
+        <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Sugar-free xylitol gum may stimulate residual flow (outside-PDF tip).</div><div class="ar">علكة الزايليتول الخالية من السكر قد تحفز اللعاب (معلومة إضافية).</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Link “serous→sensitive→parotid” as a memory chain.</div><div class="ar">احفظ سلسلة «مَصلي→حساس→نكفي».</div></div></div>
+      </aside>
+    </section>
+
+    <!-- ===== Section 10 ===== -->
+    <section class="section" id="s10">
+      <div>
+        <h2 class="sec-head"><span class="en">10) Teeth, Bone & Joints 🦷🦴</span><span class="ar">١٠) الأسنان والعظم والمفصل 🦷🦴</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Teeth</b>: If radiation precedes tooth development → tooth bud (reverting post-mitotic pulp cells) destroyed. After calcification starts → malformed teeth, stunted roots, agenesis. Post-eruption: <b>radiation caries</b> from hyposalivation, ↓pH/ buffer, flora shift, ↓remineralization.</p>
+            <p><b>Bone</b>: periosteal/cortical vasculature injury → hypovascular, hypoxic, hypocellular marrow; mineralization ↓ → risk of <b>osteoradionecrosis</b>.</p>
+            <p><b>Prevention</b>: treat caries pre-RT; atraumatic extraction of hopeless teeth; adjust dentures; defer routine radiographs ~6 months post-RT.</p>
+            <p><b>Mandibular dysfunction</b>: muscle fibrosis → trismus; manage with occlusal appliances, physiotherapy/exercises, trigger-point injections, analgesics, muscle relaxants, TCAs.</p>
+            <p><b>Dentofacial growth</b>: in the field → micrognathia, retrognathia, maxillary growth changes; pituitary exposure may affect overall growth.</p>
+          </div>
+          <div class="ar">
+            <p><b>الأسنان</b>: قبل تطور السن → تخرب برعم السن؛ بعد بدء التكلس → تشوهات، جذور قصيرة، عدم تشكّل. بعد البزوغ: <b>نخور إشعاعية</b> بسبب نقص اللعاب، انخفاض pH/العازلية، تبدّل الفلورا، نقص إعادة التمعدن.</p>
+            <p><b>العظم</b>: أذية التروية حول السمحاق والقشر → نقص تروية/أكسجة وخلوية؛ نقص التمعدن → خطر <b>نخر عظم إشعاعي</b>.</p>
+            <p><b>الوقاية</b>: علاج النخور قبل العلاج؛ قلع لطيف للأسنان غير القابلة للترميم؛ تعديل الأطقم؛ تأجيل الصور الروتينية ≈ ٦ أشهر بعد العلاج.</p>
+            <p><b>خلل الفك السفلي</b>: تليّف العضلات → تِرْزم؛ يُعالج بأجهزة إطباقية، علاج فيزيائي/تمارين، حقن نقاط الزناد، مسكنات، مرخيات، ومضادات اكتئاب ثلاثية.</p>
+            <p><b>النمو الوجهي السني</b>: داخل الحقل → صغر فك/ارتداد فك وتغير نمو الفك العلوي؛ تأثّر النخامى قد يؤثر النمو العام.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts">
+        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Plan custom fluoride trays and 3–4 mo recalls.</div><div class="ar">خطط لقوالب فلورايد ومراجعات كل ٣–٤ أشهر.</div></div></div>
+        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">ORN risk rises with hypovascular, hypoxic, hypocellular bone.</div><div class="ar">يزداد خطر النخر العظمي مع نقص التروية والأكسجة والخلوية.</div></div></div>
+        <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Avoid traumatic extractions post-RT when possible.</div><div class="ar">تجنّب القلع الرضي بعد العلاج قدر الإمكان.</div></div></div>
+        <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Consider jaw stretching devices for trismus rehab (outside-PDF).</div><div class="ar">أجهزة تمديد الفك قد تفيد في إعادة التأهيل (معلومة إضافية).</div></div></div>
+        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Map “Pre-calcification vs Post-calcification vs Post-eruption” effects.</div><div class="ar">خريطة ذهنية: قبل التكلس/بعده/بعد البزوغ.</div></div></div>
+      </aside>
+    </section>
+  </div>
+
+  <!-- Glossary 1–9 -->
+  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+  <div class="grid g3x4" id="glossary">
+    <div class="card glossary"><div class="head">Deterministic / محدَّد</div><div class="content" hidden><div class="en">Tissue effect with threshold; severity ↑ with dose.</div><div class="ar">أثر ذو عتبة؛ الشدة تزداد مع الجرعة.</div></div></div>
+    <div class="card glossary"><div class="head">Stochastic / احتمالي</div><div class="content" hidden><div class="en">Risk ↑ with dose; no threshold.</div><div class="ar">يزداد الاحتمال مع الجرعة دون عتبة.</div></div></div>
+    <div class="card glossary"><div class="head">Direct effect / أثر مباشر</div><div class="content" hidden><div class="en">Radiation ionizes biomolecule itself.</div><div class="ar">تأيين الجزيء الحيوي مباشرة.</div></div></div>
+    <div class="card glossary"><div class="head">Indirect effect / أثر غير مباشر</div><div class="content" hidden><div class="en">Water radiolysis → •OH/•H → damage.</div><div class="ar">تحلل الماء → •OH/•H → أذية.</div></div></div>
+    <div class="card glossary"><div class="head">Free radical / جذر حر</div><div class="content" hidden><div class="en">Unpaired-electron species; very reactive.</div><div class="ar">نوع ذو إلكترون منفرد؛ شديد التفاعل.</div></div></div>
+    <div class="card glossary"><div class="head">Radiolysis / التحلّل الإشعاعي</div><div class="content" hidden><div class="en">Radiation-induced splitting of water.</div><div class="ar">تفكك الماء بفعل الإشعاع.</div></div></div>
+    <div class="card glossary"><div class="head">Chromatid aberration / شذوذ كروماتيدي</div><div class="content" hidden><div class="en">Post-DNA synthesis; one arm affected.</div><div class="ar">بعد تضاعف DNA؛ ذراع واحد متأثر.</div></div></div>
+    <div class="card glossary"><div class="head">Chromosome aberration / شذوذ صبغي</div><div class="content" hidden><div class="en">Pre-DNA synthesis; both arms affected.</div><div class="ar">قبل تضاعف DNA؛ ذراعان متأثران.</div></div></div>
+    <div class="card glossary"><div class="head">Osteoradionecrosis / نخر عظم إشعاعي</div><div class="content" hidden><div class="en">Devital bone from hypovascular, hypoxic, hypocellular state post-RT.</div><div class="ar">عظم غير حي نتيجة نقص التروية/الأكسجة/الخلوية بعد الإشعاع.</div></div></div>
+  </div>
+
+  <!-- Flashcards 1–9 -->
+  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+  <div class="grid g3x4" id="flashcards">
+    <div class="card flash"><div class="head">1 — Q: Which radical causes most indirect damage?</div><div class="content" hidden>A: Hydroxyl radical (•OH).</div></div>
+    <div class="card flash"><div class="head">2 — Q: Deterministic vs Stochastic—what changes?</div><div class="content" hidden>A: Deterministic: severity; Stochastic: probability.</div></div>
+    <div class="card flash"><div class="head">3 — Q: G₁ exposure yields which aberration?</div><div class="content" hidden>A: Chromosome aberration (both arms).</div></div>
+    <div class="card flash"><div class="head">4 — Q: Most radiosensitive oral cells?</div><div class="content" hidden>A: Basal mucosal cells (vegetative/differentiating).</div></div>
+    <div class="card flash"><div class="head">5 — Q: Parotid vs submandibular sensitivity?</div><div class="content" hidden>A: Parotid more sensitive.</div></div>
+    <div class="card flash"><div class="head">6 — Q: When do taste changes appear?</div><div class="content" hidden>A: Weeks 2–3 of therapy; recover 2–4 months (dose-dependent).</div></div>
+    <div class="card flash"><div class="head">7 — Q: Define radiation caries drivers.</div><div class="content" hidden>A: Hyposalivation, ↓pH/buffer, flora shift, ↓remineralization.</div></div>
+    <div class="card flash"><div class="head">8 — Q: Key mechanism of long-term tissue injury?</div><div class="content" hidden>A: Microvascular damage → fibrosis → cell death.</div></div>
+    <div class="card flash"><div class="head">9 — Q: Cytoplasmic injury dose range?</div><div class="content" hidden>A: ~30–50 Gy for organellar changes.</div></div>
+  </div>
+</main>
+
+<script>
+// Language switcher
+const btn=document.getElementById('langBtn');
+btn.addEventListener('click',()=>{
+  document.body.classList.toggle('lang-ar');
+  document.body.classList.toggle('lang-en');
+});
+
+// Callout toggle
+document.querySelectorAll('.callout .hdr').forEach(h=>{
+  h.addEventListener('click',()=>{
+    const c=h.parentElement;
+    c.classList.toggle('open');
+    const body=c.querySelector('.body');
+    body.hidden=!body.hidden;
+  });
+});
+
+// Glossary toggle
+document.querySelectorAll('#glossary .card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    card.classList.toggle('open');
+    const cont=card.querySelector('.content');
+    cont.hidden=!cont.hidden;
+  });
+});
+
+// Flashcards toggle
+document.querySelectorAll('#flashcards .card').forEach(card=>{
+  card.addEventListener('click',()=>{
+    card.classList.toggle('open');
+    const cont=card.querySelector('.content');
+    cont.hidden=!cont.hidden;
+  });
+});
+</script>
+</body>
+</html>
