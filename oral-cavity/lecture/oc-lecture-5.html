@@ -11,9 +11,7 @@
     --text:#f6f7fb;
     --muted:#a6afc6;
     --radius:16px;
-    --gap:1.5rem;
-    --glossary-glow:#8b5cf6;
-    --flash-glow:#06b6d4;
+    --gap:1.25rem;
 
     /* Callout colors */
     --callout-gold:#eab308;
@@ -24,73 +22,98 @@
     --callout-cyan:#22d3ee;
     --callout-blue:#60a5fa;
     --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
   }
 
+  /* Base */
   body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
-  .wrap{max-width:1200px;margin:0 auto;padding:24px;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
 
-  /* Page-level language visibility (only affects elements that include .en/.ar spans) */
-  .lang-en .ar{display:none !important;}
-  .lang-ar .en{display:none !important;}
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
 
-  header{position:sticky;top:0;z-index:10;backdrop-filter:blur(8px);background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}  
-  .hdr{display:flex;justify-content:space-between;align-items:center;padding:20px 32px;}
-  .title{font-weight:800;font-size:clamp(1.6rem,1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.4),0 0 12px rgba(139,92,246,.35);} 
-  .subtitle{color:var(--muted);font-size:1rem;margin-top:6px;}
-  .lang-toggle{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--text);padding:.6rem 1rem;border-radius:999px;cursor:pointer;}
+  /* Header bar (kept, design unchanged) */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
 
-  /* Match section look for dua, chip, glossary, flash headers */
+  /* Dua & Topic boxes (white glow global 15%) */
   .dua,
-  .chip-box,
-  .glossary-box,
-  .flashcards-box{
+  .chip-box{
     border:1px solid rgba(255,255,255,.12);
     background:rgba(255,255,255,.05);
     border-radius:var(--radius);
-    box-shadow:0 20px 40px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);
-    padding:1.6rem;
-    margin:20px 0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
   }
-  .dua{font-size:1.1rem;text-align:center;}
-  .chip{font-weight:800;font-size:1.2rem;color:var(--muted);}
-  .glossary-box h3,.flashcards-box h3{margin:0;font-size:1.15rem;letter-spacing:.2px;opacity:.95;}
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
 
-  .sections{display:flex;flex-direction:column;gap:var(--gap);}  
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
   .section{
-    display:grid;grid-template-columns:2fr 1fr;column-gap:2.5rem;flex:1;min-height:240px;
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
     background:rgba(255,255,255,.05);
     border:1px solid rgba(255,255,255,.12);
     border-radius:var(--radius);
-    padding:1.6rem;
-    box-shadow:0 20px 40px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);
-  }  
-  .section>div{display:flex;flex-direction:column;}
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
   .sec-head{
-    font-weight:800;
-    font-size:1.3rem;
-    margin:0 0 1rem 0;
-    padding:0.75rem 1rem;
-    border-radius:8px;
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
     background:rgba(255,255,255,.04);
     border:1px solid rgba(255,255,255,.1);
-    width:100%;
-    box-shadow:0 0 18px rgba(255,255,255,.06), 0 0 30px rgba(255,255,255,.15);
-    display:block;
-    box-sizing:border-box;
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
   }
-  .sec-body p{margin:.5rem 0;font-size:1rem;line-height:1.65;}
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
 
-  .callouts{display:flex;flex-direction:column;gap:.75rem;align-self:center;width:100%;}
-  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.3), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
   .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
   .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
   .callout .body[hidden]{display:none;}
-  .callout.open .hdr{opacity:.8;}
-
-  /* Type-specific borders */
   .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
   .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
   .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
@@ -100,445 +123,448 @@
   .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
   .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
 
-  .grid{display:grid;gap:1rem;}
-  .grid.g3x4{grid-template-columns:repeat(3,1fr);} 
-  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:150px;box-shadow:0 0 22px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);}  
-  .card.glossary{box-shadow:0 0 26px color-mix(in srgb,var(--glossary-glow)28%, transparent), 0 0 30px rgba(255,255,255,.15);} 
-  .card.flash{box-shadow:0 0 26px color-mix(in srgb,var(--flash-glow)28%, transparent), 0 0 30px rgba(255,255,255,.15);} 
-  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .3s;} 
-  .card.open .head{opacity:.6;} 
-  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;} 
-  .card .content[hidden]{display:none;} 
-
-  @media(max-width:960px){
-    .section{grid-template-columns:1fr;min-height:auto;padding:1.2rem;}
-    .dua,.chip-box,.glossary-box,.flashcards-box{padding:1.2rem;}
-    .grid.g3x4{grid-template-columns:repeat(2,1fr);} 
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
   }
-  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;} }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
 
-  /* Gradient text accents */
-  .dua,
-  .chip,
-  .sec-head,
-  .glossary-box h3,
-  .flashcards-box h3 {
-    font-weight:800;
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
     background:linear-gradient(90deg,#06b6d4,#8b5cf6);
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
-    text-shadow:0 0 8px rgba(6,182,212,.4),0 0 12px rgba(139,92,246,.35);
-    text-align:center;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;
+    --pad: 3px;
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;
+    height: var(--h);
+    padding: 0 6px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px);
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);
+    z-index: 0;
+  }
+
+  @keyframes bgToRight { 0%{transform:translateX(0%)} 70%{transform:translateX(108%)} 100%{transform:translateX(100%)} }
+  @keyframes bgToLeft  { 0%{transform:translateX(100%)} 70%{transform:translateX(-8%)} 100%{transform:translateX(0%)} }
+  @keyframes bounceActive { 0%{transform:scale(1)} 40%{transform:scale(1.14)} 70%{transform:scale(1.04)} 100%{transform:scale(1.08)} }
+
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none; transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none; transform: scale(1.0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
   }
 </style>
 </head>
 <body class="lang-en">
 <header>
   <div class="hdr wrap">
-    <div>
+    <div class="left">
       <div class="title">🦷 Dentistry 3rd year</div>
       <div class="subtitle">Lecture 5 <b>(by ACE)</b></div>
     </div>
-    <button id="langBtn" class="lang-toggle">EN / AR</button>
+    <button id="langBtn" class="lang-toggle" aria-label="Toggle language">
+      <span class="lab en">EN</span>
+      <span class="lab ar">AR</span>
+    </button>
   </div>
 </header>
 
-<main class="wrap" id="content">
-  <!-- Dua (different each time, Arabic only) -->
-  <div class="dua">اللهمَّ علِّمْنا ما ينفعُنا وانفعْنا بما علَّمْتَنا وزِدْنا علمًا</div>
+<main class="wrap">
+  <!-- Dua: same Arabic text shown to both languages -->
+  <div class="dua">اللهم افتح علينا حكمتك وانشر علينا رحمتك يا ذا الجلال والإكرام</div>
 
-  <!-- Topic (bilingual) -->
+  <!-- Topic -->
   <div class="chip-box">
     <span class="chip">
-      <span class="en">📑 Topic: <b>Saliva — Physiology & Clinical Considerations (Part 2)</b></span>
-      <span class="ar">📑 الموضوع: <b>اللعاب — الفسيولوجيا والاعتبارات السريرية (الجزء ٢)</b></span>
+      <span class="en"><b>Topic: Saliva Part-2 — Physiology & Clinical Considerations</b></span>
+      <span class="ar"><b>الموضوع: اللعاب الجزء الثاني — الفسيولوجيا والاعتبارات السريرية</b></span>
     </span>
   </div>
 
   <div class="sections">
-    <!-- ===== Section 1: Functional Snapshot (from slide text “Functions of saliva”) ===== -->
+    <!-- Section 1: Learning outcomes -->
     <section class="section">
-      <div>
-        <h2 class="sec-head">
-          <span class="en">1) Functions of Saliva 🧪🛡️</span>
-          <span class="ar">١) وظائف اللعاب 🧪🛡️</span>
-        </h2>
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">1) Learning Outcomes</span><span class="ar">١) مخرجات التعلّم</span></h2>
         <div class="sec-body">
           <div class="en">
-            <p>Saliva maintains the oral environment and affects nearly every aspect of dental practice. It lubricates, aids taste and swallowing, buffers acids, carries antimicrobial factors, and protects teeth and mucosa—so pathology has a <i>big</i> clinical impact.</p>
+            <p>By the end, you can: (1) describe salivary secretion physiology; (2) explain primary vs secondary phases; (3) outline autonomic control and stimuli; (4) relate saliva’s key functions (pH, buffering, antimicrobial, immunoglobulins, anticariogenic); (5) apply concepts to xerostomia and sialorrhea.</p>
           </div>
           <div class="ar">
-            <p>يحافظ اللعاب على بيئة الفم ويؤثر تقريبًا على كل جوانب الممارسة السنية. يوفّر الترطيب، ويساعد على التذوق والبلع، ويُعادل الحموضة، ويحمل عوامل مضادّة للميكروبات، ويحمي الأسنان والأنسجة المخاطية—لذلك فإن أمراض الغدد اللعابية لها تأثير سريري كبير.</p>
+            <p>بنهاية الدرس يمكنك: (١) وصف فسيولوجيا إفراز اللعاب؛ (٢) التفريق بين المرحلة الأولية والثانوية؛ (٣) توضيح التحكم العصبي والمنبّهات؛ (٤) ربط وظائف اللعاب الأساسية (الرقم الهيدروجيني، الإعتماد التوازني، المضادّات الميكروبية، الأجسام المضادة، مقاومة التسوّس)؛ (٥) تطبيق ذلك على جفاف الفم والسيلان اللعابي.</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout why">
-          <div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div>
-          <div class="body" hidden>
-            <div class="en">Changes in quantity/quality of saliva alter caries risk, mucosal health, and appliance tolerance.</div>
-            <div class="ar">أي تغيّر في كمية/نوعية اللعاب يغيّر خطورة النخر، وصحة المخاطية، وتحمّل الأجهزة التقويمية.</div>
-          </div>
-        </div>
-        <div class="callout clinical">
-          <div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div>
-          <div class="body" hidden>
-            <div class="en">Expect more caries and mucosal problems with dry mouth; pooling with drooling in hypersalivation.</div>
-            <div class="ar">تزداد النخور ومشاكل المخاطية مع جفاف الفم؛ وتظهر تجمعات لعابية وسيلان في فرط اللعاب.</div>
-          </div>
-        </div>
-        <div class="callout tips">
-          <div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div>
-          <div class="body" hidden>
-            <div class="en">Link each function to a chairside sign: buffering → low caries; lubrication → easier swallowing.</div>
-            <div class="ar">اربط كل وظيفة بعلامة سريرية: المعادلة ↔ نخور أقل؛ الترطيب ↔ بلع أسهل.</div>
-          </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم؟</span></div><div class="body" hidden><div class="en">Saliva maintains oral homeostasis—so every dental plan must consider flow quality and quantity.</div><div class="ar">اللعاب يحافظ على توازن الفم—لذا يجب مراعاة الكمية والنوعية في أي خطة علاجية.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة للمذاكرة</span></div><div class="body" hidden><div class="en">Map each symptom (dry mouth, caries, ulcers) back to a specific lost saliva function.</div><div class="ar">اربط كل عرض (جفاف، نخر، تقرّحات) بوظيفة مفقودة محددة من وظائف اللعاب.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Fact</span><span class="ar">📌 حقيقة</span></div><div class="body" hidden><div class="en">“Lecture 6 — Saliva Part-2” topics per source PDF.</div><div class="ar">“المحاضرة ٦ — اللعاب الجزء الثاني” حسب ملف الـPDF.</div></div></div>
         </div>
       </aside>
     </section>
 
-    <!-- ===== Section 2: Two-Phase Formation ===== -->
+    <!-- Section 2: Mechanism overview -->
     <section class="section">
-      <div>
-        <h2 class="sec-head">
-          <span class="en">2) Mechanism of Saliva Formation 🔄</span>
-          <span class="ar">٢) آلية تكوين اللعاب 🔄</span>
-        </h2>
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">2) Mechanism of Saliva Formation — Overview</span><span class="ar">٢) آلية تكوّن اللعاب — نظرة عامة</span></h2>
         <div class="sec-body">
           <div class="en">
-            <p>Secretion occurs in <b>two phases</b>: (1) a <b>primary phase</b> in the secretory acini, and (2) a <b>secondary (modification) phase</b> in the ductal system.</p>
+            <p>Salivary secretion occurs in two phases: a <b>primary phase</b> in the acini and a <b>secondary (modification) phase</b> in ducts. Serous cells add watery fluid; mucous cells add viscous mucin. Interstitial fluid from capillaries is modified by acinar cells → secreted to lumen → further modified in striated ducts.</p>
           </div>
           <div class="ar">
-            <p>يحدث الإفراز على <b>مرحلتين</b>: (١) <b>مرحلة أولية</b> في الحويصلات العنبية، و(٢) <b>مرحلة ثانوية (تعديل)</b> في الجهاز القنوي.</p>
+            <p>يتكوّن اللعاب عبر مرحلتين: <b>المرحلة الأولية</b> في الأسينيّات و<b>المرحلة الثانوية (التعديل)</b> في الأقنية. الخلايا المصلية تضيف سائلاً مائياً، والمخاطية تضيف مخاطاً لزجاً. يُعَدَّل السائل الخِلالي من الشعيرات بواسطة خلايا الأسيني ثم يُفرَز إلى اللمعة ويُعدَّل لاحقاً في الأقنية المخططة.</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout facts">
-          <div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div>
-          <div class="body" hidden>
-            <div class="en">Primary secretion is <b>isotonic</b>; after ductal modification it becomes <b>hypotonic</b>.</div>
-            <div class="ar">الإفراز الأولي <b>متساوي التوتر</b>؛ وبعد التعديل القنوي يصبح <b>ناقص التوتر</b>.</div>
-          </div>
-        </div>
-        <div class="callout memory">
-          <div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div>
-          <div class="body" hidden>
-            <div class="en">Think “<b>I → H</b>”: Isotonic (acini) → Hypotonic (ducts).</div>
-            <div class="ar">تذكّر “<b>I → H</b>”: متساوي التوتر (العنبات) → ناقص التوتر (القنوات).</div>
-          </div>
-        </div>
-        <div class="callout example">
-          <div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div>
-          <div class="body" hidden>
-            <div class="en">Serous cells → watery; mucous cells → viscous mucin-rich secretions.</div>
-            <div class="ar">الخلايا المصلية → سائل مائي؛ الخلايا المخاطية → إفراز لزج غنيّ بالميوسين.</div>
-          </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory Hook</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“A for Acini = Add; D for Ducts = Dilute & exchange ions.”</div><div class="ar">«أ = أسيني = إضافة؛ ق = قنوات = تخفيف وتبادل شوارد».</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Serous acini of parotid secrete watery, enzyme-rich fluid; sublingual mucous acini secrete mucin-rich fluid.</div><div class="ar">الأسينيّات المصلية للغدة النكفية تُفرز سائلاً مائياً غنيّاً بالأنزيمات؛ وتُفرز الغدة تحت اللسان مخاطاً غنياً بالميوسين.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra</span><span class="ar">📝 إضافي</span></div><div class="body" hidden><div class="en">Most ionic modification happens in striated ducts.</div><div class="ar">أغلب التعديل الأيوني يحدث في الأقنية المخططة.</div></div></div>
         </div>
       </aside>
     </section>
 
-    <!-- ===== Section 3: Primary Secretion (Acini) ===== -->
+    <!-- Section 3: Primary secretion -->
     <section class="section">
-      <div>
-        <h2 class="sec-head">
-          <span class="en">3) Primary Phase — Acinar Output 🧫</span>
-          <span class="ar">٣) المرحلة الأولية — ناتج العنبات 🧫</span>
-        </h2>
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">3) Primary Secretion (Acini)</span><span class="ar">٣) الإفراز الأولي (الأسيني)</span></h2>
         <div class="sec-body">
           <div class="en">
-            <p>In the end pieces (<b>acini</b>), serous cells produce a watery fluid and mucous cells a viscous, mucin-rich secretion. Acinar cells modify <i>interstitial fluid</i> derived from capillary blood and release it into the lumen as <b>isotonic</b> saliva.</p>
+            <p>Acini generate <b>isotonic</b> fluid relative to plasma. Serous cells contribute water, ions, and proteins (e.g., enzymes); mucous cells provide mucins for lubrication and protection.</p>
           </div>
           <div class="ar">
-            <p>في القطع النهائية (<b>العنبات</b>) تُنتج الخلايا المصلية سائلاً مائيًا وتنتج الخلايا المخاطية إفرازًا لزجًا غنيًا بالميوسين. تقوم خلايا العنبات بتعديل <i>السائل الخلالي</i> المشتق من الدم وتطرحه في اللمعة كلعاب <b>متساوي التوتر</b>.</p>
+            <p>تُنتِج الأسينيّات سائلاً <b>متساوي التوتر</b> مع البلازما. تضيف الخلايا المصلية ماءً وشوارد وبروتينات، بينما تضيف الخلايا المخاطية الميوسين للتشحيم والحماية.</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout why">
-          <div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div>
-          <div class="body" hidden>
-            <div class="en">Understanding cell types predicts secretion character (watery vs. viscous) in gland pathology.</div>
-            <div class="ar">معرفة أنواع الخلايا تتنبّأ بطبيعة الإفراز (مائي مقابل لزج) في أمراض الغدد.</div>
-          </div>
-        </div>
-        <div class="callout tips">
-          <div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div>
-          <div class="body" hidden>
-            <div class="en">Match major glands: serous-dominant → parotid; mixed → submandibular; mucous-rich → sublingual.</div>
-            <div class="ar">طابِق الغدد الرئيسية: مصلي غالب → النكفية؛ مختلط → تحت الفك؛ مخاطي غني → تحت اللسان.</div>
-          </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Fact</span><span class="ar">📌 حقيقة</span></div><div class="body" hidden><div class="en">Primary saliva is isotonic before ductal processing.</div><div class="ar">اللعاب الأولي متساوي التوتر قبل مروره بالأقنية.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Think “acini = composition set; ducts = composition refined.”</div><div class="ar">تذكّر: «الأسيني تحدّد المكوّنات، والأقنية تُنقّيها».</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Clinical Relevance</span><span class="ar">🎯 صلة سريرية</span></div><div class="body" hidden><div class="en">Damage to acini (e.g., radiation) reduces volume and proteins.</div><div class="ar">تضرّر الأسينيّات (مثل الإشعاع) يُقلّل الحجم والبروتينات.</div></div></div>
         </div>
       </aside>
     </section>
 
-    <!-- ===== Section 4: Secondary (Ductal) Modification ===== -->
+    <!-- Section 4: Secondary secretion -->
     <section class="section">
-      <div>
-        <h2 class="sec-head">
-          <span class="en">4) Secondary Phase — Ductal Modification 🚰</span>
-          <span class="ar">٤) المرحلة الثانوية — التعديل القنوي 🚰</span>
-        </h2>
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">4) Secondary/Modification Phase (Ducts)</span><span class="ar">٤) المرحلة الثانوية/التعديل (الأقنية)</span></h2>
         <div class="sec-body">
           <div class="en">
-            <p>As saliva flows through the ductal system—especially the <b>striated ducts</b>—there is <b>reabsorption</b> of <u>sodium (Na⁺)</u> and <u>chloride (Cl⁻)</u> and concurrent <b>secretion</b> of <u>potassium (K⁺)</u> and <u>bicarbonate (HCO₃⁻)</u>. This ionic exchange converts the secretion from isotonic to <b>hypotonic</b> before entering the oral cavity.</p>
+            <p>As saliva flows through ducts, <b>Na⁺ and Cl⁻ are reabsorbed</b>, while <b>K⁺ and HCO₃⁻ are secreted</b>. Ducts have low water permeability → final saliva becomes <b>hypotonic</b>.</p>
           </div>
           <div class="ar">
-            <p>أثناء مرور اللعاب في الجهاز القنوي—خاصة <b>القنوات المخططة</b>—يحدث <b>إعادة امتصاص</b> <u>الصوديوم</u> و<u>الكلوريد</u> مع <b>إفراز</b> <u>البوتاسيوم</u> و<u>البيكربونات</u>. يحوِّل هذا التبادل الأيوني الإفراز من متساوي التوتر إلى <b>ناقص التوتر</b> قبل دخوله تجويف الفم.</p>
+            <p>أثناء مرور اللعاب في الأقنية يُعاد امتصاص <b>الصوديوم والكلوريد</b> ويُفرَز <b>البوتاسيوم والبيكربونات</b>. نفاذية الماء منخفضة في الأقنية → يصبح اللعاب النهائي <b>منخفض التوتر</b>.</p>
+          </div>
+
+          <div class="table-wrap" aria-label="Ion handling table">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Site</span><span class="ar">الموقع</span></th>
+                  <th><span class="en">Tonicity</span><span class="ar">التوتر</span></th>
+                  <th><span class="en">Na⁺</span><span class="ar">+Na</span></th>
+                  <th><span class="en">Cl⁻</span><span class="ar">−Cl</span></th>
+                  <th><span class="en">K⁺</span><span class="ar">+K</span></th>
+                  <th><span class="en">HCO₃⁻</span><span class="ar">−HCO₃</span></th>
+                  <th><span class="en">Water</span><span class="ar">الماء</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="en">Acini (primary)</span><span class="ar">الأسينيّات (أولي)</span></td>
+                  <td><span class="en">Isotonic</span><span class="ar">متساوي التوتر</span></td>
+                  <td><span class="en">Secreted</span><span class="ar">مُفرَز</span></td>
+                  <td><span class="en">Secreted</span><span class="ar">مُفرَز</span></td>
+                  <td><span class="en">Low</span><span class="ar">قليل</span></td>
+                  <td><span class="en">Low</span><span class="ar">قليل</span></td>
+                  <td><span class="en">Moves freely</span><span class="ar">يتحرّك بحرية</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Striated ducts</span><span class="ar">الأقنية المخططة</span></td>
+                  <td><span class="en">Hypotonic (final)</span><span class="ar">منخفض التوتر (نهائي)</span></td>
+                  <td><span class="en">Reabsorbed ↑</span><span class="ar">إعادة امتصاص ↑</span></td>
+                  <td><span class="en">Reabsorbed ↑</span><span class="ar">إعادة امتصاص ↑</span></td>
+                  <td><span class="en">Secreted ↑</span><span class="ar">إفراز ↑</span></td>
+                  <td><span class="en">Secreted ↑</span><span class="ar">إفراز ↑</span></td>
+                  <td><span class="en">Minimal</span><span class="ar">ضئيل</span></td>
+                </tr>
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout facts">
-          <div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div>
-          <div class="body" hidden>
-            <div class="en">“<b>Na⁺/Cl⁻ in, K⁺/HCO₃⁻ out</b>” is the core rule for ductal ion handling.</div>
-            <div class="ar">“<b>Na⁺/Cl⁻ للداخل، K⁺/HCO₃⁻ للخارج</b>” هي القاعدة الأساسية لمعالجة الأيونات في القنوات.</div>
-          </div>
-        </div>
-        <div class="callout example">
-          <div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div>
-          <div class="body" hidden>
-            <div class="en">Most ionic changes occur in <b>striated ducts</b> before excretory ducts deliver saliva to the mouth.</div>
-            <div class="ar">تحدث معظم التغيّرات الأيونية في <b>القنوات المخططة</b> قبل أن توصل القنوات المفرِّغة اللعاب إلى الفم.</div>
-          </div>
-        </div>
-        <div class="callout memory">
-          <div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div>
-          <div class="body" hidden>
-            <div class="en">“<b>Reabsorb salty, secrete basic</b>” → hypotonic final saliva.</div>
-            <div class="ar">“<b>امتصّ المالح، أفرِز القاعدي</b>” → لعاب نهائي ناقص التوتر.</div>
-          </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Fact</span><span class="ar">📌 حقيقة</span></div><div class="body" hidden><div class="en">Ductal modification converts isotonic primary saliva → hypotonic final saliva.</div><div class="ar">تعديل الأقنية يحوّل اللعاب الأولي المتساوي التوتر إلى لعاب نهائي منخفض التوتر.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Caution</span><span class="ar">⚠️ تنبيه</span></div><div class="body" hidden><div class="en">High flow rates shorten contact time → final saliva becomes less hypotonic.</div><div class="ar">معدلات الجريان العالية تقلّل زمن التماس → يصبح اللعاب أقل انخفاضاً في التوتر.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">During vigorous chewing, Na⁺ in saliva increases relative to resting conditions.</div><div class="ar">مع المضغ الشديد يزداد تركيز الصوديوم في اللعاب مقارنة بالراحة.</div></div></div>
         </div>
       </aside>
     </section>
 
-    <!-- ===== Section 5: Regulation ===== -->
+    <!-- Section 5: Neural regulation -->
     <section class="section">
-      <div>
-        <h2 class="sec-head">
-          <span class="en">5) Regulation of Salivary Secretion 🧠⚙️</span>
-          <span class="ar">٥) تنظيم إفراز اللعاب 🧠⚙️</span>
-        </h2>
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">5) Regulation of Salivary Secretion</span><span class="ar">٥) تنظيم إفراز اللعاب</span></h2>
         <div class="sec-body">
           <div class="en">
-            <p>Control is largely via the <b>autonomic nervous system</b> (ANS). <b>Parasympathetic</b> activity increases secretion; <b>sympathetic</b> activity decreases secretion (notably in “fight or flight”). Secretion also responds to <b>smell, taste,</b> and <b>masticatory</b> stimuli and overall <b>flow</b> dynamics.</p>
+            <p><b>Autonomic control:</b> Parasympathetic activity <b>increases</b> secretion (watery, copious). Sympathetic activity can <b>reduce</b> overall flow but increase protein content; in “fight/flight” flow typically falls. Secretion is also triggered by <b>taste, smell, and mastication</b>. Basal flow maintains mucosal moisture.</p>
           </div>
           <div class="ar">
-            <p>يَتِمّ التحكم أساسًا بواسطة <b>الجهاز العصبي الذاتي</b>. يزيد <b>الباراسمبثاوي</b> الإفراز؛ ويُنقِص <b>السمبثاوي</b> الإفراز (خاصةً في حالة “الكرّ والفرّ”). كما يستجيب الإفراز لـ<b>الشمّ، التذوّق،</b> ومحفّزات <b>المضغ</b> و<b>معدل الجريان</b>.</p>
+            <p><b>التحكم الذاتي:</b> التنبيه نظير الودي <b>يزيد</b> الإفراز (مائي وغزير). التنبيه الودي قد <b>يقلّل</b> الحجم الكلي ويزيد البروتينات؛ وفي «القتال/الهروب» ينخفض الجريان عادة. كما تُحفَّز الإفرازات بـ<b>الطعم والرائحة والمضغ</b>. الجريان القاعدي يحافظ على رطوبة المخاطية.</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout facts">
-          <div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div>
-          <div class="body" hidden>
-            <div class="en">Parasympathetic ↑flow; Sympathetic ↓flow.</div>
-            <div class="ar">الباراسمبثاوي ↑الجريان؛ السمبثاوي ↓الجريان.</div>
-          </div>
-        </div>
-        <div class="callout example">
-          <div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div>
-          <div class="body" hidden>
-            <div class="en">Aromas and chewing a tasteless gum slug stimulate flow by reflex pathways.</div>
-            <div class="ar">الروائح والمضغ حتى للُّبان عديم النكهة ينشّطان الجريان عبر مسارات انعكاسية.</div>
-          </div>
-        </div>
-        <div class="callout tips">
-          <div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div>
-          <div class="body" hidden>
-            <div class="en">Pair “P → Plenty” (parasymp ↑) and “S → Sparse” (symp ↓) to avoid mix-ups.</div>
-            <div class="ar">اربط “P → Plenty/كثير” (باراسمبثاوي ↑) و“S → Sparse/قليل” (سمبثاوي ↓) لمنع الالتباس.</div>
-          </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“PNS pours; SNS proteins.”</div><div class="ar">«نظير الودي يفيض؛ الودي يزيد البروتين».</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Anticholinergics ↓ parasympathetic tone → dry mouth.</div><div class="ar">مضادات الكولين تُضعِف النظير الودي → جفاف الفم.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why</span><span class="ar">🎯 لماذا</span></div><div class="body" hidden><div class="en">Explains drug-induced xerostomia and stress-related complaints.</div><div class="ar">يشرح الجفاف الدوائي وأعراض التوتر.</div></div></div>
         </div>
       </aside>
     </section>
 
-    <!-- ===== Section 6: Clinical Overview ===== -->
+    <!-- Section 6: Key functions -->
     <section class="section">
-      <div>
-        <h2 class="sec-head">
-          <span class="en">6) Clinical Considerations 🧑‍⚕️</span>
-          <span class="ar">٦) اعتبارات سريرية 🧑‍⚕️</span>
-        </h2>
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">6) Core Functions of Saliva</span><span class="ar">٦) الوظائف الأساسية للعاب</span></h2>
         <div class="sec-body">
           <div class="en">
-            <p>Because saliva regulates the oral environment and salivary glands are widely distributed, <b>gland pathology</b> strongly affects daily dentistry—from caries control to prosthesis comfort.</p>
+            <p><b>pH & Buffering:</b> Bicarbonate buffers acids, stabilizing plaque pH.</p>
+            <p><b>Antimicrobial:</b> Lysozyme, lactoferrin, peroxidases; <b>IgA</b> limits microbial adhesion.</p>
+            <p><b>Anticariogenic:</b> Buffering + remineralization (Ca²⁺/PO₄³⁻) protect teeth.</p>
+            <p><b>Lubrication & Digestion:</b> Mucins ease speech/swallowing; enzymes initiate starch digestion.</p>
           </div>
           <div class="ar">
-            <p>لأن اللعاب ينظّم بيئة الفم والغدد اللعابية موزّعة على نطاق واسع، فإن <b>أمراض الغدد</b> تؤثر بشدة على طب الأسنان اليومي—من ضبط النخور إلى راحة الأطقم.</p>
+            <p><b>الرقم الهيدروجيني والتعادل:</b> البيكربونات تُعادِل الأحماض وتثبّت pH اللويحة.</p>
+            <p><b>مضادّات ميكروبية:</b> الليزوزيم واللاكتوفرّين والبيروكسيدازات؛ <b>IgA</b> يحدّ من التصاق الجراثيم.</p>
+            <p><b>مضادّ للتسوّس:</b> التعادل + إعادة التمعدن (كالسيوم/فوسفات) تحمي الأسنان.</p>
+            <p><b>التشحيم والهضم:</b> الميوسين يسهل الكلام والبلع؛ وأنزيمات تبدأ هضم النشويات.</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout why">
-          <div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div>
-          <div class="body" hidden>
-            <div class="en">Treatment planning must factor in baseline flow and protective functions.</div>
-            <div class="ar">يجب أن يأخذ التخطيط العلاجي بالحسبان معدل الجريان ووظائف الحماية الأساسية.</div>
-          </div>
-        </div>
-        <div class="callout clinical">
-          <div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div>
-          <div class="body" hidden>
-            <div class="en">Two common disturbances: <b>hyposalivation (xerostomia)</b> and <b>hypersalivation (sialorrhea)</b>.</div>
-            <div class="ar">اضطرابان شائعان: <b>نقص اللعاب (جفاف الفم)</b> و<b>فرط اللعاب (سيلان اللعاب)</b>.</div>
-          </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Buffering, antimicrobial action, immunoglobulins, and anticariogenic roles are highlighted as key Qs in the lecture.</div><div class="ar">ذُكِرت الأسئلة حول التعادل والمضادّات الميكروبية والأجسام المضادة ومقاومة التسوّس كأمور محورية.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Low salivary flow after meds → drop in buffering → faster caries.</div><div class="ar">انخفاض اللعاب بعد الأدوية → هبوط التعادل → تسوّس أسرع.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Link each function to what worsens when saliva is low.</div><div class="ar">اربط كل وظيفة بما يسوء عند نقص اللعاب.</div></div></div>
         </div>
       </aside>
     </section>
 
-    <!-- ===== Section 7: Hyposalivation / Xerostomia ===== -->
+    <!-- Section 7: Clinical considerations (overview) -->
     <section class="section">
-      <div>
-        <h2 class="sec-head">
-          <span class="en">7) Hyposalivation (Xerostomia) 🌵</span>
-          <span class="ar">٧) نقص اللعاب (جفاف الفم) 🌵</span>
-        </h2>
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">7) Clinical Considerations — Overview</span><span class="ar">٧) اعتبارات سريرية — لمحة</span></h2>
         <div class="sec-body">
           <div class="en">
-            <p><b>Definition:</b> Reduction or loss of salivary function/volume → oral dryness.</p>
-            <p><b>Causes:</b> destruction of secretory cells (inflammation, gland irradiation), psychological factors (anxiety/depression), dehydration, and <b>medications</b> that disrupt neuro-regulation (e.g., anticholinergics, antidepressants, antipsychotics, antihypertensives).</p>
-            <p><b>Effects:</b> difficulty in speech, mastication, taste perception; painful swallowing; ↑ caries risk; frequent oral infections; mucosal inflammation & ulceration.</p>
+            <p>Because glands are widely distributed, pathology significantly affects dental care. Two key flow disorders: <b>Hyposalivation (xerostomia)</b> and <b>Hypersalivation (sialorrhea/ptyalism)</b>.</p>
           </div>
           <div class="ar">
-            <p><b>التعريف:</b> انخفاض/فقدان وظيفة أو حجم اللعاب → جفاف الفم.</p>
-            <p><b>الأسباب:</b> تخرّب الخلايا الإفرازية (التهاب، تشعيع للغدة)، عوامل نفسية (قلق/اكتئاب)، تجفاف، وأدوية تؤثر على التنظيم العصبي (مثل مضادات الكولين، مضادات الاكتئاب، مضادات الذهان، مضادات ارتفاع الضغط).</p>
-            <p><b>الآثار:</b> صعوبة الكلام والمضغ والتذوّق؛ ألم عند البلع؛ ↑ خطر النخر؛ التهابات فموية متكررة؛ التهاب وتقرّح المخاطية.</p>
+            <p>بسبب الانتشار الواسع للغدد، تؤثر أمراضها بشدّة على طب الأسنان. اضطرابان رئيسيان: <b>نقص اللعاب (جفاف الفم)</b> و<b>فرط اللعاب (السيلان/البيالزم)</b>.</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout warning">
-          <div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div>
-          <div class="body" hidden>
-            <div class="en">Review medication lists—polypharmacy commonly underlies xerostomia.</div>
-            <div class="ar">راجع قائمة الأدوية—تعدد الأدوية سبب شائع لجفاف الفم.</div>
-          </div>
-        </div>
-        <div class="callout clinical">
-          <div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div>
-          <div class="body" hidden>
-            <div class="en">Expect root caries, candidiasis, angular cheilitis; advise saliva-sparing care plans.</div>
-            <div class="ar">توقّع نخور الجذور، المبيضّات، والتهاب الصوار؛ انصح بخطط رعاية تحافظ على اللعاب.</div>
-          </div>
-        </div>
-        <div class="callout tips">
-          <div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div>
-          <div class="body" hidden>
-            <div class="en">Tie each symptom to a saliva function: pain on swallowing → poor lubrication.</div>
-            <div class="ar">اربط كل عرض بوظيفة اللعاب: ألم عند البلع ↔ ترطيب ضعيف.</div>
-          </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Impact</span><span class="ar">🎯 الأثر</span></div><div class="body" hidden><div class="en">Flow disorders alter speech, mastication, taste, caries risk, and infection susceptibility.</div><div class="ar">تغيّر اضطرابات الجريان النطق والمضغ والتذوّق وخطر النخر والقابلية للعدوى.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Dentist’s View</span><span class="ar">🩺 منظور طبيب الأسنان</span></div><div class="body" hidden><div class="en">Expect mucosal inflammation, ulceration, and candidiasis with xerostomia.</div><div class="ar">توقّع التهاب المخاطية والقرحات والمبيضات الفموية مع جفاف الفم.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Screen meds list for xerogenic drugs.</div><div class="ar">راجِع قائمة الأدوية بحثاً عن أدوية تُسبب الجفاف.</div></div></div>
         </div>
       </aside>
     </section>
 
-    <!-- ===== Section 8: Hypersalivation / Sialorrhea ===== -->
+    <!-- Section 8: Xerostomia -->
     <section class="section">
-      <div>
-        <h2 class="sec-head">
-          <span class="en">8) Hypersalivation (Sialorrhea/Ptyalism) 💧</span>
-          <span class="ar">٨) فرط اللعاب (سيلان/بتيالزم) 💧</span>
-        </h2>
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">8) Xerostomia (Dry Mouth)</span><span class="ar">٨) جفاف الفم (Xerostomia)</span></h2>
         <div class="sec-body">
           <div class="en">
-            <p><b>Definition:</b> Excessive salivary secretion; pathological hypersalivation termed <b>ptyalism/sialorrhea</b>.</p>
-            <p><b>Occurs With:</b> acute inflammation of mouth/tongue, neurological disorders (e.g., cerebral palsy, intellectual disability), <b>teething</b>, nausea/vomiting, and foreign material (e.g., orthodontic appliances).</p>
+            <p><b>Definition:</b> Loss of salivary function or reduced volume → oral dryness.</p>
+            <p><b>Causes:</b> Destruction of secretory cells (inflammation/radiation), psychological factors (anxiety/depression), dehydration, and <b>medications</b> (anticholinergics, antidepressants, antipsychotics, antihypertensives) that disrupt neural regulation.</p>
+            <p><b>Consequences:</b> Painful swallowing; impaired speech, mastication, taste; ↑ caries; frequent infections; mucosal inflammation/ulceration.</p>
           </div>
           <div class="ar">
-            <p><b>التعريف:</b> زيادة مفرطة في إفراز اللعاب؛ وتُسمّى الحالة المرضية <b>السيلان/البتيالزم</b>.</p>
-            <p><b>يحدث مع:</b> التهاب فم/لسان حاد، اضطرابات عصبية (مثل الشلل الدماغي والتأخر الذهني)، <b>التسنين</b>، الغثيان/الإقياء، والأجسام الأجنبية (مثل الأجهزة التقويمية).</p>
+            <p><b>التعريف:</b> فقدان وظيفة اللعاب أو انخفاض حجمه → جفاف الفم.</p>
+            <p><b>الأسباب:</b> تخرّب الخلايا المُفرِزة (التهاب/إشعاع)، عوامل نفسية، تجفاف، و<b>أدوية</b> (مضادات كولين، مضادات اكتئاب، مضادات ذهان، أدوية ضغط) تُربك التنظيم العصبي.</p>
+            <p><b>النتائج:</b> ألم عند البلع؛ اضطراب النطق والمضغ والتذوّق؛ ↑ نخر؛ عدوى متكررة؛ التهاب وتقرّح المخاطية.</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout example">
-          <div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div>
-          <div class="body" hidden>
-            <div class="en">Drooling in CP children; brace-related stimulation causing transient over-salivation.</div>
-            <div class="ar">سيلان اللعاب عند أطفال الشلل الدماغي؛ تحرّض الأجهزة التقويمية زيادة مؤقتة بالإفراز.</div>
-          </div>
-        </div>
-        <div class="callout clinical">
-          <div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div>
-          <div class="body" hidden>
-            <div class="en">Assess airway protection and skin integrity at the lips/chin due to drooling.</div>
-            <div class="ar">قيّم حماية مجرى الهواء وسلامة الجلد حول الشفاه/الذقن بسبب السيلان.</div>
-          </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Red Flags</span><span class="ar">⚠️ مؤشرات خطورة</span></div><div class="body" hidden><div class="en">Rapid-onset dryness after new meds or post-radiation needs prompt review.</div><div class="ar">جفاف سريع بعد دواء جديد أو بعد إشعاع يستلزم مراجعة عاجلة.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Management Pearls</span><span class="ar">🩺 لآلئ علاجية</span></div><div class="body" hidden><div class="en">Hydration, saliva substitutes/stimulants, fluoride, antifungals if needed; coordinate with prescriber to modify xerogenic drugs.</div><div class="ar">ترطيب، بدائل/منبّهات اللعاب، فلورايد، مضادات فطريات عند الحاجة؛ التنسيق لتعديل الأدوية المُجفِّفة.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Exam Tip</span><span class="ar">💡 تلميح امتحاني</span></div><div class="body" hidden><div class="en">Always link xerostomia → ↑ caries + mucosal disease.</div><div class="ar">اربط جفاف الفم دائماً بـ ↑ النخر + أمراض المخاطية.</div></div></div>
         </div>
       </aside>
     </section>
 
-    <!-- ===== Section 9: Prompted Qs from Slide (answered in Extra Notes only) ===== -->
+    <!-- Section 9: Hypersalivation -->
     <section class="section">
-      <div>
-        <h2 class="sec-head">
-          <span class="en">9) Slide Prompts 📝</span>
-          <span class="ar">٩) أسئلة الشريحة 📝</span>
-        </h2>
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">9) Hypersalivation (Sialorrhea/Ptyalism)</span><span class="ar">٩) فرط اللعاب (السيلان/البيالزم)</span></h2>
         <div class="sec-body">
           <div class="en">
-            <p>Questions highlighted in the slide for review: <b>pH of saliva?</b> • <b>Buffering action?</b> • <b>Antimicrobial action?</b> • <b>Immunoglobulin in saliva?</b> • <b>Anticariogenic action?</b></p>
+            <p><b>Definition:</b> Excess salivary secretion.</p>
+            <p><b>Causes:</b> Acute inflammation of mouth/tongue; neurological disorders (e.g., cerebral palsy, intellectual disability); teething; nausea/vomiting; foreign bodies (e.g., orthodontic appliance).</p>
           </div>
           <div class="ar">
-            <p>أسئلة للمراجعة كما وردت في الشريحة: <b>ما هو pH اللعاب؟</b> • <b>كيف يعمل كعازل؟</b> • <b>كيف يقاوم الميكروبات؟</b> • <b>أي الغلوبيولينات المناعية توجد فيه؟</b> • <b>كيف يمنع النخر السني؟</b></p>
+            <p><b>التعريف:</b> زيادة مفرطة في إفراز اللعاب.</p>
+            <p><b>الأسباب:</b> التهاب حاد للفم/اللسان؛ اضطرابات عصبية (كالشلل الدماغي والتأخر العقلي)؛ التسنين؛ الغثيان/الإقياء؛ أجسام غريبة (كالجهاز التقويمي).</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <!-- Marked Extra Notes = outside the PDF -->
-        <div class="callout extra">
-          <div class="hdr"><span class="en">📝 Extra Notes — pH & Buffer</span><span class="ar">📝 ملاحظات إضافية — pH والعازلية</span></div>
-          <div class="body" hidden>
-            <div class="en"><i>(Outside the slide)</i> Resting saliva is typically near neutral; bicarbonate is the main buffer increasing with flow.</div>
-            <div class="ar"><i>(خارج الشريحة)</i> يكون اللعاب الراكد قريبًا من المتعادل؛ والبيكربونات هي العازل الرئيس الذي يزداد مع الجريان.</div>
-          </div>
-        </div>
-        <div class="callout extra">
-          <div class="hdr"><span class="en">📝 Extra Notes — Antimicrobials</span><span class="ar">📝 ملاحظات إضافية — العوامل المضادّة للميكروبات</span></div>
-          <div class="body" hidden>
-            <div class="en">Saliva carries lysozyme, lactoferrin, peroxidases, and <b>IgA</b> to limit bacterial adherence and growth.</div>
-            <div class="ar">يحمل اللعاب الليزوزيم واللاكتوفرّين والبيروكسيدازات و<b>IgA</b> للحد من التصاق الجراثيم ونموّها.</div>
-          </div>
-        </div>
-        <div class="callout extra">
-          <div class="hdr"><span class="en">📝 Extra Notes — Anticariogenic</span><span class="ar">📝 ملاحظات إضافية — مضاد للنخر</span></div>
-          <div class="body" hidden>
-            <div class="en">Buffering + mineral supply + antimicrobial actions together protect enamel from demineralization.</div>
-            <div class="ar">توفّر المعادلة + المعادن + العوامل المضادّة للميكروبات حماية للميناء من نزع المعادن.</div>
-          </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Fact</span><span class="ar">📌 حقيقة</span></div><div class="body" hidden><div class="en">When pathological, it’s termed sialorrhea/ptyalism.</div><div class="ar">عند الإمراضية يُسمّى سيلان لعابي/بيالزم.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Assess for aspiration risk, skin maceration, and social impact; treat underlying cause, consider behavioral, pharmacologic, or procedural options.</div><div class="ar">قيّم خطر الشفط وتليّن الجلد والأثر الاجتماعي؛ عالج السبب، وادرس خيارات سلوكية/دوائية/إجرائية.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Check for new appliances or oral inflammation before labeling as neurologic.</div><div class="ar">تحقّق من أجهزة جديدة أو التهاب فموي قبل افتراض سبب عصبي.</div></div></div>
         </div>
       </aside>
     </section>
 
-    <!-- ===== Section 10: Quick Map (from whole lecture) ===== -->
+    <!-- Section 10: Quick Q-bank from the slide questions -->
     <section class="section">
-      <div>
-        <h2 class="sec-head"><span class="en">10) From Acini to Oral Cavity — The Flow Map 🗺️</span><span class="ar">١٠) من العنبات إلى الفم — خريطة الجريان 🗺️</span></h2>
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">10) Quick Answers to the Slide Questions</span><span class="ar">١٠) إجابات سريعة لأسئلة الشرائح</span></h2>
         <div class="sec-body">
           <div class="en">
-            <p><b>Acini</b> (serous & mucous) → lumen (isotonic) → <b>striated ducts</b> (Na⁺/Cl⁻ reabsorption & K⁺/HCO₃⁻ secretion) → <b>excretory ducts</b> → oral cavity (hypotonic). Regulation overlays via ANS and sensory stimuli (smell, taste, mastication).</p>
+            <p><b>pH of saliva:</b> Near neutral at rest; rises toward alkaline with stimulation (due to HCO₃⁻).</p>
+            <p><b>Buffering action:</b> Mainly bicarbonate; also phosphate and proteins.</p>
+            <p><b>Antimicrobial action:</b> Enzymes (lysozyme), lactoferrin, peroxidases, histatins; plus flow flushing.</p>
+            <p><b>Immunoglobulin:</b> Secretory IgA predominates.</p>
+            <p><b>Anticariogenic action:</b> Buffering + remineralization + antimicrobial effects.</p>
           </div>
           <div class="ar">
-            <p><b>العنبات</b> (مصلية ومخاطية) → اللمعة (متساوي التوتر) → <b>القنوات المخططة</b> (إعادة امتصاص Na⁺/Cl⁻ وإفراز K⁺/HCO₃⁻) → <b>القنوات المفرِّغة</b> → جوف الفم (ناقص التوتر). ويتحكّم بذلك الجهاز العصبي الذاتي والمنبّهات الحسية (الشمّ، التذوّق، المضغ).</p>
+            <p><b>الـpH:</b> قريب من المتعادل بالراحة ويرتفع للقلوية مع التحفيز (بسبب البيكربونات).</p>
+            <p><b>التعادل:</b> أساساً البيكربونات، وأيضاً الفوسفات والبروتينات.</p>
+            <p><b>المضادّات الميكروبية:</b> أنزيمات (الليزوزيم)، اللاكتوفرّين، البيروكسيدازات، الهستاتينات؛ مع جريان يُزيل الجراثيم.</p>
+            <p><b>الأجسام المضادة:</b> يغلب IgA الإفرازي.</p>
+            <p><b>مضادّ التسوّس:</b> التعادل + إعادة التمعدن + التأثيرات المضادّة للميكروبات.</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout memory">
-          <div class="hdr"><span class="en">🧠 Memory — “A→S→E→Mouth”</span><span class="ar">🧠 تذكّر — “عنبات→مخططة→مفرِّغة→فم”</span></div>
-          <div class="body" hidden>
-            <div class="en">Acini → Striated → Excretory → Mouth.</div>
-            <div class="ar">عنبات → مخططة → مفرِّغة → الفم.</div>
-          </div>
-        </div>
-        <div class="callout tips">
-          <div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div>
-          <div class="body" hidden>
-            <div class="en">Draw the duct and write the ion arrows to cement the concept.</div>
-            <div class="ar">ارسم القناة واكتب أسهُم الأيونات لتثبيت الفكرة.</div>
-          </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example MCQ</span><span class="ar">🔍 مثال MCQ</span></div><div class="body" hidden><div class="en">Ducts mainly reabsorb: A) Na⁺ & Cl⁻ ✅ B) K⁺ & HCO₃⁻ C) Ca²⁺ & PO₄³⁻</div><div class="ar">الأقنية تعيد امتصاص: أ) الصوديوم والكلوريد ✅ ب) البوتاسيوم والبيكربونات ج) الكالسيوم والفوسفات</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Mnemonic</span><span class="ar">🧠 اختصار</span></div><div class="body" hidden><div class="en">“NaCl RE-in, KHCO₃ SE-out.”</div><div class="ar">«NaCl يدخل، KHCO₃ يخرج».</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why</span><span class="ar">🎯 لماذا</span></div><div class="body" hidden><div class="en">These are common viva/OSCE talking points.</div><div class="ar">هذه نقاط شائعة في الفايفا/الأوسكي.</div></div></div>
         </div>
       </aside>
     </section>
@@ -547,70 +573,71 @@
   <!-- Glossary -->
   <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
   <div class="grid g3x4" id="glossary">
-    <div class="card glossary">
-      <div class="head">Acinus / العُنبة</div>
-      <div class="content" hidden><div class="en">End-piece of salivary gland producing primary secretion.</div><div class="ar">القطعة النهائية في الغدة اللعابية تُنتِج الإفراز الأولي.</div></div>
-    </div>
-    <div class="card glossary"><div class="head">Serous cell / خلية مصلية</div><div class="content" hidden><div class="en">Makes watery secretion.</div><div class="ar">تنتج إفرازًا مائيًا.</div></div></div>
-    <div class="card glossary"><div class="head">Mucous cell / خلية مخاطية</div><div class="content" hidden><div class="en">Makes viscous mucin-rich secretion.</div><div class="ar">تنتج إفرازًا لزجًا غنيًا بالميوسين.</div></div></div>
-    <div class="card glossary"><div class="head">Striated duct / قناة مخططة</div><div class="content" hidden><div class="en">Major site of ion exchange (Na⁺/Cl⁻ reabsorption; K⁺/HCO₃⁻ secretion).</div><div class="ar">الموقع الأساسي لتبادل الأيونات (امتصاص Na⁺/Cl⁻؛ إفراز K⁺/HCO₃⁻).</div></div></div>
-    <div class="card glossary"><div class="head">Isotonic / متساوي التوتر</div><div class="content" hidden><div class="en">Same osmolarity as plasma; property of primary saliva.</div><div class="ar">نفس الأسمولارية مثل البلازما؛ صفة اللعاب الأولي.</div></div></div>
-    <div class="card glossary"><div class="head">Hypotonic / ناقص التوتر</div><div class="content" hidden><div class="en">Lower osmolarity after ductal modification.</div><div class="ar">أسمولارية أقل بعد التعديل القنوي.</div></div></div>
-    <div class="card glossary"><div class="head">ANS / الجهاز العصبي الذاتي</div><div class="content" hidden><div class="en">Autonomic control of salivary flow (PNS ↑, SNS ↓).</div><div class="ar">التحكم الذاتي بجريان اللعاب (الباراسمبثاوي ↑، السمبثاوي ↓).</div></div></div>
-    <div class="card glossary"><div class="head">Xerostomia / جفاف الفم</div><div class="content" hidden><div class="en">Clinical condition of dry mouth from reduced saliva.</div><div class="ar">حالة سريرية لجفاف الفم نتيجة قلة اللعاب.</div></div></div>
-    <div class="card glossary"><div class="head">Sialorrhea (Ptyalism) / سيلان اللعاب</div><div class="content" hidden><div class="en">Excessive salivary secretion.</div><div class="ar">زيادة مفرطة في إفراز اللعاب.</div></div></div>
+    <div class="card"><div class="head">Acinus / الأسينيّة</div><div class="content" hidden><div class="en">Secretory end piece producing primary saliva.</div><div class="ar">الوحدة الإفرازية الطرفية التي تُنتج اللعاب الأولي.</div></div></div>
+    <div class="card"><div class="head">Striated Duct / القناة المخططة</div><div class="content" hidden><div class="en">Modifies ions to form hypotonic saliva.</div><div class="ar">تُعدّل الشوارد لتُنتج لعاباً منخفض التوتر.</div></div></div>
+    <div class="card"><div class="head">Isotonic / متساوي التوتر</div><div class="content" hidden><div class="en">Same osmolarity as plasma (primary saliva).</div><div class="ar">أسمولية مساوية للبلازما (اللعاب الأولي).</div></div></div>
+    <div class="card"><div class="head">Hypotonic / منخفض التوتر</div><div class="content" hidden><div class="en">Lower osmolarity than plasma (final saliva).</div><div class="ar">أسمولية أقل من البلازما (اللعاب النهائي).</div></div></div>
+    <div class="card"><div class="head">Hyposalivation / نقص اللعاب</div><div class="content" hidden><div class="en">Reduced salivary flow; often perceived as xerostomia.</div><div class="ar">انخفاض جريان اللعاب؛ يُشعَر به كجفاف الفم.</div></div></div>
+    <div class="card"><div class="head">Xerostomia / جفاف الفم</div><div class="content" hidden><div class="en">Subjective dryness from reduced function/volume.</div><div class="ar">إحساس بالجفاف بسبب فقدان الوظيفة/الحجم.</div></div></div>
+    <div class="card"><div class="head">Sialorrhea / سيلان لعابي</div><div class="content" hidden><div class="en">Pathological excessive salivation (ptyalism).</div><div class="ar">زيادة مرضية في اللعاب (البيالزم).</div></div></div>
+    <div class="card"><div class="head">Buffering / الاعتماد التوازني</div><div class="content" hidden><div class="en">Neutralization of acids, mainly by bicarbonate.</div><div class="ar">معادلة الأحماض خصوصاً بالبيكربونات.</div></div></div>
+    <div class="card"><div class="head">Secretory IgA / IgA الإفرازي</div><div class="content" hidden><div class="en">Immunoglobulin that limits microbial adhesion.</div><div class="ar">جسم مضاد يحدّ من التصاق الميكروبات.</div></div></div>
+    <div class="card"><div class="head">Mucins / الميوسينات</div><div class="content" hidden><div class="en">Glycoproteins providing lubrication and protection.</div><div class="ar">بروتينات سكّرية للتشحيم والحماية.</div></div></div>
   </div>
 
   <!-- Flashcards -->
   <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
   <div class="grid g3x4" id="flashcards">
-    <div class="card flash"><div class="head">1 — Q: Two phases of saliva formation?</div><div class="content" hidden>A: Primary (acini) and secondary/modification (ducts).</div></div>
-    <div class="card flash"><div class="head">2 — Q: Primary saliva tonicity?</div><div class="content" hidden>A: Isotonic.</div></div>
-    <div class="card flash"><div class="head">3 — Q: Final saliva tonicity?</div><div class="content" hidden>A: Hypotonic after ductal modification.</div></div>
-    <div class="card flash"><div class="head">4 — Q: Ions reabsorbed in ducts?</div><div class="content" hidden>A: Na⁺ and Cl⁻.</div></div>
-    <div class="card flash"><div class="head">5 — Q: Ions secreted in ducts?</div><div class="content" hidden>A: K⁺ and HCO₃⁻.</div></div>
-    <div class="card flash"><div class="head">6 — Q: ANS effect on flow?</div><div class="content" hidden>A: Parasympathetic ↑, Sympathetic ↓.</div></div>
-    <div class="card flash"><div class="head">7 — Q: Define xerostomia.</div><div class="content" hidden>A: Oral dryness due to reduced salivary function/volume.</div></div>
-    <div class="card flash"><div class="head">8 — Q: Two causes of xerostomia from slide?</div><div class="content" hidden>A: Gland inflammation/radiation; psychological causes; dehydration; medication side effects.</div></div>
-    <div class="card flash"><div class="head">9 — Q: Situations causing sialorrhea?</div><div class="content" hidden>A: Acute mouth/tongue inflammation, neurological disorders (e.g., CP), teething, nausea/vomiting, foreign bodies (e.g., orthodontic appliances).</div></div>
+    <div class="card"><div class="head"><span class="en">1 — Which phase makes saliva hypotonic?</span><span class="ar">١ — أي مرحلة تجعل اللعاب منخفض التوتر؟</span></div><div class="content" hidden><span class="en">A: Ductal (secondary) modification.</span><span class="ar">ج: التعديل القنوي (الثانوي).</span></div></div>
+    <div class="card"><div class="head"><span class="en">2 — Main ions reabsorbed in ducts?</span><span class="ar">٢ — الشوارد المعاد امتصاصها في الأقنية؟</span></div><div class="content" hidden><span class="en">A: Na⁺ and Cl⁻.</span><span class="ar">ج: الصوديوم والكلوريد.</span></div></div>
+    <div class="card"><div class="head"><span class="en">3 — Main ions secreted by ducts?</span><span class="ar">٣ — الشوارد المُفرَزة في الأقنية؟</span></div><div class="content" hidden><span class="en">A: K⁺ and HCO₃⁻.</span><span class="ar">ج: البوتاسيوم والبيكربونات.</span></div></div>
+    <div class="card"><div class="head"><span class="en">4 — Parasympathetic effect on flow?</span><span class="ar">٤ — تأثير نظير الودي على الجريان؟</span></div><div class="content" hidden><span class="en">A: Increases watery, copious secretion.</span><span class="ar">ج: يزيد إفرازاً مائياً غزيراً.</span></div></div>
+    <div class="card"><div class="head"><span class="en">5 — Predominant salivary immunoglobulin?</span><span class="ar">٥ — الجسم المضاد الغالب في اللعاب؟</span></div><div class="content" hidden><span class="en">A: Secretory IgA.</span><span class="ar">ج: IgA الإفرازي.</span></div></div>
+    <div class="card"><div class="head"><span class="en">6 — Two major causes of xerostomia in slides?</span><span class="ar">٦ — سببان رئيسيان لجفاف الفم بالشرائح؟</span></div><div class="content" hidden><span class="en">A: Gland damage (inflammation/radiation) and medications.</span><span class="ar">ج: أذية الغدة (التهاب/إشعاع) والأدوية.</span></div></div>
+    <div class="card"><div class="head"><span class="en">7 — Name for pathological hypersalivation?</span><span class="ar">٧ — اسم فرط اللعاب الإمراضي؟</span></div><div class="content" hidden><span class="en">A: Sialorrhea (ptyalism).</span><span class="ar">ج: السيلان اللعابي (البيالزم).</span></div></div>
+    <div class="card"><div class="head"><span class="en">8 — Key anticariogenic mechanisms?</span><span class="ar">٨ — آليات مقاومة التسوّس؟</span></div><div class="content" hidden><span class="en">A: Buffering + remineralization + antimicrobial effects.</span><span class="ar">ج: التعادل + إعادة التمعدن + تأثيرات مضادّة للميكروبات.</span></div></div>
+    <div class="card"><div class="head"><span class="en">9 — One symptom of xerostomia?</span><span class="ar">٩ — عرض شائع لجفاف الفم؟</span></div><div class="content" hidden><span class="en">A: Painful swallowing / mucosal ulceration / increased caries.</span><span class="ar">ج: ألم بالبلع / تقرّح مخاطي / زيادة النخر.</span></div></div>
   </div>
+
 </main>
 
 <script>
-// Language switcher
-const btn=document.getElementById('langBtn');
-btn.addEventListener('click',()=>{
-  document.body.classList.toggle('lang-ar');
-  document.body.classList.toggle('lang-en');
-});
-
-// Callout toggle
-document.querySelectorAll('.callout .hdr').forEach(h=>{
-  h.addEventListener('click',()=>{
-    const c=h.parentElement;
-    c.classList.toggle('open');
-    const body=c.querySelector('.body');
-    body.hidden=!body.hidden;
+  // Language toggle: flip lang visibility + page direction (kept as template)
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
   });
-});
 
-// Glossary toggle
-document.querySelectorAll('#glossary .card').forEach(card=>{
-  card.addEventListener('click',()=>{
-    card.classList.toggle('open');
-    const cont=card.querySelector('.content');
-    cont.hidden=!cont.hidden;
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
   });
-});
 
-// Flashcards toggle
-document.querySelectorAll('#flashcards .card').forEach(card=>{
-  card.addEventListener('click',()=>{
-    card.classList.toggle('open');
-    const cont=card.querySelector('.content');
-    cont.hidden=!cont.hidden;
+  // Glossary toggle
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
   });
-});
+
+  // Flashcards toggle
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
 </script>
 </body>
 </html>

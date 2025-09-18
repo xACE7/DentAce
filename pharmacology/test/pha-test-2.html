@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Interactive Exam • Glowing Dark Theme</title>
+<title>Pharma 2-test • Interactive Exam</title>
 <meta name="color-scheme" content="dark" />
 <style>
   :root{
@@ -32,7 +32,7 @@
   .wrap{max-width:1100px;margin:0 auto;padding:24px;}
 
   .titlebar{
-    position:sticky;top:0;z-index:10;
+    position: static;z-index:10;
     backdrop-filter:saturate(140%) blur(8px);
     background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
     border-bottom:1px solid var(--glass-border);
@@ -67,7 +67,6 @@
     .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
   }
 
-  /* Cards (no accent on the card itself) */
   .card{
     background:var(--card);
     border:1px solid var(--card-border);
@@ -94,7 +93,6 @@
   }
   .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
-  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
     border-left:6px solid var(--ok);
     outline:none;
@@ -107,7 +105,7 @@
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}  
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
@@ -169,62 +167,62 @@
   </main>
 
 <script>
-// ----------- Data (from Lecture 2) -----------
+// ----------- Data (filled from "Pharma 2.pdf") -----------
 const mcqs = [
-  { q:"Which organs are involved in drug metabolism?", opts:["Only the liver","Liver, lungs, kidneys, blood, and intestines","Only kidneys and lungs","Only intestines"], correct:1, explain:"Metabolism occurs in multiple organs: liver, lungs, kidneys, blood and intestines." },
-  { q:"For a drug to cross lipid cell membranes efficiently, it must be:", opts:["Hydrophilic","Highly ionized","Lipophilic","Protein-bound"], correct:2, explain:"Membrane passage favors lipophilic drugs." },
-  { q:"Higher lipid vs. water solubility generally leads to:", opts:["Slower tissue entry","More rapid tissue entry","No change in entry","Drug inactivation"], correct:1, explain:"Greater lipid solubility accelerates tissue entry." },
-  { q:"What primarily determines the duration of a drug's action?", opts:["Molecular weight","Metabolic rate","Tablet color","Brand name"], correct:1, explain:"Faster metabolism shortens duration; slower metabolism prolongs it." },
-  { q:"To be excreted effectively, drugs usually must become more:", opts:["Lipophilic","Hydrophilic","Volatile","Protein-bound"], correct:1, explain:"Conversion to more water-soluble (hydrophilic) forms facilitates excretion." },
-  { q:"Which sequence correctly describes the general need before renal excretion of lipophilic drugs?", opts:["Direct filtration by glomerulus","Metabolism to polar forms","Binding to plasma proteins","Alveolar elimination"], correct:1, explain:"Lipophilic drugs are first metabolized (often in liver) to more polar compounds before renal excretion." },
-  { q:"Phase I reactions are most commonly catalyzed by:", opts:["UDP-glucuronyltransferase","Cytochrome P450 system","Amino acid transferases","Esterases"], correct:1, explain:"Phase I often uses CYP (microsomal mixed-function oxidase)." },
-  { q:"Cytochrome P450 is also known as:", opts:["Mitochondrial oxidase","Microsomal mixed-function oxidase","Peroxisomal oxidase","Cytosolic oxidase"], correct:1, explain:"CYP enzymes comprise the microsomal mixed-function oxidase system." },
-  { q:"Which of the following is a CYP family example?", opts:["CYP3A4","NADH dehydrogenase","Lactate dehydrogenase","ATP synthase"], correct:0, explain:"Examples include CYP3A4, CYP2D6, CYP2C9/10, CYP2C19, CYP2E1, CYP1A2." },
-  { q:"Phase II reactions are best described as:", opts:["Oxidations only","Reductions only","Conjugations with endogenous substrates","Hydrolyses only"], correct:2, explain:"Phase II forms polar conjugates (e.g., glucuronic, sulfuric, acetic, amino acid)." },
-  { q:"A Phase I metabolite that is sufficiently polar:", opts:["Must undergo Phase II","Can be excreted by kidneys","Is always reabsorbed","Becomes more lipophilic"], correct:1, explain:"If polar enough after Phase I, renal excretion can occur without Phase II." },
-  { q:"Common Phase II conjugating groups include all EXCEPT:", opts:["Glucuronic acid","Sulfuric acid","Acetic acid","Hydrochloric acid"], correct:3, explain:"Conjugation commonly uses glucuronic, sulfuric, acetic acids or amino acids—not hydrochloric acid." },
-  { q:"Microsomal drug-metabolizing enzymes are mainly located on:", opts:["Rough endoplasmic reticulum","Smooth endoplasmic reticulum","Nucleus","Golgi apparatus"], correct:1, explain:"Microsomal enzymes (e.g., CYPs) are on smooth ER, mainly in liver, also kidney, lungs, intestine." },
-  { q:"Which statement about microsomal enzymes is TRUE?", opts:["They are not inducible","They are inducible by drugs/diet","They exist only in kidneys","They lack polymorphism"], correct:1, explain:"Microsomal enzymes are inducible by drugs and diet." },
-  { q:"Non-microsomal enzymes are typically:", opts:["Inducible by diet","Located only in plasma","Non-specific and present in cytoplasm/mitochondria","Restricted to smooth ER"], correct:2, explain:"They are non-specific, found in cytoplasm & mitochondria of hepatic and other tissues, including plasma." },
-  { q:"Which is an example of a non-microsomal enzyme?", opts:["CYP3A4","Protein oxidases/esterases/amidases","Glucose-6-phosphatase","Na+/K+ ATPase"], correct:1, explain:"Examples: protein oxidases, esterases, amidases." },
-  { q:"The primary route of drug excretion is via:", opts:["Kidneys","Lungs","Bile only","Skin"], correct:0, explain:"Renal excretion is primary." },
-  { q:"Which is NOT a recognized route of drug excretion listed in the lecture?", opts:["Milk in nursing mothers","Intestine","Sweat glands as major route","Lung"], correct:2, explain:"Kidney is primary; others include bile, intestine, lung, and milk. Sweat was not emphasized as a route here." },
-  { q:"In renal failure, small molecules such as drugs may be removed by:", opts:["Hemostasis","Dialysis","Phlebotomy","Vaccination"], correct:1, explain:"Dialysis removes small molecules including drugs." },
-  { q:"Acidification of urine leads to which effect on weak acids?", opts:["Increases excretion of weak acids","Increases reabsorption and decreases excretion of weak acids","No effect","Converts acids to bases"], correct:1, explain:"Acid urine favors reabsorption of weak acids and reduces their excretion." },
-  { q:"Alkalinization of urine has what effect on weak bases?", opts:["Decreases reabsorption of weak bases","Increases reabsorption of weak bases","No effect","Always precipitates bases"], correct:1, explain:"Opposite of acidification: alkalinization increases weak base reabsorption and decreases their excretion." },
-  { q:"Lipophilic drugs are efficiently eliminated by the kidney without metabolism.", opts:["True","False","Only in neonates","Only in elderly"], correct:1, explain:"Lipophilic drugs cross membranes and are reabsorbed; they usually require metabolism first." },
-  { q:"Which statement about distal tubular reabsorption is CORRECT?", opts:["Polar metabolites are readily reabsorbed","Lipophilic drugs are reabsorbed unless metabolized","All drugs are trapped in urine","Proteins are reabsorbed easily"], correct:1, explain:"Lipophilic drugs are reabsorbed in distal tubules; metabolism to polar forms reduces this." },
-  { q:"Which drug characteristic is associated with a SHORT half-life?", opts:["Extensive protein binding","Rapid metabolism and rapid excretion","Poor excretion","Slow metabolism"], correct:1, explain:"Rapid metabolism/excretion shortens half-life." },
-  { q:"Which factor tends to PROLONG drug half-life?", opts:["Extensive tissue uptake","Rapid metabolism","Extensive protein binding with slow metabolism","Rapid excretion"], correct:2, explain:"Extensive protein binding + slow metabolism/poor excretion lengthens half-life." },
-  { q:"Define drug half-life (t1/2). It is the time required for:", opts:["Half of the dose to be swallowed","Plasma drug concentration to fall to half its initial value","Drug to be completely eliminated","Peak effect to occur"], correct:1, explain:"t1/2: time for plasma concentration to decrease by 50% of its initial value." },
-  { q:"Which pair correctly matches approximate half-lives?", opts:["Aspirin 9h, Metronidazole 6h, Digoxin 12h","Aspirin 6h, Metronidazole 9h, Digoxin 36h","Aspirin 36h, Metronidazole 6h, Digoxin 9h","All three are 24h"], correct:1, explain:"Given examples: aspirin ~6h, metronidazole ~9h, digoxin ~36h." },
-  { q:"In theory, the optimal dosage interval between administrations is:", opts:["Half the half-life","Equal to the half-life","Twice the half-life","Unrelated to half-life"], correct:1, explain:"Optimal interval ≈ the drug's half-life (practical exceptions exist)." },
-  { q:"Which clinical example reflects excretion-guided prescribing?", opts:["Digoxin for biliary infections","Ampicillin for biliary tract infection","Sotalol for anemia","Metronidazole for asthma"], correct:1, explain:"Ampicillin reaches high concentrations in bile; useful in biliary tract infection." },
-  { q:"Loading doses are used when:", opts:["A rapid high concentration is needed urgently","We wish to delay onset","We aim to reduce maintenance dose","We want to avoid any side effects"], correct:0, explain:"Loading dose gives high concentration quickly; typically about twice maintenance in this lecture context." }
+  { q:"Drug metabolism primarily aims to convert drugs into forms that are:", opts:["More lipophilic for distribution","More hydrophilic for excretion","More protein-bound for storage","Electrically neutral to cross membranes"], correct:1, explain:"Metabolism generally increases polarity to facilitate renal/biliary excretion." },
+  { q:"Which organ is the most important site for drug metabolism?", opts:["Kidney","Liver","Lung","Intestine"], correct:1, explain:"Although multiple organs contribute, the liver is primary." },
+  { q:"Which property best favors passive diffusion across lipid membranes?", opts:["Hydrophilicity","High molecular weight","Lipophilicity","Ionization"], correct:2, explain:"Higher lipid solubility increases membrane permeability and tissue entry." },
+  { q:"Which statement about metabolic rate is TRUE?", opts:["It has no effect on duration of action","Faster metabolism shortens duration of action","Slower metabolism shortens duration of action","It only affects onset, not duration"], correct:1, explain:"Faster metabolism clears active drug sooner, reducing duration." },
+  { q:"The kidney alone poorly eliminates highly lipophilic drugs because they:", opts:["Are secreted rapidly in proximal tubules","Are filtered but extensively reabsorbed distally","Do not reach the nephron","Are too large for glomerular filtration"], correct:1, explain:"Lipophilic drugs are reabsorbed in distal tubules, limiting elimination." },
+  { q:"Phase I reactions are MOST commonly mediated by:", opts:["UDP-glucuronyl transferase","Cytochrome P450 (CYP) enzymes","N-acetyltransferase","Sulfotransferase"], correct:1, explain:"Phase I (oxidation/reduction/hydrolysis) often uses CYPs." },
+  { q:"Which is a correct example of a CYP family/isoform?", opts:["CYP3A4","CYP0A1","CYP9Z9","CYPX1A"], correct:0, explain:"Common isoforms: CYP3A4, CYP2D6, CYP2C9/10, CYP2C19, CYP2E1, CYP1A2." },
+  { q:"Phase II reactions typically involve:", opts:["Hydrolysis of esters","Conjugation with endogenous substrates","Oxidation by FMO","Reduction by nitroreductases"], correct:1, explain:"Phase II conjugates drug or metabolite to increase polarity and inactivate." },
+  { q:"A Phase II conjugating group is:", opts:["Glucuronic acid","Ferric iron","Carbon dioxide","Chloride"], correct:0, explain:"Common conjugates: glucuronic acid, sulfuric acid, acetic acid, amino acids." },
+  { q:"Microsomal enzymes are mainly located on:", opts:["Rough endoplasmic reticulum","Smooth endoplasmic reticulum","Mitochondrial matrix","Nucleus"], correct:1, explain:"CYPs reside on smooth ER, especially in liver." },
+  { q:"Microsomal enzymes are typically:", opts:["Not inducible","Inducible by drugs/diet","Only in kidney","Absent in intestine"], correct:1, explain:"They can be induced by xenobiotics and diet; present liver>kidney>lung>gut." },
+  { q:"Non-microsomal enzymes are generally:", opts:["Located only in ER","Highly inducible","Present in cytosol/mitochondria and plasma","Limited to conjugation only"], correct:2, explain:"They catalyze various oxidative/reductive/hydrolytic/conjugation reactions." },
+  { q:"Primary route of drug excretion is via:", opts:["Lungs","Skin","Kidneys","Breast milk"], correct:2, explain:"Kidneys are primary; others are secondary routes." },
+  { q:"Which excretory route is notably important for ampicillin, influencing prescribing for biliary infection?", opts:["Pulmonary excretion","Salivary excretion","Biliary excretion","Sweat excretion"], correct:2, explain:"Ampicillin achieves high bile concentrations, useful in biliary tract infection." },
+  { q:"Urinary acidification will:", opts:["Increase excretion of weak acids","Decrease reabsorption of weak acids","Increase reabsorption of weak acids","Have no effect on weak acids"], correct:2, explain:"Acidic urine favors the non-ionized form of weak acids → more reabsorption." },
+  { q:"Urinary alkalinization will:", opts:["Increase reabsorption of weak bases","Decrease reabsorption of weak bases","Not affect weak bases","Increase reabsorption of both acids and bases"], correct:1, explain:"Alkaline urine ionizes weak bases → less reabsorption, more excretion." },
+  { q:"Dialysis in renal failure helps remove:", opts:["Only protein-bound drugs","Only large biologics","Small molecules such as many drugs","Only endogenous toxins"], correct:2, explain:"Hemodialysis clears small, unbound, water-soluble compounds." },
+  { q:"Elderly patients with reduced renal function are more prone to toxicity from renally excreted drugs, especially those with:", opts:["Wide therapeutic ranges","Narrow therapeutic ranges","No oral bioavailability","Short half-lives"], correct:1, explain:"Narrow TI drugs (e.g., digoxin) accumulate and cause toxicity." },
+  { q:"Which β-blocker listed has renal excretion considerations in the notes?", opts:["Propranolol","Sotalol","Metoprolol","Atenolol (not mentioned)"], correct:1, explain:"Sotalol is highlighted as renally excreted and risky in renal impairment." },
+  { q:"Drug half-life (t½) is defined as the time required for:", opts:["Dose to halve","Plasma concentration to decrease by half","Effect to decrease by half","Clearance to halve"], correct:1, explain:"Pharmacokinetic definition refers to plasma concentration decrease." },
+  { q:"Which pairing of drug and approximate half-life is correct?", opts:["Aspirin ~9 h","Metronidazole ~36 h","Digoxin ~6 h","Aspirin ~6 h"], correct:3, explain:"Slides: aspirin ~6 h, metronidazole ~9 h, digoxin ~36 h." },
+  { q:"A SHORT half-life is associated with:", opts:["Extensive tissue uptake, rapid metabolism/excretion","Extensive protein binding, slow metabolism","Poor excretion","Slow metabolism only"], correct:0, explain:"Rapid clearance processes shorten half-life." },
+  { q:"A LONG half-life is associated with:", opts:["Minimal protein binding","Slow metabolism, poor excretion","Rapid metabolism","Small volume of distribution"], correct:1, explain:"Extensive binding & slower clearance prolong half-life." },
+  { q:"Optimal dosage interval in theory is:", opts:["Half the half-life","Equal to the half-life","Twice the half-life","Independent of half-life"], correct:1, explain:"Theoretical optimal interval ≈ t½." },
+  { q:"Why is the theoretical interval impractical for drugs with very short t½ (e.g., penicillin)?", opts:["Causes excessive accumulation","Requires too frequent dosing","Increases protein binding","Lowers bioavailability"], correct:1, explain:"Frequent administration is impractical for very short t½ drugs." },
+  { q:"Loading doses are used when:", opts:["A slow onset is acceptable","Therapeutic levels are needed rapidly","Maintenance therapy is complete","Drug is highly toxic"], correct:1, explain:"Loading dose quickly achieves target concentration." },
+  { q:"Which of the following is NOT a Phase II conjugate mentioned?", opts:["Glucuronic acid","Sulfuric acid","Acetic acid","Phosphoric acid"], correct:3, explain:"Slides list glucuronic, sulfuric, acetic acids, and amino acids (not phosphoric)." },
+  { q:"Which statement about Phase I metabolites is TRUE?", opts:["They are always excreted unchanged","They are usually highly polar","They may be too lipophilic and need conjugation","They are always active"], correct:2, explain:"Many Phase I products still need Phase II conjugation for excretion." },
+  { q:"Non-microsomal enzymes are:", opts:["Inducible like CYPs","Often subject to genetic polymorphism","Restricted to liver only","Confined to hydrolysis"], correct:1, explain:"They are not inducible but may show polymorphism; present in multiple tissues." },
+  { q:"Sites contributing to drug metabolism include all EXCEPT:", opts:["Liver","Lungs","Blood","Bone marrow"], correct:3, explain:"Slides highlight liver, lungs, kidneys, blood, intestines." }
 ];
 
 const tfs = [
-  { q:"Lipophilic drugs are efficiently eliminated by the kidney without prior metabolism.", answer:false, explain:"They are reabsorbed in distal tubules; metabolism increases polarity for excretion." },
-  { q:"Cytochrome P450 is also called the microsomal mixed-function oxidase system.", answer:true, explain:"That is the alternative name used in the lecture." },
-  { q:"Phase II reactions usually increase water solubility and produce inactive metabolites.", answer:true, explain:"Conjugation (e.g., glucuronidation) yields polar, usually inactive products." },
-  { q:"Microsomal enzymes are primarily on the rough endoplasmic reticulum.", answer:false, explain:"They are on the smooth ER." },
-  { q:"Non-microsomal enzymes are generally inducible by drugs and diet.", answer:false, explain:"They are not inducible but exhibit polymorphism." },
-  { q:"Age-related decline in renal function increases risk of drug toxicity, especially for narrow-therapeutic-range drugs like digoxin.", answer:true, explain:"Reduced renal capacity predisposes to accumulation." },
-  { q:"Acidification of urine increases excretion of weak acids.", answer:false, explain:"It increases reabsorption and decreases excretion of weak acids." },
-  { q:"Alkalinization of urine decreases reabsorption of weak bases.", answer:false, explain:"Opposite occurs: it increases reabsorption of weak bases." },
-  { q:"Dialysis can remove small molecules such as drugs in renal failure.", answer:true, explain:"Yes, it removes small molecules." },
-  { q:"Ampicillin is excreted in high concentrations in bile.", answer:true, explain:"Hence it is a good choice for biliary tract infection." },
-  { q:"In theory, the optimal dosage interval equals the half-life of the drug.", answer:true, explain:"That was stated explicitly in the lecture." },
-  { q:"Extensive protein binding is associated with short half-life.", answer:false, explain:"Extensive protein binding tends to prolong half-life, not shorten it." }
+  { q:"Drugs generally must become more hydrophilic to be efficiently excreted.", answer:true, explain:"Increased polarity favors renal/biliary elimination." },
+  { q:"Lipophilic drugs are poorly reabsorbed in the distal tubule.", answer:false, explain:"They are readily reabsorbed, limiting excretion." },
+  { q:"CYP enzymes are also called microsomal mixed-function oxidases.", answer:true, explain:"This is a common descriptor of the CYP system." },
+  { q:"Phase II reactions always activate drugs.", answer:false, explain:"They usually inactivate and increase water solubility." },
+  { q:"Microsomal enzymes are found mainly in smooth ER.", answer:true, explain:"Especially abundant in liver." },
+  { q:"Non-microsomal enzymes are highly inducible by drugs.", answer:false, explain:"They are generally not inducible but can show polymorphism." },
+  { q:"Kidney is the primary route of excretion, with bile, intestine, lung, and milk as others.", answer:true, explain:"Multiple excretory routes exist; kidney predominates." },
+  { q:"Urinary acidification decreases reabsorption of weak acids.", answer:false, explain:"It increases reabsorption of weak acids; alkalinization decreases it." },
+  { q:"Elderly with reduced renal capacity have less risk of toxicity from renally excreted narrow-TI drugs.", answer:false, explain:"They have more risk (e.g., digoxin)." },
+  { q:"Drug half-life is the time for plasma concentration to decrease by half.", answer:true, explain:"Standard PK definition." },
+  { q:"Aspirin has a longer half-life than digoxin as listed in the slides.", answer:false, explain:"Aspirin ~6 h; digoxin ~36 h." },
+  { q:"Loading doses are used to rapidly achieve therapeutic concentrations.", answer:true, explain:"Initial larger dose accelerates attainment of target level." }
 ];
 
 const saqs = [
-  { q: "Define drug metabolism and distinguish between Phase I and Phase II reactions with examples.", a: "Drug metabolism is the biotransformation of drugs (mainly in liver, but also lungs, kidneys, blood, intestines). Phase I (often via CYP microsomal mixed-function oxidase) introduces/unmasks polar groups (e.g., oxidation). If sufficiently polar, metabolites can be excreted. Phase II conjugates drugs/metabolites with endogenous substrates (e.g., glucuronic, sulfuric, acetic acids or amino acids) to form more water‑soluble, usually inactive products." },
-  { q: "Enumerate routes of drug excretion and explain how urinary pH affects weak acids and bases.", a: "Primary route: kidney. Others: bile, intestine, lung, milk (nursing). Urinary pH: Acidification increases reabsorption and decreases excretion of weak acids, while decreasing reabsorption of weak bases. Alkalinization has the opposite effect (promotes excretion of weak acids and increases reabsorption of weak bases)." },
-  { q: "Explain drug half‑life and its dosing implications; include examples and when loading doses are used.", a: "Half‑life (t1/2) is the time for plasma concentration to fall by half its initial value. Theoretical optimal dosing interval ≈ t1/2. Examples: aspirin ~6 h, metronidazole ~9 h, digoxin ~36 h. Short t1/2: rapid metabolism/excretion; long t1/2: extensive protein binding, slow metabolism, poor excretion. If the interval is too long, effect may be lost; too short, toxicity can occur. Loading doses are used when rapid high concentrations are required (initial dose ≈ double maintenance)." }
+  { q:"Define drug metabolism and explain why it is necessary before renal excretion of many drugs.", a:"Drug metabolism is the biotransformation of drugs (primarily in the liver) to more polar metabolites. Lipophilic drugs are reabsorbed in renal tubules; metabolism increases hydrophilicity, enabling excretion." },
+  { q:"Differentiate between Phase I and Phase II reactions with one example for each.", a:"Phase I: functionalization (e.g., oxidation via CYP3A4) that may create or expose a polar group. Phase II: conjugation (e.g., glucuronidation with glucuronic acid) producing highly polar, usually inactive metabolites." },
+  { q:"Explain how urinary pH influences the excretion of weak acids vs. weak bases and give a clinical implication.", a:"Acidic urine increases reabsorption (↓ excretion) of weak acids and decreases reabsorption of weak bases; alkaline urine has the opposite effect. Clinically, alkalinizing urine can enhance elimination of weak acids in overdose." }
 ];
 
-// ----------- State -----------
+// ----------- State (unchanged) -----------
 const state = {
   mcq: Array(mcqs.length).fill(null),
   tf: Array(tfs.length).fill(null),
@@ -240,7 +238,7 @@ function shuffleIndices(n){
   return arr;
 }
 
-// ----------- Render MCQs -----------
+// ----------- Render MCQs (unchanged) -----------
 const mcqGrid = document.getElementById('mcqGrid');
 mcqs.forEach((item, idx)=>{
   const map = shuffleIndices(4);
@@ -278,19 +276,16 @@ mcqs.forEach((item, idx)=>{
 
   buttons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      if(card.dataset.locked === 'true') return; // one attempt
+      if(card.dataset.locked === 'true') return;
       const v = Number(btn.dataset.v);
       state.mcq[idx] = v;
 
-      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
-      // Always mark the correct option (green)
       const correctBtn = buttons[correctVisualIndex];
       correctBtn.classList.add('correct');
 
       if(v !== correctVisualIndex){
-        // Mark chosen wrong option (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
@@ -306,7 +301,7 @@ mcqs.forEach((item, idx)=>{
   mcqGrid.appendChild(card);
 });
 
-// ----------- Render True/False -----------
+// ----------- Render True/False (unchanged) -----------
 const tfGrid = document.getElementById('tfGrid');
 tfs.forEach((item, idx)=>{
   const card = document.createElement('article');
@@ -338,20 +333,17 @@ tfs.forEach((item, idx)=>{
 
   buttons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      if(card.dataset.locked === 'true') return; // one attempt
+      if(card.dataset.locked === 'true') return;
       const val = btn.dataset.v === "true";
       state.tf[idx] = val;
 
-      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
-      // Always mark the correct button (green)
       const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
       correctBtn.classList.add('correct');
 
       const isCorrect = (val === item.answer);
       if(!isCorrect){
-        // mark chosen wrong (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
@@ -368,7 +360,7 @@ tfs.forEach((item, idx)=>{
   tfGrid.appendChild(card);
 });
 
-// ----------- Render SAQs -----------
+// ----------- Render SAQs (unchanged) -----------
 const saqGrid = document.getElementById('saqGrid');
 saqs.forEach((item, idx)=>{
   const card = document.createElement('article');
@@ -405,7 +397,7 @@ saqs.forEach((item, idx)=>{
   saqGrid.appendChild(card);
 });
 
-// ----------- Score + Reset -----------
+// ----------- Score + Reset (unchanged) -----------
 function recalc(){
   const mcqScore = state.mcq.reduce((s,v,i)=>{
     if(v===null) return s;

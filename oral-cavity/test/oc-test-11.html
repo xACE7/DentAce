@@ -32,7 +32,7 @@
   .wrap{max-width:1100px;margin:0 auto;padding:24px;}
 
   .titlebar{
-    position:sticky;top:0;z-index:10;
+    position: static;z-index:10;
     backdrop-filter:saturate(140%) blur(8px);
     background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
     border-bottom:1px solid var(--glass-border);
@@ -92,7 +92,7 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
   /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
@@ -169,60 +169,59 @@
   </main>
 
 <script>
-// ----------- Data (filled from lecture 11.pdf) -----------
+// ----------- Data (filled from lecture PDF) -----------
 const mcqs = [
-  {q:'TMJ develops from which embryological structure?', opts:['Second pharyngeal arch','First pharyngeal arch (Meckel\'s cartilage)','Third pharyngeal arch','Maxillary process'], correct:1, explain:'Origin: 6th–8th week IUL from the first pharyngeal arch (Meckel\'s cartilage).'},
-  {q:'During which weeks do the initial TMJ primordia appear?', opts:['2nd–4th week','6th–8th week','9th–10th week','12th–14th week'], correct:1, explain:'The origin is in the 6th–8th weeks in utero.'},
-  {q:'The condylar blastema forms which structure?', opts:['Articular eminence','Mandibular condyle (cartilage)','Squamous temporal bone','Articular disc'], correct:1, explain:'Condylar blastema → cartilage that becomes the mandibular condyle.'},
-  {q:'The temporal blastema primarily ossifies to become the:', opts:['Zygomatic arch','Glenoid fossa only','Squamous part of temporal bone','Mandibular notch'], correct:2, explain:'Temporal blastema ossifies to the squamous part of the temporal bone.'},
-  {q:'Upper and lower synovial cavities appear by:', opts:['6th–8th week','8th–10th week','10th–12th week','12th–16th week'], correct:2, explain:'Mesenchyme splits into upper and lower joint spaces during weeks 10–12.'},
-  {q:'The articular disc develops from condensed mesenchyme around:', opts:['8th week','10th week','12th week','20th week'], correct:2, explain:'Disc forms by the 12th week.'},
-  {q:'Joint capsule and ligaments form mainly during:', opts:['6th–8th week','8th–10th week','12th–20th week','After birth only'], correct:2, explain:'Capsule, synovium and ligaments develop between weeks 12–20.'},
-  {q:'Complete functional maturation of the TMJ typically occurs by:', opts:['Birth','5–8 years','12–14 years','16–20 years'], correct:3, explain:'Postnatal remodeling with eruption and mastication leads to adult morphology by ~16–20 years.'},
-  {q:'The TMJ is functionally classified as a:', opts:['Fibrous syndesmosis','Synovial ginglymoarthrodial joint','Cartilaginous synchondrosis','Ball-and-socket joint'], correct:1, explain:'It combines hinge (ginglymoid) and gliding (arthrodial) movements.'},
-  {q:'Hinge movement of the TMJ primarily represents:', opts:['Translation of the disc-condyle complex','Rotation of the condyle in the socket','Medial-lateral sliding of disc','Passive ligament recoil only'], correct:1, explain:'Hinge = rotation and is responsible for initial opening/closing.'},
-  {q:'Gliding movement in TMJ refers to:', opts:['Vertical distraction of condyle','Forward/backward sliding of condyle and disc','Medial rotation of condyle','Pure rotation without translation'], correct:1, explain:'Gliding = translation of the condyle–disc complex.'},
-  {q:'The mandibular (glenoid) fossa is located on the:', opts:['Petrous temporal bone','Squamous part of temporal bone','Zygomatic process only','Sphenoid bone'], correct:1, explain:'It is an oblong S-shaped cavity on the undersurface of the squamous temporal bone.'},
-  {q:'The articular eminence forms the:', opts:['Posterior wall of fossa','Anterior root of zygoma (transverse bony bar)','Mastoid process','Glenoid tubercle'], correct:1, explain:'Articular eminence is the anterior root of the zygoma.'},
-  {q:'From the frontal view, the mandibular condyle shows:', opts:['A single pole','Medial and lateral poles','Anterior and posterior poles only','No poles'], correct:1, explain:'It has a medial and a lateral pole.'},
-  {q:'The articular surface of the condyle is covered by:', opts:['Hyaline cartilage','Elastic cartilage','Fibrocartilaginous tissue','Periosteum'], correct:2, explain:'TMJ articular surfaces are covered by fibrocartilage (not hyaline).'},
-  {q:'The synovial membrane lines the capsule and the joint cavity is filled with synovial fluid whose main function is:', opts:['Oxygenation of bone marrow','Nerve conduction','Lubrication to reduce friction','Calcification of the disc'], correct:2, explain:'Synovial fluid lubricates articular surfaces during movement.'},
-  {q:'Primary mechanism for TMJ joint lubrication is:', opts:['Weeping lubrication','Boundary lubrication','Capillary action','Vacuum suction'], correct:1, explain:'Boundary lubrication is the primary mechanism to prevent friction.'},
-  {q:'Weeping lubrication acts mainly during:', opts:['High compressive loading with fluid expression/imbibition','Static posture only','Muscle spasm','Nerve stimulation'], correct:0, explain:'It acts between articular surfaces under compressive forces to prevent sticking.'},
-  {q:'The articular disc is composed of:', opts:['Elastic cartilage, highly vascular','Fibrous connective tissue, essentially avascular and aneural centrally','Hyaline cartilage with rich innervation','Adipose tissue'], correct:1, explain:'Fibrous CT; central portion lacks vessels/nerves, slight innervation at the periphery.'},
-  {q:'In a normal joint, the condyle articulates with which disc zone?', opts:['Anterior band','Posterior band','Intermediate zone','Retrodiscal tissue'], correct:2, explain:'The condyle sits on the intermediate zone during function.'},
-  {q:'The disc and its attachments divide the joint into compartments that:', opts:['Freely communicate','Normally do not communicate','Are absent in adults','Only form after age 10'], correct:1, explain:'Upper and lower compartments normally do not communicate.'},
-  {q:'Upper joint compartment boundaries are:', opts:['Roof: condyle; Floor: disc inferior surface','Roof: mandibular fossa; Floor: superior surface of disc','Roof: articular eminence only; Floor: capsule','Roof: disc; Floor: temporal bone'], correct:1, explain:'Upper = roof (mandibular fossa), floor (superior surface of disc).'},
-  {q:'Lower joint compartment boundaries are:', opts:['Roof: inferior surface of disc; Floor: condylar articular surface','Roof: temporal bone; Floor: superior disc surface','Roof: capsule; Floor: synovium','Roof: retrodiscal pad; Floor: eminence'], correct:0, explain:'Lower = roof (inferior disc), floor (condylar articular surface).'},
-  {q:'Which statement best describes the disc\'s function?', opts:['It passively increases friction','It destabilizes the condyle only','It stabilizes the joint, controls condyle position, reduces wear and aids lubrication','It ossifies with age to bone'], correct:2, explain:'Disc stabilizes TMJ, shapes joint space, reduces wear, aids lubrication.'},
-  {q:'Collateral (discal) ligament primarily:', opts:['Restricts movement of the disc away from the condyle','Encompasses the entire joint','Limits anterior translation','Connects disc to skull base'], correct:0, explain:'It tethers the disc to the condyle medially and laterally.'},
-  {q:'Capsular ligament function is to:', opts:['Prevent protrusion','Encompass the joint and retain synovial fluid','Attach disc to muscle','Carry neurovascular bundle'], correct:1, explain:'Capsule encloses the joint and maintains synovial environment.'},
-  {q:'Temporomandibular (lateral) ligament functions include:', opts:['Allow excessive dropping of the condyle','Limit posterior movement of condyle and disc and resist excessive dropping','Restrict mouth closing','Tighten during retrusion only'], correct:1, explain:'It resists excessive inferior movement and limits posterior displacement.'},
-  {q:'Which accessory ligament limits excessive protrusion?', opts:['Sphenomandibular','Stylomandibular','Collateral','Capsular'], correct:1, explain:'Stylomandibular ligament limits excessive protrusive movements.'},
-  {q:'Sphenomandibular ligament has which effect on movement?', opts:['Strongly limits opening','Strongly limits lateral movement','No significant limiting effect','Prevents retrusion'], correct:2, explain:'It does not have significant limiting effects on mandibular movements.'},
-  {q:'Blood supply to the TMJ is mainly from branches of:', opts:['Facial and lingual arteries','Superficial temporal and maxillary arteries','Occipital and posterior auricular arteries','Internal carotid artery'], correct:1, explain:'Arterial supply: superficial temporal and maxillary branches; veins follow arteries.'},
-  {q:'Primary nerve supply to the TMJ includes:', opts:['Auriculotemporal, deep temporal and masseteric nerves','Lingual and hypoglossal nerves','Facial nerve branches','Glossopharyngeal nerve'], correct:0, explain:'Innervation mainly by auriculotemporal, and branches to muscles of mastication (deep temporal & masseteric).'},
+  { q: "TMJ develops from which pharyngeal arch?", opts:["Second arch","First arch (Meckel's)","Third arch","Fourth arch"], correct:1, explain:"TMJ originates from the first pharyngeal arch; Meckel's cartilage is involved (6th–8th week IUL)." },
+  { q: "Approximate intrauterine age when TMJ origin is evident:", opts:["2nd–4th week","6th–8th week","10th–12th week","20th–22nd week"], correct:1, explain:"Origin occurs in the 6th–8th week in utero." },
+  { q: "The condylar blastema gives rise to:", opts:["Articular disc","Mandibular condyle","Glenoid fossa roof","Temporomandibular ligament"], correct:1, explain:"Condylar blastema forms cartilage that becomes the mandibular condyle (8th–10th week)." },
+  { q: "Temporal blastema mostly:", opts:["Remains cartilage","Ossifies to squamous temporal bone","Forms the disc","Forms auriculotemporal nerve"], correct:1, explain:"Temporal blastema ossifies into the squamous part of the temporal bone (8th–10th week)." },
+  { q: "Upper and lower joint cavities appear by:", opts:["6th–8th week","8th–10th week","10th–12th week","After birth"], correct:2, explain:"Mesenchyme splits into two synovial cavities by 10th–12th week, establishing joint space." },
+  { q: "The articular disc begins to form around:", opts:["8th week","10th week","12th week","16th week"], correct:2, explain:"Intervening mesenchyme condenses into the articular disc around the 12th week." },
+  { q: "Capsule and major ligaments develop mainly during:", opts:["12th–20th week","20th–28th week","Birth–1 year","1–3 years"], correct:0, explain:"Joint capsule, synovium and ligaments form between 12th and 20th weeks." },
+  { q: "Complete functional maturation of TMJ typically by:", opts:["Birth","5–8 years","16–20 years",">30 years"], correct:2, explain:"Remodeling continues postnatally with eruption/mastication, reaching adult form by ~16–20 years." },
+  { q: "TMJ is a synovial joint that is:", opts:["Amphiarthrodial","Ginglymoarthrodial","Suture","Symphysis"], correct:1, explain:"TMJ combines hinge (ginglymoid) and gliding (arthrodial) movements." },
+  { q: "Hinge movement of TMJ primarily involves:", opts:["Translation of disc-condyle complex","Rotation of condyle in socket","Medial pterygoid contraction only","Superior joint space only"], correct:1, explain:"Initial opening/closing is by rotation of the mandibular condyle in its socket (hinge)." },
+  { q: "Gliding movement best described as:", opts:["Superior rotation","Anterior–posterior sliding of condyle and disc","Vertical distraction","Medial rotation only"], correct:1, explain:"Gliding is forward/backward sliding of the condyle-disc complex." },
+  { q: "Which is part of TMJ contents?", opts:["Coronoid fossa","Mandibular fossa of temporal bone","Sella turcica","Ethmoid air cells"], correct:1, explain:"The mandibular (glenoid) fossa is a TMJ component." },
+  { q: "Articular eminence forms:", opts:["Posterior root of zygoma","Anterior root of zygoma","Styloid process","Zygomatic arch body only"], correct:1, explain:"Articular eminence is the transverse bony bar forming the anterior root of the zygoma." },
+  { q: "Mandibular condyle has:", opts:["Single pole","Medial and lateral poles","Anterior and posterior poles","No defined poles"], correct:1, explain:"Front view shows medial and lateral poles." },
+  { q: "Articular surface covering of condyle:", opts:["Hyaline cartilage","Elastic cartilage","Fibrocartilaginous tissue","Periosteum"], correct:2, explain:"TMJ articular surfaces are covered by fibrocartilage, not hyaline." },
+  { q: "Primary lubrication mechanism in TMJ:", opts:["Capillary filtration","Boundary lubrication","Cavitation","Lymphatic wicking"], correct:1, explain:"Boundary lubrication primarily prevents friction in a moving joint." },
+  { q: "Weeping lubrication refers to:", opts:["Fluid exuding from cartilage under load","Sweat glands near TMJ","Tears in synovium","Vascular leakage"], correct:0, explain:"Weeping lubrication releases synovial fluid from articular surfaces during compression." },
+  { q: "In normal joint, condylar contact aligns with which disc zone?", opts:["Anterior band","Intermediate zone","Posterior band","Retrodiscal tissue"], correct:1, explain:"The articular surface of the condyle lies on the intermediate zone in normal function." },
+  { q: "Articular disc composition:", opts:["Hyaline cartilage with vessels","Fibrous connective tissue, essentially avascular/aneural centrally","Elastic cartilage richly innervated","Bone with marrow"], correct:1, explain:"Disc is fibrous CT and centrally lacks blood vessels/nerve fibers; periphery slightly innervated." },
+  { q: "The disc divides the joint into:", opts:["Two communicating spaces","Upper and lower compartments that normally do not communicate","Three sacs","No true compartments"], correct:1, explain:"Disc and attachments create separate upper and lower spaces." },
+  { q: "Roof of the upper compartment:", opts:["Articular disc superior surface","Mandibular fossa","Condylar head","Sphenomandibular ligament"], correct:1, explain:"Upper compartment roof is the mandibular fossa; floor is the disc's superior surface." },
+  { q: "Floor of the lower compartment:", opts:["Inferior surface of disc","Articular eminence","Temporal bone roof","Stylomandibular ligament"], correct:0, explain:"Lower compartment floor is the condylar articulating surface; roof is the disc's inferior surface." },
+  { q: "A key function of the articular disc:", opts:["Actively moves the joint","Stabilizes joint and reduces wear","Supplies blood to condyle","Transmits taste"], correct:1, explain:"Disc stabilizes TMJ, reduces wear and aids lubrication." },
+  { q: "Which statement about TMJ ligaments is TRUE?", opts:["They actively move the joint","They passively limit extremes of movement","They are muscular attachments","They communicate synovial spaces"], correct:1, explain:"Ligaments do not actively control movement; they restrict extremes." },
+  { q: "Collateral (discal) ligament primarily:", opts:["Restricts disc from condyle","Encompasses the joint","Limits posterior movement","Supplies nerves to disc"], correct:0, explain:"Collateral ligament restricts movement of disc away from condyle." },
+  { q: "Capsular ligament function:", opts:["Encompasses joint and retains synovial fluid","Prevents protrusion","Attaches to hyoid","Innervates retrodiscal tissue"], correct:0, explain:"Capsular ligament encloses the joint, helping retain synovial fluid." },
+  { q: "Temporomandibular (lateral) ligament limits:", opts:["Protrusion only","Posterior movement and excessive dropping of condyle","Mediotrusion only","Disc translation"], correct:1, explain:"It resists excessive dropping and limits posterior movement of condyle and disc." },
+  { q: "Sphenomandibular ligament:", opts:["Major limiter of movement","No significant limiting effect","Prevents retrusion","Forms articular eminence"], correct:1, explain:"Accessory ligament with minimal limiting effect on mandibular motion." },
+  { q: "Stylomandibular ligament:", opts:["Limits excessive protrusion","Limits depression","No effect","Supplies synovial fluid"], correct:0, explain:"It limits excessive protrusive movements of the mandible." },
+  { q: "Primary muscles of mastication include ALL EXCEPT:", opts:["Masseter","Temporalis","Lateral pterygoid","Digastric"], correct:3, explain:"Digastric is a suprahyoid (secondary) muscle; primaries are masseter, temporalis, medial & lateral pterygoids." }
 ];
 
 const tfs = [
-  {q:'TMJ is structurally present at birth but often matures functionally by 16–20 years.', answer:true, explain:'Postnatal remodeling with eruption and mastication continues to adolescence.'},
-  {q:'The TMJ is a fibrous joint.', answer:false, explain:'It is a synovial joint (ginglymoarthrodial).'},
-  {q:'Hinge movement corresponds to rotation of the mandibular condyle.', answer:true, explain:'Hinge = rotation; early opening/closing.'},
-  {q:'TMJ articular surfaces are covered by hyaline cartilage.', answer:false, explain:'They are covered by fibrocartilage.'},
-  {q:'The central part of the articular disc contains abundant blood vessels and nerves.', answer:false, explain:'It is devoid of vessels and nerves; slight peripheral innervation only.'},
-  {q:'Upper and lower joint compartments normally communicate during function.', answer:false, explain:'They are separate synovial spaces.'},
-  {q:'The sphenomandibular ligament strongly restricts mandibular movements.', answer:false, explain:'It has no significant limiting effect.'},
-  {q:'The stylomandibular ligament limits excessive protrusive movements.', answer:true, explain:'Yes, it helps limit protrusion.'},
-  {q:'Boundary lubrication is considered the primary lubrication mechanism in TMJ.', answer:true, explain:'Boundary lubrication prevents friction during movement.'},
-  {q:'A panoramic radiograph (OPG) is best for detailed soft‑tissue evaluation of the disc.', answer:false, explain:'OPG provides a broad overview of osseous structures, not soft tissue.'},
-  {q:'MRI is used to evaluate soft tissues such as the articular disc and joint effusion.', answer:true, explain:'MRI shows disc displacement (T1) and effusion (T2).'},
-  {q:'CBCT/MDCT are valuable for assessing the osseous components of the TMJ.', answer:true, explain:'Advanced CT modalities visualize bony detail of the joint.'},
+  { q:"TMJ articular surfaces are covered by hyaline cartilage.", answer:false, explain:"They are covered by fibrocartilage." },
+  { q:"Auriculotemporal nerve contributes to TMJ innervation.", answer:true, explain:"Along with deep temporal and masseteric branches (V3)." },
+  { q:"Panoramic imaging (OPG) provides a broad overview of TMJ-region anatomy.", answer:true, explain:"Conventional panoramic imaging gives an overview of osseous structures." },
+  { q:"MRI is primarily used for evaluating osseous detail of TMJ.", answer:false, explain:"MRI is best for soft tissues (disc, effusion); CT/CBCT for bone." },
+  { q:"Joint space appears radiopaque on conventional radiographs/CT.", answer:false, explain:"It appears as a radiolucent space." },
+  { q:"Weeping lubrication helps prevent sticking during compressive forces.", answer:true, explain:"Fluid expression under load reduces friction and sticking." },
+  { q:"In a normal joint, the condyle articulates against the posterior band of the disc.", answer:false, explain:"It aligns with the intermediate zone." },
+  { q:"TMJ synovial compartments normally communicate freely.", answer:false, explain:"Upper and lower compartments do not normally communicate." },
+  { q:"Stylomandibular ligament limits excessive protrusion.", answer:true, explain:"Yes, it checks protrusive movements." },
+  { q:"Sphenomandibular ligament has significant limiting effects on jaw motion.", answer:false, explain:"It generally does not significantly limit motion." },
+  { q:"CBCT/MDCT are advanced imaging modalities for TMJ bone.", answer:true, explain:"They provide detailed osseous imaging." },
+  { q:"TMJ achieves adult morphology immediately at birth.", answer:false, explain:"It's present at birth but functionally matures by ~16–20 years." }
 ];
 
 const saqs = [
-  { q: 'Outline the embryological development of the TMJ with key weeks and structures.', a: 'Origin: 6th–8th week from 1st pharyngeal arch (Meckel\'s cartilage). 8th–10th: condylar blastema forms cartilage → mandibular condyle; temporal blastema ossifies → squamous temporal bone. 10th–12th: mesenchyme splits into upper/lower synovial cavities. 12th week: disc forms from condensed mesenchyme. 12th–20th: capsule, synovium and ligaments develop; condylar cartilage acts as a growth site. Postnatal adaptation continues with eruption/mastication; adult morphology by ~16–20 years.' },
-  { q: 'Describe the articular disc (composition, zones, compartments, functions).', a: 'Disc is fibrous connective tissue, centrally avascular/aneural with slight peripheral innervation. Zones: anterior band, intermediate zone, posterior band; condyle normally articulates with the intermediate zone. Disc + attachments divide joint into upper (roof: mandibular fossa; floor: superior disc) and lower (roof: inferior disc; floor: condyle) compartments that do not communicate. Functions: stabilizes joint, shapes joint space, helps lubrication (weeping/boundary), reduces wear.' },
-  { q: 'Compare imaging modalities used for the TMJ.', a: 'Conventional panoramic (OPG): broad overview of osseous structures. CBCT/MDCT: detailed 3D assessment of bony components. MRI: evaluates soft tissues (disc displacement on T1; joint effusion on T2). Ultrasonography: adjunct for certain soft‑tissue assessments.' },
+  { q: "Outline the embryologic timeline of TMJ development.", a: "6th–8th week: First arch origin; condylar & temporal blastemas appear. 8th–10th: Condylar cartilage forms; temporal blastema ossifies to squamous temporal bone. 10th–12th: Mesenchyme splits into upper & lower cavities. ~12th week: Articular disc condenses. 12th–20th week: Capsule, synovium & ligaments form. Postnatal: Remodeling with eruption/mastication; adult morphology ~16–20 years." },
+  { q: "List the major and accessory ligaments of the TMJ with key functions.", a: "Functional: Collateral (restricts disc from condyle), Capsular (encompasses joint, retains synovial fluid), Temporomandibular/lateral (limits posterior movement; resists excessive dropping). Accessory: Sphenomandibular (minimal limiting effect), Stylomandibular (limits excessive protrusion)." },
+  { q: "Differentiate imaging modalities for TMJ evaluation.", a: "Conventional panoramic (OPG): overview of osseous region. CBCT/MDCT: detailed osseous anatomy. MRI: soft tissues (disc position, effusion; e.g., T1 for disc displacement, T2 for effusion). Ultrasonography: adjunct for superficial soft tissues." }
 ];
 
 // ----------- State -----------

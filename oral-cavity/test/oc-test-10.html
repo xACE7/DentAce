@@ -32,7 +32,7 @@
   .wrap{max-width:1100px;margin:0 auto;padding:24px;}
 
   .titlebar{
-    position:sticky;top:0;z-index:10;
+    position: static;z-index:10;
     backdrop-filter:saturate(140%) blur(8px);
     background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
     border-bottom:1px solid var(--glass-border);
@@ -92,7 +92,7 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
   /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
@@ -107,7 +107,7 @@
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
@@ -169,66 +169,377 @@
   </main>
 
 <script>
-// ----------- Data (filled from lecture topic) -----------
+// ----------- Data (from lecture) -----------
 const mcqs = [
-  { q:"The dental lamina gives rise to primary tooth germs as localized proliferations. What are these called?", opts:["Accessional teeth","Successional teeth","Supernumerary buds","Enamel knots"], correct:1, explain:"Successional teeth originate as localized proliferations from the dental lamina of each primary tooth germ." },
-  { q:"Accessional teeth (permanent molars) arise as:", opts:["Anterior extension of vestibular lamina","Posterior extension of dental lamina","Division of enamel organ","Migration of HERS"], correct:1, explain:"Permanent molars develop from a posterior extension of the dental lamina." },
-  { q:"Correct chronological order of histologic stages is:", opts:["Bud → Bell → Cap → Apposition","Cap → Bud → Early Bell → Advanced Bell","Bud → Cap → Early Bell → Advanced Bell","Early Bell → Bud → Cap → Advanced Bell"], correct:2, explain:"Standard progression: bud, cap, early bell, advanced bell." },
-  { q:"Which component first appears as a rounded epithelial invagination into ectomesenchyme?", opts:["Bud stage enamel organ","Dental papilla","Dental follicle","Reduced enamel epithelium"], correct:0, explain:"The bud is an epithelial proliferation from the dental lamina." },
-  { q:"The cap stage is characterized by formation of:", opts:["Hertwig's epithelial root sheath","Enamel knot and concave enamel organ","Cervical loop elongation","Reduced enamel epithelium"], correct:1, explain:"Cap stage shows a concave enamel organ with a primary enamel knot signaling center." },
-  { q:"Which tissues constitute the tooth germ?", opts:["Enamel organ only","Dental papilla only","Enamel organ, dental papilla, dental follicle","Dental follicle and HERS"], correct:2, explain:"The classic triad forms the tooth germ in cap stage." },
-  { q:"Inner enamel epithelium differentiates into:", opts:["Ameloblasts","Odontoblasts","Cementoblasts","Fibroblasts"], correct:0, explain:"IEE cells elongate and become ameloblasts to secrete enamel." },
-  { q:"Odontoblasts are derived from:", opts:["Inner enamel epithelium","Outer enamel epithelium","Stratum intermedium","Dental papilla ectomesenchyme"], correct:3, explain:"Odontoblasts differentiate from peripheral dental papilla." },
-  { q:"The sequence at the cusp tip is:", opts:["Amelogenesis precedes dentinogenesis","Dentinogenesis precedes amelogenesis","Cementogenesis precedes both","They start simultaneously with cementum"], correct:1, explain:"Predentin formation by odontoblasts induces ameloblasts to secrete enamel." },
-  { q:"Which layer provides supportive metabolism for ameloblasts during bell stage?", opts:["Stratum intermedium","Outer enamel epithelium","Stellate reticulum","Reduced enamel epithelium"], correct:0, explain:"Stratum intermedium aids mineral transport and enamel maturation." },
-  { q:"The stellate reticulum is best described as:", opts:["A layer of columnar cells producing dentin","A star-shaped cell network within enamel organ","A continuation of HERS","A connective tissue capsule"], correct:1, explain:"SR is a hydrated, star-shaped cell network that maintains enamel organ shape." },
-  { q:"The cervical loop is the junction of:", opts:["IEE and OEE","IEE and stratum intermedium","OEE and stellate reticulum","Ameloblasts and odontoblasts"], correct:0, explain:"Cervical loop is where IEE meets OEE; later gives rise to HERS." },
-  { q:"Hertwig's epithelial root sheath (HERS) is formed by:", opts:["IEE + OEE at the cervical loop","OEE only","SR + SI","Reduced enamel epithelium"], correct:0, explain:"HERS is a bilayer from the cervical loop that guides root formation." },
-  { q:"Breakdown of HERS permits contact of dental papilla with dental follicle to form:", opts:["Enamel","Cementum","Dentin","Pulp"], correct:1, explain:"Disintegration of HERS allows ectomesenchyme to differentiate into cementoblasts forming cementum." },
-  { q:"Which structure becomes the dentinoenamel junction (DEJ)?", opts:["Basement membrane between IEE and dental papilla","Basal lamina of OEE","HERS","Gubernacular canal"], correct:0, explain:"The early basement membrane location becomes the DEJ after apposition." },
-  { q:"Reduced enamel epithelium (REE) forms from:", opts:["OEE alone","Ameloblasts + remnants of enamel organ after enamel completion","Stellate reticulum only","HERS"], correct:1, explain:"REE covers enamel and participates in eruption/attachment." },
-  { q:"The gubernacular canal is associated with:", opts:["Eruption pathway of successional teeth","Root bifurcation","Formation of enamel rods","Fusion of dental lamina"], correct:0, explain:"It contains the gubernacular cord guiding eruption of successional teeth." },
-  { q:"Primary enamel knot functions primarily as:", opts:["A mechanical spacer","A signaling center controlling cusp patterning","A nutrient channel","A resorptive organ"], correct:1, explain:"The enamel knot expresses signaling molecules guiding cusp morphogenesis." },
-  { q:"Which is NOT part of the enamel organ in bell stage:", opts:["Inner enamel epithelium","Outer enamel epithelium","Dental papilla","Stratum intermedium"], correct:2, explain:"Dental papilla is mesenchyme; enamel organ is epithelial (IEE, OEE, SR, SI)." },
-  { q:"Which event marks transition from early to advanced bell stage?", opts:["Cap formation","Histodifferentiation and morphodifferentiation completion","HERS formation","Eruption"], correct:1, explain:"Advanced bell shows hard tissue apposition after cell differentiation and crown shape determination." },
-  { q:"Which is true about successional lamina?", opts:["Gives rise to permanent molars","Extends lingual to primary teeth to form successors","Derived from vestibular lamina","Part of HERS"], correct:1, explain:"Successional lamina forms lingual to primary teeth for incisors, canines, premolars." },
-  { q:"Accessional teeth include:", opts:["Permanent incisors","Permanent canines","Permanent molars","Primary molars"], correct:2, explain:"Permanent molars have no primary predecessors (accessional)." },
-  { q:"The dental follicle (sac) gives rise to all EXCEPT:", opts:["Cementum","Periodontal ligament","Alveolar bone proper","Enamel"], correct:3, explain:"Enamel is epithelial, produced by ameloblasts; follicle forms PDL, cementum, alveolar bone." },
-  { q:"During apposition, the first mineralized tissue laid down is typically:", opts:["Enamel","Mantle dentin","Cementum","Secondary dentin"], correct:1, explain:"Odontoblasts lay mantle dentin first, then enamel deposition follows." },
-  { q:"Which best describes the vestibular lamina?", opts:["A groove-forming epithelial band for oral vestibule","Future site of DEJ","Root sheath for molars","Epithelial rests of Malassez"], correct:0, explain:"Vestibular lamina splits to form the oral vestibule, distinct from dental lamina." },
-  { q:"Epithelial rests of Malassez are remnants of:", opts:["Dental lamina","HERS","Stellate reticulum","Successional lamina"], correct:1, explain:"ERM in PDL are HERS remnants." },
-  { q:"Which layer disappears as enamel matures toward eruption?", opts:["Stratum intermedium and stellate reticulum","OEE","IEE","Dental follicle"], correct:0, explain:"SR collapses and SI diminishes as REE forms." },
-  { q:"Cervical loop proliferation apically mainly contributes to:", opts:["Cusp patterning","Root lengthening","Enamel rod orientation","Eruption pathway"], correct:1, explain:"Apical growth creates HERS guiding root length and shape." },
-  { q:"Which reading is recommended for detailed tooth development per the lecture?", opts:["Guyton Physiology pp. 100-120","Ten Cate's Oral Histology pp. 70–94","Wheeler's Dental Anatomy ch. 2","Netter Atlas plates 1–10"], correct:1, explain:"Essential reading highlighted: Ten Cate pp. 70–94 and James K. Avery pp. 63–80." },
-  { q:"According to the session outcomes, students should be able to:", opts:["Memorize eruption ages only","Illustrate and examine bud, cap, early bell, advanced bell stages","Perform clinical restorations","Describe cranial nerve nuclei"], correct:1, explain:"CLO/SLO emphasize illustrating and examining histologic stages of tooth development." }
+  {
+    q:"When does root development begin?",
+    opts:[
+      "At initiation of enamel organ",
+      "Once enamel and dentin reach the future CEJ",
+      "Only after tooth eruption",
+      "Before crown mineralization"
+    ],
+    correct:1,
+    explain:"Root formation starts when enamel and dentin formation reach the future cemento-enamel junction (CEJ)."
+  },
+  {
+    q:"Hertwig’s Epithelial Root Sheath (HERS) arises from proliferation of which layers?",
+    opts:[
+      "Inner and outer enamel epithelium from the cervical loop",
+      "Stratum intermedium and stellate reticulum",
+      "Reduced enamel epithelium",
+      "Dental follicle"
+    ],
+    correct:0,
+    explain:"IEE and OEE proliferate from the cervical loop to form a double epithelial membrane (HERS)."
+  },
+  {
+    q:"Which is NOT a function of HERS?",
+    opts:[
+      "Shapes the root",
+      "Induces root dentin formation",
+      "Forms enamel pearls directly",
+      "Helps establish apical foramen via epithelial diaphragm"
+    ],
+    correct:2,
+    explain:"HERS shapes the root and induces odontoblast differentiation; enamel pearls occur if HERS remnants differentiate into ameloblasts abnormally."
+  },
+  {
+    q:"The epithelial diaphragm is best described as:",
+    opts:[
+      "A fold of REE sealing the crown pre-eruption",
+      "An obtuse bend of HERS at the future CEJ narrowing the apical foramen",
+      "A ligament at the apex",
+      "The fusion line of dental lamina"
+    ],
+    correct:1,
+    explain:"HERS bends at an obtuse angle at the CEJ to form the epithelial diaphragm, causing primary narrowing of the apical foramen."
+  },
+  {
+    q:"Correct sequence for single-rooted tooth development:",
+    opts:[
+      "HERS → odontoblasts → dentin → HERS disintegration → cementoblasts",
+      "Odontoblasts → HERS → dentin → cementoblasts → disintegration",
+      "Dentin → cementoblasts → HERS → odontoblasts",
+      "Cementoblasts → HERS → dentin → odontoblasts"
+    ],
+    correct:0,
+    explain:"Cervical loop proliferates to HERS, which induces odontoblasts and dentin; HERS then disintegrates, allowing cementoblast differentiation."
+  },
+  {
+    q:"Rests of Malassez are located primarily in the:",
+    opts:[
+      "Dental papilla",
+      "Periodontal ligament",
+      "Enamel",
+      "Pulp chamber"
+    ],
+    correct:1,
+    explain:"After HERS disintegration, epithelial cell rests of Malassez persist in the PDL throughout life."
+  },
+  {
+    q:"Which event allows cementoblast differentiation?",
+    opts:[
+      "Persistence of intact HERS over dentin",
+      "Contact of formed root dentin with the dental follicle",
+      "Ameloblast migration into root",
+      "Odontoclast activation"
+    ],
+    correct:1,
+    explain:"When dentin contacts the dental follicle, follicular cells differentiate into cementoblasts and lay down cementum."
+  },
+  {
+    q:"Enamel pearls most commonly arise when:",
+    opts:[
+      "HERS remains adherent and inner cells become ameloblasts",
+      "Cervical loop fails to form",
+      "Odontoblasts stop secreting dentin",
+      "Cementoblasts overproduce cementum"
+    ],
+    correct:0,
+    explain:"Adherent HERS cells may differentiate into ameloblasts in CEJ/furcation → enamel pearls."
+  },
+  {
+    q:"Dilaceration is associated with:",
+    opts:[
+      "Early crown morphogenesis",
+      "HERS dislocation after partial root mineralization",
+      "Failure of dental lamina breakdown",
+      "Hypercementosis"
+    ],
+    correct:1,
+    explain:"Displacement of HERS after partial root mineralization can bend/twist the remaining root (dilaceration)."
+  },
+  {
+    q:"Accessory root canals may form when:",
+    opts:[
+      "HERS loses continuity before odontoblast differentiation",
+      "Odontoblasts deposit excessive predentin",
+      "Ameloblasts remain active post-eruption",
+      "Cementoblasts mineralize the pulp"
+    ],
+    correct:0,
+    explain:"Loss of HERS continuity (or a large blood vessel interrupting it) before dentin formation can create accessory canals."
+  },
+  {
+    q:"Reduced Enamel Epithelium (REE) forms from the fusion of:",
+    opts:[
+      "IEE + OEE only",
+      "Ameloblasts + stratum intermedium + stellate reticulum + OEE",
+      "HERS + dental follicle",
+      "Odontoblasts + preameloblasts"
+    ],
+    correct:1,
+    explain:"After enamel formation, these enamel organ layers collapse and fuse to form REE."
+  },
+  {
+    q:"Primary role of REE before eruption:",
+    opts:[
+      "Initiates dentinogenesis",
+      "Protects enamel from resorption and connective tissue invasion",
+      "Forms cementum",
+      "Maintains pulp vitality"
+    ],
+    correct:1,
+    explain:"REE protects the newly formed enamel surface prior to eruption."
+  },
+  {
+    q:"In multi-rooted teeth, the number of roots is determined when:",
+    opts:[
+      "Tongue-like processes from the epithelial diaphragm grow and fuse",
+      "REE fuses with oral epithelium",
+      "Dental lamina fragments",
+      "PDL fibers insert into cementum"
+    ],
+    correct:0,
+    explain:"Processes from the epithelial diaphragm divide the root trunk into 2 or 3 roots."
+  },
+  {
+    q:"HERS induces differentiation of which cells for root dentin?",
+    opts:[
+      "Ameloblasts from enamel organ",
+      "Odontoblasts from dental papilla",
+      "Cementoblasts from dental follicle",
+      "Fibroblasts from PDL"
+    ],
+    correct:1,
+    explain:"IEE of HERS induces ectomesenchymal cells of dental papilla to become odontoblasts."
+  },
+  {
+    q:"Which tissue gives rise to cementoblasts?",
+    opts:[
+      "Dental papilla",
+      "Dental follicle (sac)",
+      "Stellate reticulum",
+      "Outer enamel epithelium"
+    ],
+    correct:1,
+    explain:"Follicular undifferentiated mesenchymal cells become cementoblasts after dentin formation."
+  },
+  {
+    q:"The apical foramen is initially narrowed due to:",
+    opts:[
+      "REE fusion",
+      "Epithelial diaphragm",
+      "PDL fiber formation",
+      "Cementum deposition"
+    ],
+    correct:1,
+    explain:"The epithelial diaphragm at the bending of HERS creates a primary narrowing of the apical foramen."
+  },
+  {
+    q:"During root development, where does HERS remain intact?",
+    opts:[
+      "At the cervical loop only",
+      "Across the entire root surface",
+      "Only at the advancing root edge",
+      "It never remains intact"
+    ],
+    correct:2,
+    explain:"HERS disintegrates behind but stays intact at the advancing root edge where induction continues."
+  },
+  {
+    q:"The ‘root trunk’ of molars initially develops like:",
+    opts:[
+      "A multi-rooted tooth",
+      "A single-rooted tooth",
+      "A rootless crown",
+      "A deciduous tooth only"
+    ],
+    correct:1,
+    explain:"Root trunk forms as in a single-rooted tooth before diaphragm processes divide it."
+  },
+  {
+    q:"Which statement about epithelial rests of Malassez is TRUE?",
+    opts:[
+      "They calcify into enamel pearls",
+      "They are found in PDL and may proliferate into cysts/tumors with chronic inflammation",
+      "They produce cementum",
+      "They disappear immediately after eruption"
+    ],
+    correct:1,
+    explain:"Rests persist in PDL; chronic inflammation can drive cystic changes."
+  },
+  {
+    q:"Which event immediately follows odontoblast differentiation during root formation?",
+    opts:[
+      "Cementum formation",
+      "Root dentin formation",
+      "REE formation",
+      "Eruption"
+    ],
+    correct:1,
+    explain:"Differentiated odontoblasts lay down the first layer of root dentin."
+  },
+  {
+    q:"Which best describes the cervical loop?",
+    opts:[
+      "Junction of IEE and OEE at the rim of the enamel organ",
+      "Fusion of REE with oral epithelium",
+      "PDL insertion site",
+      "Apical papilla remnant"
+    ],
+    correct:0,
+    explain:"Proliferation from the cervical loop initiates HERS formation."
+  },
+  {
+    q:"Failure of HERS continuity due to a large blood vessel may lead to:",
+    opts:[
+      "Hypercementosis",
+      "Accessory root canals",
+      "Taurodontism",
+      "Ankylosis"
+    ],
+    correct:1,
+    explain:"Interruption of HERS can create lateral/accessory canals."
+  },
+  {
+    q:"Which combination is correct for enamel pearl location?",
+    opts:[
+      "Incisal edge exclusively",
+      "CEJ and furcation areas, particularly molars",
+      "Apical foramen only",
+      "Pulp horns"
+    ],
+    correct:1,
+    explain:"Enamel pearls are often seen at the CEJ or in molar furcations."
+  },
+  {
+    q:"What primarily triggers cementoblast differentiation?",
+    opts:[
+      "Persistence of REE",
+      "Exposure of dental follicle cells to formed dentin",
+      "Ameloblast apoptosis",
+      "PDL fiber maturation"
+    ],
+    correct:1,
+    explain:"Dentin contacting follicle cells induces them to become cementoblasts."
+  },
+  {
+    q:"Which layer directly protects enamel pre-eruption?",
+    opts:[
+      "HERS",
+      "REE",
+      "PDL",
+      "Cementum"
+    ],
+    correct:1,
+    explain:"Reduced Enamel Epithelium protects enamel from resorption and connective tissue invasion."
+  },
+  {
+    q:"Which is TRUE regarding HERS fate?",
+    opts:[
+      "Persists around the entire root permanently",
+      "Fully transforms into REE",
+      "Disintegrates leaving cell rests in the PDL",
+      "Mineralizes into dentin"
+    ],
+    correct:2,
+    explain:"HERS fragments and leaves epithelial rests of Malassez in the PDL."
+  },
+  {
+    q:"The first hard tissue of the root to form is:",
+    opts:[
+      "Cementum",
+      "Dentin",
+      "Enamel",
+      "Alveolar bone"
+    ],
+    correct:1,
+    explain:"Odontoblasts deposit the first layer of root dentin before cementum forms."
+  },
+  {
+    q:"Which structure does NOT contribute to REE formation?",
+    opts:[
+      "Ameloblasts",
+      "Stratum intermedium",
+      "Stellate reticulum",
+      "Dental follicle"
+    ],
+    correct:3,
+    explain:"REE is formed by enamel organ components, not the dental follicle."
+  },
+  {
+    q:"A primary function shared by HERS and the epithelial diaphragm is to:",
+    opts:[
+      "Shape the root anatomy and apical opening",
+      "Produce enamel matrix",
+      "Induce cementoid directly",
+      "Anchor PDL fibers"
+    ],
+    correct:0,
+    explain:"HERS shapes roots; its diaphragm portion helps define the apical opening."
+  },
+  {
+    q:"Which BEST explains why dilaceration is more common in permanent teeth?",
+    opts:[
+      "Primary teeth lack HERS",
+      "Permanent roots mineralize longer, increasing risk if HERS is displaced during development",
+      "PDL is absent in primary teeth",
+      "Enamel is thinner in permanent teeth"
+    ],
+    correct:1,
+    explain:"Displacement during longer root development of permanent teeth can bend/twist roots (dilaceration)."
+  },
+  {
+    q:"Multi-rooted development proceeds AFTER division of the root trunk such that each root:",
+    opts:[
+      "Develops independently like a single root",
+      "Depends on crown enamel completion",
+      "Grows only via cementum deposition",
+      "Loses HERS entirely"
+    ],
+    correct:0,
+    explain:"After diaphragm processes fuse, each root continues as in a single-rooted tooth."
+  }
 ];
 
 const tfs = [
-  { q:"In the cap stage, the tooth germ consists of enamel organ, dental papilla, and dental follicle.", answer:true, explain:"These three components define the tooth germ." },
-  { q:"Ameloblasts derive from dental papilla.", answer:false, explain:"Ameloblasts derive from inner enamel epithelium; odontoblasts from papilla." },
-  { q:"HERS is responsible for crown morphogenesis.", answer:false, explain:"Crown shape is set earlier; HERS guides root formation." },
-  { q:"The DEJ corresponds to the site of the original basement membrane between IEE and papilla.", answer:true, explain:"That interface becomes the DEJ after apposition." },
-  { q:"Permanent molars are successional teeth.", answer:false, explain:"They are accessional teeth forming from a posterior dental lamina extension." },
-  { q:"The enamel knot acts as a transient signaling center for cusp patterning.", answer:true, explain:"It regulates morphogenesis during cap/bell stages." },
-  { q:"The dental follicle contributes to PDL, cementum, and alveolar bone.", answer:true, explain:"Collectively termed the periodontium." },
-  { q:"Dentinogenesis begins after amelogenesis starts.", answer:false, explain:"Dentin forms first; enamel follows." },
-  { q:"Reduced enamel epithelium participates in eruption and forms the junctional epithelium after eruption.", answer:true, explain:"REE fuses with oral epithelium and contributes to JE." },
-  { q:"Epithelial rests of Malassez are remnants of the dental lamina.", answer:false, explain:"They are remnants of HERS within the PDL." },
-  { q:"Successional lamina forms lingual to primary teeth to produce incisors, canines, and premolars.", answer:true, explain:"These are successors of primary teeth." },
-  { q:"Stellate reticulum is a mesenchymal structure.", answer:false, explain:"It is epithelial and lies within the enamel organ." }
+  { q:"Root formation begins once enamel and dentin reach the future CEJ.", answer:true,  explain:"This timing initiates HERS formation and root induction." },
+  { q:"HERS is derived from stratum intermedium and stellate reticulum only.", answer:false, explain:"It derives from IEE and OEE proliferating from the cervical loop." },
+  { q:"The epithelial diaphragm causes the primary narrowing of the apical foramen.", answer:true,  explain:"It is the obtuse bend of HERS at the CEJ." },
+  { q:"HERS remains intact around the entire root until eruption.", answer:false, explain:"It disintegrates except at the advancing root edge." },
+  { q:"Epithelial rests of Malassez persist in the periodontal ligament (PDL).", answer:true,  explain:"They are remnants of HERS in the PDL." },
+  { q:"Enamel pearls may form if adherent HERS cells differentiate into ameloblasts at CEJ/furcation.", answer:true,  explain:"This can produce small spherical enamel projections." },
+  { q:"Dilaceration can result from HERS dislocation after partial root mineralization.", answer:true,  explain:"Remaining root may bend or twist." },
+  { q:"Cementoblasts are derived from dental papilla cells.", answer:false, explain:"They differentiate from dental follicle cells after dentin formation." },
+  { q:"Accessory root canals may develop if HERS loses continuity before dentin forms.", answer:true,  explain:"Or if a large blood vessel interrupts HERS." },
+  { q:"Reduced Enamel Epithelium forms before enamel formation begins.", answer:false, explain:"REE forms after enamel formation when enamel organ layers fuse." },
+  { q:"In multi-rooted teeth, tongue-like processes of the epithelial diaphragm fuse to divide the root trunk.", answer:true,  explain:"This creates two or three roots." },
+  { q:"HERS induces differentiation of dental papilla cells into odontoblasts.", answer:true,  explain:"IEE of HERS drives odontoblast formation and root dentin." }
 ];
 
 const saqs = [
-  { q: "Outline the key histologic differences between bud, cap, early bell, and advanced bell stages.", a: "Bud: epithelial knob invading ectomesenchyme. Cap: concave enamel organ with enamel knot; tooth germ visible (enamel organ, papilla, follicle). Early bell: IEE, OEE, stellate reticulum, stratum intermedium; histo- and morphodifferentiation. Advanced bell: onset of apposition—predentin then enamel; DEJ established." },
-  { q: "Differentiate successional from accessional teeth and specify their lamina origins.", a: "Successional teeth (incisors, canines, premolars) arise from successional lamina lingual to primary teeth via localized dental lamina proliferation. Accessional teeth (permanent molars) arise from a posterior extension of the dental lamina." },
-  { q: "Describe the role of the cervical loop and HERS in root formation.", a: "Cervical loop (junction of IEE and OEE) proliferates apically to form HERS, a bilayer that molds root shape and induces root dentin. Disintegration of HERS allows dental follicle cells to contact dentin and differentiate into cementoblasts." }
+  { q:"Outline the steps in development of a single-rooted tooth.", a:"1) IEE & OEE proliferate from the cervical loop → HERS. 2) HERS induces dental papilla cells to become odontoblasts. 3) Odontoblasts lay down first layer of root dentin. 4) HERS disintegrates → rests of Malassez remain. 5) Dentin contact with dental follicle induces cementoblasts → cementum deposition." },
+  { q:"Describe Hertwig’s Epithelial Root Sheath (HERS) and the epithelial diaphragm.", a:"HERS is a double epithelial membrane formed by IEE+OEE proliferation from the cervical loop. It shapes the root and induces root dentin. At the CEJ it bends obtusely forming the epithelial diaphragm, which contributes to primary narrowing of the apical foramen." },
+  { q:"Discuss the fate of HERS and two clinical considerations.", a:"HERS disintegrates during root formation, persisting only at the advancing edge; remnants remain as epithelial rests of Malassez in the PDL and can proliferate into cysts/tumors with chronic inflammation. Clinical: (1) Enamel pearls if adherent HERS cells become ameloblasts (often at CEJ/furcation). (2) Dilaceration from HERS dislocation after partial root mineralization; (3) Accessory canals if HERS continuity is lost before dentin forms." }
 ];
 
 // ----------- State -----------
 const state = {
-  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
-  tf: Array(tfs.length).fill(null),   // null | boolean
-  saq: Array(saqs.length).fill(false) // self-marked
+  mcq: Array(mcqs.length).fill(null),
+  tf: Array(tfs.length).fill(null),
+  saq: Array(saqs.length).fill(false)
 };
 
 function shuffleIndices(n){
@@ -278,19 +589,16 @@ mcqs.forEach((item, idx)=>{
 
   buttons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      if(card.dataset.locked === 'true') return; // one attempt
+      if(card.dataset.locked === 'true') return;
       const v = Number(btn.dataset.v);
       state.mcq[idx] = v;
 
-      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
-      // Always mark the correct option (green)
       const correctBtn = buttons[correctVisualIndex];
       correctBtn.classList.add('correct');
 
       if(v !== correctVisualIndex){
-        // Mark chosen wrong option (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
@@ -338,20 +646,17 @@ tfs.forEach((item, idx)=>{
 
   buttons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      if(card.dataset.locked === 'true') return; // one attempt
+      if(card.dataset.locked === 'true') return;
       const val = btn.dataset.v === "true";
       state.tf[idx] = val;
 
-      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
-      // Always mark the correct button (green)
       const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
       correctBtn.classList.add('correct');
 
       const isCorrect = (val === item.answer);
       if(!isCorrect){
-        // mark chosen wrong (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;

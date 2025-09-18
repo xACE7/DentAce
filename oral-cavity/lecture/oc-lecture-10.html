@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>🦷 Dentistry 3rd year — Development of Tooth (Part 4): Root Formation</title>
+<title>🦷 Dentistry 3rd year — Root Formation (Tooth Development Part 4)</title>
 <meta name="color-scheme" content="dark" />
 <style>
   :root{
@@ -11,9 +11,7 @@
     --text:#f6f7fb;
     --muted:#a6afc6;
     --radius:16px;
-    --gap:1.5rem;
-    --glossary-glow:#8b5cf6;
-    --flash-glow:#06b6d4;
+    --gap:1.25rem;
 
     /* Callout colors */
     --callout-gold:#eab308;
@@ -24,73 +22,99 @@
     --callout-cyan:#22d3ee;
     --callout-blue:#60a5fa;
     --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
   }
 
+  /* Base */
   body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
-  .wrap{max-width:1200px;margin:0 auto;padding:24px;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
 
-  /* Page-level language visibility (only affects elements that include .en/.ar spans) */
-  .lang-en .ar{display:none !important;}
-  .lang-ar .en{display:none !important;}
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
 
-  header{position:sticky;top:0;z-index:10;backdrop-filter:blur(8px);background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}  
-  .hdr{display:flex;justify-content:space-between;align-items:center;padding:20px 32px;}
-  .title{font-weight:800;font-size:clamp(1.6rem,1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.4),0 0 12px rgba(139,92,246,.35);} 
-  .subtitle{color:var(--muted);font-size:1rem;margin-top:6px;}
-  .lang-toggle{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);color:var(--text);padding:.6rem 1rem;border-radius:999px;cursor:pointer;}
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
 
-  /* Match section look for dua, chip, glossary, flash headers */
+  /* Dua & Topic boxes (white glow global 15%) */
   .dua,
-  .chip-box,
-  .glossary-box,
-  .flashcards-box{
+  .chip-box{
     border:1px solid rgba(255,255,255,.12);
     background:rgba(255,255,255,.05);
     border-radius:var(--radius);
-    box-shadow:0 20px 40px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);
-    padding:1.6rem;
-    margin:20px 0;
-    display:flex;
-    align-items:center;
-    justify-content:center;
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
   }
-  .dua{font-size:1.1rem;text-align:center;}
-  .chip{font-weight:800;font-size:1.2rem;color:var(--muted);}
-  .glossary-box h3,.flashcards-box h3{margin:0;font-size:1.15rem;letter-spacing:.2px;opacity:.95;}
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
 
-  .sections{display:flex;flex-direction:column;gap:var(--gap);}  
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
   .section{
-    display:grid;grid-template-columns:2fr 1fr;column-gap:2.5rem;flex:1;min-height:240px;
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
     background:rgba(255,255,255,.05);
     border:1px solid rgba(255,255,255,.12);
     border-radius:var(--radius);
-    padding:1.6rem;
-    box-shadow:0 20px 40px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);
-  }  
-  .section>div{display:flex;flex-direction:column;}
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
   .sec-head{
-    font-weight:800;
-    font-size:1.3rem;
-    margin:0 0 1rem 0;
-    padding:0.75rem 1rem;
-    border-radius:8px;
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
     background:rgba(255,255,255,.04);
     border:1px solid rgba(255,255,255,.1);
-    width:100%;
-    box-shadow:0 0 18px rgba(255,255,255,.06), 0 0 30px rgba(255,255,255,.15);
-    display:block;
-    box-sizing:border-box;
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
   }
-  .sec-body p{margin:.5rem 0;font-size:1rem;line-height:1.65;}
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
 
-  .callouts{display:flex;flex-direction:column;gap:.75rem;align-self:center;width:100%;}
-  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.3), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
   .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
   .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
   .callout .body[hidden]{display:none;}
-  .callout.open .hdr{opacity:.8;}
-
-  /* Type-specific borders */
   .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
   .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
   .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
@@ -100,377 +124,596 @@
   .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
   .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
 
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
   .grid{display:grid;gap:1rem;}
-  .grid.g3x4{grid-template-columns:repeat(3,1fr);} 
-  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:150px;box-shadow:0 0 22px rgba(255,255,255,.08), 0 0 30px rgba(255,255,255,.15);}  
-  .card.glossary{box-shadow:0 0 26px color-mix(in srgb,var(--glossary-glow)28%, transparent), 0 0 30px rgba(255,255,255,.15);} 
-  .card.flash{box-shadow:0 0 26px color-mix(in srgb,var(--flash-glow)28%, transparent), 0 0 30px rgba(255,255,255,.15);} 
-  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .3s;} 
-  .card.open .head{opacity:.6;} 
-  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;} 
-  .card .content[hidden]{display:none;} 
-
-  @media(max-width:960px){
-    .section{grid-template-columns:1fr;min-height:auto;padding:1.2rem;}
-    .dua,.chip-box,.glossary-box,.flashcards-box{padding:1.2rem;}
-    .grid.g3x4{grid-template-columns:repeat(2,1fr);} 
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
   }
-  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;} }
-
-  .dua,
-  .chip,
-  .sec-head,
-  .glossary-box h3,
-  .flashcards-box h3 {
-    font-weight:800;
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
     background:linear-gradient(90deg,#06b6d4,#8b5cf6);
-    -webkit-background-clip:text;
-    background-clip:text;
-    color:transparent;
-    text-shadow:0 0 8px rgba(6,182,212,.4),0 0 12px rgba(139,92,246,.35);
-    text-align:center;
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
   }
 
-  /* Small helper styles for inline lists and badges */
-  ul.clean{margin:.4rem 0;padding-left:1rem}
-  .badge{display:inline-block;padding:.15rem .5rem;border:1px solid rgba(255,255,255,.12);border-radius:8px;font-size:.85rem;color:var(--muted);margin:.1rem .2rem;background:rgba(255,255,255,.03)}
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          
+    --pad: 3px;         
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   
+    height: var(--h);
+    padding: 0 6px;     
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px);
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);
+    z-index: 0;
+  }
+
+  @keyframes bgToRight {0%{transform:translateX(0%)}70%{transform:translateX(108%)}100%{transform:translateX(100%)}}
+  @keyframes bgToLeft {0%{transform:translateX(100%)}70%{transform:translateX(-8%)}100%{transform:translateX(0%)}}
+  @keyframes bounceActive {0%{transform:scale(1)}40%{transform:scale(1.14)}70%{transform:scale(1.04)}100%{transform:scale(1.08)}}
+
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none; transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none; transform: scale(1.0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar { animation:none!important; transition:none!important; transform:none!important; }
+  }
 </style>
 </head>
 <body class="lang-en">
 <header>
   <div class="hdr wrap">
-    <div>
+    <div class="left">
       <div class="title">🦷 Dentistry 3rd year</div>
       <div class="subtitle">Lecture 10 <b>(by ACE)</b></div>
     </div>
-    <button id="langBtn" class="lang-toggle">EN / AR</button>
+    <button id="langBtn" class="lang-toggle" aria-label="Toggle language">
+      <span class="lab en">EN</span>
+      <span class="lab ar">AR</span>
+    </button>
   </div>
 </header>
 
-<main class="wrap" id="content">
-  <!-- Dua: ALWAYS Arabic, different each time -->
-  <div class="dua">اللَّهُمَّ انْفَعْنَا بِمَا عَلَّمْتَنَا، وَعَلِّمْنَا مَا يَنْفَعُنَا، وَزِدْنَا عِلْمًا</div>
+<main class="wrap">
+  <!-- Dua -->
+  <div class="dua">اللهم افتح علينا حكمتك وانشر علينا رحمتك يا ذا الجلال والإكرام</div>
 
-  <!-- Topic chip: bilingual -->
+  <!-- Topic -->
   <div class="chip-box">
     <span class="chip">
-      <span class="en">📑 Topic: <b>Development of Tooth — Part 4: Root Formation (HERS, REE & Clinical)</b></span>
-      <span class="ar">📑 الموضوع: <b>تطوّر السن — الجزء الرابع: تكوُّن الجذر (غمد الجذر الظهاري لهيرتوغ، الظهارة المينائية المختزلة والسريريات)</b></span>
+      <span class="en"><b>Topic: Root Formation — Tooth Development (Part 4)</b></span>
+      <span class="ar"><b>الموضوع: تكوّن الجذر — تطور السن (الجزء الرابع)</b></span>
     </span>
   </div>
 
   <div class="sections">
-    <!-- ===== Section 1 ===== -->
-    <section class="section" id="sec1">
-      <div>
-        <h2 class="sec-head"><span class="en">Reduced Enamel Epithelium (REE) 🧪</span><span class="ar">الظهارة المينائيّة المُخْتَزَلة (REE) 🧪</span></h2>
+    <!-- Section 1 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">Reduced Enamel Epithelium (REE)</span>
+          <span class="ar">الظهر الطلائي المنخفض للمينا (REE)</span>
+        </h2>
         <div class="sec-body">
           <div class="en">
-            <p>After enamel is finished, the enamel organ layers—ameloblasts, stratum intermedium, stellate reticulum, and outer enamel epithelium—collapse and <b>fuse</b> into a thin membrane called <b>Reduced Enamel Epithelium</b>. REE <u>protects enamel</u> from resorption and connective tissue invasion before eruption.</p>
+            <p>After enamel completes, the enamel organ layers (ameloblasts, stratum intermedium, stellate reticulum, and outer enamel epithelium) collapse and fuse into a thin protective membrane called <b>Reduced Enamel Epithelium</b>.</p>
+            <p>REE shields enamel from resorption and connective-tissue invasion before eruption.</p>
           </div>
           <div class="ar">
-            <p>بعد اكتمال تشكّل الميناء، تنهار طبقات عضو الميناء—المخلّبات، الطبقة المتوسّطة، الشبكة النجمية، والظهارة المينائيّة الخارجية—وتندمج مكوِّنة غشاءً رقيقًا يُسمّى <b>الظهارة المينائيّة المُخْتَزَلة</b>. تعمل REE على <u>حماية الميناء</u> من الارتشاف وغزو النسيج الضام قبل البزوغ.</p>
+            <p>بعد اكتمال تكوّن المينا، تنهار طبقات عضو المينا (الأميلوبلاست، الطبقة المتوسطة، الشبكة النجمية، والظهارة الخارجية) وتندمج لتكوّن غشاءً رقيقًا واقيًا يُسمى <b>الظهارة المينائية المختزلة</b> (REE).</p>
+            <p>تعمل REE على حماية المينا من الارتشاف وغزو النسيج الضام قبل البزوغ.</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">REE forms when enamel formation ends; it’s a fused layer from all enamel organ components.</div><div class="ar">تتشكل REE عند انتهاء تكوّن الميناء؛ وهي طبقة مدمجة من جميع مكوّنات عضو الميناء.</div></div></div>
-        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">REE acts as a biological seal over enamel pre-eruption—injury can expose enamel to resorption risk.</div><div class="ar">تعمل REE كختم حيوي فوق الميناء قبل البزوغ—إصابتها قد تعرّض الميناء لخطر الارتشاف.</div></div></div>
-        <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">Mnemonic: <b>R</b>EE = <b>R</b>educes external exposure.</div><div class="ar">قانون: REE = <b>تقلّل</b> التعرض الخارجي.</div></div></div>
-        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Histology slide shows a thin flattened epithelial covering atop completed enamel.</div><div class="ar">تظهر الشرائح النسيجية غشاءً ظهاريًا مسطحًا رقيقًا فوق الميناء المكتمل.</div></div></div>
-        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Link REE to <i>eruption pathway</i> and “protection” to avoid confusing it with HERS (root shaping).</div><div class="ar">اربط REE بمسار البزوغ و“الحماية” لتجنب الخلط مع HERS (تشكيل الجذر).</div></div></div>
+
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">REE is the fused remnant of all enamel organ layers post-amelogenesis.</div><div class="ar">REE هو بقايا مندمجة لكل طبقات عضو المينا بعد تكوّن المينا.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Protecting enamel pre-eruption prevents defects caused by connective tissue interference.</div><div class="ar">حماية المينا قبل البزوغ تمنع العيوب الناتجة عن تداخل النسيج الضام.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">In unerupted teeth, REE contacts the oral epithelium to aid eruption.</div><div class="ar">في الأسنان غير البازغة، تتلامس REE مع الظهارة الفموية للمساعدة في البزوغ.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Remember: “All four fuse → REE → protects enamel.”</div><div class="ar">احفظها: «الأربع يندمجون ← REE ← تحمي المينا».</div></div></div>
+        </div>
       </aside>
     </section>
 
-    <!-- ===== Section 2 ===== -->
-    <section class="section" id="sec2">
-      <div>
-        <h2 class="sec-head"><span class="en">When Does Root Formation Start? ⏱️</span><span class="ar">متى يبدأ تكوُّن الجذر؟ ⏱️</span></h2>
+    <!-- Section 2 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">When Does Root Formation Start?</span>
+          <span class="ar">متى يبدأ تكوّن الجذر؟</span>
+        </h2>
         <div class="sec-body">
           <div class="en">
-            <p>Root development begins <b>once enamel and dentin reach the future CEJ</b> (cementoenamel junction). The cervical loop is the critical region that kicks off root formation.</p>
+            <p>Root development begins once enamel and dentin formation reach the future cemento-enamel junction (CEJ).</p>
           </div>
           <div class="ar">
-            <p>يبدأ تكوّن الجذر <b>عندما يصل الميناء والعاج إلى موضع CEJ المستقبلي</b>. وتُعد الحلقة العنقية منطقة محورية لبدء تكوّن الجذر.</p>
+            <p>يبدأ تكوّن الجذر عند وصول تكوّن المينا والعاج إلى موضع ملتقى الميناء والإسمنت (CEJ) المستقبلي.</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Trigger point = completion of crown tissues at future CEJ.</div><div class="ar">نقطة الانطلاق = اكتمال أنسجة التاج عند CEJ المستقبلي.</div></div></div>
-        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">It explains why roots lag behind crowns in timing and why crown completion is clinically significant.</div><div class="ar">يُفسّر تأخّر الجذور زمنيًا عن التيجان وأهمية اكتمال التاج سريريًا.</div></div></div>
-        <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“CEJ reached → root switched.”</div><div class="ar">«الوصول إلى CEJ ⇒ التحوّل للجذر».</div></div></div>
-        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">In developing incisors, root formation starts only after crown shape and tissues are established.</div><div class="ar">في القواطع النامية، لا يبدأ تكوّن الجذر إلا بعد اكتمال شكل التاج وأنسجته.</div></div></div>
-        <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Clinicians use root length vs. crown completion in eruption timing assessment.</div><div class="ar">يستخدم الأطباء نسبة طول الجذر لاكتمال التاج في تقدير توقيت البزوغ.</div></div></div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Initiation is tied to completion at the crown’s cervical region.</div><div class="ar">البدء مرتبط باكتمال التكوّن عند المنطقة العنقية للتاج.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Crown first, root next.”</div><div class="ar">«التاج أولاً، ثم الجذر».</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Explains timing differences between crown completion and eruption paths.</div><div class="ar">يشرح اختلاف توقيت اكتمال التاج ومسار البزوغ.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden><div class="en">The region involved is the cervical loop of the enamel organ.</div><div class="ar">المنطقة المعنية هي الحلقة العنقية لعضو المينا.</div></div></div>
+        </div>
       </aside>
     </section>
 
-    <!-- ===== Section 3 ===== -->
-    <section class="section" id="sec3">
-      <div>
-        <h2 class="sec-head"><span class="en">Hertwig’s Epithelial Root Sheath (HERS) 🧬</span><span class="ar">غِمْدُ الجذرِ الظِّهاري لهيرتوغ (HERS) 🧬</span></h2>
+    <!-- Section 3 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">Hertwig Epithelial Root Sheath (HERS): Formation</span>
+          <span class="ar">غمد هرتويغ الطلائي للجذر (HERS): التكوّن</span>
+        </h2>
         <div class="sec-body">
           <div class="en">
-            <p>Proliferation of the <b>inner and outer enamel epithelium from the cervical loop</b> forms a double epithelial membrane: <b>HERS</b>. At the future CEJ, it <b>bends</b> to form the <b>epithelial diaphragm</b>, creating a primary narrowing of the apical foramen (root shaping).</p>
+            <p>The inner and outer enamel epithelium proliferate from the cervical loop to form a double epithelial membrane called <b>Hertwig Epithelial Root Sheath</b> (HERS). It bends at the future CEJ creating the <b>epithelial diaphragm</b>, which narrows the initial apical foramen.</p>
           </div>
           <div class="ar">
-            <p>يؤدي تكاثر الظهارة المينائيّة الداخلية والخارجية من <b>الحلقة العنقية</b> إلى تكوين غشاء ظهاري مزدوج: <b>HERS</b>. وعند الـCEJ المستقبلي <b>ينحني</b> ليشكّل <b>الحاجز/الحجاب الظهاري</b> مما يسبب تضيقًا أوليًا للثقبة القميّة (تشكيل الجذر).</p>
+            <p>تتكاثر الظهارتان الداخلية والخارجية للمينا من الحلقة العنقية لتكوّنا غشاءً طلائيًا مزدوجًا يُسمى <b>غمد هرتويغ الطلائي للجذر</b> (HERS). ينثني عند CEJ المستقبلي مُشكِّلًا <b>الحجاب الطلائي</b> الذي يضيّق الثقبة القمية الأولية.</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">HERS = IEE + OEE proliferation; bends to make epithelial diaphragm.</div><div class="ar">HERS = تكاثر الظهارة الداخلية والخارجية؛ ينحني لتشكيل الحجاب الظهاري.</div></div></div>
-        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Diaphragm position influences apical foramen size—relevance to endodontic access and apex formation anomalies.</div><div class="ar">موقع الحجاب يؤثر على حجم الثقبة القميّة—وهذا مهم في مداخلات العلاج اللبي واضطرابات تشكّل الق apex.</div></div></div>
-        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Sketch the cervical loop → HERS → diaphragm arrow to cement the sequence.</div><div class="ar">ارسم تسلسل الحلقة العنقية → HERS → الحجاب لتثبيت الفهم.</div></div></div>
-        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Micrographs show a bilayer epithelial sleeve extending apically from cervical loop.</div><div class="ar">تُظهر المجهريات غلافًا ظهاريًا ثنائي الطبقة يمتد ذرويًا من الحلقة العنقية.</div></div></div>
-        <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“HERS <b>H</b>elps <b>ER</b>ect the <b>S</b>hape.”</div><div class="ar">«HERS = <b>تشكِّل</b> الجذر».</div></div></div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">HERS is a two-layered extension (IEE + OEE) from the cervical loop.</div><div class="ar">HERS امتداد ثنائي الطبقة (الداخلية + الخارجية) من الحلقة العنقية.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">The diaphragm’s bend produces a primary apical constriction.</div><div class="ar">انثناء الحجاب يعطي تضيقًا قمّيًا أوليًا.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Think “HERS = mold + signal”: shapes the root and induces dentin.</div><div class="ar">تذكّر «HERS = قالب + إشارة»: تُشكّل الجذر وتحفّز تكوّن العاج.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Root length, shape, and number depend on correct HERS function.</div><div class="ar">طول وشكل وعدد الجذور يعتمد على سلامة وظيفة HERS.</div></div></div>
+        </div>
       </aside>
     </section>
 
-    <!-- ===== Section 4 ===== -->
-    <section class="section" id="sec4">
-      <div>
-        <h2 class="sec-head"><span class="en">Root Formation — Step-by-Step 🧭</span><span class="ar">تكوُّن الجذر — خطوة بخطوة 🧭</span></h2>
+    <!-- Section 4 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">Functions of HERS</span>
+          <span class="ar">وظائف HERS</span>
+        </h2>
         <div class="sec-body">
           <div class="en">
-            <p><b>Sequence:</b></p>
-            <ul class="clean">
-              <li>① Crown tissues reach future CEJ.</li>
-              <li>② IEE + OEE proliferate from cervical loop → <span class="badge">HERS</span>.</li>
-              <li>③ HERS bends at CEJ → <span class="badge">Epithelial diaphragm</span> (primary apical narrowing).</li>
-              <li>④ IEE of HERS induces dental papilla cells → <b>odontoblasts</b> → first layer of <b>root dentin</b>.</li>
-              <li>⑤ HERS degenerates → fragments remain as <b>epithelial rests of Malassez (ERM)</b>.</li>
-              <li>⑥ Dentin contacting dental follicle induces UMCs → <b>cementoblasts</b> → <b>cementum</b>.</li>
+            <ul>
+              <li>Shapes the root(s) and defines root curvature and length.</li>
+              <li>Induces differentiation of dental papilla cells into <b>odontoblasts</b> which lay the first layer of root dentin.</li>
             </ul>
           </div>
           <div class="ar">
-            <p><b>التسلسل:</b></p>
-            <ul class="clean">
-              <li>① وصول أنسجة التاج إلى CEJ المستقبلي.</li>
-              <li>② تكاثر الظهارة الداخلية والخارجية من الحلقة العنقية → <span class="badge">HERS</span>.</li>
-              <li>③ انحناء HERS عند CEJ → <span class="badge">الحجاب الظهاري</span> (تضيّق قمّي أولي).</li>
-              <li>④ تحفّز الظهارة الداخلية في HERS خلايا حليمة السن → <b>مكوّنات العاج</b> → أول طبقة من <b>عاج الجذر</b>.</li>
-              <li>⑤ تنكس HERS وتتفكك → بقايا تُسمّى <b>بقايا مالاسيز الظهارية</b>.</li>
-              <li>⑥ تماس العاج المتكوّن مع جراب السن يحفّز الخلايا <b>المتعددة القدرات</b> → <b>خلايا إسمنتية</b> → <b>الإسمنت</b>.</li>
+            <ul>
+              <li>تُشكّل الجذر/الجذور وتحدد الانحناء والطول.</li>
+              <li>تحفّز تمايز خلايا حليمة السن إلى <b>أودونتوبلاست</b> التي تضع أول طبقة من عاج الجذر.</li>
             </ul>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Odontoblasts are induced by IEE; cementoblasts are induced by dentin contact with dental follicle.</div><div class="ar">تُحفَّز الخلايا المكوِّنة للعاج بواسطة الظهارة الداخلية، وتُحفَّز الخلايا الإسمنتية بتماس العاج مع جراب السن.</div></div></div>
-        <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Premature HERS loss can disrupt odontoblast differentiation → accessory canals.</div><div class="ar">فقدان HERS المبكر قد يعيق تمايز مكوّنات العاج → قنوات إضافية.</div></div></div>
-        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Schematic arrows: cervical loop → HERS → odontoblasts → dentin → cementoblasts → cementum.</div><div class="ar">مخطط بالأسهم: الحلقة العنقية → HERS → خلايا العاج → العاج → خلايا الإسمنت → الإسمنت.</div></div></div>
-        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Understanding sequence clarifies how crown completion controls root initiation.</div><div class="ar">فهم التسلسل يوضح كيف يضبط اكتمال التاج بدء تكوّن الجذر.</div></div></div>
-        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Make a 6-step flash flow chart and recite twice.</div><div class="ar">اصنع مخططًا من 6 خطوات وكرّره مرتين.</div></div></div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Abnormal HERS signaling can alter root length or shape.</div><div class="ar">الاختلال في إشارات HERS قد يغيّر طول أو شكل الجذر.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“HERS hints → odontoblasts act.”</div><div class="ar">«إشارة HERS ← فعل الأودونتوبلاست».</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden><div class="en">HERS cells do not produce enamel; they guide root dentin formation.</div><div class="ar">خلايا HERS لا تُنتج المينا؛ بل تُوجّه تكوّن عاج الجذر.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Premature HERS disruption can create accessory canals.</div><div class="ar">تعطّل HERS المبكر قد يؤدي إلى قنوات جذرية إضافية.</div></div></div>
+        </div>
       </aside>
     </section>
 
-    <!-- ===== Section 5 ===== -->
-    <section class="section" id="sec5">
-      <div>
-        <h2 class="sec-head"><span class="en">Functions & Fate of HERS 🔄</span><span class="ar">وظائف ومآل HERS 🔄</span></h2>
+    <!-- Section 5 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">Step-by-Step: Single-Rooted Tooth</span>
+          <span class="ar">الخطوات: السن أحادي الجذر</span>
+        </h2>
         <div class="sec-body">
           <div class="en">
-            <p><b>Functions:</b> (1) <u>Shapes the root</u>. (2) <u>Induces root dentin</u> formation via odontoblast differentiation from dental papilla.</p>
-            <p><b>Fate:</b> As root formation proceeds, HERS <b>disintegrates</b> except at the advancing edge. Fragments persist in the PDL as <b>epithelial rests of Malassez (ERM)</b>; with chronic inflammation, ERM may proliferate into <b>cysts/tumors</b>.</p>
+            <ol>
+              <li><b>Initiation at CEJ:</b> crown enamel/dentin reach future CEJ.</li>
+              <li><b>HERS forms:</b> IEE + OEE proliferate from cervical loop; diaphragm narrows apex.</li>
+              <li><b>Induction:</b> IEE of HERS induces dental papilla cells → odontoblasts.</li>
+              <li><b>Dentin laid:</b> first root dentin layer forms.</li>
+              <li><b>HERS disintegrates:</b> epithelial fragments remain as <b>rests of Malassez</b>.</li>
+              <li><b>Cementogenesis:</b> dentin contacting dental follicle induces UMCs → cementoblasts; cementum deposited.</li>
+            </ol>
           </div>
           <div class="ar">
-            <p><b>الوظائف:</b> (1) <u>تشكيل الجذر</u>. (2) <u>تحريض تكوّن عاج الجذر</u> عبر تمايز خلايا الحليمة السنية.</p>
-            <p><b>المآل:</b> أثناء تقدّم التشكّل يتفكك HERS ما عدا الحافة المتقدمة. تبقى الشظايا في الرباط حول السني كـ<b>بقايا مالاسيز</b>؛ وقد تتكاثر مع الالتهاب المزمن لتتحوّل إلى <b>أكياس/أورام</b>.</p>
+            <ol>
+              <li><b>البدء عند CEJ:</b> يصل تكوّن المينا والعاج إلى CEJ المستقبلي.</li>
+              <li><b>تكوّن HERS:</b> تكاثر الظهارتين من الحلقة العنقية؛ الحجاب يضيّق الق apex.</li>
+              <li><b>التحريض:</b> الظهارة الداخلية لـ HERS تُحفّز خلايا الحليمة السنية → أودونتوبلاست.</li>
+              <li><b>وضع العاج:</b> تتكوّن أول طبقة من عاج الجذر.</li>
+              <li><b>تفكك HERS:</b> تبقى بقايا ظهارية تُسمى <b>بقايا مالاسيز</b>.</li>
+              <li><b>تكوين الإسمنت:</b> تماس العاج مع الجُريب السني يحفّز خلايا غير متمايزة → أسمنتوبلاست ثم ترسيب الإسمنت.</li>
+            </ol>
           </div>
+
+          <div class="table-wrap" aria-label="Key players across steps">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Stage</span><span class="ar">المرحلة</span></th>
+                  <th><span class="en">Key Tissue/Cells</span><span class="ar">النسيج/الخلايا</span></th>
+                  <th><span class="en">Outcome</span><span class="ar">النتيجة</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="en">Formation of HERS</span><span class="ar">تكوّن HERS</span></td>
+                  <td><span class="en">IEE + OEE (cervical loop)</span><span class="ar">الظهارة الداخلية + الخارجية</span></td>
+                  <td><span class="en">Epithelial diaphragm, root shape template</span><span class="ar">حجاب طلائي، قالب شكل الجذر</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Induction</span><span class="ar">التحريض</span></td>
+                  <td><span class="en">IEE → dental papilla</span><span class="ar">الظهارة الداخلية → الحليمة</span></td>
+                  <td><span class="en">Odontoblast differentiation</span><span class="ar">تمايز الأودونتوبلاست</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Dentin deposition</span><span class="ar">ترسيب العاج</span></td>
+                  <td><span class="en">Odontoblasts</span><span class="ar">أودونتوبلاست</span></td>
+                  <td><span class="en">First root dentin layer</span><span class="ar">أول طبقة من عاج الجذر</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Cementogenesis</span><span class="ar">تكوين الإسمنت</span></td>
+                  <td><span class="en">Dental follicle UMCs → cementoblasts</span><span class="ar">خلايا الجُريب غير المتمايزة → أسمنتوبلاست</span></td>
+                  <td><span class="en">Cementum over dentin</span><span class="ar">إسمنت فوق العاج</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">HERS remnants</span><span class="ar">بقايا HERS</span></td>
+                  <td><span class="en">Rests of Malassez</span><span class="ar">بقايا مالاسيز</span></td>
+                  <td><span class="en">Persist in PDL</span><span class="ar">تبقى في الرباط حول السني</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">ERM are lifelong residents of the PDL.</div><div class="ar">بقايا مالاسيز تبقى مدى الحياة داخل الرباط حول السني.</div></div></div>
-        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Chronic inflammation can trigger ERM proliferation → periapical cyst formation.</div><div class="ar">يمكن للالتهاب المزمن أن يحفّز تكاثر بقايا مالاسيز → تكوّن كيس حول الذروة.</div></div></div>
-        <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“HERS fades, ERM remains.”</div><div class="ar">«HERS يختفي، وERM يبقى».</div></div></div>
-        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Explains origins of some pathologies in PDL.</div><div class="ar">يُفسّر منشأ بعض الأمراض في الرباط حول السني.</div></div></div>
-        <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">ERM may play roles in PDL homeostasis and eruption pathways (research topic).</div><div class="ar">قد تلعب بقايا مالاسيز أدوارًا في توازن الرباط ومسارات البزوغ (موضوع بحثي).</div></div></div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Memorize S→H→I→D→R→C (Start, HERS, Induction, Dentin, Remnants, Cementum).</div><div class="ar">احفظ الترتيب: ب→ح→ت→ع→ب→إ (بدء، HERS، تحريض، عاج، بقايا، إسمنت).</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Single-rooted incisors follow these exact steps.</div><div class="ar">القواطع أحادية الجذر تتبع هذه الخطوات حرفيًا.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Early sheath loss before odontoblast differentiation can leave accessory canals.</div><div class="ar">فقدان الغمد مبكرًا قبل تمايز الأودونتوبلاست قد يترك قنوات إضافية.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 الأهمية</span></div><div class="body" hidden><div class="en">Endodontic anatomy stems from these morphogenetic events.</div><div class="ar">تشريح المعالجة اللبّية ينشأ من هذه الأحداث التكوينية.</div></div></div>
+        </div>
       </aside>
     </section>
 
-    <!-- ===== Section 6 ===== -->
-    <section class="section" id="sec6">
-      <div>
-        <h2 class="sec-head"><span class="en">Single-Rooted Tooth Pathway 🦷➡️</span><span class="ar">مسار السن أحادي الجذر 🦷➡️</span></h2>
+    <!-- Section 6 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">Epithelial Diaphragm & Apical Foramen</span>
+          <span class="ar">الحجاب الطلائي والثقبة القمية</span>
+        </h2>
         <div class="sec-body">
           <div class="en">
-            <p>In single-rooted teeth, the above sequence proceeds linearly: cervical loop → HERS → root dentin → HERS disintegration → cementoblasts → cementum.</p>
+            <p>The bend of HERS at the CEJ forms the epithelial diaphragm, producing a <b>primary narrowing</b> of the apical foramen and guiding root tip development.</p>
           </div>
           <div class="ar">
-            <p>في الأسنان أحادية الجذر، يتقدّم التسلسل خطيًا: الحلقة العنقية → HERS → عاج الجذر → تنكس HERS → خلايا إسمنتية → إسمنت.</p>
+            <p>ينتج انثناء HERS عند CEJ الحجاب الطلائي الذي يُحدث <b>تضيّقًا أوليًا</b> للثقبة القمية ويُوجّه نمو قمة الجذر.</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Maxillary central incisor development follows the classic single-root sequence.</div><div class="ar">يتبع القاطع العلوي المركزي التسلسل الكلاسيكي للسن أحادي الجذر.</div></div></div>
-        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Cementum deposition starts after root dentin formation begins.</div><div class="ar">يبدأ ترسّب الإسمنت بعد بدء تكوّن عاج الجذر.</div></div></div>
-        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Recite: “Dentin first, cementum next.”</div><div class="ar">ردّد: «العاج أولاً، ثم الإسمنت».</div></div></div>
-        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Predictable apex formation aids endodontic working length determination.</div><div class="ar">تسهّل قِمّة متوقّعة تحديد طول العمل اللبي.</div></div></div>
-        <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Foundation for understanding multi-root modifications.</div><div class="ar">أساس لفهم تعديلات الأسنان متعددة الجذور.</div></div></div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">The diaphragm is transient—active at the advancing root edge.</div><div class="ar">الحجاب مؤقّت—نشِط عند الحافة المتقدمة للجذر.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Helps explain apical constriction relevant to working-length determination.</div><div class="ar">يُفسّر التضيق القمي الهام لتحديد طول العمل.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Diaphragm = door to the apex.”</div><div class="ar">«الحجاب = باب القمة».</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden><div class="en">Only the front edge of HERS remains intact during progression.</div><div class="ar">يبقى الحد الأمامي لـ HERS سليمًا أثناء التقدّم فقط.</div></div></div>
+        </div>
       </aside>
     </section>
 
-    <!-- ===== Section 7 ===== -->
-    <section class="section" id="sec7">
-      <div>
-        <h2 class="sec-head"><span class="en">Formation of Multi-Rooted Teeth 🌳</span><span class="ar">تشكُّل الأسنان متعدّدة الجذور 🌳</span></h2>
+    <!-- Section 7 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">Formation of Multi-Rooted Teeth</span>
+          <span class="ar">تكوّن الأسنان متعددة الجذور</span>
+        </h2>
         <div class="sec-body">
           <div class="en">
-            <p>The <b>root trunk</b> forms like a single-root tooth. At the <b>bifurcation</b>, the epithelial diaphragm produces <b>2 or 3 tongue-like processes</b> (depending on 2- or 3-rooted teeth). These grow toward each other and <b>fuse</b>, dividing the trunk into separate roots. Each root then develops as in single-rooted teeth.</p>
+            <p>The <b>root trunk</b> forms like a single-rooted tooth. At the furcation/bifurcation area, the epithelial diaphragm generates 2 or 3 tongue-like processes that grow and fuse, partitioning the trunk into separate roots. Each root then develops as in single-rooted teeth.</p>
           </div>
           <div class="ar">
-            <p>يتكوّن <b>جذع الجذر</b> كما في السن أحادي الجذر. عند <b>التفرّع</b> يُنتج الحجاب الظهاري <b>نتوءات لسانية 2 أو 3</b> حسب عدد الجذور، تنمو وتتلاقى وتندمج لتقسّم الجذع إلى جذور منفصلة، ثم يتطوّر كل جذر كما في الأسنان أحادية الجذر.</p>
+            <p>يتكوّن <b>جذع الجذر</b> كما في السن أحادي الجذر. عند منطقة التشعّب، يُنتج الحجاب الطلائي عمليّات شبيهة باللسان (٢ أو ٣) تنمو وتلتحم لتقسيم الجذع إلى جذور منفصلة، ثم يتطوّر كل جذر كما في السن أحادي الجذر.</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">“Tongue-like” epithelial processes partition the root trunk.</div><div class="ar">النتوءات اللسانية الظهارية تُقسّم جذع الجذر.</div></div></div>
-        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Mandibular molar: two processes → mesial and distal roots.</div><div class="ar">الضرس السفلي: نتوءان → جذران دهليزي ولساني/أنسي وخلفي.</div></div></div>
-        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Furcation morphology affects periodontal prognosis and endodontic access.</div><div class="ar">مورفولوجيا منطقة التفرّع تؤثر على إنذار أمراض اللثة والوصول اللبي.</div></div></div>
-        <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Trunk first, tongues then, roots last.”</div><div class="ar">«جذع أولًا، نتوءات ثم، جذور أخيرًا».</div></div></div>
-        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Draw Y-shaped (mandibular) and tripod (maxillary) partitions for memory.</div><div class="ar">ارسم تقسيمًا على شكل Y (سفلي) وثلاثي القوائم (علوي) للتذكّر.</div></div></div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Mandibular molars: 2 processes → mesial & distal roots.</div><div class="ar">أضراس سفلية: عمليّتان → جذران إنسي وبعيد.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Fusion of epithelial processes sets the furcation level.</div><div class="ar">التحام العمليّات الطلائية يحدد مستوى التشعّب.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Furcation anatomy impacts periodontal prognosis and access.</div><div class="ar">تشريح التشعّب يؤثر على الإنذار اللثوي وسهولة الوصول العلاجي.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Sketch the “tongues” growing inward, then fusing.</div><div class="ar">ارسم «ألسنة» تنمو نحو الداخل ثم تلتحم.</div></div></div>
+        </div>
       </aside>
     </section>
 
-    <!-- ===== Section 8 ===== -->
-    <section class="section" id="sec8">
-      <div>
-        <h2 class="sec-head"><span class="en">Accessory Root Canals ➕🛤️</span><span class="ar">القنوات الجذرية الإضافية ➕🛤️</span></h2>
+    <!-- Section 8 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">Fate of HERS & Rests of Malassez</span>
+          <span class="ar">مصير HERS وبقايا مالاسيز</span>
+        </h2>
         <div class="sec-body">
           <div class="en">
-            <p><b>Causes:</b> (1) Loss of continuity of HERS <b>before</b> odontoblast differentiation/dentin formation. (2) Large blood vessel interrupting HERS continuity. Result: <b>accessory canals</b> form as alternate pathways.</p>
+            <p>As root formation advances, HERS disintegrates except at the advancing root edge. Its fragments remain as <b>epithelial rests of Malassez</b> in the periodontal ligament throughout life; with chronic inflammation, these may proliferate into cysts or tumors.</p>
           </div>
           <div class="ar">
-            <p><b>الأسباب:</b> (1) فقدان استمرارية HERS <b>قبل</b> تمايز مكوّنات العاج/تكوّن العاج. (2) وجود وعاء دموي كبير يقطع استمرارية HERS. النتيجة: تشكّل <b>قنوات إضافية</b>.</p>
+            <p>مع تقدم تكوّن الجذر يتفكك HERS ما عدا الحافة المتقدمة للجذر. تبقى شظاياه كـ<b>بقايا مالاسيز</b> في الرباط حول السني طيلة الحياة؛ وقد تتكاثر في حالات الالتهاب المزمن لتكوّن أكياسًا أو أورامًا.</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Accessory canals complicate endodontic debridement and obturation; consider irrigant penetration and sealer selection.</div><div class="ar">تُعقّد القنوات الإضافية التنظيف والحشو اللبي؛ انتبه لاختراق المروّق واختيار السيلر.</div></div></div>
-        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Common at the apical third and furcation; may explain persistent periapical pathoses.</div><div class="ar">شائعة في الثلث القِمّي ومنطقة التفرّع؛ قد تفسّر استمرار الآفات حول الذروة.</div></div></div>
-        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Directly tied to disruptions of HERS continuity.</div><div class="ar">مرتبطة مباشرة بانقطاعات استمرارية HERS.</div></div></div>
-        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">CBCT reveals tiny lateral canal at apical third of mandibular premolar.</div><div class="ar">تصوير CBCT يُظهر قناة جانبية صغيرة في الثلث القِمّي للضاحك السفلي.</div></div></div>
-        <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Use warm vertical compaction or bioceramic sealers for complex canal anatomy.</div><div class="ar">استخدم الضغط العمودي الحار أو سيلرات بيو سيراميكية للتشريح المعقّد.</div></div></div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Rests of Malassez are normal PDL components.</div><div class="ar">بقايا مالاسيز مكوّن طبيعي في الرباط حول السني.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Inflammation may trigger cystic proliferation.</div><div class="ar">قد يحرّض الالتهاب تكاثرًا كيسيًا.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 الأهمية</span></div><div class="body" hidden><div class="en">Explains origins of certain periapical pathoses.</div><div class="ar">يشرح منشأ بعض الآفات حول القمية.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden><div class="en">Only advancing edge of HERS divides; rest fragments into clusters.</div><div class="ar">فقط الحافة المتقدمة تنقسم؛ والباقي يتجزأ إلى عناقيد.</div></div></div>
+        </div>
       </aside>
     </section>
 
-    <!-- ===== Section 9 ===== -->
-    <section class="section" id="sec9">
-      <div>
-        <h2 class="sec-head"><span class="en">Clinical Considerations — Enamel Pearl 💎</span><span class="ar">اعتبارات سريرية — لؤلؤة الميناء 💎</span></h2>
+    <!-- Section 9 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">Accessory Root Canals — Causes</span>
+          <span class="ar">القنوات الجذرية الإضافية — الأسباب</span>
+        </h2>
         <div class="sec-body">
           <div class="en">
-            <p>Small spherical <b>enamel projections</b> at the CEJ or molar furcation can occur if HERS remains adherent to dentin and its inner enamel cells differentiate into <b>ameloblasts</b>—producing <b>enamel pearls</b>.</p>
+            <ul>
+              <li>Loss of HERS continuity before odontoblast differentiation and dentin formation.</li>
+              <li>Presence of a large blood vessel interrupting HERS continuity.</li>
+            </ul>
           </div>
           <div class="ar">
-            <p>قد تظهر <b>نتوءات مينائية كروية صغيرة</b> عند الـCEJ أو تفرّع الأضراس إذا بقي HERS ملتصقًا بالعاج وتمايزت خلاياه إلى <b>مخلّبات</b> لتنتج <b>لآلئ الميناء</b>.</p>
+            <ul>
+              <li>فقدان استمرارية HERS قبل تمايز الأودونتوبلاست وتكوّن العاج.</li>
+              <li>وجود وعاء دموي كبير يقطع استمرارية HERS.</li>
+            </ul>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Enamel pearls can harbor plaque and mimic calculus; may complicate periodontal therapy.</div><div class="ar">قد تؤوي لآلئ الميناء اللويحة وتُشبه القَلْح؛ قد تعقّد علاج اللثة.</div></div></div>
-        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Pathogenesis: HERS adherence + ameloblastic transformation.</div><div class="ar">المرضية: التصاق HERS + تحوّل خلوي إلى مخلّبات.</div></div></div>
-        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Radiopaque bead in molar furcation on radiograph.</div><div class="ar">خرزة معتمة شعاعيًا في منطقة تفرّع الضرس على الصورة الشعاعية.</div></div></div>
-        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Associate pearls with “HERS stickiness at dentin.”</div><div class="ar">اربط اللؤلؤة بـ«التصاق HERS بالعاج».</div></div></div>
-        <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Pearls are usually enamel only (no dentin/pulp), but exceptions exist.</div><div class="ar">غالبًا ما تكون اللآلئ ميناء فقط (بدون عاج/لب)، لكن توجد استثناءات.</div></div></div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Accessory canals can harbor pulp/periodontal communications—important during RCT.</div><div class="ar">القنوات الإضافية قد تؤوي اتصالًا لبّيًا/لثويًا—مهم أثناء معالجة القنوات.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Missed accessory canals → persistent infection.</div><div class="ar">إهمال القنوات الإضافية قد يسبب عدوى مستمرة.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Associate “broken HERS → extra canal.”</div><div class="ar">اربط «انقطاع HERS ← قناة إضافية».</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Common in furcation areas of molars.</div><div class="ar">تشيع في مناطق التشعّب بالأضراس.</div></div></div>
+        </div>
       </aside>
     </section>
 
-    <!-- ===== Section 10 ===== -->
-    <section class="section" id="sec10">
-      <div>
-        <h2 class="sec-head"><span class="en">Clinical Considerations — Dilaceration 🪫↪️</span><span class="ar">اعتبارات سريرية — الانثناء الجذري (دلَسِرَيْشن) 🪫↪️</span></h2>
+    <!-- Section 10 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">Clinical Considerations: Enamel Pearls</span>
+          <span class="ar">اعتبارات سريرية: لآلئ المينا</span>
+        </h2>
         <div class="sec-body">
           <div class="en">
-            <p>If HERS is <b>dislocated after partial root mineralization</b>, the remaining part of the root may become <b>bent/twisted</b> → <b>dilaceration</b> (root distortion), often seen in permanent teeth.</p>
+            <p><b>Enamel pearls</b> are small spherical enamel projections, often at the CEJ or in molar furcations. If HERS remains adherent to dentin, inner cells may differentiate into ameloblasts and deposit enamel locally.</p>
           </div>
           <div class="ar">
-            <p>إذا انزاح HERS بعد <b>تَمَعدُن جزئي للجذر</b> فقد ينثني الجزء المتبقّي من الجذر أو يلتوي → <b>الانثناء الجذري</b>، ويُرى عادة في الأسنان الدائمة.</p>
+            <p><b>لآلئ المينا</b> هي بروزات كروية صغيرة من المينا، تظهر غالبًا عند CEJ أو في تشعّبات الأضراس. إذا بقي HERS ملتصقًا بالعاج فقد تتمايز خلاياه الداخلية إلى أميلوبلاست وتُنتج مينا موضعيًا.</p>
           </div>
         </div>
       </div>
-      <aside class="callouts">
-        <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Challenges: endodontic instrumentation, extraction difficulty, and orthodontic movement planning.</div><div class="ar">التحديات: تشكيل القنوات، صعوبة الخلع، وخطط الحركة التقويمية.</div></div></div>
-        <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Unrecognized dilaceration risks ledging, transportation, or perforation during endodontics.</div><div class="ar">عدم التعرف على الانثناء قد يسبب حوافًا كاذبة أو انحرافًا أو ثقوبًا أثناء العلاج اللبي.</div></div></div>
-        <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Etiology linked to HERS displacement post-mineralization.</div><div class="ar">السبب مرتبط بانزياح HERS بعد بدء التمعدن.</div></div></div>
-        <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Periapical radiograph reveals a sharp apical bend on maxillary canine.</div><div class="ar">صورة حول الذروة تُظهر انثناءً حادًا قمّيًا للناب العلوي.</div></div></div>
-        <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Associate “dilaceration = displaced HERS after dentin present.”</div><div class="ar">اربط «الانثناء = انزياح HERS بعد وجود العاج».</div></div></div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Pearls complicate periodontal attachment and may be plaque-retentive.</div><div class="ar">قد تُعقّد اللآلئ الارتباط اللثوي وتحتجز اللويحة.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Originate from ectopic ameloblast differentiation on root surfaces.</div><div class="ar">تنشأ من تمايز أميلوبلاست شاذ على أسطح الجذور.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">“Pearl at furcation? Think HERS adhesion.”</div><div class="ar">«لؤلؤة في التشعّب؟ فكّر في التصاق HERS.»</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 الأهمية</span></div><div class="body" hidden><div class="en">May mimic calculus on radiographs; affects treatment planning.</div><div class="ar">قد تُشبه الجير شعاعيًا؛ تؤثر على خطة العلاج.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 11 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">Clinical Considerations: Dilacerations</span>
+          <span class="ar">اعتبارات سريرية: الانعواج الجذري</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Dilaceration</b> (root distortion/bending) can result if HERS is displaced after partial root mineralization. It is seen mainly in permanent teeth.</p>
+          </div>
+          <div class="ar">
+            <p><b>الانْعِوَاج</b> الجذري قد يحدث إذا انزاح HERS بعد بدء تمعدن جزء من الجذر. يُشاهد غالبًا في الأسنان الدائمة.</p>
+          </div>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Complicates endodontic access and extraction; requires careful radiographic planning.</div><div class="ar">يعقّد الوصول اللبّي والقلع؛ يتطلب تخطيطًا شعاعيًا دقيقًا.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Forceful orthodontic movement risks resorption in dilacerated roots.</div><div class="ar">الحركات التقويمية القسرية قد تزيد ارتشاف الجذور المنعوجة.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">S-shaped mandibular premolar root on periapical film.</div><div class="ar">جذر ضاحك سفلي بشكل S في صورة ذروية.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Link: “HERS displacement + partial mineralization → bend.”</div><div class="ar">اربط: «انزياح HERS + تمعدن جزئي ← انثناء».</div></div></div>
+        </div>
       </aside>
     </section>
   </div>
 
-  <!-- Glossary 1–9 -->
+  <!-- Glossary -->
   <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
   <div class="grid g3x4" id="glossary">
-    <div class="card glossary"><div class="head">Reduced Enamel Epithelium (REE) / الظهارة المينائيّة المُخْتَزَلة</div><div class="content" hidden><div class="en">Thin fused epithelial covering over completed enamel pre-eruption.</div><div class="ar">غشاء ظهاري رقيق مدمج يغطي الميناء المكتمل قبل البزوغ.</div></div></div>
-    <div class="card glossary"><div class="head">Hertwig’s Epithelial Root Sheath (HERS) / غمد الجذر الظهاري لهيرتوغ</div><div class="content" hidden><div class="en">Double epithelial membrane from cervical loop shaping root and inducing root dentin.</div><div class="ar">غشاء ظهاري مزدوج من الحلقة العنقية يَشكّل الجذر ويحرّض تكوّن عاج الجذر.</div></div></div>
-    <div class="card glossary"><div class="head">Epithelial Diaphragm / الحجاب الظهاري</div><div class="content" hidden><div class="en">Bending of HERS at CEJ causing initial apical foramen narrowing.</div><div class="ar">انحناء HERS عند CEJ مُسبِّبًا تضيقًا أوليًّا للثقبة القميّة.</div></div></div>
-    <div class="card glossary"><div class="head">Cervical Loop / الحلقة العنقية</div><div class="content" hidden><div class="en">Region where IEE and OEE meet; origin of HERS proliferation.</div><div class="ar">منطقة التقاء الظهارتين الداخلية والخارجية؛ منطلق تكاثر HERS.</div></div></div>
-    <div class="card glossary"><div class="head">Odontoblast / خلية مُكوِّنة للعاج</div><div class="content" hidden><div class="en">Cell induced by IEE to lay down root dentin.</div><div class="ar">خلية تُحفّزها الظهارة الداخلية لتشكيل عاج الجذر.</div></div></div>
-    <div class="card glossary"><div class="head">Cementoblast / خلية إسمنتية</div><div class="content" hidden><div class="en">Follicle-derived cell forming cementum after dentin induction.</div><div class="ar">خلية منشؤها جراب السن تُكوِّن الإسمنت بعد تحريض العاج.</div></div></div>
-    <div class="card glossary"><div class="head">Epithelial Rests of Malassez (ERM) / بقايا مالاسيز الظهارية</div><div class="content" hidden><div class="en">HERS remnants persisting in PDL; may form cysts with chronic inflammation.</div><div class="ar">بقايا HERS في الرباط حول السني؛ قد تكوّن أكياسًا مع الالتهاب المزمن.</div></div></div>
-    <div class="card glossary"><div class="head">Accessory Canal / قناة إضافية</div><div class="content" hidden><div class="en">Extra canal due to HERS discontinuity or vascular interruption.</div><div class="ar">قناة إضافية تنجم عن انقطاع HERS أو وجود وعاء دموي كبير.</div></div></div>
-    <div class="card glossary"><div class="head">Dilaceration / الانثناء الجذري</div><div class="content" hidden><div class="en">Abnormal bend in root due to HERS displacement after partial mineralization.</div><div class="ar">انثناء غير طبيعي في الجذر نتيجة انزياح HERS بعد تمعدن جزئي.</div></div></div>
+    <div class="card"><div class="head">Reduced Enamel Epithelium / الظهارة المينائية المختزلة</div><div class="content" hidden><div class="en">Fused post-amelogenesis enamel organ layers protecting enamel pre-eruption.</div><div class="ar">اندماج طبقات عضو المينا بعد التكوّن لحماية المينا قبل البزوغ.</div></div></div>
+    <div class="card"><div class="head">Cervical Loop / الحلقة العنقية</div><div class="content" hidden><div class="en">Proliferative rim of enamel organ where HERS originates.</div><div class="ar">حافة تكاثرية في عضو المينا تنشأ منها HERS.</div></div></div>
+    <div class="card"><div class="head">HERS / غمد هرتويغ الطلائي</div><div class="content" hidden><div class="en">Double epithelial sheath shaping roots and inducing odontoblasts.</div><div class="ar">غشاء طلائي مزدوج يُشكّل الجذور ويحفّز الأودونتوبلاست.</div></div></div>
+    <div class="card"><div class="head">Epithelial Diaphragm / الحجاب الطلائي</div><div class="content" hidden><div class="en">Bend at CEJ creating primary apical narrowing.</div><div class="ar">انثناء عند CEJ يسبب تضيّقًا قمّيًا أوليًا.</div></div></div>
+    <div class="card"><div class="head">Odontoblast / أودونتوبلاست</div><div class="content" hidden><div class="en">Dentin-forming cell derived from dental papilla.</div><div class="ar">خلية مُكوِّنة للعاج منشؤها الحليمة السنية.</div></div></div>
+    <div class="card"><div class="head">Dental Follicle / الجُريب السني</div><div class="content" hidden><div class="en">Surrounding ectomesenchyme giving rise to cementoblasts and PDL.</div><div class="ar">أديم متوسط محيط يُنتج الأسمنتوبلاست والرباط حول السني.</div></div></div>
+    <div class="card"><div class="head">Cementoblast / أسمنتوبلاست</div><div class="content" hidden><div class="en">Cell that deposits cementum over root dentin.</div><div class="ar">خلية تُرسّب الإسمنت فوق عاج الجذر.</div></div></div>
+    <div class="card"><div class="head">Rests of Malassez / بقايا مالاسيز</div><div class="content" hidden><div class="en">Epithelial clusters in PDL—remnants of HERS.</div><div class="ar">عناقيد ظهارية في الرباط حول السني—بقايا HERS.</div></div></div>
+    <div class="card"><div class="head">Accessory Canal / قناة إضافية</div><div class="content" hidden><div class="en">Secondary canal due to interrupted HERS continuity or vessel interference.</div><div class="ar">قناة ثانوية ناتجة عن انقطاع HERS أو تدخل وعائي.</div></div></div>
+    <div class="card"><div class="head">Dilaceration / الانعواج الجذري</div><div class="content" hidden><div class="en">Abnormal root bend from HERS displacement after partial mineralization.</div><div class="ar">انحناء غير طبيعي للجذر نتيجة انزياح HERS بعد تمعدن جزئي.</div></div></div>
   </div>
 
-  <!-- Flashcards 1–9 -->
+  <!-- Flashcards -->
   <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
   <div class="grid g3x4" id="flashcards">
-    <div class="card flash"><div class="head">1 — Q: What triggers root formation?</div><div class="content" hidden>A: Enamel and dentin reaching the future CEJ.</div></div>
-    <div class="card flash"><div class="head">2 — Q: HERS is formed by proliferation of which layers?</div><div class="content" hidden>A: Inner and outer enamel epithelium from the cervical loop.</div></div>
-    <div class="card flash"><div class="head">3 — Q: Function of HERS?</div><div class="content" hidden>A: Shapes the root and induces odontoblast differentiation for root dentin.</div></div>
-    <div class="card flash"><div class="head">4 — Q: What is the epithelial diaphragm?</div><div class="content" hidden>A: The bend of HERS at CEJ producing primary apical narrowing.</div></div>
-    <div class="card flash"><div class="head">5 — Q: Fate of HERS?</div><div class="content" hidden>A: Disintegrates; remnants persist as ERM in PDL (can form cysts).</div></div>
-    <div class="card flash"><div class="head">6 — Q: Sequence after HERS induces odontoblasts?</div><div class="content" hidden>A: Root dentin forms → HERS degenerates → cementoblasts lay down cementum.</div></div>
-    <div class="card flash"><div class="head">7 — Q: How do multi-rooted teeth form?</div><div class="content" hidden>A: Epithelial diaphragm makes tongue-like processes that fuse to partition the root trunk.</div></div>
-    <div class="card flash"><div class="head">8 — Q: Two causes of accessory canals?</div><div class="content" hidden>A: Early HERS discontinuity; large blood vessel interrupting HERS.</div></div>
-    <div class="card flash"><div class="head">9 — Q: Define dilaceration.</div><div class="content" hidden>A: Root bend due to HERS displacement after partial root mineralization.</div></div>
+    <div class="card"><div class="head"><span class="en">1 — What triggers root formation?</span><span class="ar">١ — ما الذي يطلق تكوّن الجذر؟</span></div><div class="content" hidden><span class="en">Enamel & dentin reaching the future CEJ.</span><span class="ar">وصول المينا والعاج إلى CEJ المستقبلي.</span></div></div>
+    <div class="card"><div class="head"><span class="en">2 — HERS is derived from?</span><span class="ar">٢ — ممّ يشتق HERS؟</span></div><div class="content" hidden><span class="en">Proliferation of IEE + OEE at the cervical loop.</span><span class="ar">تكاثر الظهارتين الداخلية والخارجية عند الحلقة العنقية.</span></div></div>
+    <div class="card"><div class="head"><span class="en">3 — Two main HERS functions?</span><span class="ar">٣ — وظيفتا HERS الرئيسيتان؟</span></div><div class="content" hidden><span class="en">Shape roots; induce odontoblasts for root dentin.</span><span class="ar">تشكيل الجذور؛ تحريض الأودونتوبلاست لعاج الجذر.</span></div></div>
+    <div class="card"><div class="head"><span class="en">4 — What forms the epithelial diaphragm?</span><span class="ar">٤ — ما الذي يُكوّن الحجاب الطلائي؟</span></div><div class="content" hidden><span class="en">HERS bending at the CEJ.</span><span class="ar">انثناء HERS عند CEJ.</span></div></div>
+    <div class="card"><div class="head"><span class="en">5 — Fate of HERS fragments?</span><span class="ar">٥ — ما مصير شظايا HERS؟</span></div><div class="content" hidden><span class="en">Become epithelial rests of Malassez in the PDL.</span><span class="ar">تصبح بقايا مالاسيز في الرباط حول السني.</span></div></div>
+    <div class="card"><div class="head"><span class="en">6 — Accessory canal cause?</span><span class="ar">٦ — سبب القناة الإضافية؟</span></div><div class="content" hidden><span class="en">Interrupted HERS continuity or large vessel presence.</span><span class="ar">انقطاع استمرارية HERS أو وجود وعاء كبير.</span></div></div>
+    <div class="card"><div class="head"><span class="en">7 — Enamel pearl mechanism?</span><span class="ar">٧ — آلية لؤلؤة المينا؟</span></div><div class="content" hidden><span class="en">HERS adherence; inner cells become ameloblasts → enamel.</span><span class="ar">التصاق HERS؛ تتمايز خلاياه إلى أميلوبلاست → مينا.</span></div></div>
+    <div class="card"><div class="head"><span class="en">8 — Dilaceration definition?</span><span class="ar">٨ — تعريف الانعواج؟</span></div><div class="content" hidden><span class="en">Bending/twisting of root after partial mineralization due to HERS displacement.</span><span class="ar">انثناء/التواء الجذر بعد تمعدن جزئي نتيجة انزياح HERS.</span></div></div>
+    <div class="card"><div class="head"><span class="en">9 — Single vs multi-root formation key difference?</span><span class="ar">٩ — الفرق الأساسي بين أحادي ومتعدد الجذور؟</span></div><div class="content" hidden><span class="en">Tongue-like epithelial processes grow and fuse to divide the root trunk.</span><span class="ar">تنمو عمليّات طلائية شبيهة باللسان وتلتحم لتقسيم جذع الجذر.</span></div></div>
   </div>
 
-  <!-- Footer chip (optional learning outcomes recap prompt) -->
-  <div class="chip-box">
-    <span class="chip">
-      <span class="en">✅ Self-check: <b>HERS?</b> • <b>Root steps?</b> • <b>HERS fate?</b> • <b>Clinical points?</b></span>
-      <span class="ar">✅ تحقّق ذاتي: <b>ما هو HERS؟</b> • <b>خطوات التكوّن؟</b> • <b>مآل HERS؟</b> • <b>نِّقاط سريرية؟</b></span>
-    </span>
-  </div>
 </main>
 
 <script>
-// Language switcher: toggle a single class on <body>
-const btn=document.getElementById('langBtn');
-btn.addEventListener('click',()=>{
-  document.body.classList.toggle('lang-ar');
-  document.body.classList.toggle('lang-en');
-});
-
-// Callout toggle (header only)
-document.querySelectorAll('.callout .hdr').forEach(h=>{
-  h.addEventListener('click',()=>{
-    const c=h.parentElement;
-    c.classList.toggle('open');
-    const body=c.querySelector('.body');
-    body.hidden=!body.hidden;
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
   });
-});
 
-// Glossary toggle (card click)
-document.querySelectorAll('#glossary .card').forEach(card=>{
-  card.addEventListener('click',()=>{
-    card.classList.toggle('open');
-    const cont=card.querySelector('.content');
-    cont.hidden=!cont.hidden;
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
   });
-});
 
-// Flashcards toggle (card click)
-document.querySelectorAll('#flashcards .card').forEach(card=>{
-  card.addEventListener('click',()=>{
-    card.classList.toggle('open');
-    const cont=card.querySelector('.content');
-    cont.hidden=!cont.hidden;
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
   });
-});
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
 </script>
 </body>
 </html>
