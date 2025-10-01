@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>OCIH 17-test • Interactive Exam</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 17</b></p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (filled from "OCIH 17.pdf") -----------
+const mcqs = [
+  {
+    q:"Amelogenesis is the process of:",
+    opts:["Dentin formation","Cementum resorption","Enamel formation","Pulp maturation"],
+    correct:2,
+    explain:"Amelogenesis refers specifically to enamel formation by ameloblasts."
+  },
+  {
+    q:"Amelogenesis begins:",
+    opts:["Before dentinogenesis in the cap stage","Shortly after dentinogenesis at the advanced bell stage","Simultaneously with dentinogenesis in the bud stage","Only after tooth eruption"],
+    correct:1,
+    explain:"It begins shortly after dentinogenesis during the advanced bell stage."
+  },
+  {
+    q:"The delicate basement membrane between IEE and odontoblasts disintegrates:",
+    opts:["Before dentinogenesis","After dentinogenesis and before amelogenesis","During eruption","During root formation"],
+    correct:1,
+    explain:"It disintegrates after dentin formation and prior to enamel formation."
+  },
+  {
+    q:"Cells responsible for amelogenesis are:",
+    opts:["Odontoblasts","Ameloblasts","Cementoblasts","Fibroblasts"],
+    correct:1,
+    explain:"Ameloblasts secrete enamel matrix and regulate its maturation."
+  },
+  {
+    q:"Correct sequential order of tooth development:",
+    opts:["Cap → Bud → Advanced bell → Early bell","Bud → Early bell → Cap → Advanced bell","Bud → Cap → Early bell → Advanced bell","Early bell → Bud → Cap → Advanced bell"],
+    correct:2,
+    explain:"Bud, Cap, Early Bell, Advanced Bell."
+  },
+  {
+    q:"Main stages of amelogenesis are matrix deposition and:",
+    opts:["Root elongation","Mineralization (maturation)","Cementogenesis","Eruption"],
+    correct:1,
+    explain:"After matrix secretion, mineralization/maturation occurs."
+  },
+  {
+    q:"Life cycle stages of ameloblasts include all EXCEPT:",
+    opts:["Presecretory","Secretory","Transitional","Alveolar","Maturation","Protective"],
+    correct:3,
+    explain:"‘Alveolar’ is not a stage; others are correct."
+  },
+  {
+    q:"During the morphogenic phase:",
+    opts:["Crown shape is determined","Ameloblasts lose Tomes’ processes","Rods become rodless","Amelogenin is removed"],
+    correct:0,
+    explain:"Morphogenic phase sets crown morphology before active secretion."
+  },
+  {
+    q:"In the morphogenic phase, inner enamel epithelium (IEE) cells are typically:",
+    opts:["Tall columnar with distal nuclei","Cuboidal/low columnar with central nuclei","Squamous with apical nuclei","Pseudostratified with basal nuclei"],
+    correct:1,
+    explain:"IEE cells are cuboidal/low columnar and nuclei are centrally located."
+  },
+  {
+    q:"Differentiation phase characteristics include:",
+    opts:["Cells shorten and lose organelles","Nuclei shift proximally toward stratum intermedium","First enamel rods appear","Cells continue to divide actively"],
+    correct:1,
+    explain:"Nuclei move proximally; protein-synthesizing organelles accumulate distally; cells can no longer divide."
+  },
+  {
+    q:"Which event begins during differentiation of IEE?",
+    opts:["Dentin formation by odontoblasts","Root formation","Eruption","Cementum deposition on crown"],
+    correct:0,
+    explain:"Odontoblasts begin forming dentin as ameloblasts differentiate."
+  },
+  {
+    q:"Secretory stage begins:",
+    opts:["After first enamel rod forms","After the first layer of dentin is formed","After eruption","Before any dentin is formed"],
+    correct:1,
+    explain:"Ameloblasts enter formative/secretory stage following initial dentin."
+  },
+  {
+    q:"The initial enamel formed against dentin:",
+    opts:["Contains well-formed rods","Is rodless (prism-less)","Is cementoid","Is secondary dentin"],
+    correct:1,
+    explain:"Initial enamel lacks rods."
+  },
+  {
+    q:"Tomes’ process develops when ameloblasts:",
+    opts:["Migrate toward dentin surface","Migrate away from dentin surface","Undergo apoptosis","Fuse to form REE"],
+    correct:1,
+    explain:"After first enamel is formed, ameloblasts move away and develop conical Tomes’ processes distally."
+  },
+  {
+    q:"Tomes’ processes interdigitate giving enamel a:",
+    opts:["Lamellar appearance","Picket fence appearance","Hunter-Schreger band","Perikymata"],
+    correct:1,
+    explain:"Interdigitation produces a picket-fence-like surface."
+  },
+  {
+    q:"Rods and interrods are formed from:",
+    opts:["Odontoblast processes","Tomes’ process of ameloblasts","Stratum intermedium","Hertwig’s root sheath"],
+    correct:1,
+    explain:"Both rod and interrod enamel derive from Tomes’ processes."
+  },
+  {
+    q:"At the end of the secretory stage:",
+    opts:["Tomes’ processes enlarge","Tomes’ processes are lost and last-formed enamel is rodless","Amelogenin increases","Odontoblasts stop secreting dentin"],
+    correct:1,
+    explain:"Loss of Tomes’ processes makes the final enamel prismless."
+  },
+  {
+    q:"Contribution to a single enamel rod:",
+    opts:["Head by 3 ameloblasts; tail by 1","Formed entirely by one ameloblast","Head by 1 ameloblast; tail by 3","Head by 2 ameloblasts; tail by 2"],
+    correct:2,
+    explain:"Each rod: head (1 cell) + tail (3 cells) → contribution from 4 ameloblasts."
+  },
+  {
+    q:"Transitional stage changes include all EXCEPT:",
+    opts:["Decrease in ameloblast height","Reduction of protein-synthesizing organelles","Increase in lysosomes/autophagic vacuoles","Increase in ameloblast number by mitosis"],
+    correct:3,
+    explain:"Cell number decreases (apoptosis), not increases."
+  },
+  {
+    q:"Approximate reduction of ameloblast population by end of transitional stage:",
+    opts:["<5%","~20%","~50%","~80%"],
+    correct:2,
+    explain:"Population is reduced by as much as 50% via apoptosis."
+  },
+  {
+    q:"During maturation, there is massive influx of:",
+    opts:["Sodium and chloride","Calcium and phosphate","Potassium and magnesium","Iron and fluoride"],
+    correct:1,
+    explain:"Ca2+ and PO4 3- influx with selective loss of proteins and water."
+  },
+  {
+    q:"Main enamel protein removed during maturation:",
+    opts:["Collagen I","Dentin sialophosphoprotein","Amelogenin","Elastin"],
+    correct:2,
+    explain:"Amelogenin is selectively removed along with water."
+  },
+  {
+    q:"Ameloblast modulation (maturation) alternates between:",
+    opts:["Ciliated and non-ciliated","Cuboidal and squamous","Ruffled-ended and smooth-ended","Basal and apical"],
+    correct:2,
+    explain:"Cells switch between ruffled-ended and smooth-ended morphologies."
+  },
+  {
+    q:"Ruffled-ended ameloblasts (approx. time spent and role):",
+    opts:["20%; exit proteins/water","80%; incorporate inorganic material","80%; exit proteins/water","20%; incorporate inorganic material"],
+    correct:1,
+    explain:"~80% of time in ruffled-ended form; promotes mineral influx."
+  },
+  {
+    q:"Smooth-ended ameloblasts (approx. time spent and role):",
+    opts:["20%; exit of protein fragments & water","80%; incorporation of minerals","50%; both influx and efflux","20%; incorporation of minerals"],
+    correct:0,
+    explain:"~20% of time; facilitates removal of proteins and water."
+  },
+  {
+    q:"In the protective stage, ameloblasts become:",
+    opts:["Multinucleated giants forming dentin","Short cuboidal cells forming reduced enamel epithelium","Flat cells forming junctional epithelium immediately","Osteoclast-like cells resorbing enamel"],
+    correct:1,
+    explain:"They dedifferentiate to short cuboidal cells and, with other layers, form REE."
+  },
+  {
+    q:"Reduced enamel epithelium (REE) remains on enamel surface until:",
+    opts:["Cusp completion","Eruption","Root completion","Cementum formation begins"],
+    correct:1,
+    explain:"REE covers the fully formed enamel until tooth eruption."
+  },
+  {
+    q:"Amelogenesis Imperfecta (AI) is primarily:",
+    opts:["Inflammatory","Genomic in origin","Nutritional","Autoimmune"],
+    correct:1,
+    explain:"AI represents a group of genetic conditions affecting enamel."
+  },
+  {
+    q:"A common clinical feature of AI is:",
+    opts:["Enamel hypermineralization with translucency","No change in clinical appearance","Discoloration and, in severe forms, hypomineralized enamel","Pulpal obliteration"],
+    correct:2,
+    explain:"Discoloration; severe cases show hypomineralization."
+  },
+  {
+    q:"Which statement about morphologic organelle distribution during differentiation is MOST accurate?",
+    opts:["Protein-synthesizing organelles accumulate proximally near stratum intermedium","Protein-synthesizing organelles are mainly in distal end","Mitochondria disappear","Golgi is absent"],
+    correct:1,
+    explain:"Golgi, RER, and mitochondria are more abundant distally during differentiation."
+  },
+];
+
+const tfs = [
+  {
+    q:"Amelogenesis starts before dentinogenesis.",
+    answer:false,
+    explain:"It starts shortly after dentinogenesis."
+  },
+  {
+    q:"The crown shape is determined during the morphogenic phase.",
+    answer:true,
+    explain:"Morphogenic phase sets crown morphology."
+  },
+  {
+    q:"IEE cells are tall columnar with apical nuclei during the morphogenic phase.",
+    answer:false,
+    explain:"They are cuboidal/low columnar with centrally located nuclei."
+  },
+  {
+    q:"During differentiation, ameloblasts can still divide.",
+    answer:false,
+    explain:"Once differentiated, they no longer divide."
+  },
+  {
+    q:"Odontoblasts begin forming dentin as ameloblasts differentiate.",
+    answer:true,
+    explain:"Dentinogenesis begins during ameloblast differentiation."
+  },
+  {
+    q:"The earliest enamel laid against dentin lacks rods.",
+    answer:true,
+    explain:"Initial enamel is rodless/prismless."
+  },
+  {
+    q:"Tomes’ processes are conical projections at the proximal ends of ameloblasts.",
+    answer:false,
+    explain:"They are at the distal ends."
+  },
+  {
+    q:"Loss of Tomes’ processes at the end of secretion results in rodless final enamel layers.",
+    answer:true,
+    explain:"Final layers become prismless when Tomes’ processes are lost."
+  },
+  {
+    q:"One enamel rod is formed entirely by a single ameloblast.",
+    answer:false,
+    explain:"Head by 1 ameloblast; tail by 3 → total 4 contribute."
+  },
+  {
+    q:"During the transitional stage, ameloblast height decreases and lysosomes increase.",
+    answer:true,
+    explain:"Cells shrink; lysosomes/autophagic vacuoles are abundant."
+  },
+  {
+    q:"Ruffled-ended ameloblasts are mainly responsible for protein and water exit.",
+    answer:false,
+    explain:"Ruffled-ended favor mineral influx; smooth-ended favor exit."
+  },
+  {
+    q:"Reduced enamel epithelium covers the enamel until eruption.",
+    answer:true,
+    explain:"REE remains on the surface of fully formed enamel until eruption."
+  },
+];
+
+const saqs = [
+  { q: "Enumerate the two principal stages of amelogenesis.", a: "1) Enamel (organic) matrix secretion. 2) Mineralization/Maturation of the enamel matrix." },
+  { q: "List the five functional stages in the life cycle of ameloblasts.", a: "Presecretory (morphogenic + differentiation), Secretory (formative), Transitional, Maturation, Protective." },
+  { q: "Describe Tomes’ process and its function.", a: "A conical distal projection of secretory ameloblasts that interdigitates with forming enamel, giving a picket-fence surface and enabling formation of rods and interrods; when Tomes’ processes are lost, the last enamel becomes rodless." },
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <h3 class="qtitle">${item.q}</h3>
+    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="primary" data-act="reveal">Reveal Answer</button>
+      <button class="ghost" data-act="toggle">I was correct</button>
+    </div>
+    <div class="answer" hidden>${item.a}</div>
+  `;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

@@ -1,0 +1,669 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>OCIH 7 — Odontogenesis Part II (Bilingual Study Guide)</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;
+    --pad: 3px;
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;
+    height: var(--h);
+    padding: 0 6px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px);
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);
+    z-index: 0;
+  }
+
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none; transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none; transform: scale(1.0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+</style>
+</head>
+<body class="lang-en">
+<header>
+  <div class="hdr wrap">
+    <div class="left">
+      <div class="title">🦷 Dentistry 3rd year</div>
+      <div class="subtitle">Lecture 7</div>
+    </div>
+    <button id="langBtn" class="lang-toggle" aria-label="Toggle language">
+      <span class="lab en">EN</span>
+      <span class="lab ar">AR</span>
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- Dua (Arabic text shown in both EN/AR) -->
+  <div class="dua">اللهم زدنا علمًا نافعًا وارزقنا فهمًا صائبًا وعملاً صالحًا مقبولًا.</div>
+
+  <!-- Topic -->
+  <div class="chip-box">
+    <span class="chip">
+      <span class="en"><b>Topic: Development of Tooth — Part 2</b></span>
+      <span class="ar"><b>الموضوع: تطوّر الأسنان — الجزء الثاني</b></span>
+    </span>
+  </div>
+
+  <div class="sections">
+    <!-- Section 1 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">1) Roadmap & Key Concepts</span><span class="ar">١) خريطة الدرس والمفاهيم الأساسية</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Tooth development is a coordinated series of epithelial–mesenchymal events, similar across all teeth. In Part II we focus on morphological stages (bud → cap → bell) and early tissue differentiation.</p>
+            <div class="table-wrap" aria-label="Morphological vs Physiological stages">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Axis</th><th>Stages</th><th>Core idea</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>Morphological</td><td>Dental lamina → Bud → Cap → Bell (early/advanced)</td><td>Shape of enamel organ over time.</td></tr>
+                  <tr><td>Physiological (histophysiological)</td><td>Initiation → Proliferation → Histodifferentiation → Morphodifferentiation → Apposition</td><td>What the cells are doing.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="ar">
+            <p>تطوّر الأسنان سلسلة من التفاعلات بين الظهارة والأديم المتوسط، متشابهة في جميع الأسنان. في هذا الجزء نركز على المراحل الشكلية (البرعم → القبعة → الجرس) وبدايات التمايز النسيجي.</p>
+            <div class="table-wrap" aria-label="مقارنة المراحل الشكلية والفيزيولوجية">
+              <table>
+                <thead>
+                  <tr>
+                    <th>المحور</th><th>المراحل</th><th>الفكرة الأساسية</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr><td>شكلي</td><td>الصفيحة السنية → البرعم → القبعة → الجرس (مبكر/متقدم)</td><td>تغيّر شكل عضو المينا عبر الزمن.</td></tr>
+                  <tr><td>فيزيولوجي (نسيجي-وظيفي)</td><td>البدء → التكاثر → التمايز النسيجي → التمايز الشكلي → الترسيب</td><td>ماذا تفعل الخلايا.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 3,5,6,9/29</span><span class="ar">الصفحات المرجعية: ٣،٥،٦،٩/٢٩</span></div>
+      </div>
+
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Understanding both “shape” and “function” timelines helps predict anomalies and plan interceptive care.</div><div class="ar">فهم خطّي “الشكل” و“الوظيفة” يساعد في توقّع الشذوذات ووضع خطط علاجية مبكرة.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Pair each morphological stage with its main physiological process.</div><div class="ar">اربط كل مرحلة شكلية بعمليتها الفيزيولوجية الأساسية.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">All teeth follow the same fundamental developmental plan.</div><div class="ar">جميع الأسنان تتبع مخططًا نمائيًا أساسيًا واحدًا.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 2 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">2) Early Oral Epithelium (5–6 W.I.U.)</span><span class="ar">٢) الظهارة الفموية المبكرة (الأسبوع 5–6 داخل الرحم)</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>At 5–6 weeks in utero, the primitive oral cavity is lined by ectoderm with 2–3 layers (basal columnar + superficial flat cells). This ectoderm is separated from underlying ectomesenchyme by a basement membrane.</p>
+          </div>
+          <div class="ar">
+            <p>في الأسبوع ٥–٦ داخل الرحم، تُبطّن التجويف الفموي البدائي ظهارة خارجية مؤلفة من ٢–٣ طبقات (طبقة قاعدية عمودية + طبقة سطحية مفلطحة). تفصلها غشاء قاعدي عن الأديم المتوسط الظِهاري (الإكتوميسنكايم).</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 10/29</span><span class="ar">الصفحات المرجعية: ١٠/٢٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">Ectoderm (2–3 layers) + basement membrane + ectomesenchyme triad.</div><div class="ar">ثلاثية: الظهارة الخارجية (٢–٣ طبقات) + الغشاء القاعدي + الإكتوميسنكايم.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Label these layers on a histology micrograph to orient yourself before stages begin.</div><div class="ar">قم بتأشير هذه الطبقات على صورة نسيجية للتثبيت قبل الدخول في المراحل.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">“Stomodeum” is the primitive mouth; its ectoderm drives initial tooth epithelial events.</div><div class="ar">الـ“ستوموديوم” هو الفم البدائي؛ وظهارته تقود بدايات الأحداث الظهارية السِنية.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 3 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">3) Dental Lamina & Primary Epithelial Bands</span><span class="ar">٣) الصفيحة السنية والحزم الظهارية الأولية</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Continued localized proliferation of the anterior dental lamina forms a series of epithelial outgrowths (≈10 maxillary + 10 mandibular) at sites of future primary teeth. Each outgrowth = beginning of an enamel organ. Ectomesenchymal cells condense around these outgrowths.</p>
+          </div>
+          <div class="ar">
+            <p>يؤدي التكاثر الموضّع المستمر للصفيحة السنية الأمامية إلى نتوءات ظهارية (≈١٠ فكية علوية + ١٠ فكية سفلية) في مواقع الأسنان المؤقتة المستقبلية. كل نتوء = بداية عضو المينا. تتكاثف خلايا الإكتوميسنكايم حولها.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 11–13/29</span><span class="ar">الصفحات المرجعية: ١١–١٣/٢٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Primary epithelial bands appear ~6 W.I.U.</div><div class="ar">تظهر الحزم الظهارية الأولية قرابة الأسبوع السادس داخل الرحم.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Positions of outgrowths foreshadow the primary dentition map.</div><div class="ar">مواقع النتوءات تُمهّد خريطة الأسنان اللبنية.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Think “20 buds for 20 primary teeth.”</div><div class="ar">اربطها بعبارة “٢٠ برعمًا لِـ٢٠ سنًا لبنيًا”.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 4 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">4) Bud Stage (Proliferation)</span><span class="ar">٤) مرحلة البرعم (التكاثر)</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Dental lamina proliferates into rounded epithelial buds called the enamel organ. Condensed ectomesenchyme beneath forms the <b>dental papilla</b>, while surrounding ectomesenchyme forms the <b>dental sac (follicle)</b>.</p>
+          </div>
+          <div class="ar">
+            <p>تتضاعف خلايا الصفيحة السنية لتُكوّن براعم ظهارية مستديرة تُسمّى <b>عضو المينا</b>. يتكاثف الإكتوميسنكايم أسفلها ليكوّن <b>الحليمة السنية</b>، ويُحيط بها <b>الكيس/الجريب السني</b>.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 16–17/29</span><span class="ar">الصفحات المرجعية: ١٦–١٧/٢٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">On histology, look for a small epithelial knob with surrounding mesenchymal condensation.</div><div class="ar">في الشرائح النسيجية ابحث عن عقدة ظهارية صغيرة مع تكاثف ميزنكيمي حولها.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">Bud = first clear enamel organ; papilla (pulp/dentin precursor); sac (cementum/PDL/alveolar bone contributor).</div><div class="ar">البرعم = أوّل عضو مينا واضح؛ الحليمة (بادئة اللب/العاج)؛ الكيس (يسهم في الملاط/الرباط/العظم السنخي).</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Disturbances here can alter tooth number (e.g., hypodontia/supernumerary).</div><div class="ar">الاضطراب في هذه المرحلة قد يغيّر عدد الأسنان (نقص التسنين/أسنان زائدة).</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 5 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">5) Cap Stage (Early Shape Change)</span><span class="ar">٥) مرحلة القبعة (بدايات تغيّر الشكل)</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Differential growth increases size and bends the enamel organ into a cap shape with a short, broad stalk to dental lamina. The <b>tooth germ</b> is now recognizable: Enamel organ + Dental papilla + Dental sac.</p>
+          </div>
+          <div class="ar">
+            <p>يؤدي النمو التفاضلي إلى ازدياد الحجم وانحناء عضو المينا ليأخذ شكل <b>قبعة</b> مع اتصال عريض وقصير بالصفيحة السنية. أصبح <b>جرثومة السن</b> واضحة: عضو المينا + الحليمة السنية + الكيس السني.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 19–21/29</span><span class="ar">الصفحات المرجعية: ١٩–٢١/٢٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en"><b>Tooth germ</b> = EO + DP + DS.</div><div class="ar"><b>جرثومة السن</b> = عضو المينا + الحليمة السنية + الكيس السني.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Each component will form distinct tissues of the tooth and periodontium.</div><div class="ar">كل مكوّن سيساهم في أنسجة مختلفة من السن والنسج الداعمة.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Sketch the cap’s convexity (outer) vs concavity (inner) to anchor orientation.</div><div class="ar">ارسم تحدّب السطح الخارجي وتقعّر الداخلي لتثبيت الاتجاه.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 6 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">6) Enamel Organ Layers (Cap → Early Bell)</span><span class="ar">٦) طبقات عضو المينا (من القبعة إلى الجرس المبكر)</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Histodifferentiation begins in the cap stage. Peripheral cells differentiate into <b>Outer Enamel Epithelium (OEE)</b> covering the convex surface and <b>Inner Enamel Epithelium (IEE)</b> lining the concavity. Central cells become the <b>Stellate Reticulum (SR)</b>, a hydrated, cushion-like network.</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>Layer</th><th>Location</th><th>Key features</th></tr></thead>
+                <tbody>
+                  <tr><td>OEE</td><td>Convex outer surface</td><td>Cuboidal; protective boundary.</td></tr>
+                  <tr><td>IEE</td><td>Concave inner surface</td><td>Low columnar; future ameloblast lineage.</td></tr>
+                  <tr><td>Stellate Reticulum</td><td>Central core</td><td>Star-shaped network; GAG-rich; acts as a cushion.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="ar">
+            <p>يبدأ التمايز النسيجي في مرحلة القبعة. تتمايز الخلايا المحيطية إلى <b>الظهارة المينائية الخارجية</b> على الجانب المحدب، و<b>الظهارة المينائية الداخلية</b> على التقعّر. تشكّل الخلايا المركزية <b>الشبكة النجمية</b> المرطّبة ذات القوام الوسادي.</p>
+            <div class="table-wrap">
+              <table>
+                <thead><tr><th>الطبقة</th><th>الموضع</th><th>السمات</th></tr></thead>
+                <tbody>
+                  <tr><td>الظهارة الخارجية</td><td>السطح الخارجي المحدّب</td><td>مكعّبة؛ حاجز وقائي.</td></tr>
+                  <tr><td>الظهارة الداخلية</td><td>السطح الداخلي المقعّر</td><td>عمودية واطئة؛ سلف مُنتِجات المينا.</td></tr>
+                  <tr><td>الشبكة النجمية</td><td>المركز</td><td>شبكة نجمية غنية بالـGAG؛ قوام وسادي.</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 20–22/29</span><span class="ar">الصفحات المرجعية: ٢٠–٢٢/٢٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Histodifferentiation starts in the cap stage.</div><div class="ar">يبدأ التمايز النسيجي خلال مرحلة القبعة.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">OEE = outer “shell”; IEE = future ameloblasts; SR = hydrophilic cushion.</div><div class="ar">الخارجي غلاف، الداخلي سلف الأميليبلاست، الشبكة وسادة مرطّبة.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Insults to IEE jeopardize enamel formation.</div><div class="ar">أي أذى للظهارة الداخلية يهدّد تكوين المينا.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 7 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">7) Why Stellate Reticulum Becomes “Star-Shaped”</span><span class="ar">٧) لماذا تصبح خلايا الشبكة النجمية نجمية؟</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Central polygonal cells synthesize and secrete hydrophilic glycosaminoglycans (GAGs) that attract water into the enamel organ (from the dental papilla). Hydration stretches cells apart; they maintain contact via cytoplasmic processes → star shape → intercellular network = Stellate Reticulum.</p>
+          </div>
+          <div class="ar">
+            <p>تُفرز الخلايا متعددة الأضلاع المركزية غليكوزأمينوغلِكانات محبة للماء، فتسحب الماء إلى عضو المينا (من الحليمة السنية). يؤدي الترطيب إلى شدّ الخلايا مع بقاء الاتصالات عبر امتدادات سيتوبلازمية، فتأخذ شكل النجمة وتشكّل شبكة بين خلوية = الشبكة النجمية.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 22–23/29</span><span class="ar">الصفحات المرجعية: ٢٢–٢٣/٢٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Diagram the sequence: GAG ↑ → Water influx → Cells stretch → Cytoplasmic bridges → SR network.</div><div class="ar">ارسم التسلسل: ↑GAG → دخول الماء → تمدّد الخلايا → جسور سيتوبلازمية → شبكة SR.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">SR protects the delicate IEE and supports morphogenesis.</div><div class="ar">تؤمّن SR حماية للظهارة الداخلية وتدعم التشكل.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Dehydration during processing can collapse SR spaces in histology.</div><div class="ar">قد ينهار فراغ SR في الشرائح بسبب الجفاف أثناء التحضير.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 8 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">8) Transient Signaling Centers: Enamel Knot & Cord</span><span class="ar">٨) مراكز عابرة للإشارة: عقدة المينا والحبل المينائي</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>The <b>enamel knot</b> is a transient condensation of IEE cells bulging towards the papilla; it may extend towards OEE as an <b>enamel cord</b>. These structures likely help position the first cusp during crown formation.</p>
+          </div>
+          <div class="ar">
+            <p><b>عقدة المينا</b> تكاثف عابر لخلايا الظهارة الداخلية يَنتأ نحو الحليمة؛ قد تمتد نحو الظهارة الخارجية كـ<b>حبل مينائي</b>. يُعتقد أنها تحدد موضع الحدبة الأولى خلال تشكّل التاج.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 25/29</span><span class="ar">الصفحات المرجعية: ٢٥/٢٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Knot and cord are <i>transient</i>—they appear and regress.</div><div class="ar">العقدة والحبل بُنى <i>عابرة</i>—تظهر ثم تتراجع.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Disruption may alter cusp patterning in molars.</div><div class="ar">الاضطراب قد يغيّر نمط الحُدَب في الأضراس.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Associate “knot = cusp cue.”</div><div class="ar">اربط “العقدة = إشارة الحُدبة”.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 9 (Summary) -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">9) Summary</span><span class="ar">٩) الخلاصة</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li>5–6 W.I.U.: Oral ectoderm (2–3 layers) over ectomesenchyme, separated by basement membrane.</li>
+              <li>Dental lamina → ~20 epithelial buds for primary teeth.</li>
+              <li>Bud stage: Enamel organ appears; papilla (pulp/dentin), sac (supporting tissues).</li>
+              <li>Cap stage: Tooth germ = Enamel organ + Dental papilla + Dental sac.</li>
+              <li>IEE, OEE, and SR emerge; histodifferentiation begins.</li>
+              <li>SR’s star-shape due to GAG-driven hydration.</li>
+              <li>Enamel knot/cord: transient organizers for cusp initiation.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li>الأسبوع ٥–٦: ظهارة فموية (٢–٣ طبقات) فوق إكتوميسنكايم يفصلها غشاء قاعدي.</li>
+              <li>الصفيحة السنية → ~٢٠ برعمًا للأسنان اللبنية.</li>
+              <li>مرحلة البرعم: ظهور عضو المينا؛ الحليمة (لب/عاج)، الكيس (أنسجة داعمة).</li>
+              <li>مرحلة القبعة: جرثومة السن = عضو المينا + الحليمة + الكيس.</li>
+              <li>تتوضّح OEE و IEE و SR؛ يبدأ التمايز النسيجي.</li>
+              <li>النمط النجمي لـSR بسبب الماء المنجذب بالـGAG.</li>
+              <li>عقدة/حبل المينا: منظِّمات عابرة لبدء الحدبات.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 10–11,16–17,19–22,25/29</span><span class="ar">الصفحات المرجعية: ١٠–١١،١٦–١٧،١٩–٢٢،٢٥/٢٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Link stage → hallmark structures (Bud: papilla/sac; Cap: EO+DP+DS; Early Bell: distinct OEE/IEE/SR).</div><div class="ar">اربط المرحلة بعلامتها (البرعم: الحليمة/الكيس؛ القبعة: EO+DP+DS؛ الجرس المبكر: OEE/IEE/SR).</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Advanced bell, apposition, and maturation proceed in Part III.</div><div class="ar">مرحلة الجرس المتقدم والترسيب والنضج تُستكمل في الجزء الثالث.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Builds the scaffold to understand enamel/dentin formation and clinical defects.</div><div class="ar">يُمهّد لفهم تكوّن المينا/العاج والعيوب السريرية.</div></div></div>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <!-- Glossary -->
+  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+  <div class="grid g3x4" id="glossary">
+    <div class="card"><div class="head">Dental Lamina / الصفيحة السنية</div><div class="content" hidden><div class="en">Epithelial band that gives rise to enamel organs.</div><div class="ar">شريط ظهاري ينشأ عنه أعضاء المينا.</div></div></div>
+    <div class="card"><div class="head">Enamel Organ / عضو المينا</div><div class="content" hidden><div class="en">Epithelial structure that forms enamel.</div><div class="ar">بنية ظهارية تُنتج المينا.</div></div></div>
+    <div class="card"><div class="head">Dental Papilla / الحليمة السنية</div><div class="content" hidden><div class="en">Condensed ectomesenchyme giving rise to dentin and pulp.</div><div class="ar">ميزنكيم متكاثف يكوّن العاج واللب.</div></div></div>
+    <div class="card"><div class="head">Dental Sac (Follicle) / الكيس السني</div><div class="content" hidden><div class="en">Ectomesenchyme surrounding the organ and papilla; forms cementum, PDL, and alveolar bone.</div><div class="ar">ميزنكيم محيط يكوّن الملاط والرباط اللثوي والعظم السنخي.</div></div></div>
+    <div class="card"><div class="head">OEE / الظهارة المينائية الخارجية</div><div class="content" hidden><div class="en">Cuboidal outer layer; protection.</div><div class="ar">طبقة خارجية مكعّبة للحماية.</div></div></div>
+    <div class="card"><div class="head">IEE / الظهارة المينائية الداخلية</div><div class="content" hidden><div class="en">Inner layer; ameloblast precursor.</div><div class="ar">طبقة داخلية؛ سلف الأميليبلاست.</div></div></div>
+    <div class="card"><div class="head">Stellate Reticulum / الشبكة النجمية</div><div class="content" hidden><div class="en">Hydrated star-shaped cell network providing cushion.</div><div class="ar">شبكة خلايا نجمية مرطّبة ذات قوام وسادي.</div></div></div>
+    <div class="card"><div class="head">Enamel Knot / عقدة المينا</div><div class="content" hidden><div class="en">Transient IEE condensation guiding cusp position.</div><div class="ar">تكاثف عابر في الظهارة الداخلية يوجّه موضع الحُدبة.</div></div></div>
+    <div class="card"><div class="head">Enamel Cord / الحبل المينائي</div><div class="content" hidden><div class="en">Strand from knot towards OEE; transient.</div><div class="ar">خيط يمتد من العقدة نحو الظهارة الخارجية؛ عابر.</div></div></div>
+    <div class="card"><div class="head">Histodifferentiation / التمايز النسيجي</div><div class="content" hidden><div class="en">Cells acquire specialized functions (e.g., IEE → ameloblasts).</div><div class="ar">اكتساب الخلايا وظائف متخصصة (مثل تحوّل IEE إلى أميليبلاست).</div></div></div>
+    <div class="card"><div class="head">Morphodifferentiation / التمايز الشكلي</div><div class="content" hidden><div class="en">Determines crown size/shape.</div><div class="ar">يحدد شكل وحجم التاج.</div></div></div>
+  </div>
+
+  <!-- Flashcards -->
+  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+  <div class="grid g3x4" id="flashcards">
+    <div class="card"><div class="head"><span class="en">1 — What forms the enamel?</span><span class="ar">١ — ما البنية التي تُنتج المينا؟</span></div><div class="content" hidden><span class="en">A: Enamel organ (IEE → ameloblasts).</span><span class="ar">ج: عضو المينا (IEE ← الأميليبلاست).</span></div></div>
+    <div class="card"><div class="head"><span class="en">2 — Tooth germ components?</span><span class="ar">٢ — مكوّنات جرثومة السن؟</span></div><div class="content" hidden><span class="en">A: Enamel organ, dental papilla, dental sac.</span><span class="ar">ج: عضو المينا، الحليمة، الكيس.</span></div></div>
+    <div class="card"><div class="head"><span class="en">3 — When does histodifferentiation begin?</span><span class="ar">٣ — متى يبدأ التمايز النسيجي؟</span></div><div class="content" hidden><span class="en">A: Cap stage.</span><span class="ar">ج: مرحلة القبعة.</span></div></div>
+    <div class="card"><div class="head"><span class="en">4 — OEE vs IEE (location)?</span><span class="ar">٤ — موضع الظهارة الخارجية والداخلية؟</span></div><div class="content" hidden><span class="en">A: OEE on convexity; IEE on concavity.</span><span class="ar">ج: الخارجية على التحدّب؛ الداخلية على التقعّر.</span></div></div>
+    <div class="card"><div class="head"><span class="en">5 — Role of GAGs in SR?</span><span class="ar">٥ — دور الـGAG في SR؟</span></div><div class="content" hidden><span class="en">A: Attract water → cells stretch → star shape.</span><span class="ar">ج: تجذب الماء → تمدّد الخلايا → شكل نجمي.</span></div></div>
+    <div class="card"><div class="head"><span class="en">6 — Significance of enamel knot?</span><span class="ar">٦ — أهمية عقدة المينا؟</span></div><div class="content" hidden><span class="en">A: Positions the first cusp (transient signal center).</span><span class="ar">ج: تحدد موضع الحُدبة الأولى (مركز إشارة عابر).</span></div></div>
+    <div class="card"><div class="head"><span class="en">7 — Bud stage hallmarks?</span><span class="ar">٧ — سمات مرحلة البرعم؟</span></div><div class="content" hidden><span class="en">A: EO buds; papilla and sac condensation.</span><span class="ar">ج: بروزات عضو المينا؛ تكاثف الحليمة والكيس.</span></div></div>
+    <div class="card"><div class="head"><span class="en">8 — Morphodifferentiation meaning?</span><span class="ar">٨ — معنى التمايز الشكلي؟</span></div><div class="content" hidden><span class="en">A: Setting crown size and shape.</span><span class="ar">ج: تحديد حجم وشكل التاج.</span></div></div>
+    <div class="card"><div class="head"><span class="en">9 — Primary epithelial bands timing?</span><span class="ar">٩ — توقيت الحزم الظهارية الأولية؟</span></div><div class="content" hidden><span class="en">A: ~6 weeks in utero.</span><span class="ar">ج: حوالي الأسبوع السادس داخل الرحم.</span></div></div>
+  </div>
+</main>
+
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+
+<!-- Notes:
+- Header design kept; subtitle set to Lecture 7 (from file name).
+- Source page numbers use the PDF's native numbering; total pages = 29.
+- All content is simplified from "OCIH 7.pdf" focusing on bud & cap stages and related structures.
+-->
+</body>
+</html>

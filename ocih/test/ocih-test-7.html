@@ -1,0 +1,456 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Development of Tooth (Odontogenesis) • Part II</h1>
+      <p class="subtitle">Test based on Lecture 7</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (filled from lecture) -----------
+const mcqs = [
+  {q:"At what embryonic age is the primitive oral cavity first lined by ectoderm that will give rise to the dental lamina?", opts:["2–3 W.I.U.","5–6 W.I.U.","8–10 W.I.U.","12–14 W.I.U."], correct:1, explain:"The oral ectoderm lining and primary epithelial bands appear around 5–6 weeks in utero (W.I.U.), preceding dental lamina formation."},
+  {q:"Which pair correctly matches the two overarching ways to describe tooth development?", opts:["Genetic and epigenetic","Cranial and caudal","Morphological and physiological","Anterior and posterior"], correct:2, explain:"The lecture distinguishes morphological stages and physiological (histophysiological) stages."},
+  {q:"Which of the following lists ONLY morphological stages?", opts:["Initiation, Proliferation, Apposition","Dental lamina, Bud, Cap, Early bell, Advanced bell, Enamel/Dentin matrix formation","Histodifferentiation, Morphodifferentiation, Apposition","Initiation, Cap, Bell"], correct:1, explain:"Morphological stages include dental lamina through matrix formation."},
+  {q:"Which of the following lists ONLY physiological (histophysiological) stages?", opts:["Bud, Cap, Bell","Initiation, Proliferation, Histodifferentiation, Morphodifferentiation, Apposition","Dental lamina, Early bell, Advanced bell","Cap, Bell, Eruption"], correct:1, explain:"Physiological stages are initiation → proliferation → histodifferentiation → morphodifferentiation → apposition."},
+  {q:"The anterior dental lamina forms how many epithelial outgrowths for deciduous teeth?", opts:["5 in each arch","8 in each arch","10 in upper and 10 in lower","12 in upper and 12 in lower"], correct:2, explain:"Ten tooth buds per arch (maxilla and mandible) correspond to future deciduous teeth."},
+  {q:"Each epithelial outgrowth from the dental lamina represents the beginning of what?", opts:["Dental papilla","Enamel organ of a deciduous tooth","Dental sac","Tooth root"], correct:1, explain:"Each outgrowth is the start of an enamel organ of a deciduous tooth."},
+  {q:"Condensation of ectomesenchyme below the enamel organ is called:", opts:["Dental sac","Dental papilla","Stellate reticulum","Pulp organ"], correct:1, explain:"The condensed ectomesenchyme beneath the enamel organ forms the dental papilla."},
+  {q:"Ectomesenchyme encircling both enamel organ and dental papilla forms the:", opts:["Dental follicle (dental sac)","Reduced enamel epithelium","Hertwig's root sheath","Secondary dental lamina"], correct:0, explain:"Surrounding ectomesenchyme becomes the dental sac/follicle."},
+  {q:"The combination of enamel organ, dental papilla, and dental sac is termed the:", opts:["Tooth germ","Cervical loop","Primary epithelial band","Enamel knot"], correct:0, explain:"Tooth germ = enamel organ + dental papilla + dental sac."},
+  {q:"In the bud stage, the enamel organ resembles:", opts:["A cap","A bell","A small rounded bud","A tube"], correct:2, explain:"Initial proliferation of the dental lamina creates a rounded bud-like enamel organ."},
+  {q:"Which change characterizes transition to the cap stage?", opts:["Loss of dental lamina","Differential growth producing a cap-shaped enamel organ","Immediate cusp formation","Root development"], correct:1, explain:"Differential growth enlarges and reshapes the enamel organ into a cap with a broad link to the dental lamina."},
+  {q:"Which three structures are well defined during the cap stage?", opts:["IEE, OEE, Stellate reticulum","Enamel organ, Dental papilla, Dental sac","Cervical loop, Enamel cord, Enamel knot","Pulp, Dentin, Enamel"], correct:1, explain:"Cap stage shows enamel organ, dental papilla, and dental sac distinctly."},
+  {q:"Histodifferentiation begins primarily in which stage?", opts:["Bud","Cap","Early bell","Advanced bell"], correct:1, explain:"Histodifferentiation starts in the cap stage as epithelial cells begin to specialize."},
+  {q:"During cap stage, polygonal central cells secrete hydrophilic GAGs. The influx of water stretches cells into star shapes forming the:", opts:["Stratum intermedium","Stellate reticulum","Reduced enamel epithelium","Outer enamel epithelium"], correct:1, explain:"GAG-mediated hydration forms a network of star-shaped cells: the stellate reticulum."},
+  {q:"In cap stage, the peripheral cells differentiate into:", opts:["Ameloblasts and odontoblasts","Outer enamel epithelium and inner enamel epithelium","Reduced enamel epithelium and HERS","Dental papilla and dental sac"], correct:1, explain:"Peripheral enamel organ cells become OEE (outer) and IEE (inner)."},
+  {q:"Which statement about OEE is TRUE?", opts:["Tall columnar cells on concavity","Cuboidal cells covering the convex surface of the enamel organ","Forms odontoblasts","Secretes enamel"], correct:1, explain:"OEE consists of cuboidal cells on the convexity of the enamel organ."},
+  {q:"Which statement about IEE is TRUE?", opts:["Cuboidal cells on convexity","Low columnar cells lining the concavity of the enamel organ","Forms cementum directly","Becomes stellate reticulum"], correct:1, explain:"IEE is low columnar epithelium on the concave side; it later differentiates into ameloblasts."},
+  {q:"Functionally, the stellate reticulum provides:", opts:["Cushion-like support to the enamel organ","Source of odontoblasts","Matrix for cementum","Route for eruption"], correct:0, explain:"It creates a cushioned, hydrated network supporting the enamel organ."},
+  {q:"Which transient epithelial condensation may indicate the initial cusp position?", opts:["Cervical loop","Enamel knot","Reduced enamel epithelium","Dental lamina"], correct:1, explain:"The enamel knot is a transient cluster implicated in early cusp patterning."},
+  {q:"The enamel cord is best described as:", opts:["A strand extending from enamel knot toward OEE","A collagen bundle in dental papilla","A vascular cord","Part of Hertwig's sheath"], correct:0, explain:"An epithelial strand connecting enamel knot toward OEE; a transient structure."},
+  {q:"Morphodifferentiation primarily determines:", opts:["Tissue mineral content","Shape and size of the tooth crown","Timing of eruption","Root number"], correct:1, explain:"Morphodifferentiation governs crown shape and size."},
+  {q:"Which is the correct sequence for physiological stages?", opts:["Proliferation → Initiation → Morphodifferentiation → Apposition → Histodifferentiation","Initiation → Proliferation → Histodifferentiation → Morphodifferentiation → Apposition","Initiation → Morphodifferentiation → Proliferation → Apposition → Histodifferentiation","Proliferation → Apposition → Initiation → Histodifferentiation → Morphodifferentiation"], correct:1, explain:"The classical order given in the lecture is initiation → proliferation → histodifferentiation → morphodifferentiation → apposition."},
+  {q:"The primary epithelial bands seen around 6 W.I.U. give rise directly to:", opts:["Dental lamina","Reduced enamel epithelium","Cementoblast layer","Hertwig's epithelial root sheath"], correct:0, explain:"Primary epithelial bands precede and form the dental lamina."},
+  {q:"Which structure remains as the connection between enamel organ and oral epithelium during early stages?", opts:["Secondary dental lamina","Dental lamina","Cervical loop","Enamel cord"], correct:1, explain:"The dental lamina maintains a short, broad connection during cap stage."},
+  {q:"Which statement is MOST accurate regarding the bud stage?", opts:["Differential growth creates a concavity","Central cells become star-shaped","Rounded epithelial proliferation into ectomesenchyme","Presence of HERS"], correct:2, explain:"Bud stage is defined by rounded epithelial proliferations from the dental lamina."},
+  {q:"The dental sac (follicle) ultimately contributes to which future tissues?", opts:["Enamel and dentin","Pulp and dentin","Cementum, periodontal ligament, and alveolar bone","Stratum intermedium and OEE"], correct:2, explain:"Although not detailed in the slide, the dental sac/follicle forms the periodontium components (classic histology concept)."},
+  {q:"Which event best marks the transition to bell stages (early/advanced)?", opts:["Initial mineral deposition","Further differentiation of IEE into preameloblasts and shape definition","Eruption into oral cavity","Root sheath formation"], correct:1, explain:"Bell stage emphasizes advanced histodifferentiation and crown morphogenesis."},
+  {q:"Which term refers to the entire unit EO + DP + DS at any developing stage?", opts:["Tooth organ","Dental complex","Tooth germ","Dental unit"], correct:2, explain:"The combined unit is termed the tooth germ."},
+  {q:"Glycosaminoglycans in the enamel organ mainly cause:", opts:["Calcification of matrix","Hydration that separates and stretches central cells","Detachment of dental lamina","Root formation"], correct:1, explain:"Hydrophilic GAGs draw water in, producing the stellate reticulum network."},
+  {q:"Which textbook was cited in the lecture as a reference?", opts:["Bhaskar's Synopsis of Oral Pathology","Orban's Oral Histology and Embryology","Shafer's Textbook of Oral Pathology","Wheeler's Dental Anatomy"], correct:1, explain:"References listed include Orban's Oral Histology and Embryology and Ten Cate's Oral Histology."},
+  {q:"Another textbook cited alongside Orban's was:", opts:["Neville's Oral & Maxillofacial Pathology","Burket's Oral Medicine","Ten Cate's Oral Histology","Carranza's Clinical Periodontology"], correct:2, explain:"Ten Cate's Oral Histology was also listed in the references."}
+];
+
+const tfs = [
+  {q:"Tooth development processes are fundamentally similar for all teeth.", answer:true, explain:"The lecture notes that the fundamental developmental process is similar for all teeth."},
+  {q:"Morphological stages include initiation and proliferation.", answer:false, explain:"Initiation and proliferation are physiological (histophysiological) stages, not morphological."},
+  {q:"The bud stage is characterized by differential growth producing a concavity.", answer:false, explain:"That description fits the cap stage; the bud stage is a rounded epithelial proliferation."},
+  {q:"During the cap stage, enamel organ, dental papilla, and dental sac are evident.", answer:true, explain:"All three are well defined in the cap stage."},
+  {q:"Histodifferentiation starts in the bud stage.", answer:false, explain:"It starts in the cap stage according to the lecture."},
+  {q:"OEE consists of cuboidal cells on the convex surface of the enamel organ.", answer:true, explain:"The outer enamel epithelium is cuboidal and covers the convexity."},
+  {q:"IEE is composed of low columnar cells lining the concavity of the enamel organ.", answer:true, explain:"Correct per the cap-stage details."},
+  {q:"Stellate reticulum forms because central cells secrete hydrophobic lipids that expel water.", answer:false, explain:"They secrete hydrophilic GAGs that draw water in, stretching cells into star shapes."},
+  {q:"Enamel knot and enamel cord are permanent features of mature enamel.", answer:false, explain:"They are transient structures during early crown formation."},
+  {q:"Morphodifferentiation determines tooth shape and size.", answer:true, explain:"That is the defining role of morphodifferentiation."},
+  {q:"The tooth germ is the union of enamel organ and dental papilla only.", answer:false, explain:"It also includes the dental sac (follicle)."},
+  {q:"Ten deciduous tooth buds arise in each dental arch from the dental lamina.", answer:true, explain:"10 in the upper and 10 in the lower arch are noted for deciduous teeth."}
+];
+
+const saqs = [
+  { q: "Enumerate the morphological and physiological (histophysiological) stages of tooth development.", a: "Morphological: Dental lamina → Bud → Cap → Early bell → Advanced bell → Enamel & dentin matrix formation. Physiological: Initiation → Proliferation → Histodifferentiation → Morphodifferentiation (shape & size determined) → Apposition." },
+  { q: "Briefly explain the bud stage.", a: "Dental lamina proliferates into rounded bud-like epithelial outgrowths (enamel organs) that invaginate into ectomesenchyme; ectomesenchyme condenses beneath as dental papilla and around as dental sac." },
+  { q: "Summarize the cap stage and its transient structures.", a: "Differential growth enlarges enamel organ into a cap shape with a broad connection to dental lamina. Three components are evident: enamel organ, dental papilla, dental sac (tooth germ). Peripheral cells differentiate into OEE and IEE; central cells produce GAGs forming stellate reticulum. Transient enamel knot (with enamel cord toward OEE) may guide initial cusp position." }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <h3 class="qtitle">${item.q}</h3>
+    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="primary" data-act="reveal">Reveal Answer</button>
+      <button class="ghost" data-act="toggle">I was correct</button>
+    </div>
+    <div class="answer" hidden>${item.a}</div>
+  `;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

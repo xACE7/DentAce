@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 16</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (filled from lecture) -----------
+const mcqs = [
+  {
+    q: "Incremental lines of Retzius are best described as:",
+    opts: [
+      "Dark bands in ground sections indicating rhythmic enamel deposition",
+      "Cross-striations within dentin reflecting daily growth",
+      "Hypocalcified defects filled with organic matrix",
+      "Post-eruptive cracks produced by mastication"
+    ],
+    correct: 0,
+    explain: "They represent successive layers of enamel laid down during crown formation; brownish bands in ground sections."
+  },
+  {
+    q: "In longitudinal sections, lines of Retzius run:",
+    opts: [
+      "Parallel to the enamel surface",
+      "Obliquely from the DEJ toward the surface",
+      "Perpendicular to rod direction only at cusps",
+      "As concentric rings around the pulp"
+    ],
+    correct: 1,
+    explain: "Seen as oblique lines extending from the dentinoenamel junction toward the enamel surface."
+  },
+  {
+    q: "In cross-section, lines of Retzius appear as:",
+    opts: ["Radial spokes", "Concentric rings", "Random striae", "S-shaped curves"],
+    correct: 1,
+    explain: "They encircle the crown as concentric rings in cross-sectional views."
+  },
+  {
+    q: "The neonatal line is a prominent incremental line associated with:",
+    opts: ["First tooth eruption", "Birth-related metabolic stress", "Weaning", "Pubertal spurts"],
+    correct: 1,
+    explain: "Neonatal line marks the physiologic disturbance at birth in teeth forming at that time."
+  },
+  {
+    q: "Hunter-Schreger bands represent:",
+    opts: [
+      "Alternating light and dark areas due to decussation of enamel rods",
+      "Cracks along enamel lamellae",
+      "Protein-rich tufts at DEJ",
+      "Daily growth lines in rods"
+    ],
+    correct: 0,
+    explain: "They are optical phenomena from groups of rods with alternating orientation (decussation)."
+  },
+  {
+    q: "Enamel tufts are:",
+    opts: [
+      "Hypermineralized rod ends at the surface",
+      "Hypocalcified, branched structures rich in enamel proteins arising from the DEJ",
+      "Post-eruptive craze lines",
+      "Incomplete coalescence of cusps"
+    ],
+    correct: 1,
+    explain: "Tufts are hypocalcified, branched features originating at the scalloped DEJ and rich in enamel proteins."
+  },
+  {
+    q: "Primary mechanical significance of enamel tufts:",
+    opts: [
+      "Initiate caries",
+      "Prevent enamel fracture by dissipating stress",
+      "Anchor perikymata",
+      "Guide rod orientation at surface"
+    ],
+    correct: 1,
+    explain: "They may act as crack stoppers, helping resist enamel fracture."
+  },
+  {
+    q: "Enamel lamellae are best defined as:",
+    opts: [
+      "Hypermineralized streaks of fluoride",
+      "Linear hypocalcified defects extending from surface toward DEJ",
+      "Daily cross-striations in rods",
+      "Scallops of the junction between dentin and enamel"
+    ],
+    correct: 1,
+    explain: "Lamellae are thin, leaf-like hypomineralized areas that can serve as pathways for bacteria."
+  },
+  {
+    q: "Clinical significance of enamel lamellae:",
+    opts: ["They increase radiopacity", "They are routes of bacterial entry leading to caries", "They form the enamel cuticle", "They are sites of prism decussation"],
+    correct: 1,
+    explain: "Lamellae can act as pathways for bacteria and contribute to caries spread."
+  },
+  {
+    q: "Dentinoenamel junction (DEJ) is characterized by:",
+    opts: ["Planar interface for tight bonding", "Scalloped interface with convexities toward enamel", "Porous membrane", "Cartilaginous layer"],
+    correct: 1,
+    explain: "The DEJ is scalloped; this increases the surface area and mechanical interlocking between tissues."
+  },
+  {
+    q: "Significance of a scalloped DEJ:",
+    opts: ["Enhances bonding and resists shearing forces", "Promotes pulp nutrition", "Allows eruption", "Forms pellicle"],
+    correct: 0,
+    explain: "Scalloping ensures a firm hold of enamel to dentin and resists separation."
+  },
+  {
+    q: "Enamel spindles are:",
+    opts: [
+      "Tuft branches",
+      "Odontoblastic processes that have crossed the DEJ into enamel",
+      "Cracks formed after eruption",
+      "Hypermineralized rod sheaths"
+    ],
+    correct: 1,
+    explain: "Spindles are short extensions of odontoblastic processes into enamel across the DEJ."
+  },
+  {
+    q: "Prismless (structureless) enamel at the surface is typically:",
+    opts: ["20–40 µm thick and highly mineralized", "200–400 µm thick and hypomineralized", "Absent in all teeth", "Composed of dentin crystals"],
+    correct: 0,
+    explain: "Surface prismless layer ~20–40 µm; crystals packed nearly perpendicular to surface; hypermineralized."
+  },
+  {
+    q: "Perikymata represent:",
+    opts: [
+      "Surface manifestation of lines of Retzius",
+      "Post-eruptive abrasion lines",
+      "Hunter-Schreger bands",
+      "Areas of enamel hypoplasia"
+    ],
+    correct: 0,
+    explain: "Perikymata are transverse, wave-like grooves reflecting the termination of Retzius lines at the surface."
+  },
+  {
+    q: "Enamel rod ends appear as:",
+    opts: ["Convex pits deeper cervically", "Concave depressions shallower cervically and deeper occlusally/incisally", "Linear cracks only at cusps", "Radiolucent stripes"],
+    correct: 1,
+    explain: "Rod-end pits are shallow cervically and deepen toward incisal/occlusal surfaces."
+  },
+  {
+    q: "Cracks visible on enamel surface are often:",
+    opts: ["Outer edges of lamellae", "Cross-striations", "Rod sheaths", "Fluorosis lines"],
+    correct: 0,
+    explain: "Many surface cracks correspond to the external expression of enamel lamellae."
+  },
+  {
+    q: "Nasmyth’s membrane refers to:",
+    opts: ["Enamel pellicle", "Enamel cuticle covering newly erupted crowns", "Rod sheath matrix", "Calcospherites"],
+    correct: 1,
+    explain: "A delicate cuticle on newly erupted teeth; soon removed by mastication."
+  },
+  {
+    q: "The enamel pellicle is:",
+    opts: [
+      "A developmental cuticle",
+      "A post-eruptive salivary protein film that reforms within hours",
+      "A bacterial biofilm",
+      "A fluoride-rich hypoplasia"
+    ],
+    correct: 1,
+    explain: "Acquired pellicle from saliva re-forms rapidly and acts as a substrate for plaque accumulation."
+  },
+  {
+    q: "Relative radiodensity: enamel generally appears:",
+    opts: ["More radiolucent than dentin", "More radiopaque than other dental tissues", "Equal to pulp", "Variable, usually radiolucent"],
+    correct: 1,
+    explain: "Due to highest mineral content, enamel is the most radiopaque dental tissue."
+  },
+  {
+    q: "Most apparent age change in enamel:",
+    opts: ["Increased permeability", "Attrition of occlusal/incisal surfaces and proximal contacts", "Thickening of cuticle", "Whitening of color"],
+    correct: 1,
+    explain: "Functional wear (attrition) reduces crown height and flattens contact points."
+  },
+  {
+    q: "With age, teeth often become:",
+    opts: ["Lighter and more permeable", "Darker with reduced fluid permeability", "Unaffected in color", "More translucent cervically only"],
+    correct: 1,
+    explain: "Changes in organic content lead to darker appearance and reduced permeability; caries resistance may increase."
+  },
+  {
+    q: "Cross-striations in enamel rods reflect:",
+    opts: ["Daily rhythmic growth", "Weekly growth", "Ameloblast mitoses", "Post-eruptive mineral gain"],
+    correct: 0,
+    explain: "Cross-striations represent circadian increments in rod formation."
+  },
+  {
+    q: "Rod sheath corresponds to:",
+    opts: ["A hypermineralized rim around prisms", "An organic-enriched boundary around enamel rods", "A purely protein-free zone", "Interglobular dentin"],
+    correct: 1,
+    explain: "Rod sheaths are relatively organic-rich boundaries around prisms; considered hypocalcified structures list."
+  },
+  {
+    q: "Which is NOT typically classified among hypocalcified enamel structures?",
+    opts: ["Rod sheath", "Lamella", "Tuft", "Hunter-Schreger band"],
+    correct: 3,
+    explain: "HS bands are optical, not hypocalcified defects; rod sheaths, tufts, lamellae are."
+  },
+  {
+    q: "DEJ scallops are oriented so that:",
+    opts: ["Dentin depressions fit enamel convexities", "Enamel depressions fit dentin convexities", "Both are flat", "Scallops open toward pulp"],
+    correct: 0,
+    explain: "Shallow depressions in dentin receive rounded projections of enamel."
+  },
+  {
+    q: "Perikymata are most evident:",
+    opts: ["On newly erupted teeth near cervical areas", "Only on occlusal surfaces", "On root dentin", "On restored surfaces"],
+    correct: 0,
+    explain: "They are surface grooves particularly visible cervically on fresh enamel."
+  },
+  {
+    q: "Which statement about prismless enamel is TRUE?",
+    opts: [
+      "Rod boundaries are prominent",
+      "Crystals are arranged almost at right angles to surface",
+      "It is hypomineralized compared with inner enamel",
+      "Occurs only at DEJ"
+    ],
+    correct: 1,
+    explain: "Surface prismless enamel shows crystals nearly perpendicular to surface and is hypermineralized."
+  },
+  {
+    q: "Enamel spindles arise because:",
+    opts: [
+      "Ameloblasts invade dentin",
+      "Odontoblastic processes extend slightly into enamel before DEJ is sealed",
+      "Cracks propagate from surface",
+      "Rod decussation"
+    ],
+    correct: 1,
+    explain: "Transient penetration of odontoblastic processes creates spindles."
+  },
+  {
+    q: "Which surface feature acts as a site for initial plaque accumulation?",
+    opts: ["Nasmyth’s membrane", "Acquired pellicle", "Perikymata only", "Hunter-Schreger bands"],
+    correct: 1,
+    explain: "Pellicle provides binding sites for microorganisms; plaque then develops."
+  },
+  {
+    q: "Cross-striation vs Retzius line difference:",
+    opts: [
+      "Cross-striations are long-period increments; Retzius lines daily",
+      "Cross-striations are daily increments within rods; Retzius lines are longer-period growth lines",
+      "Both are post-eruptive",
+      "Neither relates to growth"
+    ],
+    correct: 1,
+    explain: "Cross-striations: short-period (daily); Retzius: longer periodicity increments."
+  },
+  {
+    q: "Which best explains Hunter-Schreger bands’ appearance under reflected light?",
+    opts: [
+      "Alternating groups of rods cut in cross/longitudinal section reflect differently",
+      "Areas of hypoplasia",
+      "Air in lamellae",
+      "Pellicle thickness variation"
+    ],
+    correct: 0,
+    explain: "Rod decussation changes light reflection causing alternating bright/dark bands."
+  }
+];
+
+const tfs = [
+  { q: "Lines of Retzius appear as concentric rings in cross-section.", answer: true, explain: "Cross-sectional view shows concentric pattern." },
+  { q: "Neonatal line is unrelated to birth.", answer: false, explain: "It demarcates pre- and postnatal enamel in teeth forming at birth." },
+  { q: "Hunter-Schreger bands are hypocalcified defects.", answer: false, explain: "They are optical due to rod decussation, not mineral defects." },
+  { q: "Enamel tufts originate at the DEJ and are protein-rich.", answer: true, explain: "They are hypocalcified, branched structures rich in enamel proteins." },
+  { q: "Enamel lamellae can act as pathways for bacteria.", answer: true, explain: "Hence their caries significance." },
+  { q: "DEJ is flat to promote smooth load transfer.", answer: false, explain: "It is scalloped to enhance mechanical interlocking." },
+  { q: "Prismless enamel is typically 20–40 µm thick.", answer: true, explain: "Surface layer is thin and hypermineralized." },
+  { q: "Perikymata are external expressions of Retzius lines.", answer: true, explain: "They’re surface grooves following Retzius terminations." },
+  { q: "Enamel rod-end pits are deeper cervically than incisally.", answer: false, explain: "They deepen toward incisal/occlusal surfaces." },
+  { q: "Enamel is the most radiopaque dental tissue.", answer: true, explain: "Highest mineral content." },
+  { q: "With age, enamel becomes more permeable to fluids.", answer: false, explain: "Permeability generally decreases with age." },
+  { q: "Attrition reflects functional wear of enamel surfaces over time.", answer: true, explain: "Occlusal/incisal wear is the most obvious age change." }
+];
+
+const saqs = [
+  { q: "Define perikymata and state their origin.", a: "Perikymata are transverse, wave-like grooves on enamel surface that represent the external manifestation (surface termination) of incremental lines of Retzius." },
+  { q: "Explain the functional significance of the scalloped DEJ.", a: "Scalloping increases interfacial surface area and mechanical interlocking so enamel is firmly anchored to dentin, improving resistance to shearing and fracture." },
+  { q: "Differentiate enamel tufts from enamel lamellae (two points).", a: "Tufts: short, branched, hypocalcified, arise at the DEJ, rich in enamel proteins; thought to arrest cracks. Lamellae: thin, leaf-like hypocalcified lines extending from surface toward DEJ; may act as pathways for bacteria and contribute to caries spread." }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+ tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <h3 class="qtitle">${item.q}</h3>
+    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="primary" data-act="reveal">Reveal Answer</button>
+      <button class="ghost" data-act="toggle">I was correct</button>
+    </div>
+    <div class="answer" hidden>${item.a}</div>
+  `;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

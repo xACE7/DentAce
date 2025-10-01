@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>OCIH 2 — 🦷 Dentistry 3rd year — Two-Column Sections</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar { direction: rtl; text-align: right; }
+  body.lang-en { direction: ltr; text-align: left; }
+
+  /* Keep header always LTR */
+  header, header * { direction: ltr !important; text-align: left !important; }
+
+  /* === Language Switcher (unchanged) === */
+  #langBtn{
+    --h: 40px; --pad: 3px;
+    position: fixed; top: 16px; right: 16px;
+    display: inline-flex; align-items: center; justify-content: space-between;
+    min-width: 150px; height: var(--h); padding: 0 6px;
+    border-radius: 9999px; font-size: 13px; font-weight: 800; gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.06); color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px); isolation: isolate; overflow: hidden; z-index: 9999;
+  }
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn::after{
+    content:"";
+    position:absolute; top: var(--pad); bottom: var(--pad); left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px);
+    border-radius: inherit; background: rgba(255,255,255,.10);
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);
+    z-index: 0;
+  }
+  @keyframes bgToRight { 0%{transform:translateX(0%);}70%{transform:translateX(108%);}100%{transform:translateX(100%);} }
+  @keyframes bgToLeft  { 0%{transform:translateX(100%);}70%{transform:translateX(-8%);}100%{transform:translateX(0%);} }
+  @keyframes bounceActive { 0%{transform:scale(1.0);}40%{transform:scale(1.14);}70%{transform:scale(1.04);}100%{transform:scale(1.08);} }
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none; transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none; transform: scale(1.0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important; transition: none !important; transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto; padding:8px 12px; font-size:.85rem; color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.03);
+    text-align:center; border-radius:0 0 var(--radius) var(--radius);
+  }
+</style>
+</head>
+<body class="lang-en">
+<header>
+  <div class="hdr wrap">
+    <div class="left">
+      <div class="title">🦷 Dentistry 3rd year</div>
+      <div class="subtitle">Lecture 2</div>
+    </div>
+    <button id="langBtn" class="lang-toggle" aria-label="Toggle language">
+      <span class="lab en">EN</span>
+      <span class="lab ar">AR</span>
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- Dua (same Arabic text shown in both EN/AR as required) -->
+  <div class="dua"><span class="en">اللَّهُمَّ زِدْنَا عِلْمًا نَافِعًا وارْزُقْنَا فَهْمًا صَائِبًا وَعَمَلًا صَالِحًا.</span><span class="ar">اللَّهُمَّ زِدْنَا عِلْمًا نَافِعًا وارْزُقْنَا فَهْمًا صَائِبًا وَعَمَلًا صَالِحًا.</span></div>
+
+  <!-- Topic -->
+  <div class="chip-box">
+    <span class="chip">
+      <span class="en"><b>Topic: Histology & Embryology of Salivary Glands</b></span>
+      <span class="ar"><b>الموضوع: النسج والتكوُّن الجنيني للغُدَد اللعابية</b></span>
+    </span>
+  </div>
+
+  <div class="sections">
+
+    <!-- 1. Definition -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">1) What is a gland?</span><span class="ar">١) ما هي الغدّة؟</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Gland = an organ of secretion formed by specialized epithelial cells derived from surface epithelium and opening onto it.</p>
+          </div>
+          <div class="ar">
+            <p>الغدّة: عضو إفرازي مكوّن من خلايا ظهارية متخصصة مشتقّة من الظهارة السطحية وتفتح عليها.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 6/39</span><span class="ar">الصفحات المرجعية: ٦/٣٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Epithelial origin; communicates with surface by a duct.</div><div class="ar">أصلها ظهاري وتتصل بالسطح عبر قناة.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Explains why gland tumors keep epithelial markers.</div><div class="ar">يُفسّر احتفاظ أورام الغدد بواسمات ظهارية.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Link “gland = epithelium + duct”.</div><div class="ar">اربط: «غدّة = ظهارة + قناة».</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 2. General features -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">2) General Features</span><span class="ar">٢) خصائص عامة</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li>Epithelial in origin.</li>
+              <li>Secretory units (“end pieces”) are acinar (flask) or tubular (cylindrical).</li>
+              <li>Secreted fluid: enzymes, hormones, or mucus; under neural & hormonal control.</li>
+              <li>Myoepithelial cells lie between secretory cells and basement membrane and help expel secretion.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li>الأصل ظهاري.</li>
+              <li>الوحدات الإفرازية (النهايات الإفرازية): سنخية أو أنبوبية.</li>
+              <li>المفرَزات: إنزيمات/هرمونات/مخاط؛ تتحكم بها آليات عصبية وهرمونية.</li>
+              <li>الخلايا العضلية الظهارية بين الخلايا الإفرازية والغشاء القاعدي وتساعد في طرد الإفراز.</li>
+            </ul>
+          </div>
+          <div class="table-wrap" aria-label="Secretory unit shapes">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Unit</span><span class="ar">الوحدة</span></th>
+                  <th><span class="en">Shape</span><span class="ar">الشكل</span></th>
+                  <th><span class="en">Notes</span><span class="ar">ملاحظات</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="en">Acinus</span><span class="ar">سنخي</span></td>
+                  <td><span class="en">Flask-like</span><span class="ar">قِرْبي</span></td>
+                  <td><span class="en">Common in serous units</span><span class="ar">شائع في الوحدات المصليّة</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Tubular</span><span class="ar">أنبوبي</span></td>
+                  <td><span class="en">Cylinder-like</span><span class="ar">اسطواني</span></td>
+                  <td><span class="en">Common in mucous units</span><span class="ar">شائع في الوحدات المخاطية</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 6/39</span><span class="ar">الصفحات المرجعية: ٦/٣٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">End pieces drain into a duct system.</div><div class="ar">النهايات الإفرازية تُصرّف في جهاز قنوي.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“A for Acinus = Aqueous (serous)”.</div><div class="ar">«السنخي = سائل مائي».</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden><div class="en">Myoepithelial cells are stellate and contractile.</div><div class="ar">الخلايا العضلية الظهارية نجمية الشكل وقابلة للانقباض.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 3. Embryologic development -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">3) Embryologic Development</span><span class="ar">٣) التكوُّن الجنيني</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li>Glands develop by epithelial invagination into vascular connective tissue.</li>
+              <li>Distal part → secretory end piece (functional portion).</li>
+              <li>Proximal part → excretory duct → opens on epithelial surface.</li>
+              <li>Timeline landmarks: ~4 weeks → epithelial bud; ~6 weeks → branching; ~8 weeks → lumenization & acini primordia.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li>تتكوّن الغدد بانغراز الظهارة في النسيج الضام الوعائي.</li>
+              <li>الطرف البعيد ⇠ النهاية الإفرازية (الجزء الفعّال).</li>
+              <li>الطرف القريب ⇠ قناة مُفرِغة تفتح على السطح.</li>
+              <li>المعالم الزمنية: ~٤ أسابيع ⇠ برعم ظهاري؛ ~٦ أسابيع ⇠ تفرّع؛ ~٨ أسابيع ⇠ تكوّن التجاويف وبواكير الأسناخ.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 7/39</span><span class="ar">الصفحات المرجعية: ٧/٣٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Distal “bud” expands and differentiates into acini.</div><div class="ar">يتوسع البرعم البعيد ويتمايز إلى أسناخ.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Explains congenital duct anomalies.</div><div class="ar">يُفسّر الشذوذات القنوية الخلقية.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Remember “Distal = Do secretion; Proximal = Pipe out”.</div><div class="ar">تذكّر: «البعيد إفراز، القريب تصريف».</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 4. Histology overview: acini & ducts -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">4) Histology: Acini & Ducts</span><span class="ar">٤) النسج: الأسناخ والقنوات</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Salivary parenchyma consists of secretory acini (serous or mucous) and a duct system. Myoepithelial cells sit between acinar cells and the basement membrane.</p>
+          </div>
+          <div class="ar">
+            <p>يتكوّن النسيج الغُدّي من أسناخ مصلية أو مخاطية ومن جهاز قنوي. وتوجد الخلايا العضلية الظهارية بين خلايا الأسناخ والغشاء القاعدي.</p>
+          </div>
+
+          <div class="table-wrap" aria-label="Duct system (as referenced)">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Duct</span><span class="ar">النوع القنوي</span></th>
+                  <th><span class="en">Key features (from lecture images/text)</span><span class="ar">سمات رئيسية (حسب المحاضرة)</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="en">Intercalated</span><span class="ar">موصولة قصيرة</span></td>
+                  <td><span class="en">Small ducts between acini & striated ducts (seen adjacent to acini).</span><span class="ar">قنوات صغيرة بين الأسناخ والقنوات المخططة (تظهر قرب الأسناخ).</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Striated</span><span class="ar">مُخَطَّطة</span></td>
+                  <td><span class="en">Prominent in submandibular; fewer in sublingual.</span><span class="ar">كثيرة في تحت الفك السفلي؛ قليلة في تحت اللسان.</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Excretory</span><span class="ar">مُفرِغة</span></td>
+                  <td><span class="en">Larger ducts opening onto oral epithelium.</span><span class="ar">قنوات أكبر تفتح على الظهارة الفموية.</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 14,17,19/39</span><span class="ar">الصفحات المرجعية: ١٤، ١٧، ١٩/٣٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Acini types determine saliva character.</div><div class="ar">نوع الأسناخ يحدد طبيعة اللعاب.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Duct obstruction → sialadenitis/swelling.</div><div class="ar">انسداد القنوات ⇠ التهاب/تورم الغدّة.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Don’t confuse striated ducts with muscle striations.</div><div class="ar">لا تُخلط تخطّط القنوات مع تخطّط العضلات.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 5. Serous acini -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">5) Serous Acini</span><span class="ar">٥) الأسناخ المصلية</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li>Thin, watery secretion; small lumen.</li>
+              <li>Round, centrally placed nucleus.</li>
+              <li>Basophilic cytoplasm with zymogen granules (H&E: deeply stained).</li>
+              <li>Example-dominant gland: Parotid.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li>إفراز مائي رقيق؛ تجويف صغير.</li>
+              <li>نواة مستديرة مركزية.</li>
+              <li>سيتوبلازم قاعدي مع حبيبات زيـموغين (يَصبغ بقوة في H&E).</li>
+              <li>مثال: الغدّة النكفية (سائدة مصلية).</li>
+            </ul>
+          </div>
+          <div class="table-wrap" aria-label="Serous vs Mucous snapshot">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Feature</span><span class="ar">الميزة</span></th>
+                  <th><span class="en">Serous</span><span class="ar">مصلية</span></th>
+                  <th><span class="en">Mucous</span><span class="ar">مخاطية</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="en">Secretion</span><span class="ar">الإفراز</span></td>
+                  <td><span class="en">Thin, watery</span><span class="ar">رقيق مائي</span></td>
+                  <td><span class="en">Thick, viscous</span><span class="ar">سميك لزج</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Nucleus</span><span class="ar">النواة</span></td>
+                  <td><span class="en">Round, central</span><span class="ar">مستديرة مركزية</span></td>
+                  <td><span class="en">Flattened, peripheral</span><span class="ar">مُفلطحة طرفية</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Lumen</span><span class="ar">اللمعة</span></td>
+                  <td><span class="en">Small</span><span class="ar">صغيرة</span></td>
+                  <td><span class="en">Large</span><span class="ar">كبيرة</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">H&E stain</span><span class="ar">صبغة H&E</span></td>
+                  <td><span class="en">Deeply stained</span><span class="ar">تصبغ قوي</span></td>
+                  <td><span class="en">Lightly stained</span><span class="ar">تصبغ خفيف</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Example</span><span class="ar">مثال</span></td>
+                  <td><span class="en">Parotid</span><span class="ar">النكفية</span></td>
+                  <td><span class="en">Sublingual</span><span class="ar">تحت اللسان</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 17,22/39</span><span class="ar">الصفحات المرجعية: ١٧، ٢٢/٣٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Serous = S for ‘Strongly stained’.”</div><div class="ar">«مصلية = تصبغ قوي».</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Parotid section shows abundant serous acini + adipocytes.</div><div class="ar">مقطع النكفية: أسناخ مصلية كثيرة + خلايا دهنية.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden><div class="en">Zymogen granules = enzyme precursors.</div><div class="ar">حبيبات الزيـموغين = طلائع الإنزيمات.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 6. Mucous acini -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">6) Mucous Acini</span><span class="ar">٦) الأسناخ المخاطية</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li>Thick, viscous secretion; larger lumen.</li>
+              <li>Flattened peripheral nuclei; cytoplasm pale with mucigen droplets.</li>
+              <li>Example-dominant gland: Sublingual.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li>إفراز لزج سميك؛ لمعة أكبر.</li>
+              <li>نوى مُفلطحة طرفية؛ سيتوبلازم باهت مع قطرات مُخَيِّنة (mucigen).</li>
+              <li>مثال: الغدّة تحت اللسان.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 19,22/39</span><span class="ar">الصفحات المرجعية: ١٩، ٢٢/٣٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Serous demilunes may cap mucous tubules (e.g., in mixed glands).</div><div class="ar">قد تُغطّي أنصافُ الأقمارِ المصليةُ الأنابيبَ المخاطية (في الغدد المختلطة).</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">“Mucous = M for ‘Much lumen’.”</div><div class="ar">«مخاطي = لمعة أكبر».</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Don’t mistake pale cytoplasm for artifact—check nucleus position.</div><div class="ar">لا تعتبر الشحوب أثراً فنياً—تحقّق من موضع النواة.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 7. Myoepithelial cells -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">7) Myoepithelial Cells</span><span class="ar">٧) الخلايا العضلية الظهارية</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Star-shaped contractile cells located between secretory/duct cells and the basement membrane; they contract to help expel acinar and ductal contents.</p>
+          </div>
+          <div class="ar">
+            <p>خلايا نجمية قابلة للانقباض تقع بين الخلايا الإفرازية/القنوية والغشاء القاعدي؛ تنقبض لتُساعِد على طرد المحتوى.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 14,29/39</span><span class="ar">الصفحات المرجعية: ١٤، ٢٩/٣٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Loss of myoepithelial layer is a diagnostic clue in some tumors.</div><div class="ar">فقدان الطبقة العضلية الظهارية علامة تشخيصية في بعض الأورام.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Seen hugging acini as “basket cells”.</div><div class="ar">تظهر كـ«خلايا سَلّية» تحيط بالأسناخ.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Explains rapid saliva ejection in response to stimulation.</div><div class="ar">تُفسّر سرعة قذف اللعاب عند التحفيز.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 8. Major salivary glands -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">8) Major Salivary Glands</span><span class="ar">٨) الغدد اللعابية الكبرى</span></h2>
+        <div class="sec-body">
+          <div class="table-wrap" aria-label="Comparison of major glands">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Gland</span><span class="ar">الغدّة</span></th>
+                  <th><span class="en">Acini type</span><span class="ar">نوع الأسناخ</span></th>
+                  <th><span class="en">Ducts</span><span class="ar">القنوات</span></th>
+                  <th><span class="en">Distinct feature</span><span class="ar">ميزة بارزة</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="en">Parotid</span><span class="ar">النكفية</span></td>
+                  <td><span class="en">Predominantly serous</span><span class="ar">مصلية بشكل أساسي</span></td>
+                  <td><span class="en">Many ducts</span><span class="ar">قنوات كثيرة</span></td>
+                  <td><span class="en">Fat-cell (adipocyte) infiltration</span><span class="ar">ارتشاح خلايا دهنية</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Submandibular</span><span class="ar">تحت الفك السفلي</span></td>
+                  <td><span class="en">Mixed: many serous, few mucous; serous demilunes present</span><span class="ar">مختلطة: مصلية كثيرة ومخاطية قليلة؛ توجد أنصاف أقمار مصلية</span></td>
+                  <td><span class="en">Many striated ducts</span><span class="ar">قنوات مخططة كثيرة</span></td>
+                  <td><span class="en">Classic mixed pattern</span><span class="ar">نموذج مختلط كلاسيكي</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Sublingual</span><span class="ar">تحت اللسان</span></td>
+                  <td><span class="en">Predominantly mucous</span><span class="ar">مخاطية بشكل أساسي</span></td>
+                  <td><span class="en">Few striated ducts</span><span class="ar">قنوات مخططة قليلة</span></td>
+                  <td><span class="en">Demilunes frequent over mucous tubules</span><span class="ar">أنصاف أقمار شائعة فوق الأنابيب المخاطية</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="en"><p>Slides/images in the lecture show typical sections of parotid and submandibular glands, plus mixed patterns.</p></div>
+          <div class="ar"><p>تُظهر شرائح المحاضرة مقاطع نموذجية للنكفية وتحت الفك السفلي وأنماطاً مختلطة.</p></div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 22,32,37/39</span><span class="ar">الصفحات المرجعية: ٢٢، ٣٢، ٣٧/٣٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Parotid = serous; Sublingual = mucous; Submandibular = mixed.</div><div class="ar">النكفية = مصلية؛ تحت اللسان = مخاطية؛ تحت الفك = مختلطة.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Parotid swelling often feels watery due to serous predominance.</div><div class="ar">تورّم النكفية يبدو «مائياً» لسيادة المصلية.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">PSM mnemonic: Parotid-Serous, Sublingual-Mucous, Submandibular-Mix.</div><div class="ar">ترميز: نكفية=مصلية، تحت اللسان=مخاطية، تحت الفك=مختلطة.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 9. Summary -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">9) Summary</span><span class="ar">٩) الخلاصة</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li>Salivary glands arise by epithelial invagination; distal becomes the secretory end piece, proximal the excretory duct.</li>
+              <li>Serous acini: watery, small lumen, central nuclei, strong H&E staining (e.g., parotid).</li>
+              <li>Mucous acini: viscous, large lumen, peripheral flattened nuclei, pale cytoplasm (e.g., sublingual).</li>
+              <li>Submandibular is mixed with many striated ducts and serous demilunes.</li>
+              <li>Myoepithelial cells assist in rapid expulsion of saliva.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li>تنشأ الغدد اللعابية من انغراز الظهارة؛ الطرف البعيد ⇠ نهاية إفرازية، والقريب ⇠ قناة مُفرِغة.</li>
+              <li>الأسناخ المصلية: لعاب مائي، لمعة صغيرة، نوى مركزية، تصبغ قوي (مثال: النكفية).</li>
+              <li>الأسناخ المخاطية: لعاب لزج، لمعة كبيرة، نوى طرفية مفلطحة، سيتوبلازم باهت (مثال: تحت اللسان).</li>
+              <li>غدّة تحت الفك السفلي مختلطة مع قنوات مخططة كثيرة وأنصاف أقمار مصلية.</li>
+              <li>الخلايا العضلية الظهارية تُساعِد على قذف اللعاب بسرعة.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 6,7,14,17,19,22,32,37,29/39</span><span class="ar">الصفحات المرجعية: ٦، ٧، ١٤، ١٧، ١٩، ٢٢، ٣٢، ٣٧، ٢٩/٣٩</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Correlates microscopic structure with saliva properties and common pathologies.</div><div class="ar">يربط البنية المجهرية بخصائص اللعاب والآفات الشائعة.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Parotid = Purely (mostly) serous; Sublingual = Slimy mucous; Submandibular = a mix.”</div><div class="ar">«النكفية مصلية؛ تحت اللسان مخاطية؛ تحت الفك مختلطة».</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Practice drawing a quick serous vs mucous acinus sketch before exams.</div><div class="ar">درّب نفسك على رسم مخطط سريع للسنخ المصلي مقابل المخاطي.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+  </div>
+
+  <!-- Glossary -->
+  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+  <div class="grid g3x4" id="glossary">
+    <div class="card"><div class="head">Acinus / سنخ</div><div class="content" hidden><div class="en">Flask-shaped secretory end piece.</div><div class="ar">نهاية إفرازية قِرْبية الشكل.</div></div></div>
+    <div class="card"><div class="head">Tubular unit / وحدة أنبوبية</div><div class="content" hidden><div class="en">Cylinder-like secretory unit.</div><div class="ar">وحدة إفرازية أسطوانية.</div></div></div>
+    <div class="card"><div class="head">Myoepithelial / خلايا عضلية ظهارية</div><div class="content" hidden><div class="en">Contractile cells aiding secretion.</div><div class="ar">خلايا قابلة للانقباض تُساعِد على الطرد.</div></div></div>
+    <div class="card"><div class="head">Zymogen granules / حبيبات زيـموغين</div><div class="content" hidden><div class="en">Enzyme precursors in serous cells.</div><div class="ar">طلائع إنزيمات في الخلايا المصلية.</div></div></div>
+    <div class="card"><div class="head">Mucigen / مُخَيِّنة</div><div class="content" hidden><div class="en">Mucin precursor in mucous cells.</div><div class="ar">سلف الميوسين في الخلايا المخاطية.</div></div></div>
+    <div class="card"><div class="head">Striated duct / قناة مُخَطَّطة</div><div class="content" hidden><div class="en">Duct segment with basal striations.</div><div class="ar">جزء قنوي ذو تخطّط قاعدي.</div></div></div>
+    <div class="card"><div class="head">Serous demilune / نصف قمر مصلي</div><div class="content" hidden><div class="en">Crescent of serous cells capping mucous tubules.</div><div class="ar">هلال خلايا مصلية يغطي الأنابيب المخاطية.</div></div></div>
+    <div class="card"><div class="head">Excretory duct / قناة مُفرِغة</div><div class="content" hidden><div class="en">Large duct opening to oral surface.</div><div class="ar">قناة كبيرة تفتح على السطح الفموي.</div></div></div>
+    <div class="card"><div class="head">Adipocyte infiltration / ارتشاح خلايا دهنية</div><div class="content" hidden><div class="en">Fat cells within parotid stroma.</div><div class="ar">خلايا دهنية ضمن سدى النكفية.</div></div></div>
+  </div>
+
+  <!-- Flashcards -->
+  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+  <div class="grid g3x4" id="flashcards">
+    <div class="card"><div class="head"><span class="en">1 — Define a gland.</span><span class="ar">١ — عرّف الغدّة.</span></div><div class="content" hidden><span class="en">Organ of secretion from surface epithelium opening onto it.</span><span class="ar">عضو إفرازي من الظهارة السطحية يفتح عليها.</span></div></div>
+    <div class="card"><div class="head"><span class="en">2 — Serous vs mucous: lumen?</span><span class="ar">٢ — اللمعة: مصلي/مخاطي؟</span></div><div class="content" hidden><span class="en">Serous small; mucous large.</span><span class="ar">المصلية صغيرة؛ المخاطية كبيرة.</span></div></div>
+    <div class="card"><div class="head"><span class="en">3 — Nuclei position?</span><span class="ar">٣ — موضع النوى؟</span></div><div class="content" hidden><span class="en">Serous central; mucous peripheral & flattened.</span><span class="ar">المصلية مركزية؛ المخاطية طرفية ومفلطحة.</span></div></div>
+    <div class="card"><div class="head"><span class="en">4 — Example glands.</span><span class="ar">٤ — أمثلة غدد.</span></div><div class="content" hidden><span class="en">Parotid (serous), Sublingual (mucous), Submandibular (mixed).</span><span class="ar">النكفية مصلية، تحت اللسان مخاطية، تحت الفك مختلطة.</span></div></div>
+    <div class="card"><div class="head"><span class="en">5 — Myoepithelial role.</span><span class="ar">٥ — دور الخلايا العضلية الظهارية.</span></div><div class="content" hidden><span class="en">Contract to expel secretions.</span><span class="ar">تنقبض لطرد الإفرازات.</span></div></div>
+    <div class="card"><div class="head"><span class="en">6 — Development: distal vs proximal.</span><span class="ar">٦ — التطوّر: البعيد والقريب.</span></div><div class="content" hidden><span class="en">Distal → acini; proximal → excretory duct.</span><span class="ar">البعيد ⇠ أسناخ؛ القريب ⇠ قناة مُفرِغة.</span></div></div>
+    <div class="card"><div class="head"><span class="en">7 — Staining difference.</span><span class="ar">٧ — اختلاف التصبغ.</span></div><div class="content" hidden><span class="en">Serous: deeply stained; Mucous: lightly stained.</span><span class="ar">المصلية: تصبغ قوي؛ المخاطية: خفيف.</span></div></div>
+    <div class="card"><div class="head"><span class="en">8 — Striated ducts: where many?</span><span class="ar">٨ — القنوات المخططة: أين تكثر؟</span></div><div class="content" hidden><span class="en">Submandibular gland.</span><span class="ar">في غدّة تحت الفك السفلي.</span></div></div>
+    <div class="card"><div class="head"><span class="en">9 — Feature of parotid stroma.</span><span class="ar">٩ — سِمَة في سدى النكفية.</span></div><div class="content" hidden><span class="en">Adipocyte infiltration.</span><span class="ar">ارتشاح خلايا دهنية.</span></div></div>
+  </div>
+
+</main>
+
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

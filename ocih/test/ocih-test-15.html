@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 15</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (filled from OCIH 15: Enamel Part-1) -----------
+const mcqs = [
+  { q: "Which tissue forms the protective covering of the anatomical crown?", opts:["Dentin","Cementum","Enamel","Pulp"], correct:2, explain:"Enamel is the hardest calcified tissue and covers the anatomical crown." },
+  { q: "Enamel is derived from which embryonic germ layer?", opts:["Endoderm","Mesoderm","Ectoderm","Neural crest mesenchyme"], correct:2, explain:"Enamel originates from oral ectoderm via inner enamel epithelium (ameloblasts)." },
+  { q: "The enamel-forming cell is the:", opts:["Odontoblast","Ameloblast","Cementoblast","Fibroblast"], correct:1, explain:"Ameloblasts (from inner enamel epithelium) synthesize enamel." },
+  { q: "Mature enamel is best described as:", opts:["Cellular and vascular","Acellular, avascular, non‑vital","Contains nerves but no vessels","Rich in collagen"], correct:1, explain:"Mature enamel lacks cells, blood vessels, nerves and collagen; it is a non‑vital tissue." },
+  { q: "Why can enamel not regenerate clinically?", opts:["Low calcium content","Forming cells are lost post‑eruption","High fluoride content blocks growth","Dentin blocks diffusion"], correct:1, explain:"After eruption, ameloblasts are lost; hence enamel cannot regenerate." },
+  { q: "Approximate specific gravity of enamel is:", opts:["1.0","2.0","2.8","3.5"], correct:2, explain:"Slides list specific gravity of enamel ≈ 2.8." },
+  { q: "Typical enamel thickness at cusp tips/incisal edges is:", opts:["0.5–1.0 mm","1.0–1.5 mm","2.0–2.5 mm","3.0–3.5 mm"], correct:2, explain:"At cusp tips and incisal edges, enamel is thickest (~2–2.5 mm) and thins cervically to a knife edge." },
+  { q: "Which cusps are functional and thus have thicker enamel?", opts:["Buccal cusps of maxillary teeth","Palatal cusps of mandibular teeth","Palatal cusps of maxillary and buccal cusps of mandibular","Lingual cusps of both arches"], correct:2, explain:"Functional cusps: palatal (maxillary) and buccal (mandibular) show thicker enamel." },
+  { q: "Thick, highly mineralized enamel appears:", opts:["Yellow and translucent","Grayish‑white and opaque","Blue and translucent","Brown and opaque"], correct:1, explain:"Thicker enamel is more opaque/grayish‑white; thinner enamel is more translucent/yellowish due to dentin color." },
+  { q: "Tooth color is mainly influenced by:", opts:["Pulp chamber size","Thickness of enamel","Calculus deposits","Saliva viscosity"], correct:1, explain:"As enamel thins, underlying yellow dentin shows through; thickness drives apparent color." },
+  { q: "Hardness of enamel increases with:", opts:["Magnesium application","Fluoride application","Heat","Laser etching"], correct:1, explain:"Fluoride incorporation increases enamel hardness and resistance to demineralization." },
+  { q: "Relative tensile strength of enamel is:", opts:["High, greater than dentin","Moderate, equal to dentin","Low, less than dentin","Negligible but greater than cementum"], correct:2, explain:"Enamel is brittle with low tensile strength; structural support from dentin is critical." },
+  { q: "Enamel is selectively permeable mainly due to:", opts:["Protein channels","Cracks and microscopic spaces","Large tubules","Presence of cells"], correct:1, explain:"Microporosities and cracks permit selective permeability; permeability decreases with age." },
+  { q: "By weight, mature enamel is approximately:", opts:["90% inorganic, 10% organic/water","96% inorganic, 4% organic/water","70% inorganic, 30% organic","50% inorganic, 50% organic"], correct:1, explain:"Slides note ~96% inorganic (hydroxyapatite) and ~4% water/organic by weight." },
+  { q: "Which statement about enamel proteins is CORRECT?", opts:["Collagen is the main protein","Amelogenins (~90%) predominate","Only nonamelogenins are present","Enamelin is absent"], correct:1, explain:"Amelogenins are ~90%; nonamelogenins (~10%) include enamelin, ameloblastin, tuftelin. No collagen." },
+  { q: "Hydroxyapatite crystals in enamel are:", opts:["Smallest in the body","Largest among calcified tissues","Spherical in section","Composed only of calcium"], correct:1, explain:"They are the largest biological apatite crystals; hexagonal in cross‑section; calcium + phosphate." },
+  { q: "The preferred method to study enamel microstructure in slides was:", opts:["Ground sections","Decalcified sections","Vital staining","Polarized light of pulp"], correct:0, explain:"Slides emphasized studying enamel via ground sections (non‑decalcified)." },
+  { q: "The basic structural unit of enamel is the:", opts:["Lamina densa","Enamel rod (prism)","Rod sheath only","Perikymata"], correct:1, explain:"Enamel rods/prisms are the fundamental structural units." },
+  { q: "Approximate number of enamel rods per tooth ranges from:", opts:["50,000–120,000","0.5–1.2 million","5–12 million","50–120 million"], correct:2, explain:"Counts vary by tooth size: ~5 million (mand. lateral incisor) to ~12 million (max. first molar)." },
+  { q: "Enamel rods typically follow what course from DEJ to surface?", opts:["Straight radial","Wavy/undulating","Circular loops","Random"], correct:1, explain:"Rods follow a wavy course; longer in cuspal region than cervical." },
+  { q: "An enamel rod consists of:", opts:["Head/body and tail","Only tail","Only head","Head and neck with collagen"], correct:0, explain:"Bodies are nearer occlusal surface while the tail points cervically." },
+  { q: "Average diameter of enamel rods reported in slides is:", opts:["0.5–1 μm","2–3 μm","4–5 μm","8–10 μm"], correct:2, explain:"Average rod diameter ≈ 4–5 μm; cross‑section varies from hexagonal to oval." },
+  { q: "Electron microscopy shows rods and interrod enamel arranged as:", opts:["Concentric circles","KEYHOLE configuration","Zig‑zag triangles","Parallel plates"], correct:1, explain:"Rod body and tail with differently oriented crystals give a characteristic keyhole appearance." },
+  { q: "The prism sheath (rod sheath) is:", opts:["Area devoid of crystals","Area of less densely packed crystals","Organic‑free zone","Another name for interrod enamel"], correct:1, explain:"Rod sheath surrounds each rod and is less densely packed (more enamel proteins)." },
+  { q: "Ratio of rod diameter at DEJ to outer surface (as per slides) is approximately:", opts:["2:1","1:1","1:2","3:1"], correct:2, explain:"Rod diameter is roughly double at the outer surface compared to the DEJ (≈1:2)." },
+  { q: "At the cervical third, rod direction in deciduous teeth is mostly:", opts:["Tilted apically","Almost horizontal initially","Strongly occlusal","Random"], correct:1, explain:"Deciduous: cervical & middle enamel nearly horizontal then gradually occlusal; permanent cervical tilts apically." },
+  { q: "Gnarled enamel is typically found at:", opts:["CEJ","Cuspal tips and incisal edges","Cervical third of incisors","Root surface"], correct:1, explain:"At stress‑bearing areas (cusps/incisal edges), rods twist around each other producing gnarled enamel." },
+  { q: "Primary advantage of gnarled enamel is:", opts:["Increases permeability","Reduces hardness","Enhances resistance to fracture","Promotes rod straightness"], correct:2, explain:"Twisting pattern dissipates occlusal forces, making enamel more fracture‑resistant." },
+  { q: "Striations along enamel rods reflect daily growth of about:", opts:["1 μm/day","2 μm/day","4 μm/day","8 μm/day"], correct:2, explain:"Segments separated by dark lines give ~4 μm/day growth pattern (cross‑striations)." },
+  { q: "Which statement about enamel color/translucency is CORRECT?",
+    opts:["Thin, less calcified enamel is more opaque","Thick enamel tends to be translucent bluish","Decreased thickness increases yellowish translucency","Color is unrelated to enamel thickness"],
+    correct:2,
+    explain:"Thin/less calcified enamel is more translucent; dentin’s yellow shows through, so thinner enamel appears yellower." },
+];
+
+const tfs = [
+  { q:"Enamel can undergo true regeneration after eruption.", answer:false, explain:"Ameloblasts are lost; enamel cannot regenerate (preservation is essential)." },
+  { q:"Enamel is derived from ectoderm.", answer:true, explain:"From oral ectoderm via inner enamel epithelium." },
+  { q:"Mature enamel contains collagen.", answer:false, explain:"No collagen in mature enamel matrix." },
+  { q:"Mature enamel is vascular.", answer:false, explain:"It is acellular and avascular; non‑vital." },
+  { q:"Thick enamel looks yellow because dentin shows through.", answer:false, explain:"Thick enamel is opaque/grayish‑white; thin enamel appears yellowish/translucent." },
+  { q:"Functional cusps (maxillary palatal, mandibular buccal) have thicker enamel.", answer:true, explain:"Slides note functional cusps possess thicker enamel than non‑functional." },
+  { q:"Enamel has high tensile strength compared with dentin.", answer:false, explain:"It is brittle with low tensile strength; dentin provides support." },
+  { q:"Permeability of enamel increases with age.", answer:false, explain:"Permeability decreases and hardness increases with age." },
+  { q:"By weight, enamel is about 96% inorganic.", answer:true, explain:"~96% hydroxyapatite by weight; ~4% water/organic." },
+  { q:"Hydroxyapatite crystals in enamel are hexagonal in cross‑section.", answer:true, explain:"Slides state hexagonal cross‑section for enamel crystals." },
+  { q:"Enamel rods run straight with no undulation.", answer:false, explain:"They follow a wavy/undulating path; in cusps they twist (gnarled enamel)." },
+  { q:"Gnarled enamel increases resistance to fracture in stress‑bearing areas.", answer:true, explain:"Twisting rods strengthen cusp tips/incisal edges." },
+];
+
+const saqs = [
+  { q: "List four physical properties of enamel and briefly define each.", a: "Thickness (max at cusps/incisal ~2–2.5 mm, thinning cervically); Color/Translucency (thick enamel opaque grayish‑white; thin enamel more translucent/yellowish from dentin); Hardness (hardest calcified tissue; increases with fluoride); Tensile strength (low—brittle; supported by dentin); Permeability (selectively permeable via micro‑pores; decreases with age)." },
+  { q: "Summarize the chemical composition of mature enamel by weight and name the principal protein classes.", a: "~96% inorganic hydroxyapatite crystals (Ca and PO4 with trace ions: F, Mg, Sr, Cl, K, Pb); ~4% water + organic. Organic matrix is protein‑rich with ~90% amelogenins (low MW) and ~10% non‑amelogenins (high MW): enamelin, ameloblastin, tuftelin. No collagen." },
+  { q: "Define gnarled enamel and state its clinical significance.", a: "At cusp tips and incisal edges, adjacent rods twist and interweave, producing ‘gnarled enamel’. This spiral arrangement distributes occlusal forces and increases resistance to fracture in stress‑bearing areas." },
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <h3 class="qtitle">${item.q}</h3>
+    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="primary" data-act="reveal">Reveal Answer</button>
+      <button class="ghost" data-act="toggle">I was correct</button>
+    </div>
+    <div class="answer" hidden>${item.a}</div>
+  `;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 4</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (filled from Lecture 4: Saliva) -----------
+const mcqs = [
+  { q: "What proportion of saliva is water?", opts:["99–99.5%","90–95%","70–80%","50–60%"], correct:0, explain:"Saliva is predominantly water, comprising about 99–99.5%." },
+  { q: "Total solids in saliva are approximately:", opts:["10–15%","5–7%","0.5–1%","2–3%"], correct:2, explain:"Solids account for roughly 0.5–1% of saliva." },
+  { q: "Which of the following is NOT listed among the major inorganic ions of saliva?", opts:["Calcium","Fluoride","Iron","Bicarbonate"], correct:2, explain:"Common inorganic ions include Ca, F, Na, K, Cl, HCO3, Mg, and HPO4; iron is not listed." },
+  { q: "Which salivary component is a carbohydrate‑rich glycoprotein that lubricates tissues?", opts:["Amylase","Mucin","Lipase","Albumin"], correct:1, explain:"Mucins are carbohydrate‑rich glycoproteins providing lubrication." },
+  { q: "Which is a salivary enzyme involved in starch digestion?", opts:["Lysozyme","Peroxidase","Amylase","Kallikrein"], correct:2, explain:"Amylase initiates starch digestion." },
+  { q: "Secretory IgA in saliva is primarily:", opts:["Derived from serum leakage","Produced locally by plasma cells in salivary glands","Synthesized in the liver","Stored in enamel"], correct:1, explain:"sIgA is produced locally by plasma cells within salivary glands." },
+  { q: "Whole (mixed) saliva contains all EXCEPT:", opts:["Desquamated epithelial cells","Leukocytes","Cerebrospinal fluid","Microorganisms and their products"], correct:2, explain:"Whole saliva includes glandular secretions plus microorganisms, food debris, leukocytes, epithelial cells, and gingival fluid." },
+  { q: "The typical pH of saliva is:", opts:["Acidic (pH 4–5)","Neutral","Strongly alkaline (pH 9–10)","Variable but usually <6"], correct:1, explain:"Salivary pH is generally neutral." },
+  { q: "Tonicity of resting saliva is:", opts:["Isotonic","Hypertonic","Hypotonic","Depends only on diet"], correct:2, explain:"Saliva is classically hypotonic." },
+  { q: "Approximate contribution of parotid glands to total saliva:", opts:["5%","30%","60%","80%"], correct:1, explain:"Parotid glands contribute ~30% and produce watery, enzyme‑rich saliva." },
+  { q: "Which gland contributes the largest volume of resting saliva?", opts:["Parotid","Sublingual","Submandibular","Minor glands only"], correct:2, explain:"Submandibular glands contribute ~60% and are relatively mucin‑rich." },
+  { q: "Sublingual glands mainly secrete:", opts:["Watery, enzyme‑rich saliva","Viscous saliva rich in mucins","Serum‑derived albumin","Only bicarbonate"], correct:1, explain:"Sublingual saliva is viscous and mucin‑rich (~5% of total)." },
+  { q: "The human parotid gland produces which hormone?", opts:["Parotin","Insulin","Erythropoietin","Parathormone"], correct:0, explain:"Parotin is produced by human parotid glands (as noted in the lecture)." },
+  { q: "Salivary flow shows diurnal variation with a peak typically:", opts:["At midnight","Early morning","Mid‑afternoon","During sleep"], correct:2, explain:"Peak secretion occurs mid‑afternoon; it is negligible during sleep." },
+  { q: "During sleep, salivary flow is:", opts:["Increased","Unchanged","Negligible","Doubles"], correct:2, explain:"Flow is negligible during sleep." },
+  { q: "Which of the following best describes the mechanical protective action of saliva?", opts:["Neutralizes alkali","Washes away non‑adherent debris and bacteria","Fixes pellicle to plaque","Demineralizes enamel"], correct:1, explain:"Saliva mechanically washes and clears non‑adherent material." },
+  { q: "Pellicle formation on teeth primarily involves:", opts:["Salivary glycoproteins binding to surfaces","Calcium crystals only","Bacterial toxins","Serum albumin alone"], correct:0, explain:"Salivary glycoproteins form the acquired pellicle." },
+  { q: "Which pair mainly provides salivary buffering capacity?", opts:["Chloride and fluoride","Bicarbonate and phosphate","Calcium and magnesium","Urea and lipids"], correct:1, explain:"Bicarbonate and phosphate buffer acids in saliva." },
+  { q: "Salivary anticaries activity includes:", opts:["Demineralization of incipient lesions","Remineralization and increased enamel resistance via fluoride","Only plaque accumulation","None of the above"], correct:1, explain:"Calcium and phosphate aid remineralization; fluoride increases enamel resistance." },
+  { q: "A key antimicrobial component of saliva is:", opts:["Glucagon","Lysozyme","Bilirubin","Myosin"], correct:1, explain:"Lysozyme contributes to antimicrobial action; others include lactoferrin and peroxidases." },
+  { q: "Which statement about mastication and swallowing is TRUE?", opts:["Saliva inhibits bolus formation","Saliva moistens food to form a bolus and aids deglutition","Saliva digests only proteins","Saliva prevents any taste perception"], correct:1, explain:"Moistening and lubrication help bolus formation and swallowing." },
+  { q: "Which enzyme(s) in saliva participate in digestion?", opts:["Amylase and lipase","Trypsin only","Pepsin only","Catalase and urease"], correct:0, explain:"Amylase (starch) and lipase (fat) are present in saliva." },
+  { q: "Which growth factor mentioned in saliva supports tissue repair?", opts:["Vascular endothelial growth factor","Epidermal growth factor (EGF)","Insulin‑like growth factor only","No growth factors present"], correct:1, explain:"EGF is present in small quantities and aids repair." },
+  { q: "Saliva is necessary for taste because it:", opts:["Blocks taste pores","Dissolves substances and carries them to taste buds","Raises pH to 9","Removes taste buds"], correct:1, explain:"Dissolution and transport to taste receptors are required for taste." },
+  { q: "Which of the following is a component of \"whole saliva\" but not directly secreted by salivary acini?", opts:["Gingival crevicular fluid","Amylase","Mucin","Bicarbonate"], correct:0, explain:"Whole saliva contains gingival fluid mixed with glandular secretions." },
+  { q: "Which serum constituents may be present in saliva?", opts:["IgA, G, M and albumin","Hemoglobin and bilirubin only","Only IgE","Only clotting factor VIII"], correct:0, explain:"Immunoglobulins (A,G,M), albumin, and some clotting factors can be found." },
+  { q: "Which best describes submandibular saliva?", opts:["Minor contribution; highly serous","Major contributor (~60%); relatively rich in mucins","Only during sleep","Identical to parotid saliva"], correct:1, explain:"Submandibular glands provide the majority of resting saliva and include mucins." },
+  { q: "Which diagnostic application of saliva is emerging?", opts:["Measuring blood pressure","Detecting biomarkers for systemic diseases","Measuring bone density","EEG monitoring"], correct:1, explain:"Salivary diagnostics include biomarkers for diabetes, autoimmune disease, and infections (HIV/HCV)." },
+  { q: "For oral cancer screening, saliva may be used to detect:", opts:["Specific proteins or DNA mutations","Only RBC counts","Lung function","Blood glucose directly"], correct:0, explain:"Salivary assays can target tumor‑related proteins or DNA changes." },
+  { q: "An advantage of salivary diagnostics is that sampling is:", opts:["Invasive and painful","Non‑invasive and easy to collect","Requires anesthesia","Only possible in hospitals"], correct:1, explain:"A key advantage is non‑invasive, simple collection." }
+];
+
+const tfs = [
+  { q:"Saliva is typically hypotonic.", answer:true, explain:"Resting saliva is hypotonic relative to plasma." },
+  { q:"The pH of saliva is generally neutral.", answer:true, explain:"Resting pH centers around neutrality." },
+  { q:"Parotid glands contribute about 60% of saliva.", answer:false, explain:"Parotid ≈30%; submandibular ≈60%." },
+  { q:"Sublingual glands mainly secrete viscous, mucin‑rich saliva.", answer:true, explain:"They contribute ~5% and are mucin‑rich." },
+  { q:"Secretory IgA in saliva is mainly produced by the liver.", answer:false, explain:"It is produced locally by plasma cells in salivary glands." },
+  { q:"Salivary flow is negligible during sleep.", answer:true, explain:"Flow drops markedly during sleep." },
+  { q:"Bicarbonate and phosphate provide major buffering in saliva.", answer:true, explain:"They neutralize acids and buffer pH." },
+  { q:"Saliva has no role in remineralization of enamel.", answer:false, explain:"It is saturated with Ca and PO4, supporting remineralization." },
+  { q:"Lysozyme is one antimicrobial factor found in saliva.", answer:true, explain:"Along with lactoferrin and peroxidases." },
+  { q:"Pellicle formation is unrelated to salivary glycoproteins.", answer:false, explain:"Pellicle results from salivary glycoproteins binding to surfaces." },
+  { q:"EGF in saliva can support tissue repair.", answer:true, explain:"Small amounts of EGF are present." },
+  { q:"Using saliva for diagnostics is invasive and difficult.", answer:false, explain:"A major advantage is non‑invasive, simple collection." }
+];
+
+const saqs = [
+  { q: "List four protective roles of saliva.", a: "Mechanical washing; lubrication via mucins; pellicle formation by salivary glycoproteins; anticaries effects (remineralization via Ca/PO4 and increased enamel resistance via fluoride)." },
+  { q: "Compare secretions from parotid, submandibular, and sublingual glands (volume share and nature).", a: "Parotid ≈30%: watery, enzyme‑rich (amylase); produces parotin. Submandibular ≈60%: major contributor; mixed with notable mucins. Sublingual ≈5%: viscous, mucin‑rich." },
+  { q: "Outline three emerging diagnostic uses of saliva.", a: "Biomarker detection for systemic diseases (e.g., diabetes, autoimmune, HIV/HCV); oral cancer screening via specific proteins/DNA mutations; caries risk assessment (buffering capacity, IgA, specific bacterial counts); plus therapeutic drug monitoring." }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <h3 class="qtitle">${item.q}</h3>
+    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="primary" data-act="reveal">Reveal Answer</button>
+      <button class="ghost" data-act="toggle">I was correct</button>
+    </div>
+    <div class="answer" hidden>${item.a}</div>
+  `;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

@@ -1,0 +1,448 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 13</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (filled from the lecture) -----------
+const mcqs = [
+  { q:"Which paranasal sinus is the first to develop?", opts:["Maxillary","Ethmoid","Frontal","Sphenoid"], correct:0, explain:"Maxillary sinus develops first among paranasal sinuses." },
+  { q:"Maxillary sinus development begins in which gestational month?", opts:["1st","2nd","3rd","4th"], correct:1, explain:"Development begins in the 2nd gestational month." },
+  { q:"Ethmoid sinuses begin to form during which gestational month?", opts:["2nd","3rd","4th","5th"], correct:1, explain:"Ethmoid sinuses begin in the 3rd gestational month and are present at birth." },
+  { q:"The frontal sinus expands to cross the supraorbital margin by about what age?", opts:["4 years","6 years","8 years","10 years"], correct:1, explain:"Frontal sinus crosses the supraorbital margin by ~6 years." },
+  { q:"The sphenoid sinus can typically be seen on X-rays by which age?", opts:["4 years","6 years","8 years","10 years"], correct:2, explain:"Sphenoid sinus: visible on X-rays by ~8 years." },
+  { q:"Paranasal sinuses open primarily into which area of the nasal cavity?", opts:["Nasal septum","Lateral wall (middle meatus)","Nasopharynx","Eustachian tube"], correct:1, explain:"They drain into openings on the lateral wall, commonly into the middle meatus." },
+  { q:"The maxillary sinus is typically described as having what shape?", opts:["Spherical","Cuboidal","Tetrahedral/Pyramidal","Cylindrical"], correct:2, explain:"It is tetrahedral/pyramidal." },
+  { q:"Approximate volume of an adult maxillary sinus is:", opts:["5 ml","10 ml","15 ml","25 ml"], correct:2, explain:"About 15 ml." },
+  { q:"Approximate dimensions of the maxillary sinus are:", opts:["20×20×20 mm","25×25×18 mm","34×33×23 mm","40×35×30 mm"], correct:2, explain:"Approximate size: 34×33×23 mm." },
+  { q:"Which is the largest of the paranasal sinuses?", opts:["Frontal","Ethmoid","Sphenoid","Maxillary"], correct:3, explain:"Maxillary is the largest." },
+  { q:"The base (medial wall) of the maxillary sinus corresponds to:", opts:["Nasal septum","Lateral wall of nasal cavity","Hard palate","Zygomatic arch"], correct:1, explain:"Base forms the medial wall and is the lateral wall of the nasal cavity." },
+  { q:"The apex of the maxillary sinus extends into the:", opts:["Frontal process","Palatine process","Zygomatic process of maxilla","Pterygoid process"], correct:2, explain:"Apex reaches the zygomatic process." },
+  { q:"The roof (superior wall) of the maxillary sinus is formed by the:", opts:["Hard palate","Floor of the orbit","Nasal septum","Zygomatic arch"], correct:1, explain:"Roof is the orbital floor." },
+  { q:"The floor (inferior wall) of the maxillary sinus is primarily the:", opts:["Frontal bone","Alveolar & palatal processes of maxilla","Sphenoid body","Nasal septum"], correct:1, explain:"Formed by alveolar process and palatal process of maxilla." },
+  { q:"Which canal runs along the thin superior wall of the maxillary sinus?", opts:["Nasopalatine canal","Infraorbital canal","Canalis sinuosus","Vidian canal"], correct:1, explain:"Infraorbital canal carries infraorbital nerve and vessels." },
+  { q:"The posterior wall contains a canal transmitting which nerves?", opts:["Greater palatine nerves","Nasopalatine nerves","Posterior superior alveolar nerves","Lingual nerve"], correct:2, explain:"PSA canal transmits posterior superior alveolar nerves." },
+  { q:"Which wall is closest to roots of upper premolars and molars, allowing dental infections to spread into the sinus?", opts:["Anterior (facial) wall","Posterior wall","Roof","Lateral wall"], correct:0, explain:"The anterior (facial) wall is close to these roots." },
+  { q:"All of the following arteries supply the maxillary sinus EXCEPT:", opts:["Infraorbital artery","Greater palatine artery","Posterior superior alveolar artery","Superior thyroid artery"], correct:3, explain:"Superior thyroid does not supply the maxillary sinus." },
+  { q:"Principal venous drainage of the maxillary sinus is to the:", opts:["Cavernous sinus directly","Facial vein and pterygoid plexus","Superior sagittal sinus","Internal jugular vein directly"], correct:1, explain:"Drains to facial vein & pterygoid plexus; infections can spread via connections." },
+  { q:"Which nerve is NOT part of the sensory supply to the maxillary sinus?", opts:["Infraorbital nerve","Anterior superior alveolar nerve","Lingual nerve","Posterior superior alveolar nerve"], correct:2, explain:"Lingual nerve is mandibular; not a sinus supply." },
+  { q:"Lymph from the anterior part of the maxillary sinus drains mainly to:", opts:["Submandibular nodes","Deep cervical nodes","Preauricular nodes","Retropharyngeal nodes"], correct:0, explain:"Anterior part → submandibular; posterior → deep cervical." },
+  { q:"Which of the following is NOT a function of the paranasal sinuses?", opts:["Decreasing skull weight","Humidifying and warming air","Increasing resonance of voice","Increasing skull weight"], correct:3, explain:"They decrease, not increase, skull weight." },
+  { q:"Growth of the maxillary sinus is biphasic, occurring mainly during:", opts:["0–2 and 5–7 years","0–3 and 7–12 years","3–5 and 10–15 years","Birth only"], correct:1, explain:"Two spurts: 0–3 years and 7–12 years." },
+  { q:"At birth, maxillary sinuses are usually:", opts:["Air-filled","Completely absent","Fluid-filled","Fully adult size"], correct:2, explain:"They are usually fluid filled at birth." },
+  { q:"During later growth, pneumatization of the maxillary sinus spreads:", opts:["Superiorly as primary teeth erupt","Inferiorly as permanent teeth erupt","Medially toward septum","Posteriorly into sphenoid"], correct:1, explain:"Spreads inferiorly as permanent teeth take their place." },
+  { q:"The gold-standard conventional radiographic view for maxillary sinuses is:", opts:["True lateral skull view","Submentovertex view","Water’s (occipitomental) view","Towne’s view"], correct:2, explain:"Water’s/occipitomental is the gold-standard PNS view." },
+  { q:"On standard radiographs, the antrum appears as:", opts:["Uniform radiopaque cavity with faint margins","Radiolucent cavity with dense corticated radiopaque walls","Mixed radiolucent/opaque cavity with no border","Only visible on CT"], correct:1, explain:"Radiolucent cavity bounded by dense corticated margins." },
+  { q:"All of the following are typical maxillary bony landmarks on OPG EXCEPT:", opts:["Floor of maxillary sinus","Posterior wall of zygomatic process (innominate line)","Hard palate","Coronoid notch"], correct:3, explain:"Coronoid notch is a mandibular landmark." },
+  { q:"Acute maxillary sinusitis may cause pain in multiple posterior maxillary teeth due to involvement of the:", opts:["Anterior wall","Posterior wall (PSA canal)","Roof","Nasal septum"], correct:1, explain:"Posterior wall contains PSA canal; pain may be referred to molars." },
+  { q:"Which wall of the maxillary sinus is the thinnest and therefore at risk for tumor erosion with neurologic symptoms?", opts:["Anterior","Posterior","Superior (roof)","Inferior (floor)"], correct:2, explain:"The roof (orbital floor) is thin; erosion may cause neurologic signs." },
+];
+
+const tfs = [
+  { q:"Paranasal air sinuses are air-filled cavities around the nasal cavity.", answer:true, explain:"They are air-filled and communicate with the nasal cavity." },
+  { q:"All paranasal sinuses open into the nasal septum.", answer:false, explain:"They open into the lateral wall (often the middle meatus), not the septum." },
+  { q:"The maxillary sinus lies in the maxilla beneath the orbits and is also called the Antrum of Highmore.", answer:true, explain:"Located in the cheek region within the maxilla." },
+  { q:"The base (medial wall) of the maxillary sinus forms the lateral wall of the nasal cavity.", answer:true, explain:"This base constitutes the medial sinus wall." },
+  { q:"The floor of the maxillary sinus is typically far from the apices of maxillary molars.", answer:false, explain:"It is often close to the apices of premolars and molars." },
+  { q:"The infraorbital canal runs along the superior (roof) wall of the maxillary sinus.", answer:true, explain:"It transmits the infraorbital nerve and vessels." },
+  { q:"Infections can spread from the maxillary sinus to the cavernous sinus via venous connections.", answer:true, explain:"Through the pterygoid plexus/facial vein connections (dangerous pathway)." },
+  { q:"Frontal air sinuses are single midline cavities.", answer:false, explain:"They are paired and lie in the frontal bone." },
+  { q:"Ethmoidal air sinuses are numerous (about 6–12 per side).", answer:true, explain:"They form intercommunicating air cells." },
+  { q:"Sphenoid sinuses are typically unequal in size.", answer:true, explain:"They lie within the body of the sphenoid and may be asymmetrical." },
+  { q:"The maxillary sinus is the smallest of the paranasal sinuses.", answer:false, explain:"It is actually the largest." },
+  { q:"Transillumination can be used as a screening tool for monitoring resolving sinus disease.", answer:true, explain:"Listed as a clinical screening method." },
+];
+
+const saqs = [
+  { q:"Outline the boundaries (walls) of the maxillary sinus and a key relation for each.", a:"Roof: floor of the orbit (thin; infraorbital canal). Floor: alveolar & palatal processes (near molar/premolar apices). Anterior wall: facial surface (close to roots; risk of oroantral communication). Posterior wall: infratemporal surface (PSA canal to molars; referred pain). Medial wall (base): lateral wall of nasal cavity. Apex: extends into zygomatic process." },
+  { q:"Summarize the vascular, lymphatic and nerve supply of the maxillary sinus.", a:"Arterial: branches of maxillary artery—infraorbital, greater palatine, posterior & anterior superior alveolar. Venous: facial vein & pterygoid plexus (potential cavernous spread). Lymph: anterior/floor → submandibular; posterior → deep cervical; roof may go to preauricular/parotid. Nerves: infraorbital; anterior, middle & posterior superior alveolar nerves." },
+  { q:"List two reasons why the maxillary sinus is important in dental practice and one key imaging view.", a:"Dental proximity: posterior tooth roots near the sinus floor → risk of perforation, OAC/fistula; sinus lift may be needed before implants. Key imaging: Water’s (occipitomental) view is the gold-standard conventional view for maxillary sinus assessment." },
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null),
+  tf: Array(tfs.length).fill(null),
+  saq: Array(saqs.length).fill(false)
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return;
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return;
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saxs = saqs; // keep original name used below unchanged if needed
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <h3 class="qtitle">${item.q}</h3>
+    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="primary" data-act="reveal">Reveal Answer</button>
+      <button class="ghost" data-act="toggle">I was correct</button>
+    </div>
+    <div class="answer" hidden>${item.a}</div>
+  `;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

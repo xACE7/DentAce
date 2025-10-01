@@ -1,0 +1,842 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>🦷 Dentistry 3rd year — Dental Enamel (Part 1) — OCIH 15</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15), 0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+</style>
+</head>
+<body class="lang-en">
+<header>
+  <div class="hdr wrap">
+    <div class="left">
+      <div class="title">🦷 Dentistry 3rd year</div>
+      <div class="subtitle">Lecture 15</div>
+    </div>
+    <button id="langBtn" class="lang-toggle" aria-label="Toggle language">
+      <span class="lab en">EN</span>
+      <span class="lab ar">AR</span>
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- Dua (same Arabic text shown in both EN/AR) -->
+  <div class="dua">‏اللهم انفعنا بما علمتنا وعلِّمنا ما ينفعنا وزِدنا علمًا نافعًا</div>
+
+  <!-- Topic -->
+  <div class="chip-box">
+    <span class="chip">
+      <span class="en"><b>Topic: Dental Enamel — Part 1</b></span>
+      <span class="ar"><b>الموضوع: الميناء السني — الجزء الأول</b></span>
+    </span>
+  </div>
+
+  <div class="sections">
+
+    <!-- 1. Definition & Uniqueness -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">1) Definition & Why Enamel is Unique</span>
+          <span class="ar">١) التعريف وخصوصية الميناء</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Definition:</b> Enamel is the hardest calcified tissue in the human body covering the anatomic crown.</p>
+            <p><b>Unique features:</b> Calcified epithelial tissue; contains <i>no</i> cells, blood vessels, nerves, or collagen; mature enamel is acellular, avascular, and non-vital.</p>
+            <p><b>Clinical note:</b> Enamel cannot regenerate because ameloblasts are lost after eruption—preservation is essential.</p>
+          </div>
+          <div class="ar">
+            <p><b>التعريف:</b> الميناء هي أصلب نسيج متكلس في الجسم وتغطي تاج السن التشريحي.</p>
+            <p><b>خصوصيات:</b> نسيج ظهاري متكلس؛ لا يحتوي على خلايا أو أوعية دموية أو أعصاب أو كولاجين؛ الميناء الناضجة لاإنْتاجية، لاأوعية، وغير حية.</p>
+            <p><b>ملاحظة سريرية:</b> لا تتجدد الميناء لزوال الأميلوبلاست بعد البزوغ—لذلك يجب الحفاظ عليها.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 1,3/35</span>
+          <span class="ar">الصفحات المرجعية: ١، ٣/٣٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Hardest tissue; covers crown; epithelial origin; no collagen.</div><div class="ar">أصلب نسيج؛ يغطي التاج؛ أصل ظهاري؛ بلا كولاجين.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">No regenerative capacity—avoid unnecessary removal during procedures.</div><div class="ar">لا قدرة على التجدد—تجنّب الإزالة غير الضرورية أثناء المعالجات.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Explains rationale for minimally invasive dentistry and remineralization strategies.</div><div class="ar">يبرّر طب الأسنان المحافظ واستراتيجيات إعادة التمعدن.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Memorize: “Hardest—Epithelial—Acellular—No collagen.”</div><div class="ar">احفظ: «الأصلب—ظهاري—لا خلوي—بلا كولاجين».</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 2. Origin & Amelogenesis -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">2) Origin & Amelogenesis</span>
+          <span class="ar">٢) المنشأ وتكوُّن الميناء</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Origin:</b> Oral ectoderm → enamel organ → inner enamel epithelium (ameloblasts).</p>
+            <p><b>Role:</b> Enamel is the protective covering of teeth; formed during the advanced bell stage by ameloblasts (amelogenesis).</p>
+          </div>
+          <div class="ar">
+            <p><b>المنشأ:</b> الأديم الظاهر الفموي ← عضو الميناء ← الظهارة المينائية الداخلية (أميلوبلاست).</p>
+            <p><b>الدور:</b> غطاء واقٍ للأسنان؛ يتكوّن خلال مرحلة الجرس المتقدمة بواسطة الأميلوبلاست (الأميلوجينيسيس).</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 3,5/35</span>
+          <span class="ar">الصفحات المرجعية: ٣، ٥/٣٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Ecto → Enamel”: enamel is ectodermal, unlike dentin (mesenchymal).</div><div class="ar">«الأديم الظاهر → الميناء»: الميناء ظاهرية بخلاف العاج (متوسطي).</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Bell stage illustration: IEE differentiates into ameloblasts and begins matrix secretion.</div><div class="ar">مرحلة الجرس: تمايز الظهارة الداخلية إلى أميلوبلاست وبدء إفراز المصفوفة.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Mature enamel is non-vital—no odontoblastic processes inside.</div><div class="ar">الميناء الناضجة غير حية—لا توجد امتدادات أودونتوبلاستية بداخلها.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 3. Physical Properties Overview -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">3) Physical Properties — Overview</span>
+          <span class="ar">٣) الخواص الفيزيائية — نظرة عامة</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Key properties: <b>thickness, colour, hardness, tensile strength, permeability</b>. Enamel neither repairs nor replaces itself; specific gravity ≈ <b>2.8</b>.</p>
+          </div>
+          <div class="ar">
+            <p>الخصائص الأساسية: <b>السماكة، اللون، الصلابة، المقاومة للشد، النفاذية</b>. الميناء لا تُصلِح ولا تُستبدل نفسها؛ الثقل النوعي ≈ <b>٢٫٨</b>.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 2,6/35</span>
+          <span class="ar">الصفحات المرجعية: ٢، ٦/٣٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Specific gravity ≈ 2.8; no physiologic repair.</div><div class="ar">الثقل النوعي ≈ ٢٫٨؛ لا ترميم فسيولوجي.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Guides case selection for full vs. partial coverage restorations.</div><div class="ar">يوجه اختيار التعويضات الكاملة مقابل الجزئية.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Over-preparation reduces thickness → color & strength change.</div><div class="ar">التحضير المفرط يخفّض السماكة → تغيّر اللون والقوة.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 4. Thickness -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">4) Thickness</span>
+          <span class="ar">٤) السماكة</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Thickest at incisal edges and molar/premolar cusp tips (~<b>2–2.5 mm</b>), tapering cervically to a knife-edge.</p>
+            <p>Functional cusps (maxillary palatal; mandibular buccal) have <b>thicker</b> enamel than non-functional cusps.</p>
+          </div>
+          <div class="ar">
+            <p>تبلغ الذروة عند الحواف القاطعة وقمم أضراس/ضواحك (~<b>٢–٢٫٥ مم</b>)، وتتدرج قِطعياً حتى تنتهي بحافة رفيعة.</p>
+            <p>القُمم الوظيفية (حنكية علوية؛ دهليزية سفلية) تمتلك ميناء <b>أسمك</b> من القمم غير الوظيفية.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 6,7,10/35</span>
+          <span class="ar">الصفحات المرجعية: ٦، ٧، ١٠/٣٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Maxillary palatal cusp > enamel thickness vs. maxillary buccal cusp.</div><div class="ar">سماكة الميناء على الحدبة الحنكية العلوية أكبر من الدهليزية.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Remember “2–2.5 mm at tips; fades cervically.”</div><div class="ar">«٢–٢٫٥ مم في القمم؛ تتناقص قِطعياً».</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Be conservative near CEJ to avoid dentin exposure.</div><div class="ar">تحفّظ قرب CEJ لتجنّب انكشاف العاج.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 5. Colour -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">5) Colour</span>
+          <span class="ar">٥) اللون</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Thick and highly mineralized enamel → <b>opaque greyish-white</b>.</p>
+            <p>Thin or less calcified enamel → more <b>translucent/yellowish</b> as underlying yellow dentin shows.</p>
+            <p>Incisal edges may appear translucent due to minimal/absent dentin beneath.</p>
+          </div>
+          <div class="ar">
+            <p>الميناء السميكة عالية التمعدن → <b>بياض معتم رمادي</b>.</p>
+            <p>الميناء الرقيقة أو الأقل تمعدناً → <b>أكثر شفافية/مصفرّة</b> بسبب انعكاس لون العاج الأصفر.</p>
+            <p>قد تبدو الحواف القاطعة شفافة لقلّة/غياب العاج تحتها.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 8/35</span>
+          <span class="ar">الصفحات المرجعية: ٨/٣٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Tooth colour largely depends on enamel thickness over yellow dentin.</div><div class="ar">لون السن يعتمد بدرجة كبيرة على سماكة الميناء فوق العاج الأصفر.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Affects shade selection and prep design in esthetic dentistry.</div><div class="ar">يؤثر على اختيار الظل وتصميم التحضير في طب الأسنان التجميلي.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Over-bleaching cannot “thicken” enamel—manage expectations.</div><div class="ar">التبييض المفرط لا «يزيد سماكة» الميناء—اضبط التوقعات.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 6. Hardness & Tensile Strength -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">6) Hardness & Tensile Strength</span>
+          <span class="ar">٦) الصلابة ومقاومة الشد</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Hardness:</b> Highest among calcified tissues due to high inorganic content and crystalline arrangement; increases with topical fluoride.</p>
+            <p><b>Tensile strength:</b> <i>Low</i>; enamel is brittle and depends on underlying dentin for support.</p>
+          </div>
+          <div class="ar">
+            <p><b>الصلابة:</b> الأعلى بين الأنسجة المتكلسة بسبب المحتوى غير العضوي العالي وترتيب البلورات؛ تزداد مع الفلورايد الموضعي.</p>
+            <p><b>مقاومة الشد:</b> <i>منخفضة</i>؛ الميناء هشة وتعتمد على دعم العاج تحتها.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 11,12,13/35</span>
+          <span class="ar">الصفحات المرجعية: ١١، ١٢، ١٣/٣٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Cuspal coverage restorations can prevent enamel fracture on heavily loaded cusps.</div><div class="ar">التعويضات المغطية للقمم قد تمنع انكسار الميناء في القمم المثقلة.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Fluoride varnish increases surface microhardness.</div><div class="ar">الفلورايد الورنيشي يزيد الصلادة السطحية.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Pair “hard but brittle” with “needs dentin support.”</div><div class="ar">إقرن «صلب لكنه هش» مع «يحتاج دعم العاج».</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 7. Permeability -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">7) Permeability & Age Changes</span>
+          <span class="ar">٧) النفاذية وتغيرات العمر</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Enamel is selectively permeable due to microscopic pores/cracks. With age: <b>permeability decreases</b> and <b>hardness increases</b>.</p>
+          </div>
+          <div class="ar">
+            <p>الميناء نافذة بشكل انتقائي بسبب مسام/شقوق مجهرية. مع التقدم بالعمر: <b>تنخفض النفاذية</b> و<b>تزداد الصلابة</b>.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 6,13/35</span>
+          <span class="ar">الصفحات المرجعية: ٦، ١٣/٣٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Microporosity enables ion exchange and fluoride uptake.</div><div class="ar">المسامية الدقيقة تسمح بتبادل الأيونات وامتصاص الفلورايد.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Basis for remineralization therapies and sealant penetration.</div><div class="ar">أساس علاجات إعادة التمعدن ونفوذ الحشوات السادة.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Cracks can propagate under stress—avoid desiccation and overheating during prep.</div><div class="ar">قد تمتد الشقوق تحت الإجهاد—تجنّب التجفيف والحرارة الزائدة أثناء التحضير.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 8. Chemical Composition (with table) -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">8) Chemical Composition</span>
+          <span class="ar">٨) التركيب الكيميائي</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>By weight: ~<b>96%</b> inorganic (hydroxyapatite crystals with ions like F⁻, Sr²⁺, Mg²⁺, Pb²⁺, Cl⁻, K⁺); ~<b>4%</b> water + organic proteins (no collagen).</p>
+            <p><b>Proteins:</b> Amelogenins (~90%, low MW) and non-amelogenins (~10%: enamelin, ameloblastin, tuftelin).</p>
+          </div>
+          <div class="ar">
+            <p>بالوزن: ~<b>٩٦٪</b> غير عضوي (بلورات هيدروكسي أباتيت مع أيونات مثل الفلورايد، السترونتيوم، المغنيسيوم، الرصاص، الكلوريد، والبوتاسيوم)؛ ~<b>٤٪</b> ماء + بروتينات (بلا كولاجين).</p>
+            <p><b>البروتينات:</b> أميلوغينينات (~٩٠٪ منخفضة الكتلة) وغير أميلوغينينات (~١٠٪: إناملين، أميلوبلاستين، توفتيلين).</p>
+          </div>
+
+          <div class="table-wrap" aria-label="Composition table">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Component</span><span class="ar">المكوّن</span></th>
+                  <th><span class="en">% by weight</span><span class="ar">٪ بالوزن</span></th>
+                  <th><span class="en">Details</span><span class="ar">تفاصيل</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="en">Inorganic (Hydroxyapatite)</span><span class="ar">غير عضوي (هيدروكسي أباتيت)</span></td>
+                  <td>~96%</td>
+                  <td><span class="en">Calcium + phosphate; ions: F⁻, Sr²⁺, Mg²⁺, Pb²⁺, Cl⁻, K⁺</span><span class="ar">كالسيوم + فوسفات؛ أيونات: فلورايد، سترونتيوم، مغنيسيوم، رصاص، كلوريد، بوتاسيوم</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Water + Organic</span><span class="ar">ماء + عضوي</span></td>
+                  <td>~4%</td>
+                  <td><span class="en">No collagen</span><span class="ar">بلا كولاجين</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Amelogenins</span><span class="ar">أميلوغينينات</span></td>
+                  <td>~90% (of proteins)</td>
+                  <td><span class="en">Low molecular weight</span><span class="ar">منخفضة الكتلة الجزيئية</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Non-amelogenins</span><span class="ar">غير أميلوغينينات</span></td>
+                  <td>~10% (of proteins)</td>
+                  <td><span class="en">Enamelin, ameloblastin, tuftelin</span><span class="ar">إناملين، أميلوبلاستين، توفتيلين</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 14/35</span>
+          <span class="ar">الصفحات المرجعية: ١٤/٣٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Enamel HC are the largest among calcified tissues; hexagonal in cross-section.</div><div class="ar">بلورات الميناء هي الأكبر بين الأنسجة المتكلسة؛ مقطعها سداسي.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Composition dictates acid solubility and fluoride’s protective role.</div><div class="ar">التركيب يحدد قابلية الذوبان الحمضي ودور الفلورايد الوقائي.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">“96/4 rule” + protein split 90/10.</div><div class="ar">قاعدة «٩٦/٤» وتقسيم البروتينات «٩٠/١٠».</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 9. Studying Enamel: Ground Sections -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">9) Studying Enamel — Ground Sections</span>
+          <span class="ar">٩) دراسة الميناء — المقاطع الأرضية</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Enamel structure is observed in <b>ground sections</b> (thin, polished slices) under the microscope to visualize rods/prisms and incremental features.</p>
+          </div>
+          <div class="ar">
+            <p>تُفحَص بنية الميناء عبر <b>المقاطع الأرضية</b> الرقيقة المصقولة لرؤية العُصي/المنشورات والميزات التزايدية.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 2/35</span>
+          <span class="ar">الصفحات المرجعية: ٢/٣٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Ground section reveals rod orientation and striations.</div><div class="ar">يُظهر المقطع الأرضي اتجاه العصي والخطوط.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Useful for identifying defects, hypomineralization patterns.</div><div class="ar">مفيد لتحديد العيوب وأنماط نقص التمعدن.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Ground” = no decalcification → crystals remain, cells absent.</div><div class="ar">«أرضي» = بلا نزع تكلس → البلورات باقية، لا خلايا.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 10. Enamel Rods (Prisms) -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">10) Enamel Rods (Prisms)</span>
+          <span class="ar">١٠) عُصي/منشورات الميناء</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Basic structural unit; enamel appears as closely packed linear <b>rods</b> (prisms) extending wavy from DEJ to surface.</p>
+            <p>Count: ~<b>5–12 million</b> rods per tooth; larger/longer in cuspal areas. Average diameter ~<b>4–5 μm</b>; cross-section hexagonal/round-oval; “fish-scale” appearance.</p>
+            <p>Each rod has <b>head/body</b> and <b>tail</b>; heads toward occlusal, tails cervical. Classic <b>keyhole</b> arrangement on EM.</p>
+            <p>Inter-rod (interprismatic) region has crystals with different orientation; <b>rod sheath</b> around each rod is less densely packed (more proteins).</p>
+          </div>
+          <div class="ar">
+            <p>الوحدة البنائية الأساسية؛ تُرى الميناء كعصي (منشورات) متراصة تسير بمسار متموج من الـDEJ إلى السطح.</p>
+            <p>العدد: نحو <b>٥–١٢ مليون</b> عصا/سن؛ أطول عند القمم. القطر الوسطي ~<b>٤–٥ ميكرون</b>؛ مقطع سداسي/مدور-بيضي؛ مظهر «قشرة السمك».</p>
+            <p>لكل عصا <b>رأس/جسم</b> و<b>ذيل</b>؛ الرأس نحو الإطباق والذيل قِطعياً. الترتيب <b>ثقب المفتاح</b> إلكترونياً.</p>
+            <p>المنطقة بين العصي مختلفة الاتجاه البلوري؛ <b>غمد العصا</b> أقل كثافة بلورية (أكثر بروتيناً).</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 25,26/35</span>
+          <span class="ar">الصفحات المرجعية: ٢٥، ٢٦/٣٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Rod:head/body + tail; wavy DEJ→surface; ~4–5 μm.</div><div class="ar">العصا: رأس/جسم + ذيل؛ متموجة من الـDEJ للسطح؛ ~٤–٥ ميكرون.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Keyhole prism” = head (body) + tail orientation.</div><div class="ar">«ثقب المفتاح» = توضع الرأس/الجسم والذيل.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Etching exposes interprismatic spaces → improves micromechanical bonding.</div><div class="ar">الحفر الحمضي يكشف المسافات بين المنشورات → يحسّن الارتباط الميكانيكي.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 11. Rod Direction & Striations -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">11) Rod Direction & Striations</span>
+          <span class="ar">١١) اتجاه العصي وخطوطها</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Direction:</b> Wavy course overall; cervical third differs between primary and permanent teeth (deciduous: more horizontal cervically; permanent: cervical rods tilt apically; middle/occlusal similar to deciduous).</p>
+            <p><b>Striations:</b> Rods built of segments separated by dark lines giving a striated look; uniform segment length ≈ <b>~4 μm</b> (≈ daily increment).</p>
+          </div>
+          <div class="ar">
+            <p><b>الاتجاه:</b> مسار متموج عام؛ في الثلث القِطعي يختلف بين الأسنان اللبنية والدائمة (اللبنية: أفقي أكثر؛ الدائمة: تميل قمّياً؛ الوسط/الإطباقي مشابه).</p>
+            <p><b>الخطوط:</b> تتألف العصا من مقاطع تفصلها خطوط قاتمة تُعطي مظهراً مخططاً؛ طول المقطع منتظم ≈ <b>~٤ ميكرون</b> (≈ زيادة يومية).</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 28,29,31/35</span>
+          <span class="ar">الصفحات المرجعية: ٢٨، ٢٩، ٣١/٣٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Cervical enamel in permanent teeth: rods tilt apically.</div><div class="ar">الميناء القِطعية في الأسنان الدائمة: العصي تميل قمّياً.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Associate 4 μm striation with daily growth rhythm.</div><div class="ar">اربط ٤ ميكرون بإيقاع النمو اليومي.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Know rod direction to avoid unsupported enamel during cavity prep.</div><div class="ar">معرفة اتجاه العصي يمنع ترك ميناء غير مدعومة أثناء التحضير.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 12. Gnarled Enamel -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">12) Gnarled Enamel (Cusps & Incisal Edges)</span>
+          <span class="ar">١٢) الميناء الملتفّة (القمم والحواف القاطعة)</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>At cusp tips and incisal edges, rods <b>twist and swirl</b> around each other creating <b>gnarled enamel</b>, increasing resistance to fracture under heavy occlusal loads.</p>
+          </div>
+          <div class="ar">
+            <p>في قمم الأضراس والحواف القاطعة تلتف العصي وتدور حول بعضها (<b>الميناء الملتفّة</b>) ما يزيد مقاومة الكسر تحت القوى الإطباقية.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 32,33/35</span>
+          <span class="ar">الصفحات المرجعية: ٣٢، ٣٣/٣٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Explains increased toughness at functional load points.</div><div class="ar">يشرح زيادة المتانة في مناطق التحميل الوظيفي.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Cutting enamel at cusps may be harder and irregular—use sharp burs and adequate support.</div><div class="ar">قطع الميناء عند القمم أصعب وغير منتظم—استخدم مباضع حادة ودعماً كافياً.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Gnarled = Guarded”: twisted rods guard against fracture.</div><div class="ar">«الالتفاف = الحماية»: التفاف العصي يقي من الكسر.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 13. Summary -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head">
+          <span class="en">13) Summary — Enamel (Part 1)</span>
+          <span class="ar">١٣) الخلاصة — الميناء (الجزء الأول)</span>
+        </h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Enamel is an <b>acellular, epithelial, hardest</b> tissue forming the crown cover. Key properties include thickness-dependent colour, high hardness but <i>low tensile strength</i>, selective permeability, and predominantly <b>96% inorganic</b> hydroxyapatite with protein fractions (amelogenin/non-amelogenin). Structure is organized into <b>rods</b> with keyhole pattern, wavy orientation, daily striations, and <b>gnarled</b> arrangement at load-bearing areas.</p>
+          </div>
+          <div class="ar">
+            <p>الميناء نسيج <b>لاخلوي، ظهاري، هو الأصلب</b> ويغطي التاج. تتحدد الخصائص بالسمك (اللون)، صلابة عالية لكن <i>مقاومة شد منخفضة</i>، نفاذية انتقائية، ومكوّن أساسي <b>٩٦٪ غير عضوي</b> مع بروتينات أميلوغينينية وغير أميلوغينينية. البنية عبارة عن <b>عصي</b> بنمط ثقب المفتاح ومسار متموج وخطوط يومية، وتكون <b>ملتفة</b> عند مناطق التحميل.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 1–3,6–8,10–14,25–33/35</span>
+          <span class="ar">الصفحات المرجعية: ١–٣، ٦–٨، ١٠–١٤، ٢٥–٣٣/٣٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Anchor numbers: SG 2.8; 2–2.5 mm cusp; 96/4; 90/10 proteins; 4 μm striations.</div><div class="ar">أرقام مفتاحية: الثقل ٢٫٨؛ ٢–٢٫٥ مم؛ ٩٦/٤؛ ٩٠/١٠؛ ٤ ميكرون للخطوط.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Links biology to clinical prep, bonding, shade, and fracture resistance.</div><div class="ar">يربط البيولوجيا بالتحضير السريري والالتصاق واللون ومقاومة الكسر.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Preserve enamel—no intrinsic regeneration post-eruption.</div><div class="ar">حافظ على الميناء—لا تجدد ذاتي بعد البزوغ.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+  </div> <!-- /sections -->
+
+  <!-- Glossary (9+ terms) -->
+  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+  <div class="grid g3x4" id="glossary">
+    <div class="card"><div class="head">Enamel / الميناء</div><div class="content" hidden><div class="en">Hardest calcified tissue covering the crown; acellular, avascular.</div><div class="ar">أصلب نسيج متكلس يغطي التاج؛ لاخلوي ولاأوعية.</div></div></div>
+    <div class="card"><div class="head">Ameloblast / أميلوبلاست</div><div class="content" hidden><div class="en">Enamel-forming cell from IEE.</div><div class="ar">خلية مُشكِّلة للميناء من الظهارة الداخلية.</div></div></div>
+    <div class="card"><div class="head">Hydroxyapatite / هيدروكسي أباتيت</div><div class="content" hidden><div class="en">Primary inorganic crystal of enamel (Ca-phosphate).</div><div class="ar">البلورة غير العضوية الأساسية للميناء (كالسيوم-فوسفات).</div></div></div>
+    <div class="card"><div class="head">Enamel Rod (Prism) / عصا الميناء</div><div class="content" hidden><div class="en">Basic structural unit with keyhole pattern.</div><div class="ar">الوحدة البنيوية الأساسية ذات نمط ثقب المفتاح.</div></div></div>
+    <div class="card"><div class="head">Inter-rod Region / المنطقة بين العصي</div><div class="content" hidden><div class="en">Crystals with different orientation between rods.</div><div class="ar">بلورات مختلفة الاتجاه بين العصي.</div></div></div>
+    <div class="card"><div class="head">Rod Sheath / غمد العصا</div><div class="content" hidden><div class="en">Less densely packed zone around each rod.</div><div class="ar">منطقة أقل كثافة حول كل عصا.</div></div></div>
+    <div class="card"><div class="head">Gnarled Enamel / الميناء الملتفّة</div><div class="content" hidden><div class="en">Twisted rod pattern at cusps/incisal edges; adds toughness.</div><div class="ar">نمط التفاف العصي عند القمم/الحواف؛ يزيد المتانة.</div></div></div>
+    <div class="card"><div class="head">Amelogenin / أميلوغينين</div><div class="content" hidden><div class="en">~90% of enamel proteins; low MW.</div><div class="ar">~٩٠٪ من بروتينات الميناء؛ منخفض الكتلة.</div></div></div>
+    <div class="card"><div class="head">Enamelin / إناملين</div><div class="content" hidden><div class="en">Non-amelogenin protein; part of 10% fraction.</div><div class="ar">بروتين غير أميلوغينيني؛ ضمن فئة ١٠٪.</div></div></div>
+    <div class="card"><div class="head">Permeability / النفاذية</div><div class="content" hidden><div class="en">Selective passage via micropores; decreases with age.</div><div class="ar">مرور انتقائي عبر المسام الدقيقة؛ ينخفض مع العمر.</div></div></div>
+    <div class="card"><div class="head">Striation / التخطيط</div><div class="content" hidden><div class="en">Segmental lines along rods (~4 μm increments).</div><div class="ar">خطوط مقطعية على العصي (~٤ ميكرون لكل زيادة).</div></div></div>
+  </div>
+
+  <!-- Flashcards (9+) -->
+  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+  <div class="grid g3x4" id="flashcards">
+    <div class="card"><div class="head"><span class="en">1 — What is the specific gravity of enamel?</span><span class="ar">١ — ما الثقل النوعي للميناء؟</span></div><div class="content" hidden><span class="en">A: ≈ 2.8</span><span class="ar">ج: ≈ ٢٫٨</span></div></div>
+    <div class="card"><div class="head"><span class="en">2 — Max thickness and location?</span><span class="ar">٢ — أين أقصى سماكة؟</span></div><div class="content" hidden><span class="en">A: 2–2.5 mm at incisal edges and cusp tips.</span><span class="ar">ج: ٢–٢٫٥ مم عند الحواف القاطعة وقمم الحدبات.</span></div></div>
+    <div class="card"><div class="head"><span class="en">3 — Why can’t enamel regenerate?</span><span class="ar">٣ — لماذا لا تتجدد الميناء؟</span></div><div class="content" hidden><span class="en">A: Ameloblasts are lost post-eruption; tissue is acellular.</span><span class="ar">ج: زوال الأميلوبلاست بعد البزوغ؛ النسيج لا خلوي.</span></div></div>
+    <div class="card"><div class="head"><span class="en">4 — Colour depends on?</span><span class="ar">٤ — يعتمد اللون على؟</span></div><div class="content" hidden><span class="en">A: Enamel thickness over yellow dentin (and mineralization).</span><span class="ar">ج: سماكة الميناء فوق العاج الأصفر (والتمعدن).</span></div></div>
+    <div class="card"><div class="head"><span class="en">5 — Protein split?</span><span class="ar">٥ — تقسيم البروتينات؟</span></div><div class="content" hidden><span class="en">A: ~90% amelogenin; ~10% non-amelogenins (enamelin, etc.).</span><span class="ar">ج: ~٩٠٪ أميلوغينين؛ ~١٠٪ غير أميلوغينينات (إناملين…).</span></div></div>
+    <div class="card"><div class="head"><span class="en">6 — Rod orientation pattern?</span><span class="ar">٦ — نمط توضع العصي؟</span></div><div class="content" hidden><span class="en">A: Wavy DEJ→surface; keyhole cross-section; head/tail.</span><span class="ar">ج: مسار متموج؛ مقطع «ثقب المفتاح»؛ رأس/ذيل.</span></div></div>
+    <div class="card"><div class="head"><span class="en">7 — Daily increment length?</span><span class="ar">٧ — طول الزيادة اليومية؟</span></div><div class="content" hidden><span class="en">A: ~4 μm (striations).</span><span class="ar">ج: ~٤ ميكرون (الخطوط).</span></div></div>
+    <div class="card"><div class="head"><span class="en">8 — Functional cusps with thicker enamel?</span><span class="ar">٨ — القمم الوظيفية الأسمك ميناءً؟</span></div><div class="content" hidden><span class="en">A: Palatal of maxillary; buccal of mandibular teeth.</span><span class="ar">ج: الحنكية العلوية؛ الدهليزية السفلية.</span></div></div>
+    <div class="card"><div class="head"><span class="en">9 — Define gnarled enamel.</span><span class="ar">٩ — عرّف الميناء الملتفّة.</span></div><div class="content" hidden><span class="en">A: Twisted rod pattern at cusps/incisal edges increasing toughness.</span><span class="ar">ج: التفاف العصي عند القمم/الحواف يزيد المتانة.</span></div></div>
+  </div>
+
+</main>
+
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

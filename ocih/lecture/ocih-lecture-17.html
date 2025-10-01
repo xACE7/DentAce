@@ -1,0 +1,870 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>🦷 Dentistry 3rd year — Two-Column Sections — OCIH 17</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+
+</style>
+</head>
+<body class="lang-en">
+<header>
+  <div class="hdr wrap">
+    <div class="left">
+      <div class="title">🦷 Dentistry 3rd year</div>
+      <div class="subtitle">Lecture 17</div>
+    </div>
+    <button id="langBtn" class="lang-toggle" aria-label="Toggle language">
+      <span class="lab en">EN</span>
+      <span class="lab ar">AR</span>
+    </button>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- Dua (Arabic shown in both EN/AR per instructions) -->
+  <div class="dua"><span class="en">﴿رَبِّ زِدْنِي عِلْمًا﴾</span><span class="ar">﴿رَبِّ زِدْنِي عِلْمًا﴾</span></div>
+
+  <!-- Topic -->
+  <div class="chip-box">
+    <span class="chip">
+      <span class="en"><b>Topic: Amelogenesis (Enamel Formation)</b></span>
+      <span class="ar"><b>الموضوع: تكوُّن الميناء (تشكُّل المينا)</b></span>
+    </span>
+  </div>
+
+  <div class="sections">
+
+    <!-- Section 1 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">1) What is Amelogenesis?</span><span class="ar">١) ما هي تكوُّن الميناء؟</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Amelogenesis</b> = the process of enamel formation. It starts shortly after <i>dentinogenesis</i> in the advanced bell stage when the basement membrane between IEE and odontoblasts disintegrates. The cells that conduct it are <b>ameloblasts</b>.</p>
+            <p>Tooth development passes through: <b>bud → cap → early bell → advanced bell</b>. Amelogenesis belongs to the advanced bell stage.</p>
+          </div>
+          <div class="ar">
+            <p><b>تكوُّن الميناء</b> هو عملية تكوين طبقة المينا. يبدأ مباشرة بعد <i>تكوُّن العاج</i> في مرحلة الجرس المتقدمة عندما تتفكك الغشاء القاعدي بين الظهارة الداخلية للميناء (IEE) والخلايا المكوِّنة للعاج. والخلايا المسؤولة هي <b>الأميلوبلاست</b>.</p>
+            <p>يمر تكوّن السن بمراحل: <b>برعم → قبعة → جرس مبكر → جرس متقدم</b>، وتكوّن المينا يحدث في مرحلة الجرس المتقدمة.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 1,2,3/38</span>
+          <span class="ar">الصفحات المرجعية: ١،٢،٣/٣٨</span>
+        </div>
+      </div>
+
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Enamel is acellular and non-vital after eruption; no new enamel can be formed.</div><div class="ar">المينا عديمة الخلايا وغير حية بعد البزوغ؛ لا تتكوّن مينا جديدة لاحقًا.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Understanding timing explains why early insults (fever, fluorosis) leave permanent enamel defects.</div><div class="ar">فهم التوقيت يفسّر لماذا تؤدي المؤثرات المبكرة (حمّى، فلوروز) إلى عيوب دائمة بالمينا.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Link each tooth stage to a hallmark event: advanced bell → enamel start.</div><div class="ar">اربط كل مرحلة سنية بحدث بارز: الجرس المتقدم → بدء تكوّن المينا.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Basement membrane loss permits ameloblasts to contact newly formed dentin.</div><div class="ar">زوال الغشاء القاعدي يسمح بتلامس الأميلوبلاست مع العاج المتكوّن حديثًا.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 2 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">2) Two Core Stages of Amelogenesis</span><span class="ar">٢) مرحلتان أساسيتان لتكوّن المينا</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>The process has two broad stages:</p>
+            <ul>
+              <li><b>Enamel matrix secretion</b> (organic matrix deposition)</li>
+              <li><b>Maturation / mineralization</b> of that matrix</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <p>تمر العملية بمرحلتين رئيسيتين:</p>
+            <ul>
+              <li><b>إفراز مصفوفة المينا العضوية</b></li>
+              <li><b>النُّضج/التَمَعْدُن</b> لهذه المصفوفة</li>
+            </ul>
+          </div>
+
+          <div class="table-wrap" aria-label="Scrollable table">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Stage</span><span class="ar">المرحلة</span></th>
+                  <th><span class="en">Main event</span><span class="ar">الحدث الرئيسي</span></th>
+                  <th><span class="en">Key cells</span><span class="ar">الخلايا الرئيسة</span></th>
+                  <th><span class="en">Outcome</span><span class="ar">الناتج</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="en">Matrix secretion</span><span class="ar">إفراز المصفوفة</span></td>
+                  <td><span class="en">Protein-rich (amelogenin) matrix laid over dentin</span><span class="ar">طرح مصفوفة غنية بالبروتين (أميلوجينين) فوق العاج</span></td>
+                  <td><span class="en">Secretory ameloblasts with Tomes’ processes</span><span class="ar">أميلوبلاست إفرازي مع بروز تومز</span></td>
+                  <td><span class="en">Initial rodless layer then rods/interrods</span><span class="ar">طبقة أولى بلا قضبان ثم قضبان/بين قضبان</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Maturation</span><span class="ar">النضج</span></td>
+                  <td><span class="en">Massive Ca²⁺/PO₄³⁻ influx + protein & water removal</span><span class="ar">دخول كبير للكالسيوم والفوسفات + إزالة البروتين والماء</span></td>
+                  <td><span class="en">Ruffled- & smooth-ended ameloblasts (modulation)</span><span class="ar">أميلوبلاست بنهايات مهدبة/مستقيمة (تعديل)</span></td>
+                  <td><span class="en">Hard, highly mineralized enamel</span><span class="ar">مينا صلبة عالية التمعدن</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="source-footer">
+          <span class="en">Source pages: 4,5/38</span>
+          <span class="ar">الصفحات المرجعية: ٤،٥/٣٨</span>
+        </div>
+      </div>
+
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Ameloblasts drive both deposition and later maturation of enamel.</div><div class="ar">الأميلوبلاست مسؤولة عن طرح المصفوفة ثم نضجها لاحقًا.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“S then M”: <b>S</b>ecretion precedes <b>M</b>aturation.</div><div class="ar">«إ ثم ن»: <b>إفراز</b> يسبق <b>نضج</b>.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">The very first enamel next to dentin lacks rods (rodless).</div><div class="ar">أول طبقة مينا ملاصقة للعاج تكون بلا قضبان.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Tie “modulation” to maturation, not secretion.</div><div class="ar">اربط مفهوم «التعديل» بمرحلة النضج وليس الإفراز.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 3 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">3) Life Cycle of Ameloblasts (5 stages)</span><span class="ar">٣) دورة حياة الأميلوبلاست (٥ مراحل)</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ol>
+              <li><b>Presecretory</b> — <i>Morphogenic</i> then <i>Differentiation</i></li>
+              <li><b>Secretory (Formative)</b></li>
+              <li><b>Transitional</b></li>
+              <li><b>Maturation</b></li>
+              <li><b>Protective</b></li>
+            </ol>
+          </div>
+          <div class="ar">
+            <ol>
+              <li><b>قبل الإفراز</b> — <i>مورفولوجي</i> ثم <i>تمايُز</i></li>
+              <li><b>إفرازي (تشكُّلي)</b></li>
+              <li><b>انتقالي</b></li>
+              <li><b>نضج</b></li>
+              <li><b>وقائي</b></li>
+            </ol>
+          </div>
+
+          <div class="table-wrap" aria-label="Stages quick view">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Stage</span><span class="ar">المرحلة</span></th>
+                  <th><span class="en">Cell features</span><span class="ar">سمات الخلية</span></th>
+                  <th><span class="en">What happens</span><span class="ar">ما الذي يحدث</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="en">Morphogenic</span><span class="ar">مورفولوجي</span></td>
+                  <td><span class="en">IEE cuboidal/low columnar; central nuclei; scarce Golgi</span><span class="ar">خلايا IEE مكعبة/عمودية قصيرة؛ نوى مركزية؛ جهاز جولجي ضعيف</span></td>
+                  <td><span class="en">Crown shape determined; pre-ameloblasts induce odontoblasts</span><span class="ar">تحديد شكل التاج؛ ما قبل الأميلوبلاست تحفّز تكوّن الأرومات المولدة للعاج</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Differentiation</span><span class="ar">تمايُز</span></td>
+                  <td><span class="en">Cells elongate; nuclei shift proximally; ↑RER, Golgi, mitochondria</span><span class="ar">استطالة الخلايا؛ تحرّك النوى نحو القريب؛ ↑ الشبكة الخشنة وجولجي والميتوكوندريا</span></td>
+                  <td><span class="en">Odontoblasts start dentin; ameloblasts lose division ability</span><span class="ar">بدء تكوّن العاج؛ تفقد الأميلوبلاست القدرة على الانقسام</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Secretory</span><span class="ar">إفرازي</span></td>
+                  <td><span class="en">Tomes’ processes appear at distal ends</span><span class="ar">ظهور بروز تومز في النهايات البعيدة</span></td>
+                  <td><span class="en">Initial rodless enamel → rods & interrods; last layers become rodless again</span><span class="ar">طبقة مينا أولى بلا قضبان → قضبان وبين قضبان؛ الطبقات الأخيرة بلا قضبان</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Transitional</span><span class="ar">انتقالي</span></td>
+                  <td><span class="en">Cell height ↓; secretory organelles ↓; ↑lysosomes; apoptosis</span><span class="ar">انخفاض طول الخلية؛ تناقص عضيّات الإفراز؛ ↑ الجسيمات الحالّة؛ موت مبرمج</span></td>
+                  <td><span class="en">Ameloblast number reduces by ~50%</span><span class="ar">نقص عدد الأميلوبلاست بنحو 50%</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Maturation</span><span class="ar">نضج</span></td>
+                  <td><span class="en">Cells modulate: ruffled-ended (80%) ↔ smooth-ended (20%)</span><span class="ar">تبديل الشكل: نهايات مهدبة (٨٠٪) ↔ نهايات مستقيمة (٢٠٪)</span></td>
+                  <td><span class="en">Mineral influx; protein/water exit</span><span class="ar">دخول المعادن؛ خروج البروتين/الماء</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Protective</span><span class="ar">وقائي</span></td>
+                  <td><span class="en">Reduced enamel epithelium forms</span><span class="ar">تشكّل الظهارة المينائية المختزلة</span></td>
+                  <td><span class="en">Covers enamel until eruption</span><span class="ar">تغطي المينا حتى البزوغ</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="source-footer">
+          <span class="en">Source pages: 6,7,8,9/38</span>
+          <span class="ar">الصفحات المرجعية: ٦،٧،٨،٩/٣٨</span>
+        </div>
+      </div>
+
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“MiDi Se Tr Ma Pr” → Morphogenic, Differentiation, Secretory, Transitional, Maturation, Protective.</div><div class="ar">«مو-تما-إف-انت-نض-وق» تسلسل المراحل.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Loss of Tomes’ process at the end of secretion → final enamel layers are rodless.</div><div class="ar">اختفاء بروز تومز في نهاية الإفراز → الطبقات الأخيرة بلا قضبان.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Presecretory organelles gear up for protein synthesis (RER, Golgi).</div><div class="ar">المرحلة قبل الإفراز تُحضِّر العضيّات لتصنيع البروتين (RER، جولجي).</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Associate ruffled borders with mineral <i>entry</i>, smooth with protein/water <i>exit</i>.</div><div class="ar">اربط النهايات المهدبة بدخول المعادن، والمستقيمة بخروج البروتين/الماء.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 4 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">4) Secretory Stage & Tomes’ Process</span><span class="ar">٤) المرحلة الإفرازية وبروز تومز</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>After the first dentin layer forms, ameloblasts begin secreting enamel. The initial enamel adjacent to dentin is <b>rodless</b>. As ameloblasts retreat, they develop conical <b>Tomes’ processes</b> whose interdigitation gives the “picket fence” look and produces <b>rods</b> and <b>interrods</b>.</p>
+            <p><b>Contribution</b>: The head of a rod is formed by one ameloblast; the tail involves three — so one rod receives input from <b>4 ameloblasts</b>.</p>
+          </div>
+          <div class="ar">
+            <p>بعد تكوّن أول طبقة من العاج، تبدأ الأميلوبلاست بإفراز المينا. تكون المينا الأولى بمحاذاة العاج <b>بلا قضبان</b>. ومع ابتعاد الأميلوبلاست تتشكل <b>بروزات تومز</b> المخروطية التي تتداخل مع السطح وتعطي مظهر «السياج»، منتجة <b>القضبان</b> و<b>بين القضبان</b>.</p>
+            <p><b>المساهمة</b>: يشكّل رأس القضيب أميلوبلاست واحد، أما الذيل فثلاثة؛ أي أن القضيب الواحد يتكون بمساهمة <b>٤ أميلوبلاست</b>.</p>
+          </div>
+
+          <div class="table-wrap" aria-label="Rod/interrod origin">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Structure</span><span class="ar">البنية</span></th>
+                  <th><span class="en">Made by</span><span class="ar">يصنعه</span></th>
+                  <th><span class="en">Notes</span><span class="ar">ملاحظات</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="en">Rod head</span><span class="ar">رأس القضيب</span></td>
+                  <td><span class="en">1 ameloblast</span><span class="ar">أميلوبلاست واحد</span></td>
+                  <td><span class="en">Forms the core prism</span><span class="ar">يشكّل المِعصم الأساسي</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Rod tail</span><span class="ar">ذيل القضيب</span></td>
+                  <td><span class="en">3 ameloblasts</span><span class="ar">٣ أميلوبلاست</span></td>
+                  <td><span class="en">Interrod contribution</span><span class="ar">مساهمة بين القضبان</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Initial layer</span><span class="ar">الطبقة الأولى</span></td>
+                  <td><span class="en">Rodless</span><span class="ar">بلا قضبان</span></td>
+                  <td><span class="en">Before Tomes’ forms</span><span class="ar">قبل ظهور بروز تومز</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Final layers</span><span class="ar">الطبقات النهائية</span></td>
+                  <td><span class="en">Rodless again</span><span class="ar">بلا قضبان مرة أخرى</span></td>
+                  <td><span class="en">After Tomes’ loss</span><span class="ar">بعد اختفاء بروز تومز</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="source-footer">
+          <span class="en">Source pages: 10,11,12,13/38</span>
+          <span class="ar">الصفحات المرجعية: ١٠،١١،١٢،١٣/٣٨</span>
+        </div>
+      </div>
+
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Tomes’ process is a distal conical extension unique to secretory ameloblasts.</div><div class="ar">بروز تومز امتداد مخروطي بعيد يميّز الأميلوبلاست الإفرازية.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Any disruption during secretion yields abnormal rod architecture.</div><div class="ar">أي اضطراب أثناء الإفراز يسبب بنية قضبان غير طبيعية.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">“Picket fence” appearance reflects interdigitation with forming enamel.</div><div class="ar">مظهر «السياج» يعكس تداخل البروز مع سطح المينا المتكوّنة.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Rodless at the very beginning and the very end — easy exam point.</div><div class="ar">بلا قضبان في البداية والنهاية — نقطة سهلة بالامتحان.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 5 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">5) Transitional Stage</span><span class="ar">٥) المرحلة الانتقالية</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>When enamel reaches full thickness, ameloblasts briefly enter a <b>transitional</b> stage: cell height and secretory organelles fall sharply; lysosomes and autophagic vacuoles increase; and programmed cell death reduces the cell population by ≈<b>50%</b>.</p>
+          </div>
+          <div class="ar">
+            <p>عند وصول المينا إلى السمك الكامل، تدخل الأميلوبلاست مرحلة <b>انتقالية</b> قصيرة: انخفاض ملحوظ في طول الخلية وعضيّات الإفراز، وزيادة الليسوسومات والفجوات الالتهامية، وحدوث موت خلوي مبرمج يخفض عدد الخلايا بنحو <b>٥٠٪</b>.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 14,15/38</span>
+          <span class="ar">الصفحات المرجعية: ١٤،١٥/٣٨</span>
+        </div>
+      </div>
+
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Transition bridges secretion and maturation; many cells are culled.</div><div class="ar">الانتقال يجسر بين الإفراز والنضج؛ يتم «تنقية» كثير من الخلايا.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Fewer cells proceed to maturation, affecting the rate of mineral handling.</div><div class="ar">العدد الأقل من الخلايا في النضج يحدد معدل التعامل مع المعادن.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Remember “T = Thinning”: cell height thins, population thins.</div><div class="ar">تذكّر «انتقالي = ترقُّق»: ترقّق طول الخلية وعددها.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Autophagy clears secretory machinery no longer needed.</div><div class="ar">الالتهام الذاتي يزيل أجهزة الإفراز غير اللازمة.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 6 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">6) Maturation: Modulation & Mineral Handling</span><span class="ar">٦) النضج: التعديل والتعامل مع المعادن</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Maturation involves massive influx of Ca²⁺ and PO₄³⁻ and selective loss of enamel proteins (mainly <i>amelogenin</i>) and water. Ameloblasts <b>modulate</b> between two phenotypes:</p>
+            <ul>
+              <li><b>Ruffled-ended (≈80%)</b> — promote inorganic influx into the matrix.</li>
+              <li><b>Smooth-ended (≈20%)</b> — promote removal of protein fragments & water.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <p>يتضمن النضج دخولًا كبيرًا للكالسيوم والفوسفات مع إزالة انتقائية لبروتينات المينا (خصوصًا <i>الأميلوجينين</i>) والماء. تقوم الأميلوبلاست بـ<b>تعديل</b> شكلها بين نمطين:</p>
+            <ul>
+              <li><b>نهايات مهدبة (≈٨٠٪)</b> — تعزّز دخول المواد غير العضوية إلى المصفوفة.</li>
+              <li><b>نهايات مستقيمة (≈٢٠٪)</b> — تعزّز خروج شظايا البروتين والماء.</li>
+            </ul>
+          </div>
+
+          <div class="table-wrap" aria-label="Modulation summary">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Phenotype</span><span class="ar">النمط</span></th>
+                  <th><span class="en">Dominant role</span><span class="ar">الدور الغالب</span></th>
+                  <th><span class="en">Share of time</span><span class="ar">نسبة الوقت</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="en">Ruffled-ended</span><span class="ar">نهايات مهدبة</span></td>
+                  <td><span class="en">Inorganic entry</span><span class="ar">إدخال المواد غير العضوية</span></td>
+                  <td><span class="en">≈80%</span><span class="ar">≈٨٠٪</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Smooth-ended</span><span class="ar">نهايات مستقيمة</span></td>
+                  <td><span class="en">Protein/water exit</span><span class="ar">خروج البروتين/الماء</span></td>
+                  <td><span class="en">≈20%</span><span class="ar">≈٢٠٪</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div class="source-footer">
+          <span class="en">Source pages: 16,17,18/38</span>
+          <span class="ar">الصفحات المرجعية: ١٦،١٧،١٨/٣٨</span>
+        </div>
+      </div>
+
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Amelogenin is the predominant protein removed during maturation.</div><div class="ar">الأميلوجينين هو البروتين الأكثر إزالة أثناء النضج.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Incomplete protein removal → hypomaturation defects.</div><div class="ar">عدم إزالة البروتين بشكل كافٍ يؤدي إلى عيوب نقص النضج.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Ruff = Receive ions; Smooth = Send proteins out”.</div><div class="ar">«المهدبة = تستقبل الأيونات؛ المستقيمة = تُخرج البروتين».</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Pair the 80/20 split with functions to avoid mix-ups.</div><div class="ar">اربط نسبة ٨٠/٢٠ بالوظائف لتجنب الخلط.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 7 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">7) Protective Stage & Reduced Enamel Epithelium (REE)</span><span class="ar">٧) المرحلة الوقائية والظهارة المينائية المختزلة</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Ameloblasts lose their specialized features, become short cuboidal cells, and together with remnants of the enamel organ form the <b>Reduced Enamel Epithelium</b> (REE). The REE covers fully formed enamel <b>until eruption</b>.</p>
+          </div>
+          <div class="ar">
+            <p>تفقد الأميلوبلاست خصائصها المتخصصة وتصبح خلايا مكعبة قصيرة، ومع بقايا عضو الميناء تكوّن <b>الظهارة المينائية المختزلة</b>. وتظل هذه البنية مغطية للمينا المتشكِّلة بالكامل <b>حتى البزوغ</b>.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 19,20/38</span>
+          <span class="ar">الصفحات المرجعية: ١٩،٢٠/٣٨</span>
+        </div>
+      </div>
+
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">REE participates in forming the junctional epithelium after eruption.</div><div class="ar">تسهم REE في تكوين الظهارة الملتصقة بعد البزوغ.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">REE protects enamel from resorption before eruption.</div><div class="ar">تحمي REE المينا من الارتشاف قبل البزوغ.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">REE = flattened ameloblasts + other enamel organ remnants.</div><div class="ar">REE = أميلوبلاست مفلطحة + بقايا عضو المينا.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Protective stage = think “covering until eruption”.</div><div class="ar">المرحلة الوقائية = «غطاء حتى البزوغ».</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 8 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">8) Clinical Correlate: Amelogenesis Imperfecta (AI)</span><span class="ar">٨) ارتباط سريري: سوء تَكَوُّن الميناء (AI)</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>AI</b> is a group of genetically based conditions affecting enamel structure and appearance. It can cause discoloration and, in severe forms, <b>hypomineralized</b> enamel with poor hardness.</p>
+          </div>
+          <div class="ar">
+            <p><b>سوء تكوُّن الميناء</b> مجموعة حالات ذات أصل جيني تؤثر في بنية المينا ومظهرها. قد تسبب تغيّر اللون، وفي الأشكال الشديدة تكون المينا <b>ناقصة التمعدن</b> وضعيفة الصلابة.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 21,22/38</span>
+          <span class="ar">الصفحات المرجعية: ٢١،٢٢/٣٨</span>
+        </div>
+      </div>
+
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Patients present with yellow-brown discoloration, sensitivity, rapid wear.</div><div class="ar">يشكو المرضى من تصبّغ أصفر/بني، حساسية، وتآكل سريع.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Bonding may be compromised; consider full-coverage options.</div><div class="ar">قد تتأثر الالتصاقات؛ فكّر في ترميمات تغطية كاملة.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">AI maps directly onto stages—defects in secretion vs maturation cause distinct phenotypes.</div><div class="ar">يرتبط AI مباشرة بالمراحل—خلل الإفراز مقابل النضج يعطي أنماطًا مختلفة.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Relate phenotype (hypoplastic vs hypomaturation) to the impaired stage.</div><div class="ar">اربط النمط (نقص التنسّج مقابل نقص النضج) بالمرحلة المتأثرة.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 9 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">9) Stepwise: Enamel Mineralization Over Time</span><span class="ar">٩) تتابع تَمَعْدُن المينا عبر الزمن</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Summary sequence: (A) initial enamel formed → (B) initial enamel calcified as more enamel forms → (C–D) increments continue with simultaneous matrix deposition and mineralization → (E–F) matrix formation extends laterally and cervically.</p>
+          </div>
+          <div class="ar">
+            <p>التسلسل الموجز: (أ) تتكون المينا الأولية → (ب) تتكلس المينا الأولية مع استمرار التشكُّل → (ج–د) تستمر الزيادات مع طرح المصفوفة وتمعدنها معًا → (هـ–و) يمتد تكوين المصفوفة جانبيًا وعنقيًا.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 23,24/38</span>
+          <span class="ar">الصفحات المرجعية: ٢٣،٢٤/٣٨</span>
+        </div>
+      </div>
+
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Cervical enamel forms last, explaining some cervical opacities in defects.</div><div class="ar">تتكون مينا العنق أخيرًا، ما يفسّر عتامات عنقية في بعض العيوب.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Incisal/occlusal first; cervical last.”</div><div class="ar">«القاطع/الانعراقي أولًا؛ العنقي أخيرًا».</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Mineralization and matrix apposition overlap in time.</div><div class="ar">التمعدن وطرح المصفوفة يتداخلان زمنيًا.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Sketch the A→F sequence to anchor the spatial pattern.</div><div class="ar">ارسم تسلسل أ→و لتثبيت النمط المكاني.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 10 (Summary) -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">10) Quick Summary</span><span class="ar">١٠) خلاصة سريعة</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li>Amelogenesis starts after dentinogenesis in the advanced bell stage; driven by <b>ameloblasts</b>.</li>
+              <li>Two broad stages: <b>matrix secretion</b> then <b>maturation/mineralization</b>.</li>
+              <li>Ameloblast life cycle: morphogenic → differentiation → secretory → transitional → maturation → protective.</li>
+              <li>Tomes’ process creates <b>rods</b> and <b>interrods</b>; first and last enamel are <b>rodless</b>.</li>
+              <li>Maturation uses <b>ruffled-ended (80%)</b> and <b>smooth-ended (20%)</b> modulation to import ions and export proteins/water.</li>
+              <li>REE protects enamel until eruption. AI exemplifies stage-specific defects.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li>يبدأ تكوّن المينا بعد تكوّن العاج في مرحلة الجرس المتقدمة بواسطة <b>الأميلوبلاست</b>.</li>
+              <li>مرحلتان: <b>إفراز المصفوفة</b> ثم <b>النضج/التمعدن</b>.</li>
+              <li>سلسلة الأميلوبلاست: مورفولوجي → تمايز → إفرازي → انتقالي → نضج → وقائي.</li>
+              <li>يصنع بروز تومز <b>القضبان</b> و<b>بين القضبان</b>؛ أول وآخر مينا <b>بلا قضبان</b>.</li>
+              <li>يعتمد النضج على نمطين: <b>مهدب (٨٠٪)</b> لإدخال الأيونات و<b>مستقيم (٢٠٪)</b> لإخراج البروتين/الماء.</li>
+              <li>تحمي REE المينا حتى البزوغ. ويمثّل AI عيوبًا مرتبطة بمرحلة محددة.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 25,26,27,28/38</span>
+          <span class="ar">الصفحات المرجعية: ٢٥،٢٦،٢٧،٢٨/٣٨</span>
+        </div>
+      </div>
+
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Restorative choices and caries risk assessment hinge on enamel quality from these stages.</div><div class="ar">تعتمد خيارات الترميم وتقييم خطر النخر على جودة المينا الناتجة عن هذه المراحل.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Make a one-page flowchart from bud stage to REE.</div><div class="ar">اصنع مخططًا بصفحة واحدة من مرحلة البرعم حتى REE.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“First & Final = Rodless”.</div><div class="ar">«الأولى والأخيرة = بلا قضبان».</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Matrix proteins other than amelogenin include enamelin and ameloblastin.</div><div class="ar">يشمل بروتين المينا أيضًا الإيناملين والأميلوبلاستين.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+  </div> <!-- end sections -->
+
+  <!-- Glossary -->
+  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+  <div class="grid g3x4" id="glossary">
+    <div class="card"><div class="head">Amelogenesis / تكوُّن الميناء</div><div class="content" hidden><div class="en">Process that forms enamel by ameloblasts.</div><div class="ar">عملية تكوّن المينا بواسطة الأميلوبلاست.</div></div></div>
+    <div class="card"><div class="head">Ameloblast / أميلوبلاست</div><div class="content" hidden><div class="en">Enamel-forming epithelial cell.</div><div class="ar">خلية ظهارية تُكوّن المينا.</div></div></div>
+    <div class="card"><div class="head">Inner Enamel Epithelium (IEE) / الظهارة الداخلية للميناء</div><div class="content" hidden><div class="en">Layer that differentiates into ameloblasts.</div><div class="ar">طبقة تتحول إلى أميلوبلاست.</div></div></div>
+    <div class="card"><div class="head">Tomes’ process / بروز تومز</div><div class="content" hidden><div class="en">Distal conical projection from secretory ameloblast.</div><div class="ar">امتداد مخروطي بعيد للأميلوبلاست الإفرازية.</div></div></div>
+    <div class="card"><div class="head">Enamel rod / قضيب المينا</div><div class="content" hidden><div class="en">Basic prism unit of enamel.</div><div class="ar">الوحدة المنشورية الأساسية للمينا.</div></div></div>
+    <div class="card"><div class="head">Interrod enamel / مينا بين القضبان</div><div class="content" hidden><div class="en">Enamel surrounding rods with differing crystal orientation.</div><div class="ar">المينا المحيطة بالقضبان ذات اتجاه بلوري مختلف.</div></div></div>
+    <div class="card"><div class="head">Reduced Enamel Epithelium (REE) / الظهارة المينائية المختزلة</div><div class="content" hidden><div class="en">Flattened ameloblasts + enamel organ remnants covering enamel pre-eruption.</div><div class="ar">أميلوبلاست مفلطحة مع بقايا عضو المينا تغطي المينا قبل البزوغ.</div></div></div>
+    <div class="card"><div class="head">Amelogenin / أميلوجينين</div><div class="content" hidden><div class="en">Major enamel matrix protein removed during maturation.</div><div class="ar">أهم بروتين في مصفوفة المينا ويزال أثناء النضج.</div></div></div>
+    <div class="card"><div class="head">Amelogenesis Imperfecta / سوء تكوُّن الميناء</div><div class="content" hidden><div class="en">Genetic disorders of enamel formation and quality.</div><div class="ar">اضطرابات جينية تؤثر في تكوّن وجودة المينا.</div></div></div>
+    <div class="card"><div class="head">Basement membrane / الغشاء القاعدي</div><div class="content" hidden><div class="en">Barrier between IEE & odontoblasts that breaks before enamel forms.</div><div class="ar">حاجز بين IEE والأرومات المولّدة للعاج يتفكك قبل تكوّن المينا.</div></div></div>
+    <div class="card"><div class="head">Modulation / التعديل</div><div class="content" hidden><div class="en">Switching between ruffled- and smooth-ended forms in maturation.</div><div class="ar">التبديل بين النهايات المهدبة والمستقيمة أثناء النضج.</div></div></div>
+    <div class="card"><div class="head">Rodless enamel / مينا بلا قضبان</div><div class="content" hidden><div class="en">Enamel layer lacking prisms; occurs initially and in final layers.</div><div class="ar">طبقة مينا بلا معاصم؛ تظهر في البداية والطبقات النهائية.</div></div></div>
+  </div>
+
+  <!-- Flashcards -->
+  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+  <div class="grid g3x4" id="flashcards">
+    <div class="card"><div class="head"><span class="en">1 — Define amelogenesis.</span><span class="ar">١ — عرّف تكوّن الميناء.</span></div><div class="content" hidden><span class="en">Formation of enamel by ameloblasts after dentinogenesis.</span><span class="ar">تكوين المينا بواسطة الأميلوبلاست بعد تكوّن العاج.</span></div></div>
+    <div class="card"><div class="head"><span class="en">2 — Which stage determines crown shape?</span><span class="ar">٢ — أي مرحلة تحدد شكل التاج؟</span></div><div class="content" hidden><span class="en">Morphogenic phase of presecretory stage.</span><span class="ar">الطور المورفولوجي من المرحلة قبل الإفراز.</span></div></div>
+    <div class="card"><div class="head"><span class="en">3 — When do Tomes’ processes appear?</span><span class="ar">٣ — متى تظهر بروزات تومز؟</span></div><div class="content" hidden><span class="en">During secretory stage, after initial rodless enamel.</span><span class="ar">أثناء المرحلة الإفرازية بعد طبقة المينا الأولى بلا قضبان.</span></div></div>
+    <div class="card"><div class="head"><span class="en">4 — Rod head vs tail: cell contribution?</span><span class="ar">٤ — رأس القضيب مقابل الذيل: مساهمة الخلايا؟</span></div><div class="content" hidden><span class="en">Head by 1 ameloblast; tail by 3 (total 4 per rod).</span><span class="ar">الرأس من خلية واحدة؛ الذيل من ثلاث (المجموع ٤ لكل قضيب).</span></div></div>
+    <div class="card"><div class="head"><span class="en">5 — % time in ruffled-ended form?</span><span class="ar">٥ — نسبة الوقت في الشكل المهدب؟</span></div><div class="content" hidden><span class="en">≈80%.</span><span class="ar">≈٨٠٪.</span></div></div>
+    <div class="card"><div class="head"><span class="en">6 — What leaves enamel during maturation?</span><span class="ar">٦ — ماذا يغادر المينا أثناء النضج؟</span></div><div class="content" hidden><span class="en">Protein fragments (mainly amelogenin) and water.</span><span class="ar">شظايا البروتين (خصوصًا الأميلوجينين) والماء.</span></div></div>
+    <div class="card"><div class="head"><span class="en">7 — What is REE?</span><span class="ar">٧ — ما هي REE؟</span></div><div class="content" hidden><span class="en">Reduced Enamel Epithelium; protective covering pre-eruption.</span><span class="ar">الظهارة المينائية المختزلة؛ غطاء واقٍ قبل البزوغ.</span></div></div>
+    <div class="card"><div class="head"><span class="en">8 — AI: key clinical effect?</span><span class="ar">٨ — AI: أثر سريري أساسي؟</span></div><div class="content" hidden><span class="en">Discolored, weak, hypomineralized enamel (severe forms).</span><span class="ar">مينا متصبغة وضعيفة وناقصة التمعدن (في الأشكال الشديدة).</span></div></div>
+    <div class="card"><div class="head"><span class="en">9 — First & last enamel layers?</span><span class="ar">٩ — طبقات المينا الأولى والأخيرة؟</span></div><div class="content" hidden><span class="en">Rodless.</span><span class="ar">بلا قضبان.</span></div></div>
+    <div class="card"><div class="head"><span class="en">10 — What triggers amelogenesis?</span><span class="ar">١٠ — ما الذي يطلق تكوّن الميناء؟</span></div><div class="content" hidden><span class="en">Dentin formation and basement membrane breakdown.</span><span class="ar">تكوّن العاج وانحلال الغشاء القاعدي.</span></div></div>
+    <div class="card"><div class="head"><span class="en">11 — Which stage sees 50% cell loss?</span><span class="ar">١١ — أي مرحلة يحدث فيها فقدان ٥٠٪ من الخلايا؟</span></div><div class="content" hidden><span class="en">Transitional stage.</span><span class="ar">المرحلة الانتقالية.</span></div></div>
+    <div class="card"><div class="head"><span class="en">12 — What does smooth-ended form do?</span><span class="ar">١٢ — ماذا تفعل النهاية المستقيمة؟</span></div><div class="content" hidden><span class="en">Facilitates exit of proteins and water.</span><span class="ar">تسهّل خروج البروتينات والماء.</span></div></div>
+  </div>
+
+</main>
+
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+
+<!-- Notes: Built from OCIH 17.pdf content (Amelogenesis). Page count used for references: 38. -->
+</body>
+</html>
