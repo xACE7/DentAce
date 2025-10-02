@@ -23,8 +23,8 @@
     --radius:16px;
     --gap:1.25rem;
     --pad:1.5rem;
-    --ok:#22c55e;
-    --bad:#ef4444;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
   }
 
   *{box-sizing:border-box}
@@ -67,6 +67,7 @@
     .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
   }
 
+  /* Cards (no accent on the card itself) */
   .card{
     background:var(--card);
     border:1px solid var(--card-border);
@@ -91,8 +92,9 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
 
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
     border-left:6px solid var(--ok);
     outline:none;
@@ -105,7 +107,7 @@
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
@@ -167,66 +169,69 @@
   </main>
 
 <script>
-// ----------- Data (filled from lecture) -----------
+// ----------- Data (filled) -----------
 const mcqs = [
-  { q: "Which speed range is classified as 'low' per Sturdevant?", opts:["Below 12,000 rpm","12,000–200,000 rpm","Above 200,000 rpm","2,000–10,000 rpm"], correct:0, explain:"Low/slow speeds are below 12,000 rpm." },
-  { q: "Medium (intermediate) rotary speeds are:", opts:["Below 12,000 rpm","12,000–200,000 rpm","200,000–250,000 rpm","Above 300,000 rpm"], correct:1, explain:"Medium/intermediate: 12,000 to 200,000 rpm." },
-  { q: "High/ultrahigh speeds are defined as:", opts:["≤200,000 rpm",">200,000 rpm","150,000–250,000 rpm","50,000–120,000 rpm"], correct:1, explain:"High/ultrahigh are above 200,000 rpm." },
-  { q: "An indication for LOW speed is:", opts:["Tooth/cavity preparation","Removing old restorations","Caries excavation in deep lesions","Crown preparation"], correct:2, explain:"Low speed: deep caries excavation, finishing & polishing, tooth polishing." },
-  { q: "Which is listed as an ADVANTAGE of LOW speed?", opts:["Faster cutting","Better tactile sensation","Less vibration","Less heat without coolant"], correct:1, explain:"Low speed offers better tactile sensation." },
-  { q: "A DISADVANTAGE of low speed mentioned is:", opts:["Less vibration","Time consuming and not efficient","Less heat production","Diamond instruments stay longer"], correct:1, explain:"Low speed: vibration, more heat (use coolant), time consuming, not efficient." },
-  { q: "An indication for HIGH speed is:", opts:["Polishing teeth","Finishing composite margins","Tooth/cavity preparation","Smoothing pulpal floor only"], correct:2, explain:"High speed indicated for tooth/cavity prep and removing old restorations." },
-  { q: "Which is an ADVANTAGE of HIGH speed?", opts:["Greater heat generation","Slower tooth removal","Less vibration and time-saving","Poor instrument longevity"], correct:2, explain:"High speed yields faster removal, less heat, less vibration, time-saving; diamonds/carbides last longer." },
-  { q: "A handpiece primarily functions to:", opts:["Hold burs and transmit power","Mix cements","Deliver anesthesia","Isolate the field"], correct:0, explain:"Handpiece holds rotating instruments, transmits power, positions them intraorally." },
-  { q: "Recent improvements in handpieces include:", opts:["Larger heads, higher noise","Smaller head sizes, lower noise, fiberoptic","Steel-only construction","Foot pedals removal"], correct:1, explain:"Smaller heads, lower noise, and fiberoptic illumination noted." },
-  { q: "Latch-type shank burs are used for:", opts:["High speed handpieces","Low speed handpieces","Both high and low","Only surgical units"], correct:1, explain:"Latch-type shank: low speed; friction-grip: high speed." },
-  { q: "Friction-grip burs are for:", opts:["Low speed","High speed","Laboratory trimmers","None"], correct:1, explain:"Friction-grip fits high-speed handpieces." },
-  { q: "Compared with steel, tungsten carbide burs:", opts:["Dull faster at all speeds","Perform worse at high speed","Perform better at all speeds","Are only for polishing"], correct:2, explain:"Carbide burs perform better than steel at all speeds, especially high." },
-  { q: "Diamond burs typically:", opts:["Cut smoother than carbides","Leave a rougher surface than carbides","Cannot grind enamel efficiently","Are used only at low speed"], correct:1, explain:"Diamond grinding is coarser; carbides leave smoother surfaces." },
-  { q: "The three parts of a dental bur are:", opts:["Head, blade, bevel","Handle, shank, tip","Shank, neck, head","Neck, head, shoulder"], correct:2, explain:"Bur parts: shank, neck, head." },
-  { q: "Which bur head shape is spherical and used for initial entry and caries removal?", opts:["Round","Inverted cone","Pear","Tapered fissure"], correct:0, explain:"Round bur uses: initial entry, extension, retention features/soft caries removal." },
-  { q: "Common numbering for ROUND burs is:", opts:["168–172","555–560","33¼–39","¼, ½, 1–10"], correct:3, explain:"Round: 1/4, 1/2, 1–10." },
-  { q: "INVERTED CONE burs are primarily used to:", opts:["Create occlusal convergence/undercuts","Finish margins","Crown preparation","Section roots"], correct:0, explain:"Inverted cone: undercuts and flatten/smooth pulpal floor." },
-  { q: "Number range typical for INVERTED CONE burs:", opts:["168–172","555–560","33¼–39","330–332"], correct:2, explain:"Inverted cone: 33¼, 33½, 34–39." },
-  { q: "PEAR burs: No. 330 is advocated for:", opts:["Amalgam prep","Gold foil in Class I","Onlays","Finishing cement"], correct:1, explain:"Normal-length pear 330 for Class I gold foil." },
-  { q: "PEAR long-length No. 245 is advocated for:", opts:["Gold foil","Amalgam tooth preparations","Porcelain inlays","Polishing"], correct:1, explain:"Long pear 245 for amalgam; length ~3 mm, width ~0.8 mm." },
-  { q: "Typical dimensions listed for No. 245 are:", opts:["Length 2 mm, width 1.2 mm","Length 3 mm, width 0.8 mm","Length 4 mm, width 0.6 mm","Length 3.5 mm, width 0.9 mm"], correct:1, explain:"Length 3 mm; width 0.8 mm." },
-  { q: "STRAIGHT FISSURE burs are numbered:", opts:["555–560","330–332","1–10","168–172"], correct:0, explain:"Straight fissure: 555–560; used for most cavity preparation." },
-  { q: "TAPERED FISSURE burs are commonly numbered:", opts:["168–172","555–560","33¼–39","¼–10"], correct:0, explain:"Tapered fissure: 168–172; for indirect restorations." },
-  { q: "For which procedure are TAPERED FISSURE burs especially indicated?", opts:["Direct composite finishing","Indirect restorations (cast inlays/onlays)","Enameloplasty only","Rubber dam placement"], correct:1, explain:"Used for tooth preparations for indirect restorations." },
-  { q: "Number of blades on burs is usually:", opts:["Odd; 5–9 for cutting","Even; 6–10 cutting, 12–40 finishing","Odd; 7–13 finishing","Even; 3–5 cutting"], correct:1, explain:"Even blade counts; cutting 6–10; finishing 12–40." },
-  { q: "Primary coolant recommended to prevent pulpal thermal trauma is:", opts:["Air only","Oil spray only","Air-water spray","Saline immersion"], correct:2, explain:"Air-water spray is common coolant." },
-  { q: "Which soft-tissue precaution is emphasized?", opts:["Avoid rubber dam","Use rubber dam to isolate","Do not inform patient after injury","Ignore minor hemorrhage"], correct:1, explain:"Rubber dam helps isolate and protect soft tissues; manage injuries appropriately." },
-  { q: "Eye protection recommendation:", opts:["Operator only wears glasses","Patient only wears glasses","All (operator, assistant, patient) wear side-shield glasses","No eyewear needed at high speed"], correct:2, explain:"All should wear protective eyewear with side shields." },
-  { q: "Sterilization note for handpieces:", opts:["Sterilization not recommended","Never oil after sterilization","Run briefly after sterilization to clear excess oil","Oil spray improves adhesion—apply on tooth"], correct:2, explain:"Most handpieces need re-oiling; run for a few seconds before adhesive procedures to avoid oil contamination." },
+  { q:"According to Sturdevant, which rpm range defines high/ultrahigh speeds?", opts:["≥120,000 rpm","≥200,000 rpm","≥300,000 rpm","≥500,000 rpm"], correct:1, explain:"High/ultrahigh speeds are above 200,000 rpm." },
+  { q:"Which statement best describes a dental handpiece?", opts:["A bur that cuts hard tissue","A device that holds rotating instruments, transmits power, and positions them intraorally","A coolant delivery unit","A sterilization chamber"], correct:1, explain:"Definition includes holding the bur, transmitting power, and positioning intraorally." },
+  { q:"Match the year with its typical speed: the foot engine introduced in 1871 ran at approximately…", opts:["300 rpm","700 rpm","1,000 rpm","5,000 rpm"], correct:1, explain:"Foot engine ≈700 rpm." },
+  { q:"A key advantage unique to low-speed operation in deep caries management is:", opts:["Less vibration","Lower noise","Better tactile sensation","Faster cutting"], correct:2, explain:"Low speed affords superior tactile sensation." },
+  { q:"At high speed, tooth preparation benefits include all EXCEPT:", opts:["Faster removal","Less heat production","More vibration","Time saving"], correct:2, explain:"High speed is associated with less vibration, not more." },
+  { q:"Which is NOT a part of a bur?", opts:["Shank","Neck","Head","Collet"], correct:3, explain:"Classic bur parts: shank, neck, head. The collet is in the handpiece chuck, not a bur part." },
+  { q:"Latch-type shank burs are primarily used with:", opts:["High-speed handpieces","Low-speed handpieces","Both high and low","Air abrasion units"], correct:1, explain:"Latch-type = low speed; friction-grip = high speed." },
+  { q:"Which material maintains cutting efficiency best at high speeds?", opts:["Carbon steel","Stainless steel","Tungsten carbide","Acrylic"], correct:2, explain:"Carbide outperforms steel at all speeds, especially high speeds." },
+  { q:"Relative surface left by diamond vs carbide burs:", opts:["Diamond leaves smoother than carbide","Carbide leaves rougher than diamond","Both leave identical surfaces","Diamond leaves rougher; carbide smoother"], correct:3, explain:"Diamond produces a rougher grind; carbide yields smoother surfaces." },
+  { q:"Which is NOT a standard shank length category?", opts:["Long","Regular","Short","Mini"], correct:3, explain:"Lengths listed: long, regular, short." },
+  { q:"Finishing & polishing burs are primarily used for:", opts:["Initial cavity outline","Undercut formation","Finishing restorations","Access through enamel"], correct:2, explain:"Finishing burs refine/finish and polish restorations." },
+  { q:"Number range typically associated with ROUND burs is:", opts:["1/4 to 10","33 1/4 to 39","168 to 172","555 to 560"], correct:0, explain:"Round burs are numbered 1/4, 1/2, 1… up to 10." },
+  { q:"Inverted cone burs are mainly indicated for:", opts:["Initial entry into enamel","Obtaining occlusal convergence/undercuts and flattening pulpal floor","Finishing margins","Removing old amalgam"], correct:1, explain:"They provide undercuts and help flatten pulpal floor." },
+  { q:"A normal-length pear bur advocated for Class I tooth preparations for gold foil is:", opts:["No. 245","No. 330","No. 169","No. 37"], correct:1, explain:"No. 330 is the normal-length pear bur for gold foil class I." },
+  { q:"The long pear bur (length ≈ three times width) commonly used for amalgam preparations is:", opts:["No. 245 (≈3 mm × 0.8 mm)","No. 330","No. 557","No. 170"], correct:0, explain:"No.245 length ≈3 mm; width ≈0.8 mm; used for amalgam preps." },
+  { q:"Straight fissure burs are usually numbered:", opts:["555–560","168–172","33 1/4–39","1/4–10"], correct:0, explain:"Straight fissure series 555–560." },
+  { q:"Tapered fissure burs are often selected for preparations for:", opts:["Direct composite only","Indirect restorations like cast gold inlays/onlays","Silver diamine fluoride application","Finishing composite polish"], correct:1, explain:"Tapered fissure for indirect restorations (cast gold inlays/onlays)." },
+  { q:"Typical number range for tapered fissure burs is:", opts:["555–560","1/4–10","168–172","33 1/4–39"], correct:2, explain:"Tapered fissure numbers commonly 168–172." },
+  { q:"Regarding blade count, choose the best statement:", opts:["Cutting burs often have 12–40 blades","Finishing burs often have 6–10 blades","Blade counts are usually odd numbers","Cutting burs ~6–10; finishing burs ~12–40; total blades are usually even"], correct:3, explain:"Cutting 6–10; finishing 12–40; blade counts usually even." },
+  { q:"Which coolant strategy best minimizes pulpal thermal trauma during cutting?", opts:["Air only","Dry cutting with intermittent rests","Air–water spray","Topical fluoride"], correct:2, explain:"Air–water spray is the routine coolant to reduce heat." },
+  { q:"As remaining dentin thickness decreases during cutting:", opts:["Pulp becomes less sensitive to heat","Risk of pulpal injury from heat increases","No change in pulpal risk","Only vibration matters"], correct:1, explain:"Thinner remaining dentin → greater thermal risk." },
+  { q:"A rubber dam chiefly helps prevent which accident related to rotary instruments?", opts:["Noise-induced hearing loss","Nasal inhalation of vapor","Soft-tissue entanglement and oral inhalation/ingestion of debris","Electrical shock"], correct:2, explain:"Rubber dam isolates and reduces soft-tissue injury and oral inhalation; nasal inhalation may still occur." },
+  { q:"Eye protection recommended for operator/assistant/patient is:", opts:["Standard spectacles","Glasses with side shields","Face only shield for patient","No need if using high-volume suction"], correct:1, explain:"Side-shielded eyewear protects from airborne particles." },
+  { q:"Which statement on noise is TRUE for some air-turbine handpieces?", opts:["Low-pitched sound with no risk","High-pitched noise may contribute to hearing loss depending on exposure time","Noise has no relation to maintenance","Damaged handpieces tend to be quieter"], correct:1, explain:"High-pitched noise can be harmful; limit exposure; avoid damaged handpieces." },
+  { q:"Inhalational precaution that remains a limitation of rubber dam use:", opts:["Oral inhalation of debris","Nasal inhalation of vapor/fine aerosol","Eye splash","Skin absorption"], correct:1, explain:"Rubber dam protects oral route; nasal inhalation may still occur." },
+  { q:"Post-sterilization handling of handpieces typically requires:", opts:["No lubrication ever","Re-oiling; excess oil may spray at start-up—briefly run before operative procedures affecting adhesion","Immediate dry storage only","Soaking in water before use"], correct:1, explain:"Re-oil after sterilization; run a few seconds to expel oil before adhesive steps." },
+  { q:"Which feature is listed among latest handpiece improvements?", opts:["Larger head size","Higher noise","Fiberoptic illumination","Elimination of coolant"], correct:2, explain:"Improvements include smaller heads, lower noise, and fiberoptic." },
+  { q:"Historically, diamond cutting instruments (circa 1942) operated near:", opts:["300 rpm","700 rpm","1,000 rpm","5,000 rpm"], correct:3, explain:"Diamond cutting instruments around 5,000 rpm in 1942 listings." },
+  { q:"Which historical progression of maximum speeds is chronologically correct?", opts:["1914 dental unit 5,000 rpm → 1874 electric engine 1,000 rpm → 1994 high-speed 300,000 rpm","1728 hand-rotated 300 rpm → 1871 foot engine 700 rpm → 1874 electric 1,000 rpm → 1914 dental unit 5,000 rpm","1955 belt-driven 150,000 rpm preceded 1942 diamond 5,000 rpm","1994 high-speed 300,000 rpm preceded 1955 belt-driven"], correct:1, explain:"This sequence mirrors the listed chronology of speeds." },
+  { q:"Which combination is correctly matched?", opts:["Friction-grip — low speed","Latch-type — high speed","Friction-grip — high speed","Latch-type — air turbine only"], correct:2, explain:"Friction-grip is used in high-speed handpieces." }
 ];
 
 const tfs = [
-  { q:"Hand-rotated instruments (c. 1728) had about 300 rpm.", answer:true, explain:"Early hand-rotated ~300 rpm." },
-  { q:"The foot engine (1871) achieved ~7,000 rpm.", answer:false, explain:"Listed ~700 rpm (not 7,000)." },
-  { q:"Electric engine (1874) reached ~1,000 rpm.", answer:true, explain:"Yes, ~1,000 rpm." },
-  { q:"By 1914, dental units ran near 5,000 rpm.", answer:true, explain:"Yes, ~5,000 rpm." },
-  { q:"High-speed air turbines by 1994 reached around 300,000 rpm.", answer:true, explain:"High speed handpiece ~300,000 rpm." },
-  { q:"Low-speed operation inherently produces less heat so coolant isn’t needed.", answer:false, explain:"Slide notes more heat at low speed—use coolant (water)." },
-  { q:"High speed generally causes less vibration and is time-saving.", answer:true, explain:"Advantages include less vibration and time saving." },
-  { q:"Steel burs outperform carbide at high speeds.", answer:false, explain:"Carbide burs outperform steel, especially at high speed." },
-  { q:"Diamond burs usually leave a rougher surface than carbide burs.", answer:true, explain:"Diamond grinding is coarser; carbides smoother." },
-  { q:"The three bur parts are head, neck, and shank.", answer:true, explain:"Correct: shank, neck, head." },
-  { q:"Cutting burs typically have 12–40 blades.", answer:false, explain:"Cutting: 6–10; finishing: 12–40." },
-  { q:"Hearing loss risk from turbine noise depends in part on exposure time.", answer:true, explain:"Ear precautions mention exposure time dependence and reducing continuous exposure." },
+  { q:"Low-speed operation produces less heat than high-speed cutting.", answer:false, explain:"Low speed can generate more heat due to longer contact—coolant is essential." },
+  { q:"High-speed preparation often results in less vibration than low-speed cutting.", answer:true, explain:"One advantage of high speed is reduced vibration." },
+  { q:"Bur blade counts are typically odd numbers.", answer:false, explain:"They are usually even." },
+  { q:"Round burs are numbered from about 1/4 up to 10.", answer:true, explain:"Classic round bur series." },
+  { q:"Inverted cone burs are preferred to create occlusal convergence/undercuts.", answer:true, explain:"Key indication of inverted cone burs." },
+  { q:"No eye protection is required if a rubber dam is used.", answer:false, explain:"Side-shielded eyewear is still required for all parties." },
+  { q:"Exposure time influences potential hearing loss from handpiece noise.", answer:true, explain:"Risk relates to level and duration of exposure." },
+  { q:"A rubber dam completely prevents nasal inhalation of vapors and fine aerosol.", answer:false, explain:"It protects oral route; nasal inhalation may still occur." },
+  { q:"Carbide burs generally maintain cutting efficiency better than steel at high speeds.", answer:true, explain:"Carbide outperforms steel, especially at high speed." },
+  { q:"Tapered fissure burs (168–172) are commonly used for cast-gold inlay/onlay preparations.", answer:true, explain:"Yes, for indirect restorations." },
+  { q:"After sterilization, handpieces should be briefly run to expel excess oil before adhesive procedures.", answer:true, explain:"Prevents oil contamination of bonding surfaces." },
+  { q:"Latch-type shank is standard for high-speed handpieces.", answer:false, explain:"Latch-type is for low speed; friction-grip is for high speed." }
 ];
 
 const saqs = [
-  { q: "List the three parts of a dental bur and briefly define the function of each.", a: "Shank (fits into handpiece), Neck (connects shank and head), Head (working end that performs cutting/grinding)." },
-  { q: "Compare steel vs. tungsten carbide burs in terms of performance and typical use.", a: "Steel cuts dentin at low speeds but dulls rapidly at higher speeds or in enamel. Carbide performs better at all speeds—especially high speed—and is generally superior for cutting enamel; many burs have carbide heads welded/brazed to steel shanks." },
-  { q: "Outline key pulpal and soft-tissue precautions when using rotary instruments.", a: "Use air–water spray to limit heat; minimize cutting time to reduce thermal trauma; remember thinner remaining dentin increases risk. Protect soft tissues with rubber dam; manage accidents by controlling bleeding with pressure pack, inform the patient, file an incident report, and obtain medical assistance if needed." },
+  // Direct Answer
+  { q: "Define a dental handpiece.", a: "Device that holds burs, transmits power, and positions them intraorally." },
+  // List / Enumeration (numbered in answer text)
+  { q: "List key recent improvements in handpieces.", a: "1) Smaller head sizes. 2) Lower noise levels. 3) Fiberoptic illumination." },
+  // Comparison (table + numbered)
+  { q: "Compare diamond vs carbide burs in terms of surface finish and efficiency.", a: `<table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">#</th><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">Aspect</th><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">Diamond bur</th><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">Carbide bur</th></tr></thead><tbody><tr><td>1</td><td>Cutting nature</td><td>Grinding (abrasive grit)</td><td>Blade cutting</td></tr><tr><td>2</td><td>Surface left</td><td>Rougher</td><td>Smoother</td></tr><tr><td>3</td><td>High-speed efficiency</td><td>Very effective on enamel/dentin</td><td>Performs better than steel; excellent finish</td></tr></tbody></table>` }
 ];
 
 // ----------- State -----------
 const state = {
-  mcq: Array(mcqs.length).fill(null),
-  tf: Array(tfs.length).fill(null),
-  saq: Array(saqs.length).fill(false)
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
 };
 
 function shuffleIndices(n){
@@ -276,16 +281,19 @@ mcqs.forEach((item, idx)=>{
 
   buttons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      if(card.dataset.locked === 'true') return;
+      if(card.dataset.locked === 'true') return; // one attempt
       const v = Number(btn.dataset.v);
       state.mcq[idx] = v;
 
+      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
+      // Always mark the correct option (green)
       const correctBtn = buttons[correctVisualIndex];
       correctBtn.classList.add('correct');
 
       if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
@@ -333,17 +341,20 @@ tfs.forEach((item, idx)=>{
 
   buttons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      if(card.dataset.locked === 'true') return;
+      if(card.dataset.locked === 'true') return; // one attempt
       const val = btn.dataset.v === "true";
       state.tf[idx] = val;
 
+      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
+      // Always mark the correct button (green)
       const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
       correctBtn.classList.add('correct');
 
       const isCorrect = (val === item.answer);
       if(!isCorrect){
+        // mark chosen wrong (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;

@@ -23,8 +23,8 @@
     --radius:16px;
     --gap:1.25rem;
     --pad:1.5rem;
-    --ok:#22c55e;
-    --bad:#ef4444;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
   }
 
   *{box-sizing:border-box}
@@ -67,6 +67,7 @@
     .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
   }
 
+  /* Cards (no accent on the card itself) */
   .card{
     background:var(--card);
     border:1px solid var(--card-border);
@@ -91,14 +92,17 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
 
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
     border-left:6px solid var(--ok);
+    outline:none;
     background:rgba(255,255,255,0.03);
   }
   .opt-btn.wrong{
     border-left:6px solid var(--bad);
+    outline:none;
     background:rgba(255,255,255,0.03);
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
@@ -165,66 +169,66 @@
   </main>
 
 <script>
-// ----------- Data (filled from the lecture) -----------
+// ----------- Data (filled from lecture: Histology & Embryology of Salivary Glands) -----------
 const mcqs = [
-  { q:"A gland is best defined as:", opts:["A connective tissue organ that stores hormones","An organ of secretion made of specialized epithelial cells","A muscle-derived organ that contracts to release enzymes","A neural structure that modulates endocrine output"], correct:1, explain:"Glands are organs of secretion made up of specialized secretory cells derived from surface epithelium. (Slides: What is a gland?)" },
-  { q:"Salivary glands are ______ in origin.", opts:["Mesenchymal","Ectomesenchymal","Epithelial","Neural crest"], correct:2, explain:"They are epithelial in origin. (General Features)" },
-  { q:"The functional secretory unit that is flask-shaped is called:", opts:["Tubule","Acinus","Lobule","Sinus"], correct:1, explain:"Secretory end pieces may be flask (acinus) or cylindrical (tubular). (General Features)" },
-  { q:"Which of the following is NOT a typical salivary gland secretion?", opts:["Enzymes","Hormones","Mucus","Osteoid"], correct:3, explain:"Fluid secreted may be enzymes, hormones, or mucus—not osteoid. (General Features)" },
-  { q:"Secretion of salivary glands is primarily modulated by:", opts:["Only hormonal input","Only local stretch reflexes","Nervous and hormonal influences","Passive diffusion"], correct:2, explain:"Both nervous and hormonal influences modulate secretion. (General Features)" },
-  { q:"Myoepithelial cells are located between:", opts:["Acinar lumen and saliva","Secretory cells and basement membrane","Duct lumen and connective tissue capsule","Endothelium and acinar lumen"], correct:1, explain:"They lie between secretory cells and basement membrane. (General Features)" },
-  { q:"The main function of myoepithelial cells is to:", opts:["Produce hormones","Store zymogen","Contract to expel secretions","Phagocytose debris"], correct:2, explain:"They are contractile and help expel secretory products. (General Features)" },
-  { q:"During development, salivary glands arise as:", opts:["Mesenchymal condensations","Invaginations of epithelium into connective tissue","Evaginations of blood vessels","Neural crest migrations"], correct:1, explain:"They develop as epithelial invaginations into vascular connective tissue. (Development)" },
-  { q:"In salivary gland development, the distal part of the epithelial bud forms the:", opts:["Excretory duct","Intercalated duct only","Secretory end piece (acini)","Capsule"], correct:2, explain:"Distal part forms the glandular secretory end piece. (Development)" },
-  { q:"In salivary gland development, the proximal part of the epithelial bud becomes the:", opts:["Striated duct exclusively","Excretory duct opening on the surface","Trabeculae","Nerve plexus"], correct:1, explain:"Proximal part forms the excretory duct that opens on the surface. (Development)" },
-  { q:"Which acinar type has a round, centrally placed nucleus and small lumen?", opts:["Mucous acinus","Serous acinus","Mixed acinus","Oncocytic acinus"], correct:1, explain:"Serous acini: round central nuclei, small lumen. (Differences table)" },
-  { q:"Which acinar secretion is thin and watery?", opts:["Mucous","Serous","Mixed","Sebaceous"], correct:1, explain:"Serous secretion is thin/watery; mucous is thick/viscous. (Differences table)" },
-  { q:"Which acinar type typically shows flat, peripheral nuclei and a large lumen?", opts:["Serous","Mucous","Mixed","Oncocytic"], correct:1, explain:"Mucous acini have flat peripheral nuclei with larger lumina. (Differences table)" },
-  { q:"With H&E staining, serous acini usually appear:", opts:["Lightly stained","Deeply stained","Unstained","Basophilic only at the lumen"], correct:1, explain:"Serous acini stain more deeply with H&E. (Differences table)" },
-  { q:"An example of a predominantly serous salivary gland is the:", opts:["Sublingual gland","Minor labial gland","Parotid gland","Von Ebner’s glands are not serous"], correct:2, explain:"Parotid gland is serous. (Examples/Differences; Parotid slide)" },
-  { q:"An example of a predominantly mucous major gland is the:", opts:["Parotid","Submandibular","Sublingual","None"], correct:2, explain:"Sublingual is mainly mucous. (Examples/Differences; Sublingual slide)" },
-  { q:"A mixed major salivary gland is the:", opts:["Parotid","Submandibular","Sublingual","Parathyroid"], correct:1, explain:"Submandibular is a mixed gland (many serous, few mucous). (Submandibular slide)" },
-  { q:"Serous demilunes are most commonly noted in:", opts:["Parotid","Submandibular","Thyroid","Parathyroid"], correct:1, explain:"Submandibular shows serous demilunes. (Submandibular slide)" },
-  { q:"Which gland often shows adipocyte infiltration in histologic sections?", opts:["Parotid","Submandibular","Sublingual","Minor palatal"], correct:0, explain:"Parotid commonly exhibits adipocytes. (Parotid slide)" },
-  { q:"Which major gland typically has many striated ducts?", opts:["Parotid only","Submandibular predominantly","Sublingual predominantly","None of the major glands"], correct:1, explain:"Submandibular: many striated ducts. (Submandibular slide)" },
-  { q:"Which major gland typically has few striated ducts?", opts:["Parotid","Submandibular","Sublingual","All have many"], correct:2, explain:"Sublingual: few striated ducts. (Sublingual slide)" },
-  { q:"Myoepithelial cells are characteristically:", opts:["Columnar secretory cells","Star-shaped contractile cells","Flat endothelial cells","Skeletal muscle fibers"], correct:1, explain:"They are star-shaped and contractile. (General Features/Myoepithelial cells)" },
-  { q:"The basement membrane in acini lies:", opts:["External to myoepithelial cells","Between lumen and secretory cells","Inside the nucleus","Only around ducts"], correct:0, explain:"Myoepithelial cells lie between secretory cells and basement membrane, so BM is external to them. (General Features)" },
-  { q:"Which pairing is CORRECT?", opts:["Serous—large lumen","Mucous—deep H&E staining","Serous—thin watery secretion","Mucous—central round nuclei"], correct:2, explain:"Serous have thin watery secretion. (Differences table)" },
-  { q:"During early development, salivary epithelial buds appear approximately around:", opts:["4–8 weeks of development","10–12 weeks","Birth","Postnatal month 6"], correct:0, explain:"Slide timeline shows early weeks (4, 6, 8). (Development images/timeline)" },
-  { q:"The basic tissue arrangement of salivary glands includes:", opts:["Only acini without ducts","Acini and a duct system with myoepithelial cells and a basement membrane","Only ducts without acini","Cartilaginous septa"], correct:1, explain:"Histology includes acini, ducts, BM, and myoepithelial cells. (Histology slide)" },
-  { q:"Parotid gland parenchyma is composed predominantly of:", opts:["Mucous acini","Serous acini","Seromucous glands evenly mixed","Endocrine follicles"], correct:1, explain:"Parotid: serous acini predominance. (Parotid slide)" },
-  { q:"Sublingual gland parenchyma is composed predominantly of:", opts:["Mucous acini","Serous acini","Only ducts","Oncocytes"], correct:0, explain:"Sublingual: many mucous acini. (Sublingual slide)" },
-  { q:"Submandibular gland is characterized histologically by:", opts:["Only mucous acini and no striated ducts","Many serous, few mucous acini with serous demilunes","Only serous acini and adipocytes","No intercalated ducts"], correct:1, explain:"Submandibular: mixed with many serous, few mucous; demilunes; many striated ducts. (Submandibular slide)" },
-  { q:"Zymogen granules are most associated with:", opts:["Mucous acini","Serous acini","Duct cells","Fibroblasts"], correct:1, explain:"Serous acini contain zymogen granules. (Differences figure/labels)" },
+  { q: "A gland is best defined as:", opts:["An organ that stores hormones only","An organ of secretion made of specialized epithelial cells that opens onto a surface","A connective tissue mass forming exocrine ducts","Any organ with a lumen"], correct:1, explain:"Glands are epithelial in origin and secrete onto a surface or into blood." },
+  { q: "Secretory end pieces are functionally active portions of glands and are typically shaped:", opts:["Cubic or stellate","Flask (acinus) or cylindrical (tubular)","Polygonal only","Squamous sacs"], correct:1, explain:"Secretory units form acini (flask-shaped) or tubules (cylindrical)." },
+  { q: "Which statement about myoepithelial cells is TRUE?", opts:["They are neurons that modulate secretion","They are star-shaped contractile cells between secretory cells and basement membrane","They are macrophages within the lumen","They are endocrine chromaffin cells"], correct:1, explain:"Myoepithelial cells contract to expel secretions and lie between epithelium and basal lamina." },
+  { q: "Salivary glands primarily derive from:", opts:["Mesenchyme","Surface epithelium via epithelial invagination","Neural crest exclusively","Endothelium"], correct:1, explain:"They develop by epithelial downgrowth into underlying vascular connective tissue." },
+  { q: "During development, the distal part of the epithelial bud forms the:", opts:["Excretory duct","Secretory end piece (acini/tubules)","Intercalated duct only","Capsule"], correct:1, explain:"Distal = secretory portion; proximal = excretory duct opening to surface." },
+  { q: "Which pairing of week and event is MOST appropriate in salivary gland development?", opts:["Week 4: canalization of all ducts completes","Week 6: initial epithelial invagination begins","Week 8: advanced branching of end buds","Week 10: appearance of enamel organ"], correct:2, explain:"Slides indicate branching morphogenesis around 8 weeks; early events begin in weeks 4–6." },
+  { q: "Which component is shared by serous and mucous acini?", opts:["Presence of zymogen granules in both","Presence of a basal lamina and myoepithelial cells","Central round nuclei in both","Identical lumen size"], correct:1, explain:"Both have a basal lamina and myoepithelial cells; other features differ." },
+  { q: "Serous acinar secretion is characteristically:", opts:["Thick and viscous","Thin and watery","Oily","Keratinized"], correct:1, explain:"Serous is thin, enzyme-rich; mucous is thick/viscous." },
+  { q: "Mucous acini typically exhibit nuclei that are:", opts:["Round and central","Flat and peripheral","Binucleate centrally placed","Fragmented and apical"], correct:1, explain:"Mucous acinar nuclei are flattened and displaced basally/peripherally by mucigen." },
+  { q: "Compared with mucous acini, serous acini generally have:", opts:["Larger lumina and paler cytoplasm","Smaller lumina and darker H&E staining","No myoepithelial cells","No basal lamina"], correct:1, explain:"Serous: small lumen, deeply eosinophilic; mucous: large lumen, pale." },
+  { q: "Which salivary gland is almost purely serous and shows adipocyte infiltration histologically?", opts:["Parotid","Submandibular","Sublingual","Minor labial gland"], correct:0, explain:"Parotid shows serous acini, many ducts, and adipocytes." },
+  { q: "Serous demilunes are classically described in:", opts:["Parotid gland","Submandibular gland","Sublingual gland exclusively","Von Ebner’s glands only"], correct:1, explain:"Submandibular is mixed with many serous acini and serous demilunes capping mucous tubules." },
+  { q: "Which gland has many mucous acini and few striated ducts?", opts:["Parotid","Submandibular","Sublingual","Palatine minor gland only"], correct:2, explain:"Sublingual predominates mucous; striated ducts are fewer." },
+  { q: "Zymogen granules are most abundant in:", opts:["Mucous cells of sublingual","Serous cells of parotid","Intercalated duct cells","Striated duct cells"], correct:1, explain:"Serous acini store enzyme precursors (zymogen)." },
+  { q: "Which duct segment is primarily involved in ion exchange (Na+ reabsorption, K+/HCO3− secretion)?", opts:["Intercalated duct","Striated (intralobular) duct","Interlobular excretory duct","Main duct only"], correct:1, explain:"Striated ducts modify saliva via mitochondria-rich basal infoldings." },
+  { q: "Myoepithelial cells MOST directly assist which process?", opts:["Protein synthesis","Expulsion of secretory product from acini","Formation of enamel","Stem cell renewal in ducts"], correct:1, explain:"Their contraction helps squeeze saliva into ducts." },
+  { q: "Which feature best distinguishes mucous from serous acini on H&E?", opts:["Mucous acini stain more deeply","Mucous acini have larger lumina and pale cytoplasm","Serous acini lack nuclei","Serous acini have peripheral flattened nuclei"], correct:1, explain:"Mucous are pale with large lumina; serous are darker with central round nuclei." },
+  { q: "The proximal part of the epithelial invagination becomes:", opts:["Secretory end piece","Intercalated duct only","Excretory duct opening to the surface","Capsular connective tissue"], correct:2, explain:"Proximal forms the ductal pathway to the surface." },
+  { q: "Which pair is CORRECT?", opts:["Parotid—few ducts","Submandibular—predominantly mucous","Sublingual—few striated ducts","Parotid—serous demilunes common"], correct:2, explain:"Sublingual has many mucous acini and fewer striated ducts." },
+  { q: "Basement membrane in acini serves to:", opts:["Store secretory granules","Provide a scaffold separating epithelium from connective tissue and anchoring myoepithelial cells","Generate action potentials","Convert mucous to serous secretion"], correct:1, explain:"Basal lamina supports epithelium and myoepithelial cells." },
+  { q: "Which structure first receives saliva from acini?", opts:["Main excretory duct","Intercalated duct","Striated duct","Interlobular duct"], correct:1, explain:"Intercalated ducts connect acini to striated ducts." },
+  { q: "In routine sections of parotid, abundant adipocytes are interpreted as:", opts:["Artifact only","A normal histological feature increasing with age","Pathognomonic for neoplasia","Evidence of necrosis"], correct:1, explain:"Parotid commonly shows adipose infiltration physiologically." },
+  { q: "Which cell type predominates in von Ebner’s glands of the tongue?", opts:["Mucous","Serous","Oncocytes","Goblet"], correct:1, explain:"Von Ebner’s are serous glands (hard distractor beyond slide core)." },
+  { q: "A mucous acinus contains abundant:", opts:["Mucigen droplets","Zymogen granules only","Melanin granules","Glycogen in striated ducts"], correct:0, explain:"Mucigen gives pale, foamy cytoplasm and peripheral nuclei." },
+  { q: "Which combination best matches serous acinus ultrastructure?", opts:["Sparse RER, few granules","Abundant RER, apical zymogen granules","Tight junction absence","No mitochondria"], correct:1, explain:"Protein-secreting cells: abundant RER and apical enzyme granules." },
+  { q: "Which is MOST likely reduced in sublingual gland compared with parotid?", opts:["Number of striated ducts","Number of mucous acini","Presence of myoepithelial cells","Presence of basal lamina"], correct:0, explain:"Sublingual has fewer striated ducts." },
+  { q: "In H&E, serous acinar cells appear more basophilic basally due to:", opts:["Mitochondria clusters","Rough ER for protein synthesis","Lipid droplets","Glycogen stores"], correct:1, explain:"RER contributes to basophilia at the base of serous cells." },
+  { q: "Which feature is MOST consistent with a mixed gland?", opts:["Only serous units","Only mucous units","Mucous tubules capped by serous demilunes","Absence of ducts"], correct:2, explain:"Mixed glands show demilunes where serous cells cap mucous tubules (classic description)." },
+  { q: "The lumen size comparison between serous and mucous acini is BEST stated as:", opts:["Serous larger than mucous","Equal in most fields","Mucous larger than serous","Both have no visible lumen"], correct:2, explain:"Mucous acini usually show larger lumina." },
+  { q: "Primary modulation of salivary secretion is via:", opts:["Nervous and hormonal influences","Only endocrine hormones","Only local paracrine factors","Passive diffusion alone"], correct:0, explain:"Secretion is modulated by autonomic input and hormones." }
 ];
 
 const tfs = [
-  { q:"Salivary glands are epithelial in origin.", answer:true, explain:"Stated under General Features." },
-  { q:"Myoepithelial cells lie on the luminal surface of acinar cells.", answer:false, explain:"They lie between secretory cells and basement membrane." },
-  { q:"Serous acini usually have a small lumen and central nuclei.", answer:true, explain:"Features of serous acini." },
-  { q:"Mucous acini typically stain more deeply with H&E than serous acini.", answer:false, explain:"Mucous are lightly stained; serous are deeply stained." },
-  { q:"Sublingual gland is predominantly mucous in composition.", answer:true, explain:"Sublingual: many mucous acini, few striated ducts." },
-  { q:"Parotid gland commonly shows adipocyte infiltration.", answer:true, explain:"Noted in parotid sections." },
-  { q:"Submandibular gland lacks striated ducts.", answer:false, explain:"It has many striated ducts." },
-  { q:"Serous demilunes are characteristic of submandibular glands.", answer:true, explain:"Specifically highlighted on the slide." },
-  { q:"Salivary glands develop by epithelial invagination into connective tissue.", answer:true, explain:"Development slide." },
-  { q:"The proximal part of the developing gland becomes the secretory end piece.", answer:false, explain:"Proximal forms excretory duct; distal forms secretory end piece." },
-  { q:"Myoepithelial cells are contractile and help expel secretions.", answer:true, explain:"General Features." },
-  { q:"Serous secretion is thick and viscous.", answer:false, explain:"Serous is thin/watery; mucous is thick/viscous." },
+  { q:"Myoepithelial cells lie between secretory cells and the basement membrane.", answer:true, explain:"They form a contractile basket around acini and ducts." },
+  { q:"Serous acini have flat peripheral nuclei.", answer:false, explain:"Serous nuclei are typically round and central." },
+  { q:"Mucous acini generally stain lightly with H&E.", answer:true, explain:"Mucigen causes pale, foamy cytoplasm." },
+  { q:"The proximal portion of the epithelial bud forms the secretory end piece.", answer:false, explain:"Proximal → excretory duct; distal → secretory portion." },
+  { q:"Parotid gland commonly shows infiltration by adipocytes on histology.", answer:true, explain:"Physiologic adipose is a known feature of parotid sections." },
+  { q:"Sublingual gland contains many striated ducts.", answer:false, explain:"Sublingual has few striated ducts and many mucous acini." },
+  { q:"Submandibular gland is a mixed gland with serous demilunes.", answer:true, explain:"It has many serous and fewer mucous units with demilunes." },
+  { q:"Both serous and mucous acini rest on a basal lamina.", answer:true, explain:"Basal lamina is shared; other features differ." },
+  { q:"Intercalated ducts directly receive secretions from acini.", answer:true, explain:"They connect acini to striated ducts." },
+  { q:"Zymogen granules are characteristic of mucous cells.", answer:false, explain:"They are characteristic of serous cells; mucous cells contain mucigen droplets." },
+  { q:"Serous secretion is typically thick and viscous.", answer:false, explain:"Serous is thin and watery; mucous is thick/viscous." },
+  { q:"Nervous and hormonal influences modulate salivary secretion.", answer:true, explain:"Autonomic and hormonal inputs regulate flow/composition." }
 ];
 
 const saqs = [
-  { q:"Define a salivary gland and mention its embryologic origin.", a:"A gland is an organ of secretion made of specialized secretory cells; salivary glands are epithelial in origin and develop from epithelial invaginations into vascular connective tissue (distal part → secretory end pieces; proximal part → excretory duct)." },
-  { q:"Compare serous and mucous acini under H&E (nucleus, lumen, secretion, staining) with an example for each.", a:"Serous: round central nuclei, small lumen, thin watery secretion, deeply stained; example: parotid. Mucous: flat peripheral nuclei, large lumen, thick viscous secretion, lightly stained; example: sublingual." },
-  { q:"List two histologic features for each major gland (parotid, submandibular, sublingual).", a:"Parotid: serous acini predominance, many ducts, adipocytes. Submandibular: many serous & few mucous acini, many striated ducts, serous demilunes. Sublingual: many mucous acini, few striated ducts." },
+  { q: "Define a gland and state its embryologic origin.", a: "Organ of secretion composed of specialized epithelial cells; epithelial in origin (from surface epithelium)." },
+  { q: "List differences between serous and mucous acini (3 points).", a: "1) Consistency: serous thin/watery; mucous thick/viscous. 2) Nucleus: serous round central; mucous flat peripheral. 3) Lumen & H&E: serous small lumen, deep stain; mucous large lumen, pale. 4) Example: parotid vs sublingual." },
+  { q: "A 20‑year‑old’s submandibular gland biopsy shows mucous tubules capped by crescents of cells. What are these and what do they indicate?", a: "Serous demilunes; indicate a mixed gland with mucous tubules capped by serous cells (typical of submandibular)." }
 ];
 
 // ----------- State -----------
 const state = {
-  mcq: Array(mcqs.length).fill(null),
-  tf: Array(tfs.length).fill(null),
-  saq: Array(saqs.length).fill(false)
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
 };
 
 function shuffleIndices(n){
@@ -274,16 +278,19 @@ mcqs.forEach((item, idx)=>{
 
   buttons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      if(card.dataset.locked === 'true') return;
+      if(card.dataset.locked === 'true') return; // one attempt
       const v = Number(btn.dataset.v);
       state.mcq[idx] = v;
 
+      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
+      // Always mark the correct option (green)
       const correctBtn = buttons[correctVisualIndex];
       correctBtn.classList.add('correct');
 
       if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
@@ -301,7 +308,7 @@ mcqs.forEach((item, idx)=>{
 
 // ----------- Render True/False -----------
 const tfGrid = document.getElementById('tfGrid');
-tfs.forEach((item, idx)=>{
+ tfs.forEach((item, idx)=>{
   const card = document.createElement('article');
   card.className='card qcard';
   card.dataset.type='tf';
@@ -331,17 +338,20 @@ tfs.forEach((item, idx)=>{
 
   buttons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      if(card.dataset.locked === 'true') return;
+      if(card.dataset.locked === 'true') return; // one attempt
       const val = btn.dataset.v === "true";
       state.tf[idx] = val;
 
+      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
+      // Always mark the correct button (green)
       const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
       correctBtn.classList.add('correct');
 
       const isCorrect = (val === item.answer);
       if(!isCorrect){
+        // mark chosen wrong (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
