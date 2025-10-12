@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 19</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (based on OCIH-19: Dentin Part-3) -----------
+const mcqs = [
+  { q:"Which dentin forms during tooth development before root completion?",
+    opts:["Secondary dentin","Tertiary dentin","Primary dentin","Sclerotic dentin"],
+    correct:2,
+    explain:"Primary dentin forms first (mantle then circumpulpal) before root formation completes."},
+  { q:"Mantle dentin is a subtype of which broader category?",
+    opts:["Secondary dentin","Primary dentin","Tertiary dentin","Predentin"],
+    correct:1,
+    explain:"Mantle dentin is the outermost layer of primary dentin."},
+  { q:"Circumpulpal dentin refers to dentin that:",
+    opts:["Surrounds the DEJ","Lines the pulp chamber internal to mantle dentin","Forms only after trauma","Is atubular"],
+    correct:1,
+    explain:"Circumpulpal dentin forms the bulk of primary dentin around the pulp, internal to mantle dentin."},
+  { q:"Which statement about secondary dentin is TRUE?",
+    opts:["It forms rapidly and irregularly during crown formation","It forms physiologically after root completion","It results from odontoblast death","It increases pulp horn height"],
+    correct:1,
+    explain:"Secondary dentin forms slowly after root completion and is physiologic, reducing pulp cavity size."},
+  { q:"A localized dentin formed in response to mild stimulus with intact odontoblasts is:",
+    opts:["Reparative dentin","Reactionary dentin","Predentin","Circumpulpal dentin"],
+    correct:1,
+    explain:"Reactionary dentin is secreted by surviving, stimulated odontoblasts under mild stimulus."},
+  { q:"Reparative dentin is primarily produced by:",
+    opts:["Original odontoblasts","Ameloblasts","Undifferentiated mesenchymal cells (UMCs) differentiating into odontoblast-like cells","Cementoblasts"],
+    correct:2,
+    explain:"Aggressive stimuli can kill odontoblasts; UMCs then differentiate and lay reparative dentin."},
+  { q:"Which is NOT a possible structure of reparative dentin?",
+    opts:["Osteodentin","Vasodentin","Atubular dentin","Mantle dentin"],
+    correct:3,
+    explain:"Mantle dentin is primary; reparative may be atubular, osteodentin, or vasodentin."},
+  { q:"Predentin is best described as:",
+    opts:["A mineralized band at DEJ","An unmineralized matrix adjacent to pulp","Atubular tertiary dentin","Calcified dead tracts"],
+    correct:1,
+    explain:"Predentin is the unmineralized organic matrix deposited by odontoblasts before mineralization."},
+  { q:"Secondary dentin alters dentinal tubules by making them:",
+    opts:["Straighter and more numerous","Wavy and fewer in number","Branched extensively at DEJ","Atubular"],
+    correct:1,
+    explain:"Secondary dentin shows a more wavy course and fewer tubules."},
+  { q:"Clinically, increased secondary dentin tends to:",
+    opts:["Increase risk of pulp exposure during cavity prep","Decrease risk of pulp exposure during cavity prep","Increase pulp horn prominence","Accelerate caries progression to pulp"],
+    correct:1,
+    explain:"Secondary dentin reduces pulp chamber size and pulp horn height, lowering exposure risk."},
+  { q:"Transparent (sclerotic) dentin results primarily from:",
+    opts:["Deposition of osteodentin","Calcification/obliteration of dentinal tubules","Loss of intertubular dentin","Death of odontoblasts and empty tubules"],
+    correct:1,
+    explain:"Sclerotic dentin forms as peritubular dentin thickens and tubules become occluded, appearing translucent."},
+  { q:"Dead tracts are characterized by:",
+    opts:["Numerous narrow tubules with peritubular thickening","Empty, widened tubules due to destroyed odontoblast processes","Atubular structure with entrapped cells","Increased sensitivity at DEJ"],
+    correct:1,
+    explain:"Severe stimuli cause odontoblast/process loss, leaving empty, wide tubules that appear dark by transmitted light."},
+  { q:"Under dead tracts on the pulpal side, which dentin is typically formed?",
+    opts:["Mantle dentin","Secondary dentin","Reparative dentin","Predentin"],
+    correct:2,
+    explain:"Reparative dentin forms beneath the area to protect the pulp after severe injury."},
+  { q:"Which combination correctly matches stimulus and dentin response?",
+    opts:["Mild stimulus → reparative dentin","Aggressive stimulus → reactionary dentin","Mild stimulus → reactionary dentin","Physiologic aging → tertiary dentin"],
+    correct:2,
+    explain:"Mild: reactionary by original odontoblasts; Aggressive: reparative by newly differentiated cells."},
+  { q:"The most accepted theory for dentin sensitivity is:",
+    opts:["Direct neural stimulation","Odontoblastic transduction","Gate control theory","Fluid (hydrodynamic) theory"],
+    correct:3,
+    explain:"Hydrodynamic theory best explains dentinal pain via fluid movement stimulating pulpal nerves."},
+  { q:"Evidence AGAINST the direct neural stimulation theory includes:",
+    opts:["Gap junctions between odontoblasts","Lack of nerve fibers in outer dentin near DEJ","Profuse branching at DEJ","Presence of free nerve endings in pulp"],
+    correct:1,
+    explain:"Outer dentin (DEJ) is highly sensitive yet lacks direct nerve fibers; intratubular nerves loop back."},
+  { q:"Support FOR the odontoblastic transduction theory includes:",
+    opts:["Synaptic vesicles in odontoblasts","Close association of odontoblasts with nerve endings and gap junctions","Abundance of nerves at DEJ","Anesthetic easily blocks dentin sensitivity from surface"],
+    correct:1,
+    explain:"Observed proximity and gap junctions support coupling, though absence of neurotransmitter vesicles argues against."},
+  { q:"Where is dentin most sensitive?",
+    opts:["Near the pulp only","At the cemento-enamel junction","At the dentino-enamel junction (DEJ)","In root dentin uniformly"],
+    correct:2,
+    explain:"Sensitivity is high at DEJ due to profuse tubule branching and high near pulpal surface; less in root."},
+  { q:"The plexus of Raschkow is located primarily in the:",
+    opts:["Predentin","Subodontoblastic region of the pulp","DEJ","Cementum"],
+    correct:1,
+    explain:"A nerve plexus in the subodontoblastic layer of the pulp contributes to dentin sensitivity."},
+  { q:"Which best explains reduced pulp exposures in older patients during cavity prep?",
+    opts:["Wider apical foramina","Increased mantle dentin thickness","Pulp recession due to secondary dentin","Greater enamel thickness"],
+    correct:2,
+    explain:"Secondary dentin deposition reduces pulp chamber height and obliterates pulp horns (pulp recession)."},
+  { q:"Reactionary dentin typically shows tubules that are:",
+    opts:["Numerous and regular like primary dentin","Fewer and irregular","Completely absent (atubular)","Enlarged and empty"],
+    correct:1,
+    explain:"Tertiary dentin (including reactionary) generally has fewer, irregular tubules compared with primary."},
+  { q:"Which statement about vasodentin is CORRECT?",
+    opts:["It contains entrapped blood vessels","It lacks any cellular inclusions","It is typical of mantle dentin","It forms only at DEJ"],
+    correct:0,
+    explain:"Vasodentin is reparative dentin characterized by entrapped blood vessels."},
+  { q:"Osteodentin differs from other dentins because it:",
+    opts:["Has odontoblast processes in every tubule","Contains entrapped cells within the matrix","Is always translucent","Forms exclusively during development"],
+    correct:1,
+    explain:"Osteodentin includes osteocyte-like entrapped cells; a reparative pattern."},
+  { q:"Which change contributes to the translucent appearance of sclerotic dentin?",
+    opts:["Uniform refractive index due to tubule occlusion","Air in widened tubules","Increased organic content of intertubular dentin","External staining of dentin"],
+    correct:0,
+    explain:"Occluded tubules make refractive index more uniform, appearing translucent by transmitted light."},
+  { q:"Which is LEAST associated with dead tracts?",
+    opts:["Severe stimulation","Empty wide tubules","Reparative dentin beneath","Increased peritubular deposition occluding tubules"],
+    correct:3,
+    explain:"Peritubular thickening/occlusion describes sclerotic dentin, not dead tracts."},
+  { q:"In young patients, cavity preparation carries greater pulp exposure risk mainly because:",
+    opts:["Larger pulp chambers and horns","Thinner enamel rods","Less secondary dentin and shorter roots","More cementum covering dentin"],
+    correct:0,
+    explain:"The large pulp chamber and prominent horns before secondary dentin deposition raise exposure risk."},
+  { q:"Which feature best supports the hydrodynamic theory?",
+    opts:["Surface anesthesia abolishes dentin pain","Tubule fluid movement triggers pulpal free nerve endings","Odontoblasts release transmitters into synapses","Outer dentin richly innervated by axons"],
+    correct:1,
+    explain:"Stimuli cause fluid shifts in tubules, activating nearby pulpal nerves."},
+  { q:"Predentin transitions to mineralized dentin by:",
+    opts:["Loss of collagen","Immediate calcification without delay","Mineral deposition onto organic matrix","Replacement by enamel"],
+    correct:2,
+    explain:"Mineral is deposited on the predentin matrix to form dentin."},
+  { q:"Which sequence best represents response to caries advancing toward pulp?",
+    opts:["Sclerotic dentin → Dead tracts → Reparative dentin","Dead tracts → Sclerotic dentin → Reactionary dentin","Reparative dentin → Sclerotic dentin → Dead tracts","Mantle dentin → Vasodentin → Predentin"],
+    correct:0,
+    explain:"Sclerotic dentin may form around affected tubules; severe injury creates dead tracts; pulp responds with reparative dentin beneath."},
+  { q:"Which statement about innervation of dentin is MOST accurate?",
+    opts:["Axons maintain Schwann sheath into tubules","Nerves pass between odontoblasts and may enter tubules a short distance","Nerve density is greatest in mid-dentin","There are abundant nerves at the DEJ"],
+    correct:1,
+    explain:"Fibers lose Schwann sheath, pass between odontoblasts, and may extend a short way into tubules then loop back; outer dentin lacks nerves."}
+];
+
+const tfs = [
+  { q:"Secondary dentin formation is a physiologic process that occurs after root formation is complete.", answer:true, explain:"It is not trauma-induced; it develops slowly after root completion." },
+  { q:"Reactionary dentin is formed by newly differentiated odontoblast-like cells from UMCs.", answer:false, explain:"That describes reparative dentin; reactionary is by existing odontoblasts." },
+  { q:"Dead tracts appear black with transmitted light because their tubules are empty and wide.", answer:true, explain:"Loss of odontoblast processes leaves empty, widened tubules." },
+  { q:"Sclerotic dentin increases dentin permeability.", answer:false, explain:"Occluded tubules decrease permeability; hence translucent appearance." },
+  { q:"The outer dentin near the DEJ is richly innervated with nerve fibers.", answer:false, explain:"DEJ region is highly sensitive but lacks direct nerve fibers; supports hydrodynamic theory." },
+  { q:"Hydrodynamic theory explains sensitivity by fluid movement within dentinal tubules stimulating pulpal nerves.", answer:true, explain:"Fluid shifts activate free nerve endings close to odontoblasts." },
+  { q:"Secondary dentin deposition can lead to pulp horn obliteration.", answer:true, explain:"Contributes to pulp recession and smaller chamber." },
+  { q:"Osteodentin contains entrapped cells within the dentin matrix.", answer:true, explain:"A feature of certain reparative dentin." },
+  { q:"Applying surface local anesthetic to exposed dentin predictably abolishes dentin sensitivity.", answer:false, explain:"Surface anesthetics do not reliably block dentin sensitivity—evidence against direct neural theory." }
+];
+
+const saqs = [
+  // 1. Direct Answer
+  { q: "Define predentin and state its location.", a: "Unmineralized dentin matrix adjacent to the pulp, laid by odontoblasts before mineralization." },
+  // 2. List / Enumeration (3+ items)
+  { q: "List four categories in the classification of dentin according to formation.", a: "1) Primary (mantle, circumpulpal). 2) Secondary. 3) Tertiary (reactionary, reparative). 4) Predentin." },
+  // 3. Comparison (numbered table)
+  { q: "Compare reactionary and reparative dentin in stimulus and cell source.", a: `<table style="width:100%;border-collapse:collapse"><thead><tr><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">#</th><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">Feature</th><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">Reactionary dentin</th><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">Reparative dentin</th></tr></thead><tbody><tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">1</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Stimulus</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Mild</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Aggressive</td></tr><tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">2</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Cell source</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Original odontoblasts</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">UMCs → odontoblast-like cells</td></tr><tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">3</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Tubule pattern</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Fewer, irregular</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Often atubular/heterogeneous</td></tr></tbody></table>` },
+  // 4. Case-based Scenario
+  { q: "A 55-year-old needs a Class I restoration. Why is pulp exposure less likely than in a 15-year-old?", a: "Secondary dentin has reduced pulp chamber height and obliterated horns (pulp recession)." },
+  // 5. Short factual
+  { q: "Name the nerve plexus implicated in dentin sensitivity and its location.", a: "Plexus of Raschkow in the subodontoblastic layer of the pulp." },
+  // 6. Mechanism
+  { q: "State the key rationale against the direct neural theory for dentin pain at the DEJ.", a: "Outer dentin near DEJ lacks direct nerve fibers despite high sensitivity." }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

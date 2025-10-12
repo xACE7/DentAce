@@ -92,7 +92,7 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
   /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
@@ -107,7 +107,7 @@
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
@@ -143,8 +143,8 @@
 
     <section class="score" id="scoreTop">
       <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
-      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
-      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
       <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
       <div class="btnrow">
         <button class="ghost" id="resetAll">Reset</button>
@@ -162,73 +162,66 @@
 
     <section class="score" id="scoreBottom">
       <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
-      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
-      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
       <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
     </section>
   </main>
 
 <script>
-// ----------- Data (filled from Lecture 3: Histology of Salivary Glands) -----------
+// ----------- Data (salivary glands & practical session content) -----------
 const mcqs = [
-  { q:"Which major salivary gland is composed almost entirely of serous acini?", opts:["Sublingual gland","Submandibular gland","Parotid gland","Minor labial glands"], correct:2, explain:"Parotid is a pure serous gland with darkly stained, pyramidal serous cells forming spherical acini." },
-  { q:"Serous cells in salivary glands are typically:", opts:["Columnar with apical nuclei and clear cytoplasm","Pyramidal with basally located round nuclei and basophilic cytoplasm","Cuboidal with centrally placed flattened nuclei","Fusiform with elongated apical nuclei"], correct:1, explain:"Serous cells are pyramidal, basally basophilic (rER), round nuclei basally, narrow lumen centrally." },
-  { q:"The lumen of a typical serous acinus compared with mucous acinus is:", opts:["Larger in serous","Absent in both","Narrow in serous, wide in mucous","Equal in both"], correct:2, explain:"Serous acini have a narrow lumen; mucous acini have a relatively larger lumen due to secretory mucin." },
-  { q:"Mucous acinar cells are best characterized by:", opts:["Dark granular cytoplasm and zymogen granules","Pale foamy cytoplasm and flattened basal nuclei","Eosinophilic cytoplasm and apical striations","Centrally placed vesicular nuclei and scant cytoplasm"], correct:1, explain:"Mucous cells show pale, foamy cytoplasm with mucigen droplets and flattened, basally placed nuclei." },
-  { q:"In mixed salivary glands, 'serous demilunes' are:", opts:["Artifacts formed by fixation causing serous caps on mucous tubules","True in vivo caps that seal mucous tubules","Bundles of myoepithelial cells","Segments of intercalated ducts"], correct:0, explain:"Conventional fixation can cause serous cells to be displaced as crescent caps (demilunes) over mucous tubules." },
-  { q:"Which duct segment is lined by low cuboidal epithelium and has a diameter smaller than the endpiece?", opts:["Intercalated duct","Striated duct","Excretory duct (small)","Interlobar collecting duct"], correct:0, explain:"Intercalated ducts are narrow with low cuboidal cells and connect acini to striated ducts." },
-  { q:"Mitochondria aligned basal infoldings producing a striated appearance are characteristic of:", opts:["Intercalated duct cells","Striated duct cells","Mucous acinar cells","Myoepithelial cells"], correct:1, explain:"Striated ducts show basal striations from mitochondria between infoldings; epithelium is simple columnar." },
-  { q:"Compared with endpieces, the usual diameter of striated ducts is:", opts:["Smaller","Equal","Greater","Variable but generally smaller"], correct:2, explain:"Striated ducts typically have a larger diameter than the acinar endpieces." },
-  { q:"Small excretory ducts in interlobular septa are lined by:", opts:["Simple squamous epithelium","Pseudostratified epithelium","Stratified squamous keratinized epithelium","Simple cuboidal epithelium"], correct:1, explain:"Smaller excretory ducts show pseudostratified epithelium; larger ones may be stratified cuboidal/columnar." },
-  { q:"Largest excretory ducts may exhibit which lining?", opts:["Stratified cuboidal or stratified columnar","Simple columnar with microvilli only","Transitional epithelium","Simple squamous endothelium"], correct:0, explain:"With increasing caliber, excretory ducts can become stratified cuboidal or stratified columnar." },
-  { q:"Myoepithelial cells primarily function to:", opts:["Secrete bicarbonate","Contribute to basal striations","Aid in expulsion of acinar/ductal secretions","Resorb sodium exclusively"], correct:2, explain:"Myoepithelial cells contract to help express secretions from acini and intercalated ducts." },
-  { q:"Which gland is predominantly mucous among the majors?", opts:["Parotid","Submandibular","Sublingual","Von Ebner's"], correct:2, explain:"Sublingual is predominantly mucous; submandibular is mixed; parotid is serous." },
-  { q:"Submandibular gland acini are best described as:", opts:["Pure mucous","Pure serous","Mixed with serous demilunes common","Mixed but mainly mucous without demilunes"], correct:2, explain:"Submandibular glands are mixed with notable serous demilunes." },
-  { q:"Which statement about blood supply near striated ducts is correct?", opts:["Capillaries are sparse near striated ducts","Numerous small blood vessels are adjacent to striated ducts","Only veins are present","Only lymphatics accompany them"], correct:1, explain:"Slides show many small blood vessels close to striated ducts, supporting ion exchange." },
-  { q:"Identify the feature most useful to distinguish intercalated from striated ducts:", opts:["Presence of goblet cells","Diameter relative to endpieces","Keratinization","Cilia on luminal surface"], correct:1, explain:"Intercalated ducts are narrower than endpieces; striated ducts are larger and simple columnar." },
-  { q:"The parotid gland capsule sends septa that divide the gland into:", opts:["Acini and ducts only","Lobes and lobules","Islands and cords","Follicles"], correct:1, explain:"Septa create lobes/lobules with intralobular and interlobular duct systems (histologic organization)." },
-  { q:"Which stain property best differentiates serous from mucous cells on H&E?", opts:["Serous cells appear pale; mucous dark","Both appear equally basophilic","Serous cells stain darkly; mucous cells appear pale/foamy","Mucous cells intensely eosinophilic with granular apices"], correct:2, explain:"Serous acini often appear darker; mucous acini pale/foamy with flattened nuclei." },
-  { q:"A ring-like arrangement of columnar cells with basal striations indicates:", opts:["Intercalated duct","Striated duct","Mucous tubule","Serous acinus"], correct:1, explain:"Simple columnar epithelium with basal striations = striated duct." },
-  { q:"Which of the following is most likely found in interlobular connective tissue septa?", opts:["Intercalated ducts","Striated ducts","Excretory ducts","Serous endpieces"], correct:2, explain:"Excretory ducts course in interlobular CT; intercalated/striated are intralobular." },
-  { q:"Von Ebner's glands of the tongue are:", opts:["Pure mucous","Pure serous","Mixed with mucous predominance","Sebaceous"], correct:1, explain:"Accessory fact: von Ebner’s are purely serous (relevant contrast)." },
-  { q:"Which change would most reduce saliva sodium concentration?", opts:["Short intercalated ducts","Loss of myoepithelial cells","Inhibited striated duct resorption","Increased serous zymogen"], correct:2, explain:"Striated duct cells modify primary saliva by resorbing Na⁺; inhibition prevents resorption → higher Na⁺ (so the opposite)." },
-  { q:"The term 'endpiece' refers to:", opts:["Any excretory duct segment","The acinus/tubule secretory unit before intercalated duct","Only mucous tubules","Only serous acini"], correct:1, explain:"Endpiece is the secretory unit that drains into intercalated ducts." },
-  { q:"Which microscopic clue best identifies a mucous acinus?", opts:["Spherical outline with tiny lumen","Large tubular/irregular units with wide lumen","Very thin epithelial plate","Multilayered epithelium with cilia"], correct:1, explain:"Mucous acini often form larger tubules with broader lumina." },
-  { q:"In H&E sections, flattened basal nuclei are typical of:", opts:["Serous cells","Mucous cells","Striated duct cells","Intercalated duct cells"], correct:1, explain:"Mucous cells compress nuclei basally, often flattened against the base." },
-  { q:"Which structure immediately receives secretions from acini?", opts:["Excretory duct","Striated duct","Intercalated duct","Interlobar duct"], correct:2, explain:"Sequence: Acinus → Intercalated → Striated → Excretory." },
-  { q:"Which epithelial type is least expected in the excretory duct system?", opts:["Pseudostratified columnar","Stratified cuboidal","Stratified columnar","Simple squamous endothelium-like"], correct:3, explain:"Excretory ducts are not lined by simple squamous; they are pseudostratified or stratified cuboidal/columnar." },
-  { q:"Which clue helps identify parotid vs sublingual on a photomicrograph?", opts:["Abundance of adipocytes only in sublingual","Predominant dark serous acini in parotid vs pale mucous in sublingual","Presence of enamel spindles","Keratin pearls in ducts"], correct:1, explain:"Parotid shows dark serous acini; sublingual shows pale mucous acini and wider lumina." },
-  { q:"Where are numerous small blood vessels particularly noted in these slides?", opts:["Around mucous acini only","Adjacent to striated ducts","Within acinar lumina","Inside intercalated duct lumen"], correct:1, explain:"Slides highlight vessels near striated ducts." },
-  { q:"Which best distinguishes intralobular from interlobular ducts?", opts:["Location within vs between lobules","Number of goblet cells","Presence of cartilage","Ciliation"], correct:0, explain:"Intralobular (intercalated/striated) lie within lobules; interlobular (excretory) lie in CT septa." },
-  { q:"A mixed acinus in submandibular gland commonly shows:", opts:["Centrally placed nuclei in all cells","Serous demilunes capping mucous tubules","Keratinized lining","Absence of myoepithelial cells"], correct:1, explain:"Characteristic demilunes cap mucous tubules in mixed glands (artifactually)." }
+  { q: "The parotid gland is classified histologically as:", opts:["Pure serous gland","Pure mucous gland","Mixed gland with mucous predominance","Mixed gland with serous predominance"], correct:0, explain:"Parotid is a purely serous salivary gland." },
+  { q: "Which feature best characterizes a serous acinus on H&E?", opts:["Darkly stained spherical acini with narrow lumen","Pale tubular acini with large lumen","Cells with flattened basal nuclei","Crescent caps over mucous endpieces"], correct:0, explain:"Serous acini are small, spherical, darkly stained with a narrow lumen." },
+  { q: "Cells of serous acini are typically:", opts:["Pyramidal with basally located rounded nuclei","Columnar with apical flattened nuclei","Cuboidal with centrally pyknotic nuclei","Squamous with eccentric nuclei"], correct:0, explain:"Serous cells are pyramidal; nuclei are round and basal." },
+  { q: "The sublingual gland is predominantly:", opts:["Mucous","Serous","Endocrine","Adipose-rich with no acini"], correct:0, explain:"Sublingual shows predominantly mucous acini." },
+  { q: "Which statement about mucous acini is TRUE?", opts:["They have large lumens and pale, granular cytoplasm","They stain dark and are spherical with narrow lumens","Their nuclei are round and centrally placed","They are capped by striated ducts"], correct:0, explain:"Mucous acini are pale, larger/tubular with large lumens; nuclei appear flattened basally." },
+  { q: "A small duct with diameter less than the endpiece, lined by low cuboidal cells, is:", opts:["Intercalated duct","Striated duct","Excretory duct","Interlobular duct with stratified epithelium"], correct:0, explain:"Intercalated ducts are the smallest intralobular ducts with low cuboidal cells." },
+  { q: "Striated ducts are lined by:", opts:["Simple columnar epithelium with basal striations","Pseudostratified ciliated columnar epithelium","Stratified squamous non-keratinized epithelium","Simple cuboidal epithelium only"], correct:0, explain:"Striated ducts show simple columnar cells with basal striations." },
+  { q: "Compared to endpieces, striated ducts typically have:", opts:["Larger diameter","Smaller diameter","No lumen","A discontinuous epithelium"], correct:0, explain:"Striated ducts have a diameter greater than the acinar endpieces." },
+  { q: "Excretory ducts are primarily located in:", opts:["Interlobular connective tissue septa","Inside the acinar endpiece","Within the lumen of acini","Inside the nucleus of serous cells"], correct:0, explain:"Excretory ducts course within interlobular septa." },
+  { q: "The typical epithelium of SMALL excretory ducts is:", opts:["Pseudostratified epithelium","Simple columnar with striations","Stratified squamous keratinized","Transitional epithelium"], correct:0, explain:"Smaller excretory ducts are lined by a pseudostratified epithelium." },
+  { q: "Larger excretory ducts may be lined by:", opts:["Stratified cuboidal or stratified columnar epithelium","Simple cuboidal epithelium only","Simple squamous endothelium","Ciliated columnar epithelium"], correct:0, explain:"As they enlarge, excretory ducts show stratified cuboidal/columnar lining." },
+  { q: "The sequence of the ductal system from acinus to oral cavity is:", opts:["Intercalated → Striated → Excretory","Striated → Intercalated → Excretory","Excretory → Striated → Intercalated","Intercalated → Excretory → Striated"], correct:0, explain:"Salivary flow passes intercalated then striated (intralobular) then excretory (interlobular)." },
+  { q: "In mixed glands, crescent-shaped serous caps over mucous acini are called:", opts:["Serous demilunes","Von Ebner’s glands","Serous islets","Myoepithelial crescents"], correct:0, explain:"The crescent structures are serous demilunes." },
+  { q: "Which major gland is classically mixed with SERIOUS predominance?", opts:["Submandibular gland","Sublingual gland","Parotid gland","Minor palatine glands"], correct:0, explain:"Submandibular is mixed with serous predominance." },
+  { q: "Numerous small blood vessels are typically seen adjacent to:", opts:["Striated ducts","Intercalated ducts","Acinar lumens only","Excretory ducts"], correct:0, explain:"Striated ducts are accompanied by many capillaries (ion-transport)." },
+  { q: "Interlobular vs. intralobular ducts: which pairing is CORRECT?", opts:["Excretory = interlobular; Intercalated/Striated = intralobular","Intercalated = interlobular; Excretory = intralobular","All ducts are intralobular","Striated = interlobular only"], correct:0, explain:"Excretory ducts are interlobular; intercalated and striated are intralobular." },
+  { q: "A gland composed mainly of pale, tubular acini with flattened basal nuclei most likely is:", opts:["Sublingual","Parotid","Parathyroid","Thyroid"], correct:0, explain:"Those are features of mucous acini typical of sublingual." },
+  { q: "Which feature is LEAST helpful for identifying serous acini?", opts:["Large central lumen","Dark basophilic cytoplasm","Spherical acinus","Basally placed round nuclei"], correct:0, explain:"Serous acini have narrow, not large, lumens." },
+  { q: "The narrow central opening within serous acini refers to the:", opts:["Lumen","Canaliculi of taste buds","Haversian canal","Sinus ostium"], correct:0, explain:"The central small space is the acinar lumen." },
+  { q: "Which statement about sublingual gland architecture is TRUE?", opts:["Acini often appear tubular/irregular and larger than serous acini","Acini are uniformly spherical with narrow lumens","It lacks mucous acini","Its ducts are only intercalated"], correct:0, explain:"Sublingual mucous acini are larger and often tubular/irregular with large lumens." },
+  { q: "In OSPE stations, you are MOST likely to encounter:", opts:["Photomicrographs, microscopes, or radiographs with histologic slides","Only viva without images","Live patient surgeries","Microbiology culture plates"], correct:0, explain:"Slides state OSPE stations involve such visual materials." },
+  { q: "A portfolio for practical sessions should be collected from:", opts:["Dr. Naif","Course coordinator only","Dean’s office","Central library"], correct:0, explain:"Slide note: collect portfolio from Dr. Naif." },
+  { q: "Which is NOT listed under Oral Biology microscopic examinations in this session?", opts:["Liver lobule","Salivary glands","Tooth development stages","Oral mucous membrane"], correct:0, explain:"Liver is not part of the listed oral biology items." },
+  { q: "Which item is listed under Oral Radiology normal anatomy study?", opts:["Temporomandibular joint","Pancreatic ducts","Middle ear ossicles","Nasal conchae only"], correct:0, explain:"TMJ is specifically listed." },
+  { q: "Case-based learning topics include all EXCEPT:", opts:["Hepatic cirrhosis","TMJ and Maxillary sinus","Oral mucosa/Pulp","Tooth development, Enamel, Dentin"], correct:0, explain:"Hepatic topics are not included; sessions are oral-focused." },
+  { q: "Which text is cited as a learning resource for this topic?", opts:["Ten Cate’s Oral Histology","Gray’s Anatomy (neuroanatomy section)","Guyton & Hall Physiology","Robbins Pathologic Basis of Disease"], correct:0, explain:"Ten Cate’s is explicitly referenced." },
+  { q: "Which rubric parameter is explicitly mentioned?", opts:["Ethical values and professionalism","Use of color pencils","Attendance above 95%","Group presentation skills"], correct:0, explain:"‘Ethical values and professionalism’ appears in the rubric list." },
+  { q: "Which statement correctly matches gland and secretion?", opts:["Parotid – serous","Sublingual – serous only","Submandibular – purely mucous","Minor palatine – purely serous"], correct:0, explain:"Parotid is serous; sublingual predominantly mucous; submandibular mixed." },
+  { q: "The histologic feature forming a ring-like structure with basal striations is the:", opts:["Striated duct","Intercalated duct","Excretory duct","Myoepithelial basket"], correct:0, explain:"Slides describe striated ducts with basal striations and ring-like appearance." },
+  { q: "Which lumen is typically the largest among these?", opts:["Excretory duct","Intercalated duct","Striated duct","Serous acinus"], correct:0, explain:"Excretory ducts generally have a larger lumen compared with intralobular ducts and acini." },
 ];
 
 const tfs = [
-  { q:"Intercalated ducts have a diameter considerably smaller than the endpiece.", answer:true, explain:"They are narrow and lined by low cuboidal cells." },
-  { q:"Striated ducts are typically lined by simple cuboidal epithelium.", answer:false, explain:"They are lined by simple columnar epithelium with basal striations." },
-  { q:"Small excretory ducts are found within interlobular connective tissue septa.", answer:true, explain:"Location feature of excretory ducts." },
-  { q:"Mucous acini usually display a narrow lumen compared to serous acini.", answer:false, explain:"Mucous lumina are wider; serous lumina are narrow." },
-  { q:"Serous acinar cells commonly appear darkly stained in H&E sections.", answer:true, explain:"Due to abundant rER and zymogen." },
-  { q:"Submandibular gland is purely serous in composition.", answer:false, explain:"It is mixed, with both serous and mucous components." },
-  { q:"Sublingual gland is predominantly mucous among major salivary glands.", answer:true, explain:"Key identifying feature." },
-  { q:"Striated ducts generally have a smaller diameter than endpieces.", answer:false, explain:"They usually have a greater diameter than endpieces." },
-  { q:"Serous demilunes are most often fixation artifacts rather than true structures.", answer:true, explain:"Demilunes arise due to displacement during fixation." },
-  { q:"Numerous small blood vessels are present adjacent to striated ducts.", answer:true, explain:"Supports active ion transport and modification of saliva." },
-  { q:"Excretory ducts never show stratified epithelium.", answer:false, explain:"Larger excretory ducts may be stratified cuboidal or columnar." },
-  { q:"Myoepithelial cells function primarily in sodium resorption.", answer:false, explain:"They contract to aid secretion expulsion; ion transport is a ductal function." }
+  { q:"Sublingual gland acini often show large lumens and pale cytoplasm.", answer:true, explain:"Typical mucous acinar features." },
+  { q:"Intercalated ducts have a diameter greater than the endpiece.", answer:false, explain:"They are smaller than the endpiece and low cuboidal." },
+  { q:"Striated ducts are usually accompanied by numerous small blood vessels.", answer:true, explain:"Reflecting active ion transport." },
+  { q:"Excretory ducts are intralobular structures.", answer:false, explain:"They are interlobular; intercalated/striated are intralobular." },
+  { q:"Parotid is a pure serous gland.", answer:true, explain:"Classic classification." },
+  { q:"Submandibular gland is purely mucous in composition.", answer:false, explain:"It is mixed with serous predominance." },
+  { q:"Smaller excretory ducts may show pseudostratified epithelium.", answer:true, explain:"As per slide description." },
+  { q:"Mucous cell nuclei are typically flattened basally.", answer:true, explain:"Characteristic of mucous cells." },
+  { q:"The ductal sequence is Striated → Intercalated → Excretory.", answer:false, explain:"Correct order: Intercalated → Striated → Excretory." }
 ];
 
 const saqs = [
-  // 1) Direct Answer (very short)
-  { q: "List one histologic clue that identifies a serous acinus on H&E.", a: "Darkly stained pyramidal cells with narrow central lumen and basally placed round nuclei." },
-  // 2) List/Enumeration (numbered, very short)
-  { q: "Name three intralobular duct types or features you would expect to see in a major salivary gland section.", a: "1) Intercalated duct – low cuboidal, narrow. 2) Striated duct – simple columnar with basal striations. 3) Myoepithelial cells around endpieces/initial ducts." },
-  // 3) Comparison (table, numbered, very short)
-  { q: "Compare serous vs mucous acini using three microscopic criteria.", a: `<table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">#</th><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">Serous</th><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">Mucous</th></tr></thead><tbody>
-    <tr><td>1</td><td>Dark granular cytoplasm</td><td>Pale/foamy cytoplasm</td></tr>
-    <tr><td>2</td><td>Narrow lumen</td><td>Wider lumen</td></tr>
-    <tr><td>3</td><td>Round basal nuclei</td><td>Flattened basal nuclei</td></tr>
-  </tbody></table>` }
+  { q: "Define a serous demilune.", a: "Crescent-shaped serous cap over a mucous acinus in mixed glands (e.g., submandibular)." },
+  { q: "List three areas included in the normal radiographic anatomy study for this course.", a: "1) TMJ 2) Maxillary sinus 3) Salivary glands (also: jaws/periodontium, tooth structures)." },
+  { q: "Compare intercalated, striated, and excretory ducts (epithelium, location, lumen size) in a numbered table.", a: "<table style=\"width:100%;border-collapse:collapse\"><thead><tr><th>#</th><th>Duct</th><th>Epithelium</th><th>Location</th><th>Lumen</th></tr></thead><tbody><tr><td>1</td><td>Intercalated</td><td>Low cuboidal</td><td>Intralobular (between acini & striated)</td><td>Smallest (smaller than endpiece)</td></tr><tr><td>2</td><td>Striated</td><td>Simple columnar, basal striations</td><td>Intralobular</td><td>Larger than endpiece</td></tr><tr><td>3</td><td>Excretory</td><td>Pseudostratified (small) → Stratified cuboidal/columnar (large)</td><td>Interlobular septa</td><td>Largest</td></tr></tbody></table>" },
+  { q: "A slide shows acini with pale granular cytoplasm, large lumens, and flattened basal nuclei. What major salivary gland is most likely and what is the predominant secretion?", a: "Sublingual gland; mucous secretion predominates." },
+  { q: "State the sequence of the salivary ductal system from acinus to oral cavity.", a: "Intercalated → Striated → Excretory." },
+  { q: "Name the predominant cell type in the parotid gland.", a: "Serous acinar cells (pure serous)." }
 ];
 
 // ----------- State -----------
@@ -383,14 +376,15 @@ saqs.forEach((item, idx)=>{
   card.dataset.type='saq';
   card.dataset.index = idx;
   card.innerHTML = `
-    <h3 class="qtitle">${item.q}</h3>
-    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
-    <div class="btnrow" style="margin-top:10px">
-      <button class="primary" data-act="reveal">Reveal Answer</button>
-      <button class="ghost" data-act="toggle">I was correct</button>
-    </div>
-    <div class="answer" hidden>${item.a}</div>
-  `;
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
 
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');

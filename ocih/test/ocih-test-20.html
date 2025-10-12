@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}  
+  .opt-btn.correct{border-left:6px solid var(--ok);outline:none;background:rgba(255,255,255,0.03);}  
+  .opt-btn.wrong{border-left:6px solid var(--bad);outline:none;background:rgba(255,255,255,0.03);}  
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 20</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (from OCIH-20: Practical Session – Dentin) -----------
+const mcqs = [
+  { q: "Which cells produce dentin?", opts:["Ameloblasts","Odontoblasts","Cementoblasts","Fibroblasts"], correct:1, explain:"Dentin is produced by odontoblasts located at the pulp periphery." },
+  { q: "Where are odontoblast cell bodies located?", opts:["Enamel","Pulp","Cementum","Periodontal ligament"], correct:1, explain:"Cell bodies lie in the dental pulp; their processes extend into dentinal tubules." },
+  { q: "Odontoblastic processes extend into which structures?", opts:["Enamel rods","Haversian canals","Dentinal tubules","Cementocyte lacunae"], correct:2, explain:"Processes traverse the dentin inside dentinal tubules." },
+  { q: "Which best describes the contents of dentinal tubules?", opts:["Erythrocytes only","Lymph and osteocytes","Odontoblastic process, dentinal fluid, afferent nerve terminals","Salivary secretions"], correct:2, explain:"Tubules contain the odontoblastic process, fluid and sensory nerve endings." },
+  { q: "Primary vs. secondary dentin: which is TRUE for secondary dentin?", opts:["Laid down before eruption only","Forms after eruption and continues slowly throughout life","More highly mineralized than enamel","Present only in the root"], correct:1, explain:"Secondary dentin forms physiologically after eruption and narrows the pulp with age." },
+  { q: "How does the primary curvature of dentinal tubules change from crown to root?", opts:["Linear to S-shaped","S-shaped to more linear","Helical to zig-zag","Unchanged"], correct:1, explain:"In the crown the course is S‑shaped; it flattens to a more linear path in the root." },
+  { q: "Secondary curvature of dentinal tubules refers to:", opts:["Overall S-shaped path","Minor spiral-like kinks superimposed on the primary curvature","Tubules branching at the DEJ","Curvature due to tooth movement"], correct:1, explain:"Secondary curvatures are small undulations along the primary S-shape." },
+  { q: "Incremental lines of von Ebner are:", opts:["Enamel growth lines","Dentin incremental lines reflecting rhythmic deposition","Cementum reversal lines","Pulpal fibrosis strands"], correct:1, explain:"They are periodic growth lines seen in dentin." },
+  { q: "A \"dead tract\" in dentin represents:", opts:["Cluster of bacteria","Region of empty/air-filled tubules after loss of odontoblastic processes","Carious lesion front","Blood vessel track"], correct:1, explain:"Loss of processes leaves empty tubules that appear as a dark tract in ground sections." },
+  { q: "Interglobular dentin is best described as:", opts:["Hypercalcified enamel","Areas of hypomineralized dentin between calcospherites","Unmineralized predentin","Tertiary dentin"], correct:1, explain:"It forms where globular mineralization fails to fuse completely." },
+  { q: "Tomes' granular layer is found:", opts:["Under the DEJ in the crown","Adjacent to cementum in root dentin (mantle dentin)","At the pulp horns only","Within enamel spindles"], correct:1, explain:"It lies parallel to the external root surface, just beneath cementum." },
+  { q: "Contour lines of Owen indicate:", opts:["Daily dentin deposition","Major metabolic disturbance during dentinogenesis","Neonatal enamel","Cementum apposition"], correct:1, explain:"They reflect pronounced growth disturbances, distinct from von Ebner lines." },
+  { q: "Enamel spindles are:", opts:["Cracks in enamel","Extensions of odontoblastic processes that cross the DEJ into enamel","Sharpey's fibers","Capillaries in enamel"], correct:1, explain:"They are short extensions of odontoblastic processes seen at the DEJ." },
+  { q: "The dentino‑enamel junction (DEJ) is typically:", opts:["Flat","Scalloped, increasing interlocking","Porous to blood cells","A cementum interface"], correct:1, explain:"A scalloped interface enhances mechanical interlocking between enamel and dentin." },
+  { q: "Which dentin around tubules is more highly mineralized?", opts:["Intertubular dentin","Peritubular dentin","Predentin","Mantle dentin"], correct:1, explain:"Peritubular dentin forms a hypermineralized cuff lining tubules." },
+  { q: "Tubule density is greatest:", opts:["Near the DEJ","Near the pulp","In cementum","Uniform throughout dentin"], correct:1, explain:"Tubules are closer and wider near the pulp." },
+  { q: "Overall direction of dentinal tubules in the crown is:", opts:["Cervico‑apical, straight","S‑shaped from pulp toward DEJ","Circular around the pulp","Random"], correct:1, explain:"They course from pulp outward with a characteristic S‑shape in crowns." },
+  { q: "Which preparation best demonstrates peritubular dentin as a bright cuff?", opts:["Decalcified section","Ground section","SEM of etched enamel","Fresh frozen pulp"], correct:1, explain:"Mineralized structures are preserved in ground sections." },
+  { q: "Mantle dentin refers to:", opts:["Outer layer of primary dentin beneath enamel/cementum","Central dentin near pulp","Only tertiary dentin","Unmineralized predentin"], correct:0, explain:"Mantle dentin is the first‑formed outer primary dentin." },
+  { q: "Progressive deposition of secondary dentin causes:", opts:["Enlargement of pulp chamber","No change in pulp size","Gradual reduction of pulp chamber volume","Exposure of pulp"], correct:2, explain:"Physiologic secondary dentin reduces the pulp space with age." },
+  { q: "Tertiary (reparative) dentin forms in response to:", opts:["Normal eruption only","Irritation/injury such as caries or cavity preparation","Orthodontic retention","Salivary flow"], correct:1, explain:"A localized, stimulus‑dependent response beneath the affected area." },
+  { q: "Compared with crown tubules, root tubules are:", opts:["More S‑shaped","More linear","Absent","Arranged in circles"], correct:1, explain:"The S‑shape flattens in root dentin." },
+  { q: "Which set correctly matches a \"digital slide\" observation?", opts:["Scalloped interface = pulp space","Light brown tissue above scallops = dentin","Scalloped interface = DEJ; above it enamel; below it dentin","Empty central space = enamel"], correct:2, explain:"DEJ is scalloped; enamel lies above; dentin below; central void corresponds to pulp." },
+  { q: "Most likely reason a deep cavity in a 56‑year‑old lacked pulp exposure:", opts:["Wide open apices","Tertiary (reparative) dentin beneath lesion","Absence of predentin","Cementum thickening in the crown"], correct:1, explain:"Age + chronic irritation encourages protective tertiary dentin over pulp." },
+  { q: "Which statement about enamel spindles is CORRECT?", opts:["They originate from ameloblasts","They are trapped odontoblastic processes at the DEJ","They are in cementum","They are blood vessels"], correct:1, explain:"Spindles are ends of odontoblastic processes extending a short way into enamel." },
+  { q: "\"Secondary curvature\" is best seen in:", opts:["Demineralized mid‑S region of dentin","Cementum cross‑section","Enamel prisms only","Pulp tissue"], correct:0, explain:"The demineralized mid‑S region shows fine undulations of tubules." },
+  { q: "Interglobular dentin is commonly observed:", opts:["Immediately at the DEJ in enamel","Beneath mantle dentin where globules fail to fuse","Only in roots","Only after bleaching"], correct:1, explain:"It appears where globular mineralization is incomplete, often beneath mantle dentin." },
+  { q: "Tomes' granular layer aligns:", opts:["Parallel to external root surface","Perpendicular to cementum","Only in crowns","Across the DEJ"], correct:0, explain:"It runs parallel to the outer root surface adjacent to cementum." },
+  { q: "Primary curvature of tubules is also called:", opts:["Owen line","S‑shaped pathway","Hunter–Schreger band","Striae of Retzius"], correct:1, explain:"The overall S‑shaped path constitutes the primary curvature." },
+  { q: "Which component is NOT part of dentinal tubule contents?", opts:["Dentinal fluid","Afferent nerve terminals","Erythrocytes","Odontoblastic process"], correct:2, explain:"Blood cells are not present within intact dentinal tubules." }
+];
+
+const tfs = [
+  { q:"Dentin is a calcified tissue with composition different from enamel.", answer:true, explain:"Both are mineralized but differ in composition and structure." },
+  { q:"Odontoblast processes are confined to the pulp and do not enter dentin.", answer:false, explain:"They extend into dentinal tubules throughout dentin." },
+  { q:"Secondary dentin is a physiologic deposition that continues after eruption.", answer:true, explain:"It slowly narrows the pulp chamber over time." },
+  { q:"In the root, dentinal tubules show a more linear course than in the crown.", answer:true, explain:"The S‑shape flattens apically." },
+  { q:"Secondary curvature describes the overall S‑shape of tubules.", answer:false, explain:"It refers to small undulations superimposed on the S‑shape." },
+  { q:"Dead tracts result from loss of odontoblastic processes.", answer:true, explain:"Empty tubules appear as dark tracts in ground sections." },
+  { q:"Tomes' granular layer is a crown feature adjacent to enamel.", answer:false, explain:"It is a root feature adjacent to cementum in mantle dentin." },
+  { q:"Contour lines of Owen indicate major interruptions in dentin deposition.", answer:true, explain:"They reflect metabolic disturbances during odontogenesis." },
+  { q:"Peritubular dentin is less mineralized than intertubular dentin.", answer:false, explain:"Peritubular is more highly mineralized." }
+];
+
+const saqs = [
+  // 1. Direct Answer
+  { q: "Define dentin in one sentence.", a: "A mineralized tissue produced by odontoblasts that forms the bulk of the tooth beneath enamel and surrounds the pulp." },
+  // 2. List/Enumeration (3+ items)
+  { q: "List three components commonly found within dentinal tubules.", a: "1) Odontoblastic process\n2) Dentinal fluid\n3) Afferent nerve terminals" },
+  // 3. Comparison (numbered table)
+  { q: "Compare primary and secondary curvature of dentinal tubules in a numbered table.", a: "<table style=\"width:100%;border-collapse:collapse\"><tr><th style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">#</th><th style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Primary curvature</th><th style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Secondary curvature</th></tr><tr><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">1</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Overall S‑shaped path</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Small undulations on the S‑shape</td></tr><tr><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">2</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Pronounced in crown</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Seen along tubules, best in mid‑S region</td></tr><tr><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">3</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Flattens toward root (more linear)</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Fine, spiral‑like kinks</td></tr></table>" },
+  // 4. Case-based Scenario
+  { q: "A 56‑year‑old has a deep carious lesion; after caries removal no pulp exposure occurred. What dentin change most likely prevented exposure?", a: "Formation of localized tertiary (reparative) dentin beneath the lesion." },
+  // Extra SAQs to make 6
+  { q: "State the location of Tomes' granular layer.", a: "In root dentin, parallel to the external surface, immediately adjacent to cementum (mantle dentin)." },
+  { q: "Name the dentin band reflecting major disturbances in dentinogenesis.", a: "Contour lines of Owen." }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

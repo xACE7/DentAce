@@ -1,0 +1,551 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 5</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (from Lecture 5: Drugs Contraindicated in Pregnancy) -----------
+const mcqs = [
+  { q: "Which statement best defines teratogenesis?", opts: [
+      "Physiologic changes in the mother only.",
+      "Any structural or functional defect of the embryo/fetus including IUGR, death, or transplacental carcinogenesis.",
+      "Only genetic chromosomal abnormalities inherited from parents.",
+      "Postnatal growth delay without fetal effects."], correct: 1,
+    explain: "Teratogenesis includes structural/functional defects, intrauterine growth retardation, fetal death and transplacental carcinogenesis." },
+  { q: "During the 0–8 week pre-/post-implantation period, which of the following is NOT a possible outcome of teratogen exposure?", opts: [
+      "Abortion (pregnancy loss).",
+      "No discernible effect.",
+      "Enhanced fetal growth and maturation.",
+      "An anatomic or later metabolic/functional defect."], correct: 2,
+    explain: "In the 0–8 week window outcomes include abortion, no effect, anatomic defects, or later functional defects—not enhanced growth." },
+  { q: "From 9 weeks to birth, teratogen exposure may influence which domains?", opts: [
+      "Neurologic development only.",
+      "Growth, physiologic/biochemical function, mental development, reproduction, or fetal death.",
+      "Placental implantation only.",
+      "Only skeletal development."], correct: 1,
+    explain: "Fetal period effects are broad: neurodevelopment, growth, physiology/biochemistry, mental development, reproduction, or death." },
+  { q: "Congenital abnormalities account for approximately what fraction of infant fatalities?", opts: ["1/2","1/5","1/10","2/3"], correct: 1,
+    explain: "Birth defects comprise roughly one-fifth of newborn/infant fatalities." },
+  { q: "Which group contributes the largest portion of fatal congenital abnormalities?", opts: [
+      "Cardiac abnormalities.","Lung abnormalities.","Chromosomal aberrations.","Renal anomalies."], correct: 0,
+    explain: "Cardiac abnormalities are the largest portion, followed by lung and chromosomal causes." },
+  { q: "FDA Category A indicates:", opts: [
+      "Fetal risk shown in animals but not in humans.",
+      "No fetal risk demonstrated in controlled human studies in all trimesters.",
+      "Risk to fetus clearly outweighs any benefit.",
+      "Fetal risk shown in humans; benefits may outweigh risks."], correct: 1,
+    explain: "Category A: controlled human data show no fetal risk across trimesters." },
+  { q: "FDA Category B means:", opts: [
+      "Animal studies show risk that is not confirmed in human studies.",
+      "No animal or human data available.",
+      "Clear human fetal risk; benefit may outweigh risk.",
+      "Contraindicated in pregnancy."], correct: 0,
+    explain: "Category B: animal risk seen but not confirmed in controlled human studies." },
+  { q: "FDA Category C is best described as:", opts: [
+      "Human studies show safety in all trimesters.",
+      "Animal studies show fetal risk; adequate human studies lacking or not available.",
+      "Risk outweighs benefit in all cases.",
+      "Placebo-equivalent safety."], correct: 1,
+    explain: "Category C: fetal risk in animals and insufficient human data." },
+  { q: "FDA Category D indicates:", opts: [
+      "Evidence of human fetal risk; use may be acceptable despite risks.",
+      "Absolute contraindication with no circumstances for use.",
+      "Only animal evidence of harm.",
+      "Risk unknown due to lack of data."], correct: 0,
+    explain: "Category D: positive evidence of human fetal risk; use only if benefit justifies risk." },
+  { q: "FDA Category X means:", opts: [
+      "Use if benefit outweighs risk.",
+      "Risk to the fetus clearly outweighs any benefit; contraindicated.",
+      "No animal studies exist.",
+      "Safe in later trimesters."], correct: 1,
+    explain: "Category X: contraindicated—risks clearly outweigh any possible benefit." },
+  { q: "Thalidomide exposure in pregnancy is classically associated with:", opts: [
+      "Neural tube closure defects.","Limb reduction defects and multiple congenital anomalies.","Hypertelorism only.","Macroglossia."], correct: 1,
+    explain: "Thalidomide (Category X) causes limb defects and other anomalies." },
+  { q: "Warfarin use during pregnancy (Category D) is associated with:", opts: [
+      "Renal tubular dysgenesis.","Skeletal abnormalities including spinal curvature and limb defects.","Cleft palate exclusively.","No fetal risk after week 20."], correct: 1,
+    explain: "Warfarin embryopathy includes skeletal and limb abnormalities." },
+  { q: "High-dose aminoglycosides may damage which cranial nerve in the fetus?", opts: ["II","V","VIII","XII"], correct: 2,
+    explain: "Aminoglycosides can cause ototoxicity—VIII cranial nerve damage." },
+  { q: "ACE inhibitors (Category D) in pregnancy are linked to:", opts: [
+      "Renal tubular dysplasia and skull/pulmonary hypoplasia.",
+      "Polydactyly.",
+      "Omphalocele only.",
+      "Benign fetal tachycardia."], correct: 0,
+    explain: "ACE inhibitors: renal tubular dysplasia, skull and pulmonary hypoplasia." },
+  { q: "Antineoplastic agents in pregnancy are MOST likely to cause:", opts: [
+      "Growth retardation and multi-organ malformations.","Improved neurocognitive outcomes.","Only limb shortening.","Exclusive ocular anomalies."], correct: 0,
+    explain: "Antineoplastics: growth retardation and defects of palate, eyes, kidney, heart, limbs, skull." },
+  { q: "Which dental treatments are considered safe throughout pregnancy?", opts: [
+      "Preventive, diagnostic, and restorative procedures.",
+      "Orthognathic surgery only in third trimester.",
+      "No dental procedures are safe.",
+      "Radiographic exams without shielding only."], correct: 0,
+    explain: "Preventive, diagnostic, and restorative care are safe throughout pregnancy." },
+  { q: "Which local anesthetic is generally preferred for pregnant patients?", opts: [
+      "Lidocaine with epinephrine.","Bupivacaine (high dose).","Mepivacaine (routine use).","Cocaine topical."], correct: 0,
+    explain: "Lidocaine is acceptable in pregnancy; bupivacaine/mepivacaine deserve caution due to fetal bradycardia reports." },
+  { q: "Which pair has been linked to fetal bradycardia and therefore warrants caution?", opts: [
+      "Prilocaine and etidocaine.","Mepivacaine and bupivacaine.","Lidocaine and articaine.","Procaine and benzocaine."], correct: 1,
+    explain: "Mepivacaine and bupivacaine: caution—reported fetal bradycardia." },
+  { q: "Pregnant dental personnel require special consideration mainly due to potential exposure to:", opts: [
+      "Ultrasonic vibrations only.","Nitrous oxide and ionizing radiation.","Fluoride varnish.","Dental amalgam."], correct: 1,
+    explain: "Workplace exposure to nitrous oxide and radiation merits special precautions." },
+  { q: "Regarding timing of dental care, which statement is TRUE?", opts: [
+      "Root canals/restorations should always be delayed until postpartum.",
+      "Root canals or restorations can be safely performed during pregnancy; delays may worsen outcomes.",
+      "Only extractions are safe.",
+      "No anesthetic should be used."], correct: 1,
+    explain: "Needed dental treatment should proceed; delaying can complicate problems." },
+  { q: "Which antibiotic is CONTRAINDICATED in pregnancy due to fetal tooth discoloration?", opts: [
+      "Amoxicillin","Erythromycin","Tetracycline","Penicillin"], correct: 2,
+    explain: "Tetracyclines discolor developing teeth and are avoided in pregnancy." },
+  { q: "Which antimicrobial is associated with maternal toxicity/fetal death and is generally avoided in pregnancy?", opts: [
+      "Clindamycin","Chloramphenicol","Metronidazole","Cephalosporins"], correct: 1,
+    explain: "Chloramphenicol is associated with serious toxicity and fetal death—avoid in pregnancy." },
+  { q: "Which statement about aminoglycosides in pregnancy is MOST accurate?", opts: [
+      "They are Category A agents.",
+      "High doses carry risk of fetal ototoxicity (VIII nerve).",
+      "They cause universal nephrotoxicity without hearing loss.",
+      "They are absolutely contraindicated (Category X)."], correct: 1,
+    explain: "Aminoglycosides can damage the fetal auditory nerve at high doses." },
+  { q: "Which analgesic is considered safe throughout pregnancy when used appropriately?", opts: [
+      "Acetaminophen","Aspirin","Ibuprofen","Naproxen"], correct: 0,
+    explain: "Acetaminophen is preferred; NSAIDs and aspirin have trimester-specific risks." },
+  { q: "Which drug should be AVOIDED in the third trimester due to fetal/maternal risks?", opts: [
+      "Acetaminophen","Morphine","Ibuprofen","Prednisolone"], correct: 2,
+    explain: "NSAIDs like ibuprofen are avoided in the 3rd trimester; aspirin and naproxen also avoided then." },
+  { q: "Which antifungal is appropriate for use in pregnancy and lactation?", opts: [
+      "Ketoconazole (systemic) without caution.","Fluconazole at high dose.","Nystatin (topical).","Terbinafine (systemic)."], correct: 2,
+    explain: "Topical nystatin or clotrimazole are acceptable; ketoconazole/fluconazole warrant caution due to fetal toxicity reports." },
+  { q: "Which local anesthetic warrants caution in pregnancy because of reported fetal bradycardia?", opts: [
+      "Bupivacaine","Lidocaine","Prilocaine","Etidocaine"], correct: 0,
+    explain: "Use bupivacaine with caution; lidocaine is generally preferred." },
+  { q: "Which corticosteroid is acceptable to use in pregnancy when indicated?", opts: [
+      "Prednisolone","Dexamethasone (high dose, long term) only.","Betamethasone topical class I.","None are ever acceptable."], correct: 0,
+    explain: "Prednisolone is considered acceptable in pregnancy when clinically indicated." },
+  { q: "Which sedative/hypnotic class is CONTRAINDICATED due to risk of cleft lip/palate?", opts: [
+      "Benzodiazepines","Melatonin","Antihistamines (H1)","Z-drugs (short-term)."], correct: 0,
+    explain: "Benzodiazepines are associated with orofacial clefts; avoid in pregnancy." },
+  { q: "Which opioid analgesic requires CAUTION during lactation?", opts: [
+      "Oxycodone","Acetaminophen","Ibuprofen","Prednisolone"], correct: 0,
+    explain: "Agents like oxycodone/hydrocodone warrant caution in lactation; monitor and prefer safer alternatives." }
+];
+
+const tfs = [
+  { q: "Teratogenesis includes transplacental carcinogenesis.", answer: true, explain: "Yes—it's part of the definition alongside structural/functional defects and IUGR/fetal death." },
+  { q: "Pre-implantation exposure (0–8 weeks) always results in an anatomic defect only.", answer: false, explain: "Outcomes range from abortion to no effect to anatomic or later functional defects." },
+  { q: "FDA Category A means controlled human studies show no fetal risk across trimesters.", answer: true, explain: "That's the definition of Category A." },
+  { q: "ACE inhibitors are Category B in pregnancy.", answer: false, explain: "ACE inhibitors are Category D with serious fetal risks." },
+  { q: "Preventive, diagnostic and restorative dental treatment is unsafe during pregnancy.", answer: false, explain: "These are considered safe." },
+  { q: "Tetracyclines are acceptable in pregnancy because they do not affect teeth.", answer: false, explain: "They discolor developing teeth and are avoided." },
+  { q: "NSAIDs should be avoided in the third trimester.", answer: true, explain: "Aspirin, ibuprofen, naproxen are avoided late in pregnancy." },
+  { q: "Lidocaine is an acceptable local anesthetic for pregnant patients.", answer: true, explain: "Yes—commonly used when indicated." },
+  { q: "Nitrous oxide is considered safe in the first trimester.", answer: false, explain: "Avoid N2O in the first trimester; spontaneous abortion risk noted." }
+];
+
+const saqs = [
+  { q: "Define teratogenesis in one sentence.", a: "Structural or functional defects in the embryo/fetus, including IUGR, fetal death, and transplacental carcinogenesis." },
+  { q: "List three FDA pregnancy risk categories and give a 2–3 word description for each.", a: "1) A – human studies safe. 2) C – animal risk, limited human data. 3) X – contraindicated; risks > benefits." },
+  { q: "Contrast Category D and Category X in a numbered table (keep it brief).", a: "<table style=\"width:100%;border-collapse:collapse\"><tr><th>#</th><th>Category</th><th>Key Point</th></tr><tr><td>1</td><td>D</td><td>Human fetal risk; use only if benefit justifies risk.</td></tr><tr><td>2</td><td>X</td><td>Risk clearly outweighs benefit; contraindicated.</td></tr></table>" },
+  { q: "A 32‑year‑old in her 3rd trimester needs analgesia after a filling. What do you recommend?", a: "Acetaminophen; avoid NSAIDs (e.g., ibuprofen, naproxen) and aspirin in 3rd trimester." },
+  { q: "Name two first‑line dental antibiotics acceptable in pregnancy.", a: "Amoxicillin; Penicillin (also erythromycin, cephalosporins)." },
+  { q: "You plan local anesthesia for a pregnant patient needing a root canal. Which agent is preferred?", a: "Lidocaine with epinephrine; use mepivacaine/bupivacaine with caution." }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

@@ -92,7 +92,7 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
   /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
@@ -107,7 +107,7 @@
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
@@ -139,12 +139,12 @@
 
   <main class="wrap">
 
-    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لَا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
 
     <section class="score" id="scoreTop">
       <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
-      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
-      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
       <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
       <div class="btnrow">
         <button class="ghost" id="resetAll">Reset</button>
@@ -162,69 +162,72 @@
 
     <section class="score" id="scoreBottom">
       <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
-      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
-      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
       <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
     </section>
   </main>
 
 <script>
-// ----------- Data (filled) -----------
+// ----------- Data (based on Lecture 19: Development of Tooth) -----------
 const mcqs = [
-  { q:"Which sequence correctly orders the histologic stages of crown development?", opts:["Cap → Bud → Early bell → Advanced bell","Bud → Cap → Early bell → Advanced bell","Bud → Early bell → Cap → Advanced bell","Cap → Early bell → Bud → Advanced bell"], correct:1, explain:"Tooth morphogenesis proceeds Bud → Cap → Early bell → Advanced bell." },
-  { q:"The defining feature of the bud stage is:", opts:["Presence of enamel knot signaling","A hemispherical enamel organ with a concavity","Localized epithelial proliferation with little cytodifferentiation","Formation of stratum intermedium"], correct:2, explain:"Bud stage = focal proliferation of oral ectoderm into underlying ectomesenchyme without clear tissue layers." },
-  { q:"During the cap stage, the first clear delineation of which tissues appears?", opts:["Enamel organ, dental papilla, and dental follicle","Hertwig's epithelial root sheath and cementoblasts","Secondary enamel knots and cusp tips","Reduced enamel epithelium and junctional epithelium"], correct:0, explain:"Cap stage shows enamel organ capping a condensed dental papilla, surrounded by dental follicle (sac)." },
-  { q:"Primary enamel knot is best described as:", opts:["A mineralization front at the future DEJ","A transient epithelial signaling center that patterns cusps","The stem cell niche of the dental papilla","A vascular plexus within stellate reticulum"], correct:1, explain:"The primary enamel knot secretes morphogens that control cusp patterning; it is transient and undergoes apoptosis." },
-  { q:"The dental lamina arises from:", opts:["Neural crest-derived ectomesenchyme","Oral ectoderm","Endoderm of the first pharyngeal arch","Mesodermal epithelium"], correct:1, explain:"Dental lamina is a thickening of the oral ectoderm." },
-  { q:"Successional teeth (incisors, canines, premolars) develop from:", opts:["Posterior extension of the dental lamina","A lingual offshoot of the dental lamina adjacent to each primary tooth","Direct proliferation of dental papilla","Epithelial rests of Malassez"], correct:1, explain:"Successional lamina buds lingual to primary tooth germs; accessional teeth (molars) arise from posterior extension." },
-  { q:"Which combination of epithelial layers is characteristic of the early bell stage?", opts:["IEE only","IEE and OEE with no intervening cells","IEE, OEE, stellate reticulum, and stratum intermedium","OEE and stratum intermedium only"], correct:2, explain:"The enamel organ differentiates into inner enamel epithelium, outer enamel epithelium, stellate reticulum, and stratum intermedium." },
-  { q:"A major event of the advanced bell stage is:", opts:["Initiation of root formation","Breakdown of the dental lamina to form the dental cuticle","Histodifferentiation and onset of hard tissue formation","Eruption through oral mucosa"], correct:2, explain:"Advanced bell features histodifferentiation of IEE→ameloblasts and peripheral papilla cells→odontoblasts with matrix deposition." },
-  { q:"The basement membrane between IEE and dental papilla becomes the:", opts:["Cementoenamel junction (CEJ)","Dentinoenamel junction (DEJ)","Dentinocemental junction","Alveolodental ligament"], correct:1, explain:"Future DEJ corresponds to the initial basement membrane interface." },
-  { q:"After induction by odontoblasts, IEE cells differentiate into:", opts:["Cementoblasts","Ameloblasts","Fibroblasts of PDL","Osteoblasts"], correct:1, explain:"Dentinogenesis precedes enamel formation; odontoblast-derived signals induce ameloblast differentiation." },
-  { q:"Which occurs first at cusp tips?", opts:["Enamel matrix deposition","Dentin matrix deposition","Cementum deposition","Bone trabeculae formation"], correct:1, explain:"Odontoblasts lay down predentin first; ameloblasts follow with enamel matrix." },
-  { q:"The cervical loop refers to:", opts:["Fusion of reduced enamel epithelium with oral epithelium","The rim where IEE meets OEE at the cervical margin","A condensation of follicle forming PDL","A groove on the developing crown"], correct:1, explain:"Cervical loop is the IEE–OEE junction at the cervical edge; later contributes to HERS for roots." },
-  { q:"Function of the stellate reticulum includes:", opts:["Secreting enamel matrix","Providing a hydrated cushion that maintains crown shape","Producing cementum","Inducing dentin formation"], correct:1, explain:"Star-shaped cells with GAG-rich ECM maintain space and protect IEE." },
-  { q:"Stratum intermedium is notable for high activity of:", opts:["Tartrate-resistant acid phosphatase","Alkaline phosphatase","Carbonic anhydrase","Lactate dehydrogenase"], correct:1, explain:"Stratum intermedium supports ameloblast mineralization; ALP activity is high." },
-  { q:"The dental papilla ultimately forms:", opts:["Cementum and PDL","Enamel and reduced enamel epithelium","Dentin and dental pulp","Alveolar bone and PDL"], correct:2, explain:"Papilla gives rise to odontoblasts (dentin) and the pulp." },
-  { q:"Structures derived from the dental follicle (sac) include all EXCEPT:", opts:["Cementum","Periodontal ligament","Alveolar bone","Enamel"], correct:3, explain:"Follicle forms the periodontium (cementum, PDL, alveolar bone); enamel is ectodermal (ameloblasts)." },
-  { q:"The successional lamina typically appears:", opts:["Before the cap stage of the primary tooth","During cap to early bell stages of the primary tooth","Only after eruption of the primary tooth","Only in molar regions"], correct:1, explain:"Successional buds arise lingual to primary germs around cap/early bell." },
-  { q:"Vascular supply to the enamel organ is primarily:", opts:["Rich intravascular network within stellate reticulum","Absent within the enamel organ; vessels remain external","Confined to stratum intermedium","Carried by the IEE"], correct:1, explain:"Enamel organ is avascular; nutrients diffuse from vessels in surrounding follicle via OEE/SR." },
-  { q:"Following crown completion, the enamel organ transforms into:", opts:["Reduced enamel epithelium","Junctional epithelium directly","Hertwig's epithelial root sheath","Epithelial rests of Malassez"], correct:0, explain:"Post-amelogenesis, enamel organ flattens to reduced enamel epithelium; it later contributes to junctional epithelium after eruption." },
-  { q:"Determinants of crown shape reside mainly in:", opts:["Random deposition by ameloblasts","Patterning of IEE folding and enamel knot signals","Arrangement of Sharpey's fibers","Thickness of stratum intermedium alone"], correct:1, explain:"Morphodifferentiation is guided by enamel knot signaling and IEE architecture." },
-  { q:"Mitotic activity that maintains growth at the crown rim is concentrated in the:", opts:["Cusp tip IEE","Stratum intermedium","Cervical loop","Dental papilla core"], correct:2, explain:"The cervical loop retains proliferative capacity during crown development." },
-  { q:"Secondary enamel knots typically appear:", opts:["During bud stage","At late cap/early bell at future cusp sites","After eruption","Only in incisors"], correct:1, explain:"Secondary enamel knots form at future cusp tips and refine cusp patterning." },
-  { q:"Which permanent teeth are accessional?", opts:["Incisors and canines","Premolars","First, second, and third molars","Primary molars"], correct:2, explain:"Accessional teeth (molars) arise from posterior extension of dental lamina, not from successional lamina." },
-  { q:"Direction of enamel deposition in a developing cusp is primarily:", opts:["From cervical margin toward cusp tip","From cusp tip cervically toward the CEJ","Uniform in all directions","From DEJ toward enamel surface only at the end"], correct:1, explain:"Apposition starts at cusp/incisal edges and progresses cervically." },
-  { q:"Earliest mineralization is expected at:", opts:["Cervical loop","Future cusp tips/incisal edges along the DEJ","Future CEJ","PDL attachment sites"], correct:1, explain:"Initial dentin/enamel formation begins at the highest points of the crown." },
-  { q:"Which best separates dental papilla from surrounding ectomesenchyme?", opts:["Enamel organ","Dental follicle","Basement membrane","Reduced enamel epithelium"], correct:1, explain:"Outside the enamel organ+papilla complex lies the condensed ectomesenchyme called dental follicle (sac)." },
-  { q:"A key trigger for ameloblast differentiation is the presence of:", opts:["Cementoid matrix","Predentin at the IEE basement membrane","Osteoid from alveolus","Vascular invasion of stellate reticulum"], correct:1, explain:"Odontoblasts lay predentin; its signals induce IEE to become ameloblasts." },
-  { q:"Outer enamel epithelium (OEE) cells are typically:", opts:["Tall columnar with Tomes' processes","Low cuboidal and associated with an external vascular plexus","Spindle-shaped and fibroblastic","Osteoclastic"], correct:1, explain:"OEE is a protective low-cuboidal epithelium adjacent to follicular vasculature." },
-  { q:"Crown morphodifferentiation is largely completed by the:", opts:["Bud stage","Cap stage","Early–Advanced bell stages","Root formation stage"], correct:2, explain:"Crown shape becomes finalized through early and advanced bell stages before root formation." },
-  { q:"Breakdown of dental lamina islands within the jaw may leave:", opts:["Enamel spindles","Enamel lamellae","Epithelial pearls/rests","Odontoblastic processes"], correct:2, explain:"Detached dental lamina fragments can persist as epithelial pearls (rests)." }
+  { q:"Which is the correct chronological order of histologic stages in tooth development?", opts:["Bud → Cap → Early Bell → Advanced Bell","Cap → Bud → Early Bell → Advanced Bell","Bud → Early Bell → Cap → Advanced Bell","Initiation → Apposition → Bud → Bell"], correct:0, explain:"Classic sequence: bud, cap, early bell (histodifferentiation), advanced bell (apposition)." },
+  { q:"A hallmark of the bud stage is:", opts:["Proliferation of dental lamina into spherical epithelial outgrowths","Presence of enamel knot signaling center","Formation of stratum intermedium","Deposition of enamel and dentin"], correct:0, explain:"Bud stage = proliferation without pronounced morpho/histodifferentiation." },
+  { q:"During the cap stage, the epithelial structure that first appears as a signaling center is the:", opts:["Enamel knot","Cervical loop","Hertwig’s epithelial root sheath","Tomes’ process"], correct:0, explain:"The primary enamel knot is a transient signaling center guiding cusp patterning in the cap stage." },
+  { q:"The EARLY bell stage is primarily associated with:", opts:["Histodifferentiation of IEE to preameloblasts and papilla cells to odontoblasts","Matrix deposition of enamel","Root formation","Eruption pathway formation"], correct:0, explain:"Early bell: morpho- and histodifferentiation in the enamel organ and papilla." },
+  { q:"The ADVANCED bell stage is characterized by:", opts:["Apposition of dentin and enamel matrices","Initial formation of enamel organ","Breakdown of dental lamina into epithelial pearls","Formation of HERS"], correct:0, explain:"Advanced bell proceeds to apposition where dentin and enamel matrices are laid down." },
+  { q:"Correct set of enamel organ layers at bell stage:", opts:["Outer enamel epithelium, Stellate reticulum, Stratum intermedium, Inner enamel epithelium","Outer enamel epithelium, Stratum intermedium, Outer dental epithelium, Inner enamel epithelium","Outer enamel epithelium, Dental follicle, Stratum intermedium, Inner dental epithelium","Osteoblast layer, Stellate reticulum, Stratum intermedium, Inner dentin epithelium"], correct:0, explain:"Enamel organ differentiates into OEE, SR, SI, and IEE." },
+  { q:"Stratum intermedium is functionally linked to:", opts:["Enamel mineralization via high alkaline phosphatase activity","Cushioning the enamel organ by water-rich matrix","Inducing odontoblast differentiation","Root sheath formation"], correct:0, explain:"SI supports ameloblasts and shows high ALP aiding enamel mineralization." },
+  { q:"Stellate reticulum’s main role is to:", opts:["Maintain space and protect the developing enamel organ","Secrete dentin sialophosphoprotein","Form the DEJ","Differentiate into cementoblasts"], correct:0, explain:"SR acts as a shock absorber maintaining crown shape and space." },
+  { q:"The dental papilla ultimately forms:", opts:["Dentin and dental pulp","Cementum and PDL","Alveolar bone and cementum","Enamel and pulp"], correct:0, explain:"Papilla gives rise to odontoblasts (dentin) and dental pulp tissue." },
+  { q:"The dental follicle (sac) gives rise to:", opts:["Cementum, periodontal ligament, alveolar bone","Enamel and dentin","Pulp and dentin","Stratum intermedium and stellate reticulum"], correct:0, explain:"Follicle forms the periodontium supporting tissues." },
+  { q:"The basement membrane between IEE and papilla later becomes the:", opts:["Dentinoenamel junction (DEJ)","Cementoenamel junction (CEJ)","Pulp-dentin border","Alveolar crest"], correct:0, explain:"As dentin and enamel are laid, their junction corresponds to former basement membrane." },
+  { q:"First hard tissue laid during apposition:", opts:["Mantle dentin","Enamel","Cementum","Bone"], correct:0, explain:"Odontoblasts lay mantle dentin first; enamel follows after reciprocal induction." },
+  { q:"Reciprocal induction refers to:", opts:["Preameloblasts inducing odontoblast differentiation and then odontoblasts inducing ameloblasts","HERS inducing ameloblasts which induce cementoblasts","SR inducing SI which induces OEE","PDL inducing alveolar bone"], correct:0, explain:"Preameloblasts trigger odontoblasts; odontoblast dentin formation then triggers ameloblasts." },
+  { q:"Hertwig’s epithelial root sheath (HERS) is derived from:", opts:["Cervical loop of IEE and OEE","Stratum intermedium","Dental papilla","Gubernacular cord"], correct:0, explain:"HERS forms from the proliferating cervical loop (IEE + OEE)." },
+  { q:"Function of HERS:", opts:["Guides root dentin shape and length","Deposits cementum directly","Forms enamel rods","Creates stellate reticulum"], correct:0, explain:"HERS molds the root and induces radicular dentin formation." },
+  { q:"Epithelial rests of Malassez represent remnants of:", opts:["Disintegrated HERS","Dental lamina","Reduced enamel epithelium","Stratum intermedium"], correct:0, explain:"After HERS breaks up, its remnants persist in PDL as rests of Malassez." },
+  { q:"Successional teeth arise from:", opts:["Localized proliferation of dental lamina on the lingual of each primary tooth germ","Posterior extension of dental lamina behind last primary tooth","Divisions of HERS","Epithelial rests of Malassez"], correct:0, explain:"Successional lamina forms lingual to primary tooth germs for incisors, canines, premolars." },
+  { q:"Accessional teeth (permanent molars) develop via:", opts:["Posterior extension of the dental lamina","Successional lamina lingual to primary molars","Fragmentation of REE","Secondary cementogenesis"], correct:0, explain:"Molars come from a backward extension of dental lamina." },
+  { q:"Breakdown of the dental lamina may leave epithelial remnants known as:", opts:["Rests of Serres","Rests of Malassez","Rests of von Ebner","Nasmyth’s membrane"], correct:0, explain:"Rests of Serres are remnants of dental lamina in gingiva." },
+  { q:"The cervical loop is defined as the junction of:", opts:["IEE and OEE at the rim of the enamel organ","SR and SI","IEE and dental papilla","Cementum and enamel"], correct:0, explain:"At the rim, IEE meets OEE; this region proliferates apically to form HERS." },
+  { q:"The first-formed enamel is secreted by ameloblasts that develop a distal process called:", opts:["Tomes’ process","Hunter-Schreger band","Korff’s fiber","Ruffle-ended process"], correct:0, explain:"Tomes’ process shapes enamel prisms/rods." },
+  { q:"Odontoblast processes reside within:", opts:["Dentinal tubules","Enamel rods","Cementocyte lacunae","Haversian canals"], correct:0, explain:"Long processes extend into dentinal tubules (Tomés fibers)." },
+  { q:"Mantle dentin differs from circumpulpal dentin by:", opts:["Being the first, less mineralized layer with larger collagen fibers","Being laid after circumpulpal dentin","Having more peritubular dentin","Containing enamel prisms"], correct:0, explain:"Mantle dentin is initial, has large collagen fibers (Korff’s), slightly different mineralization." },
+  { q:"Which statement about reduced enamel epithelium (REE) is TRUE?", opts:["It forms from the fusion of ameloblasts with residual OEE, SR, and SI after enamel maturation","It is another name for HERS","It differentiates into odontoblasts","It is part of dental papilla"], correct:0, explain:"REE covers the enamel and participates in eruption/junctional epithelium formation." },
+  { q:"Gubernacular canal is related to:", opts:["Eruption pathway for successional teeth","Formation of CEJ","Root bifurcation of molars","Initiation of dental lamina"], correct:0, explain:"Contains gubernacular cord aiding eruption of permanent successors." },
+  { q:"Enamel is derived from:", opts:["Ectoderm (oral epithelium)","Ectomesenchyme","Neural crest-derived follicle","Mesoderm of alveolar bone"], correct:0, explain:"Ameloblasts originate from oral ectoderm-derived enamel organ." },
+  { q:"Dentin and pulp are derived from:", opts:["Ectomesenchyme of neural crest","Oral ectoderm","Endoderm","Paraxial mesoderm"], correct:0, explain:"Cranial neural crest ectomesenchyme forms papilla (dentin+pulp)." },
+  { q:"Lateral (accessory) root canals most commonly arise due to:", opts:["Breaks in HERS or premature disintegration allowing papilla to contact follicle","Failure of SI to mineralize","Excess enamel deposition apically","Persistence of enamel organ in root"], correct:0, explain:"Gaps in HERS permit accessory canal formation in root dentin." },
+  { q:"Lines of Retzius represent:", opts:["Incremental growth lines in enamel","Predentin band before mineralization","Increments in dentin","Cementum reversal lines"], correct:0, explain:"They are incremental growth lines in enamel visible in ground sections." },
+  { q:"During cap stage, the tissue around the enamel organ that forms the periodontium is the:", opts:["Dental follicle (sac)","Dental papilla","Stratum intermedium","Reduced enamel epithelium"], correct:0, explain:"Follicle surrounds organ+papilla and later forms cementum, PDL, alveolar bone." }
 ];
 
 const tfs = [
-  { q:"Successional teeth arise lingual to their primary predecessors.", answer:true, explain:"They bud from the successional lamina on the lingual aspect of primary germs." },
-  { q:"Accessional teeth originate from the successional lamina.", answer:false, explain:"Accessional teeth (molars) come from posterior extension of the dental lamina." },
-  { q:"Dental lamina is mesenchymal in origin.", answer:false, explain:"It is epithelial, derived from oral ectoderm." },
-  { q:"The basement membrane between IEE and papilla becomes the CEJ.", answer:false, explain:"It becomes the DEJ; CEJ is at the crown–root junction formed later." },
-  { q:"Odontoblast differentiation precedes ameloblast differentiation.", answer:true, explain:"Dentinogenesis starts first and induces ameloblasts to secrete enamel." },
-  { q:"Stratum intermedium is a feature of the bud stage.", answer:false, explain:"It appears with the bell stage as enamel organ stratifies." },
-  { q:"Stellate reticulum often collapses late to reduce diffusion distance before enamel secretion ends.", answer:true, explain:"Collapse brings vasculature closer to ameloblast layer during maturation." },
-  { q:"Enamel is derived from neural crest cells.", answer:false, explain:"Enamel comes from epithelial ameloblasts; neural crest forms ectomesenchyme (papilla/follicle)." },
-  { q:"Dental papilla originates from neural crest-derived ectomesenchyme.", answer:true, explain:"Papilla and follicle are ectomesenchymal (neural crest) derivatives." },
-  { q:"The primary enamel knot undergoes apoptosis after signaling.", answer:true, explain:"It is a transient signaling center." },
-  { q:"Hertwig's epithelial root sheath forms during crown (bell) stages.", answer:false, explain:"HERS forms after crown completion to shape roots." },
-  { q:"Reduced enamel epithelium later contributes to junctional epithelium after eruption.", answer:true, explain:"REE fuses with oral epithelium and forms the initial junctional epithelium." }
+  { q:"Successional teeth develop from a successional lamina located lingual to primary tooth germs.", answer:true, explain:"This lamina buds off the dental lamina on the lingual side of primary teeth." },
+  { q:"Enamel matrix is deposited before dentin during apposition.", answer:false, explain:"Dentin (by odontoblasts) forms first; enamel follows." },
+  { q:"Outer enamel epithelium differentiates into ameloblasts.", answer:false, explain:"Ameloblasts arise from inner enamel epithelium (IEE)." },
+  { q:"Hertwig’s epithelial root sheath contains stellate reticulum and stratum intermedium layers.", answer:false, explain:"HERS is formed from IEE and OEE only." },
+  { q:"The dentinoenamel junction corresponds to the former basement membrane between IEE and papilla.", answer:true, explain:"As matrices are laid down, the old basement membrane position becomes DEJ." },
+  { q:"Dental follicle gives rise to pulp tissue.", answer:false, explain:"Pulp derives from dental papilla, not follicle." },
+  { q:"Enamel is of ectomesenchymal origin.", answer:false, explain:"Enamel is epithelial (ectodermal) in origin." },
+  { q:"Stratum intermedium cells are rich in alkaline phosphatase activity.", answer:true, explain:"SI supports enamel mineralization and shows high ALP." },
+  { q:"Permanent molars are examples of accessional teeth.", answer:true, explain:"They arise from posterior extension of dental lamina, not from successional lamina." }
 ];
 
 const saqs = [
-  // 1) Direct Answer
-  { q: "Briefly describe the chief event of the advanced bell stage.", a: "Histodifferentiation with initial dentin then enamel matrix deposition (hard tissue)." },
-  // 2) List / Enumeration (numbered)
-  { q: "List three derivatives of the dental follicle.", a: "1) Cementum  2) Periodontal ligament  3) Alveolar bone" },
-  // 3) Comparison (table + numbered)
-  { q: "Compare successional vs accessional teeth in two points.", a: `<table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">#</th><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">Successional</th><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">Accessional</th></tr></thead><tbody><tr><td>1</td><td>Develop from successional lamina lingual to primary teeth</td><td>Develop from posterior extension of dental lamina</td></tr><tr><td>2</td><td>Form permanent incisors, canines, premolars</td><td>Form permanent molars (1st–3rd)</td></tr></tbody></table>` }
+  // 1. Direct Answer
+  { q: "Define the enamel knot and state when it appears.", a: "Transient signaling center in the cap stage guiding cusp patterning." },
+  // 2. List / Enumeration (3+)
+  { q: "List three derivatives of the dental follicle.", a: "1) Cementum 2) Periodontal ligament 3) Alveolar bone" },
+  // 3. Comparison as a numbered table
+  { q: "Compare BUD, CAP, and EARLY BELL stages in terms of key events.", a: `<table style='width:100%;border-collapse:collapse'><tr><th style='border:1px solid #555;padding:6px'>#</th><th style='border:1px solid #555;padding:6px'>Stage</th><th style='border:1px solid #555;padding:6px'>Key event</th></tr><tr><td style='border:1px solid #555;padding:6px'>1</td><td style='border:1px solid #555;padding:6px'>Bud</td><td style='border:1px solid #555;padding:6px'>Proliferation of dental lamina; no major histodifferentiation.</td></tr><tr><td style='border:1px solid #555;padding:6px'>2</td><td style='border:1px solid #555;padding:6px'>Cap</td><td style='border:1px solid #555;padding:6px'>Enamel organ cap-shape; enamel knot appears; papilla & follicle evident.</td></tr><tr><td style='border:1px solid #555;padding:6px'>3</td><td style='border:1px solid #555;padding:6px'>Early Bell</td><td style='border:1px solid #555;padding:6px'>Morpho- & histodifferentiation; IEE→preameloblasts; papilla→odontoblasts.</td></tr></table>` },
+  // 4. Case-based Scenario
+  { q: "A developing premolar shows a gubernacular canal above its crown on CBCT. What eruptive role does this structure serve?", a: "Provides a soft-tissue pathway (via gubernacular cord) guiding eruption of the successor." },
+  // 5. Short direct
+  { q: "Name the first hard tissue formed during tooth development and where it is first laid.", a: "Mantle dentin; at the cusp tip/incipient cusp area along the future DEJ." },
+  // 6. Short direct
+  { q: "State the origin of epithelial rests of Malassez.", a: "Remnants of Hertwig’s epithelial root sheath within the PDL." }
 ];
 
 // ----------- State -----------
@@ -311,7 +314,7 @@ mcqs.forEach((item, idx)=>{
 
 // ----------- Render True/False -----------
 const tfGrid = document.getElementById('tfGrid');
- tfs.forEach((item, idx)=>{
+tfs.forEach((item, idx)=>{
   const card = document.createElement('article');
   card.className='card qcard';
   card.dataset.type='tf';
@@ -379,14 +382,16 @@ saqs.forEach((item, idx)=>{
   card.dataset.type='saq';
   card.dataset.index = idx;
   card.innerHTML = `
-    <h3 class="qtitle">${item.q}</h3>
-    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
-    <div class="btnrow" style="margin-top:10px">
-      <button class="primary" data-act="reveal">Reveal Answer</button>
-      <button class="ghost" data-act="toggle">I was correct</button>
-    </div>
-    <div class="answer" hidden>${item.a}</div>
-  `;
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
 
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');

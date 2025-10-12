@@ -143,8 +143,8 @@
 
     <section class="score" id="scoreTop">
       <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
-      <div class="part">True/False: <b><span id="sTf">0</span>/12</b></div>
-      <div class="part">SAQs: <b><span id="sSaq">0</span>/3</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
       <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
       <div class="btnrow">
         <button class="ghost" id="resetAll">Reset</button>
@@ -162,8 +162,8 @@
 
     <section class="score" id="scoreBottom">
       <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
-      <div class="part">True/False: <b><span id="sTf2">0</span>/12</b></div>
-      <div class="part">SAQs: <b><span id="sSaq2">0</span>/3</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
       <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
     </section>
   </main>
@@ -180,7 +180,7 @@ const mcqs = Array.from({length:30}, (_,i)=>{
   };
 });
 
-const tfs = Array.from({length:12}, (_,i)=>{
+const tfs = Array.from({length:9}, (_,i)=>{
   const n = i+1;
   return {
     q:`Sample True/False #${n}: Placeholder statement.`,
@@ -189,11 +189,13 @@ const tfs = Array.from({length:12}, (_,i)=>{
   };
 });
 
-const saqs = [
-  { q: "SAQ #1: Describe the core idea of this exam template.", a: "It demonstrates a glowing dark theme with interactive MCQs, T/F, and SAQs." },
-  { q: "SAQ #2: How are MCQ answers randomized?", a: "The option order A–D is fixed visually, but the correct answer mapping is randomized per question at render time." },
-  { q: "SAQ #3: What counts a SAQ as correct?", a: "After you check your answer via Reveal Answer, click “I was correct” to award yourself a point." },
-];
+const saqs = Array.from({ length: 6 }, (_, i) => {
+  const n = i + 1;
+  return {
+    q: `${n}- Question`,
+    a: "short Answer"
+  };
+});
 
 // ----------- State -----------
 const state = {
@@ -347,14 +349,16 @@ saqs.forEach((item, idx)=>{
   card.dataset.type='saq';
   card.dataset.index = idx;
   card.innerHTML = `
-    <h3 class="qtitle">${item.q}</h3>
-    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
-    <div class="btnrow" style="margin-top:10px">
-      <button class="primary" data-act="reveal">Reveal Answer</button>
-      <button class="ghost" data-act="toggle">I was correct</button>
-    </div>
-    <div class="answer" hidden>${item.a}</div>
-  `;
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
 
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');

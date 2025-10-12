@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>pharma-4</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Simple SVG charts */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+</style>
+</head>
+<body class="lang-en">
+<header>
+  <div class="hdr wrap">
+    <div class="left">
+      <div class="title">🦷 Dentistry 3rd year</div>
+      <div class="subtitle">Lecture 4</div>
+      <button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+        <span class="lab en">EN</span>
+        <span class="lab ar">AR</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- Dua (Arabic only; not tied to language toggle) -->
+  <div class="dua">اللهم علِّمنا ما ينفعنا وانفعنا بما علَّمتنا وزِدْنا علمًا نافعًا وعملاً صالحًا.</div>
+
+  <!-- Topic -->
+  <div class="chip-box">
+    <span class="chip">
+      <span class="en"><b>Topic: Drug–Drug & Drug–Food Interactions Relevant to Dentistry</b></span>
+      <span class="ar"><b>الموضوع: تداخلات الدواء-دواء والدواء-الغذاء ذات الصلة بطب الأسنان</b></span>
+    </span>
+  </div>
+
+  <div class="sections">
+
+    <!-- 1. Types -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">1) Types of Interactions</span><span class="ar">١) أنواع التداخلات</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Two main categories affect dental therapy outcomes:</p>
+            <ul>
+              <li><b>Drug–Drug (DDIs):</b> One medicine alters another’s effect or safety.</li>
+              <li><b>Drug–Food (DFIs):</b> Food or nutrients change a drug’s absorption, action, or elimination.</li>
+            </ul>
+            <p>We focus on clinically meaningful interactions that change response, cause toxicity, or impair nutrition.</p>
+          </div>
+          <div class="ar">
+            <p>هناك فئتان رئيسيتان تؤثران على نتائج العلاج السني:</p>
+            <ul>
+              <li><b>تداخلات دواء-دواء:</b> دواء يغيّر تأثير أو أمان دواء آخر.</li>
+              <li><b>تداخلات دواء-غذاء:</b> الطعام أو العناصر الغذائية تغيّر امتصاص الدواء أو فعله أو طرحه.</li>
+            </ul>
+            <p>نركز على التداخلات ذات الأهمية العلاجية التي تغيّر الاستجابة أو تُحدث سمّية أو تضعف الحالة الغذائية.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 3,13/19</span>
+          <span class="ar">الصفحات المرجعية: ٣،١٣/١٩</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">DDIs and DFIs can ↑ toxicity or ↓ efficacy.</div><div class="ar">قد تزيد التداخلات السمية أو تُضعف الفعالية.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Dentists often prescribe analgesics, antibiotics, and LA—common sources of interactions.</div><div class="ar">أطباء الأسنان يصفون مسكنات ومضادات حيوية وبنجاً موضعياً—وهي مصادر شائعة للتداخلات.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Sort interactions by ADME + pharmacodynamics for exam recall.</div><div class="ar">قسّم التداخلات حسب الامتصاص والتوزيع والأيض والطرح + الديناميكا الدوائية لتسهيل التذكر.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">“Clinically important” = changes response, causes toxicity, or malnutrition.</div><div class="ar">“ذو أهمية علاجية” = يغيّر الاستجابة أو يسبب سمّية أو سوء تغذية.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 2. Clinical Significance -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">2) Clinical Significance</span><span class="ar">٢) الأهمية السريرية</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>More medicines = higher interaction risk. DDIs may cause unexpected side effects or toxic levels. Example: <b>hydrocodone + diphenhydramine → additive drowsiness</b>. Therapeutically important interactions alter intended response, cause toxicity, or affect nutrition.</p>
+          </div>
+          <div class="ar">
+            <p>كلما زاد عدد الأدوية زاد خطر التداخل. قد تؤدي DDIs إلى آثار جانبية غير متوقعة أو تراكيز سامة. مثال: <b>هيدروكودون + ديفينهيدرامين → نعاس إضافي</b>. التداخلات المهمة علاجياً تغيّر الاستجابة المقصودة أو تسبب سمّية أو تؤثر على التغذية.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 5,14/19</span>
+          <span class="ar">الصفحات المرجعية: ٥،١٤/١٩</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Expect enhanced sedation when combining CNS depressants.</div><div class="ar">توقّع تهدئة زائدة عند جمع مثبطات الجهاز العصبي المركزي.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Polypharmacy patients are high risk; screen before prescribing.</div><div class="ar">المرضى متعددو الأدوية عاليُو الخطورة؛ افحص قبل الوصف.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Hydrocodone + diphenhydramine → ↑ drowsiness.</div><div class="ar">هيدروكودون + ديفينهيدرامين → ↑ النعاس.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Adverse events here are preventable causes of morbidity.</div><div class="ar">هذه الأحداث الضارة سبب قابل للوقاية من المراضة.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 3. Prevention Mindset -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">3) Preventing Problems: A–D</span><span class="ar">٣) الوقاية: أ–د</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li><b>A. Evaluate medications:</b> full drug history (prescription, OTC, supplements).</li>
+              <li><b>B. Famous interactions:</b> memorize high-yield pairs (e.g., warfarin, methotrexate).</li>
+              <li><b>C. Group medications:</b> think by class/mechanism (NSAIDs, antibiotics, steroids).</li>
+              <li><b>D. Hear your patient:</b> allergies, pregnancy, comorbidities, and adherence.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li><b>أ. قيّم الأدوية:</b> تاريخ دوائي كامل (وصفات، OTC، مكملات).</li>
+              <li><b>ب. التداخلات الشهيرة:</b> احفظ الأزواج عالية العائد (مثل الوارفارين والميثوتريكسيت).</li>
+              <li><b>ج. مجموعات الأدوية:</b> فكّر حسب الفئة/الآلية (NSAIDs، المضادات، الستيرويدات).</li>
+              <li><b>د. استمع لمريضك:</b> الحساسية، الحمل، الأمراض المصاحبة، والالتزام.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 6/19</span>
+          <span class="ar">الصفحات المرجعية: ٦/١٩</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Build a “top-10” memory list of interactions.</div><div class="ar">ابنِ قائمة ذاكرية “أعلى 10” للتداخلات.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Asking about OTCs and herbs captures hidden risks.</div><div class="ar">سؤال المريض عن الأدوية دون وصفة والأعشاب يكشف المخاطر الخفية.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Group by ADME + pharmacodynamics for quick checks.</div><div class="ar">قسّم حسب ADME + الديناميكا الدوائية للفحص السريع.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Reduces preventable adverse events in clinic.</div><div class="ar">يقلّل الأحداث الضارة القابلة للمنع في العيادة.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 4. Absorption -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">4) Absorption (A)</span><span class="ar">٤) الامتصاص</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Chelation ↓ absorption:</b> Tetracyclines/fluoroquinolones chelate with calcium, iron, magnesium, zinc, and aluminum (antacids) → reduced absorption. Separate dosing.</p>
+            <p><b>GI motility changes</b> can also alter uptake.</p>
+          </div>
+          <div class="ar">
+            <p><b>التخليب ↓ الامتصاص:</b> التتراسيكلينات والفلوروكينولونات تتخلب مع الكالسيوم والحديد والمغنيسيوم والزنك والألومنيوم (مضادات الحموضة) → انخفاض الامتصاص. افصل الجرعات.</p>
+            <p><b>تغيّر حركة القناة الهضمية</b> قد يغيّر الامتصاص أيضاً.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 8/19</span>
+          <span class="ar">الصفحات المرجعية: ٨/١٩</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Give doxycycline 2 h before or 6 h after calcium/iron.</div><div class="ar">يُعطى الدوكسيسيكلين قبل الكالسيوم/الحديد بساعتين أو بعده بـ ٦ ساعات.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Antacids and dairy can drastically reduce FQ/tetracycline efficacy.</div><div class="ar">مضادات الحموضة ومنتجات الألبان قد تقلل كثيراً فعالية الفلوروكينولونات/التتراسيكلينات.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Chelates form insoluble complexes → poor absorption.</div><div class="ar">التخليب يُشكّل معقّدات غير ذائبة → امتصاص ضعيف.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">“Tetra/FQ + Metals = No Absorption.”</div><div class="ar">“تترا/فلورو + معادن = لا امتصاص.”</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 5. Distribution -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">5) Distribution (D)</span><span class="ar">٥) التوزيع</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Plasma protein displacement:</b> Drugs compete for albumin binding. <b>NSAIDs can displace warfarin → ↑ free warfarin → ↑ bleeding risk.</b></p>
+          </div>
+          <div class="ar">
+            <p><b>الإزاحة عن بروتينات البلازما:</b> تتنافس الأدوية على الألبومين. <b>قد تُزيح الـNSAIDs الوارفارين → ↑ الوارفارين الحر → ↑ خطر النزف.</b></p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 9/19</span>
+          <span class="ar">الصفحات المرجعية: ٩/١٩</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Look for bruising/INR changes in patients on warfarin + NSAID.</div><div class="ar">راقب الكدمات/‏INR في مرضى وارفارين + NSAID.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Only free (unbound) drug is pharmacologically active.</div><div class="ar">الدواء غير المرتبط فقط هو الفعّال دوائياً.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Small shifts in binding can greatly change warfarin effect.</div><div class="ar">تغيّرات بسيطة في الارتباط قد تغيّر تأثير الوارفارين كثيراً.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Link “NSAID ↔ warfarin = bleeding”.</div><div class="ar">اربط “NSAID ↔ وارفارين = نزف”.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 6. Metabolism -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">6) Metabolism (M)</span><span class="ar">٦) الأيض</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>CYP450 inhibition:</b> <b>Metronidazole inhibits warfarin metabolism</b> → excessive anticoagulation/bleeding.</p>
+            <p><b>CYP450 induction:</b> <b>Rifampicin induces metabolism</b> of many drugs → lowered levels (e.g., antifungals, corticosteroids).</p>
+          </div>
+          <div class="ar">
+            <p><b>تثبيط CYP:</b> <b>ميترونيدازول يثبط أيض الوارفارين</b> → تميّع زائد/نزف.</p>
+            <p><b>تحريض CYP:</b> <b>ريفامبيسين يحفّز الأيض</b> لعدة أدوية → انخفاض تراكيزها (مثل مضادات الفطريات والستيرويدات).</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 10/19</span>
+          <span class="ar">الصفحات المرجعية: ١٠/١٩</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Check INR closely when starting/stopping metronidazole with warfarin.</div><div class="ar">راقب INR عند بدء/إيقاف ميترونيدازول مع وارفارين.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Rifampicin can reduce steroid efficacy → flare of inflammation.</div><div class="ar">قد يقلّل الريفامبيسين فعالية الستيرويدات → نوبة التهابية.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Inhibitors ↑ levels; inducers ↓ levels.</div><div class="ar">المثبطات ↑ التراكيز؛ المحرّضات ↓ التراكيز.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Metro = More warfarin; Rifa = Reduced levels.”</div><div class="ar">“ميترو = مزيد من وارفارين؛ ريفا = انخفاض التراكيز.”</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 7. Elimination -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">7) Elimination (E)</span><span class="ar">٧) الطرح</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Renal clearance interactions:</b> NSAIDs ↓ renal prostaglandins → ↓ renal clearance of <b>methotrexate</b> → toxicity risk.</p>
+          </div>
+          <div class="ar">
+            <p><b>تداخلات الإطراح الكلوي:</b> تقلل NSAIDs البروستاغلاندينات الكلوية → ↓ طرح <b>الميثوتريكسيت</b> → خطر سمّية.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 11/19</span>
+          <span class="ar">الصفحات المرجعية: ١١/١٩</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Avoid NSAIDs with high-dose MTX; consider alternatives.</div><div class="ar">تجنّب NSAIDs مع MTX بجرعات عالية؛ فكر ببدائل.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Competition for renal transporters can elevate MTX levels.</div><div class="ar">التنافس على ناقلات الكلية قد يرفع تراكيز MTX.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Monitor for stomatitis, myelosuppression with MTX toxicity.</div><div class="ar">راقب التهاب الفم وكبت نقي العظم في سمّية MTX.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">“NSAID + MTX = No exit (↓ clearance).”</div><div class="ar">“NSAID + MTX = طرح أقل.”</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 8. Pharmacodynamic interactions -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">8) Pharmacodynamics (Target)</span><span class="ar">٨) الديناميكا الدوائية</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Additive/Synergistic:</b> Opioids + benzodiazepines/alcohol → enhanced sedation/respiratory depression. NSAIDs + corticosteroids → ↑ GI ulcer/bleeding risk.</p>
+            <p><b>Antagonism:</b> NSAIDs can blunt antihypertensives (β-blockers, ACE inhibitors, diuretics) → poor BP control.</p>
+          </div>
+          <div class="ar">
+            <p><b>إضافي/تآزري:</b> الأفيونات + البنزوديازيبينات/الكحول → تهدئة واكتئاب تنفسي زائد. NSAIDs + الستيرويدات → ↑ قرحة/نزف معدي.</p>
+            <p><b>تضاد:</b> قد تُضعف NSAIDs خافضات الضغط (حاصرات β، مثبّطات ACE، المدرّات) → ضبط سيّئ للضغط.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 12/19</span>
+          <span class="ar">الصفحات المرجعية: ١٢/١٩</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Avoid co-prescribing multiple CNS depressants when possible.</div><div class="ar">تجنّب وصف عدة مثبطات للجهاز العصبي المركزي إن أمكن.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">GI protection may be needed in high-risk NSAID users.</div><div class="ar">قد تحتاج لحماية معدية لدى مستخدمي NSAID عاليي الخطورة.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Antagonism reduces net effect at the target or via physiology.</div><div class="ar">التضاد يقلّل التأثير الصافي في الموقع الهدف أو فيزيولوجياً.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Opioid + Benzo = Stop the breath.”</div><div class="ar">“أفيون + بنزو = خطر كبت التنفّس.”</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 9. Patients at Risk + Food/Nutrient effects -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">9) At-Risk Patients & Food Effects</span><span class="ar">٩) الفئات المعرّضة وتأثيرات الغذاء</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>At risk:</b> chronic disease, elderly, fetus/infant, pregnant women, malnourished, allergies/intolerances.</p>
+            <p><b>Food–drug examples:</b> Ciprofloxacin/tetracycline form <b>insoluble complexes</b> with dairy/minerals → ↓ absorption. <b>Ceftin</b> (cefuroxime axetil) bioavailability: ~<b>52% with food vs 37% fasting</b>.</p>
+            <p><b>Dosing tip:</b> Stop unnecessary mineral supplements during therapy or separate dosing (2 h before or 6 h after minerals/antacids).</p>
+          </div>
+          <div class="ar">
+            <p><b>فئات الخطر:</b> الأمراض المزمنة، المسنّون، الجنين/الرضيع، الحوامل، سوء التغذية، الحساسية/عدم التحمل.</p>
+            <p><b>أمثلة دواء-غذاء:</b> السيبروفلوكساسين/التتراسيكلين يشكّلان <b>معقّدات غير ذائبة</b> مع الألبان/المعادن → ↓ الامتصاص. <b>سيفتين</b> (سيفوروكزيم أسيتيل) التوافر الحيوي له ~<b>٥٢٪ مع الطعام مقابل ٣٧٪ صائماً</b>.</p>
+            <p><b>نصيحة جرعات:</b> أوقف المكملات المعدنية غير الضرورية أو افصل الجرعات (ساعتان قبل أو ٦ ساعات بعد المعادن/مضادات الحموضة).</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 15,16/19</span>
+          <span class="ar">الصفحات المرجعية: ١٥،١٦/١٩</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Mineral supplements (Ca, Fe, Mg, Zn) and antacids reduce FQ/tetracycline absorption.</div><div class="ar">مكملات المعادن (كالسيوم، حديد، مغنيسيوم، زنك) ومضادات الحموضة تقلل امتصاص الفلوروكينولونات/التتراسيكلينات.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Take antibiotic 2 h before or 6 h after a mineral.</div><div class="ar">تناول المضاد قبل المعدن بساعتين أو بعده بـ ٦ ساعات.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Remember “Food ↑ cefuroxime axetil absorption.”</div><div class="ar">تذكّر “الطعام ↑ امتصاص سيفوروكزيم أسيتيل.”</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Avoids therapeutic failure for oral antibiotics.</div><div class="ar">يمنع فشل العلاج بالمضادات الحيوية الفموية.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 10. High-Yield Examples Table -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">10) High-Yield Interaction Examples</span><span class="ar">١٠) أمثلة تداخلات عالية الأهمية</span></h2>
+        <div class="sec-body">
+          <div class="en"><p>Selected pairs and their likely outcomes:</p></div>
+          <div class="ar"><p>أزواج مختارة ونتائجها المتوقعة:</p></div>
+
+          <div class="table-wrap" aria-label="Scrollable table">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Object drug</span><span class="ar">الدواء المتأثر</span></th>
+                  <th><span class="en">Precipitant</span><span class="ar">المثير للتداخل</span></th>
+                  <th><span class="en">Likely interaction</span><span class="ar">التأثير المحتمل</span></th>
+                  <th><span class="en">Clinical note</span><span class="ar">ملاحظة سريرية</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="en">Combined oral contraceptives</span><span class="ar">موانع حمل فموية مركبة</span></td>
+                  <td><span class="en">Ampicillin</span><span class="ar">أمبيسيلين</span></td>
+                  <td><span class="en">Failure of contraception</span><span class="ar">فشل مانع الحمل</span></td>
+                  <td><span class="en">Advise alternative contraception</span><span class="ar">انصحي/انصح ببديل مانع للحمل</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Warfarin</span><span class="ar">وارفارين</span></td>
+                  <td><span class="en">Ampicillin</span><span class="ar">أمبيسيلين</span></td>
+                  <td><span class="en">↑ bleeding risk</span><span class="ar">↑ خطر النزف</span></td>
+                  <td><span class="en">Monitor INR</span><span class="ar">راقب INR</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Lithium salts</span><span class="ar">أملاح الليثيوم</span></td>
+                  <td><span class="en">Metronidazole / Tinidazole</span><span class="ar">ميترونيدازول/تينيدازول</span></td>
+                  <td><span class="en">↓ excretion → toxicity</span><span class="ar">↓ الإطراح → سمّية</span></td>
+                  <td><span class="en">Check levels/symptoms</span><span class="ar">تحقق من التراكيز/الأعراض</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Warfarin</span><span class="ar">وارفارين</span></td>
+                  <td><span class="en">Metronidazole / Tinidazole</span><span class="ar">ميترونيدازول/تينيدازول</span></td>
+                  <td><span class="en">↑ bleeding (inhibition)</span><span class="ar">↑ نزف (تثبيط)</span></td>
+                  <td><span class="en">Avoid or adjust dose</span><span class="ar">تجنب أو عدّل الجرعة</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">CNS (seizure risk)</span><span class="ar">الجهاز العصبي المركزي</span></td>
+                  <td><span class="en">Ciprofloxacin + NSAIDs</span><span class="ar">سيبروفلوكساسين + NSAIDs</span></td>
+                  <td><span class="en">↑ CNS toxicity, seizures</span><span class="ar">↑ سمّية عصبية، اختلاجات</span></td>
+                  <td><span class="en">Use cautiously</span><span class="ar">بحذر</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Propranolol (with LA + adrenaline)</span><span class="ar">بروبرانولول (مع بنج موضعي + أدرينالين)</span></td>
+                  <td><span class="en">Adrenaline (epinephrine)</span><span class="ar">الأدرينالين (إبينفرين)</span></td>
+                  <td><span class="en">↑ BP response</span><span class="ar">↑ استجابة الضغط</span></td>
+                  <td><span class="en">Limit epinephrine dose</span><span class="ar">حدِّد جرعة الإبينفرين</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 17/19</span>
+          <span class="ar">الصفحات المرجعية: ١٧/١٩</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Examples are lecture-provided high-yield pairs.</div><div class="ar">الأمثلة من الأزواج عالية الأهمية المذكورة في المحاضرة.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Always ask about β-blockers before LA with epinephrine.</div><div class="ar">اسأل عن حاصرات β قبل التخدير الموضعي مع الإبينفرين.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Make a 1-page “Interactions in Dentistry” sheet.</div><div class="ar">اصنع صفحة واحدة “تداخلات في طب الأسنان”.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Prevents avoidable adverse outcomes in common dental scenarios.</div><div class="ar">يمنع نتائج سلبية يمكن تجنّبها في ممارسات سنية شائعة.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 11. Summary -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">11) Summary</span><span class="ar">١١) الملخص</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li>DDIs/DFIs are common and <b>preventable</b>.</li>
+              <li>Classify by <b>ADME</b> and <b>pharmacodynamics</b> for rapid reasoning.</li>
+              <li>Know the big ones: <b>chelation (tetracycline/FQ + minerals)</b>, <b>CYP effects (metronidazole, rifampicin)</b>, <b>protein displacement (NSAIDs–warfarin)</b>, <b>renal clearance (NSAIDs–MTX)</b>, and <b>PD additivity</b>.</li>
+              <li>Ask about diet, OTCs, supplements; separate dosing around minerals/antacids.</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li>تداخلات الدواء-دواء/الدواء-الغذاء شائعة و<b>قابلة للوقاية</b>.</li>
+              <li>صنّف حسب <b>ADME</b> و<b>الديناميكا الدوائية</b> للتفكير السريع.</li>
+              <li>احفظ الأساسية: <b>التخليب (تترا/فلورو + معادن)</b>، <b>تأثيرات CYP (ميترونيدازول، ريفامبيسين)</b>، <b>إزاحة البروتين (NSAIDs–وارفارين)</b>، <b>الطرح الكلوي (NSAIDs–MTX)</b>، و<b>الإضافة/التآزر</b>.</li>
+              <li>اسأل عن الغذاء وOTC والمكملات؛ افصل الجرعات حول المعادن/مضادات الحموضة.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 3,5,8,9,10,11,12,15,16,17/19</span>
+          <span class="ar">الصفحات المرجعية: ٣،٥،٨،٩،١٠،١١،١٢،١٥،١٦،١٧/١٩</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Think ADME + Target.”</div><div class="ar">“فكّر ADME + الهدف.”</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Practice mapping any interaction to its mechanism.</div><div class="ar">تمرّن على ربط أي تداخل بآليته.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Flag high-risk patients for extra counseling.</div><div class="ar">علِّم المرضى عاليي الخطورة لإرشاد إضافي.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Improves safety and outcomes in routine dental care.</div><div class="ar">يحسّن الأمان والنتائج في الرعاية السنية الروتينية.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+  </div><!-- /sections -->
+
+  <!-- Optional quick visual (kept minimal & neutral to remain offline) -->
+  <div class="sections">
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">Mechanisms Overview (Visual)</span><span class="ar">نظرة عامة على الآليات (مرئية)</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <svg class="chart-svg" viewBox="0 0 860 240" aria-label="Bar chart of mechanism emphasis (illustrative)">
+              <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="99" x2="820" y1="200" y2="200"></line>
+              <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="100" x2="100" y1="55" y2="201"></line>
+              <text x="75" y="85"  fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">Absorption</text>
+              <text x="75" y="130" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">Metabolism</text>
+              <text x="75" y="175" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">Pharmacodynamics</text>
+              <rect fill="#60a5fa" height="28" opacity="0.95" rx="6" ry="6" width="240" x="110" y="65"></rect>
+              <rect fill="#22d3ee" height="28" opacity="0.95" rx="6" ry="6" width="300" x="110" y="110"></rect>
+              <rect fill="#a78bfa" height="28" opacity="0.95" rx="6" ry="6" width="280" x="110" y="155"></rect>
+              <g font-size="11" fill="#a6afc6" opacity=".95">
+                <text x="148" y="218">10%</text><text x="213" y="218">20%</text><text x="278" y="218">30%</text>
+                <text x="343" y="218">40%</text><text x="408" y="218">50%</text><text x="473" y="218">60%</text>
+                <text x="538" y="218">70%</text><text x="603" y="218">80%</text><text x="668" y="218">90%</text>
+                <text x="733" y="218">100%</text>
+              </g>
+            </svg>
+          </div>
+          <div class="ar">
+            <svg class="chart-svg" viewBox="0 0 860 240" aria-label="مخطط شريطي توضيحي">
+              <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="99" x2="820" y1="200" y2="200"></line>
+              <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="100" x2="100" y1="55" y2="201"></line>
+              <text x="65" y="85"  fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">الامتصاص</text>
+              <text x="65" y="130" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">الأيض</text>
+              <text x="65" y="175" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">الديناميكا</text>
+              <rect fill="#60a5fa" height="28" opacity="0.95" rx="6" ry="6" width="240" x="110" y="65"></rect>
+              <rect fill="#22d3ee" height="28" opacity="0.95" rx="6" ry="6" width="300" x="110" y="110"></rect>
+              <rect fill="#a78bfa" height="28" opacity="0.95" rx="6" ry="6" width="280" x="110" y="155"></rect>
+              <g font-size="11" fill="#a6afc6" opacity=".95">
+                <text x="168" y="218">10%</text><text x="233" y="218">20%</text><text x="298" y="218">30%</text>
+                <text x="363" y="218">40%</text><text x="428" y="218">50%</text><text x="493" y="218">60%</text>
+                <text x="558" y="218">70%</text><text x="623" y="218">80%</text><text x="688" y="218">90%</text>
+                <text x="753" y="218">100%</text>
+              </g>
+            </svg>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 3,5,8,10,12/19</span>
+          <span class="ar">الصفحات المرجعية: ٣،٥،٨،١٠،١٢/١٩</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Illustrative only; use to organize thinking.</div><div class="ar">للإيضاح فقط؛ استخدمه لتنظيم التفكير.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Map each example to one mechanism.</div><div class="ar">اربط كل مثال بآلية واحدة.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">ADME first, PD last.</div><div class="ar">ابدأ بـ ADME ثم الديناميكا.</div></div></div>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <!-- Glossary -->
+  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+  <div class="grid g3x4" id="glossary">
+    <div class="card"><div class="head">Chelation / التخليب</div><div class="content" hidden><div class="en">Binding of drug to metals → ↓ absorption.</div><div class="ar">ارتباط الدواء بالمعادن → ↓ الامتصاص.</div></div></div>
+    <div class="card"><div class="head">CYP Inhibition / تثبيط CYP</div><div class="content" hidden><div class="en">Enzyme blocked → ↑ levels of substrates.</div><div class="ar">حجب الإنزيم → ↑ تراكيز الركائز.</div></div></div>
+    <div class="card"><div class="head">CYP Induction / تحريض CYP</div><div class="content" hidden><div class="en">Enzyme increased → ↓ levels of substrates.</div><div class="ar">زيادة نشاط الإنزيم → ↓ تراكيز الركائز.</div></div></div>
+    <div class="card"><div class="head">Protein Displacement / إزاحة بروتينية</div><div class="content" hidden><div class="en">Competition for albumin → ↑ free drug.</div><div class="ar">تنافس على الألبومين → ↑ الدواء الحر.</div></div></div>
+    <div class="card"><div class="head">Renal Clearance / الإطراح الكلوي</div><div class="content" hidden><div class="en">Kidney removal; ↓ clearance raises toxicity.</div><div class="ar">طرح كلوي؛ ↓ الإطراح يرفع السمية.</div></div></div>
+    <div class="card"><div class="head">Additive Effect / تأثير إضافي</div><div class="content" hidden><div class="en">Similar actions sum up (e.g., sedation).</div><div class="ar">تتجمّع الأفعال المتشابهة (مثل التهدئة).</div></div></div>
+    <div class="card"><div class="head">Antagonism / تضاد</div><div class="content" hidden><div class="en">Opposing effects reduce response.</div><div class="ar">تأثيرات متعارضة تقلّل الاستجابة.</div></div></div>
+    <div class="card"><div class="head">Bioavailability / التوافر الحيوي</div><div class="content" hidden><div class="en">Fraction reaching systemic circulation.</div><div class="ar">نسبة الدواء التي تصل للدورة الدموية.</div></div></div>
+    <div class="card"><div class="head">Object vs Precipitant / الدواء المتأثر والمثير</div><div class="content" hidden><div class="en">Object = affected drug; precipitant = causes change.</div><div class="ar">المتأثر = الدواء الذي يتغيّر؛ المثير = سبب التغيّر.</div></div></div>
+  </div>
+
+  <!-- Flashcards -->
+  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+  <div class="grid g3x4" id="flashcards">
+    <div class="card"><div class="head"><span class="en">1 — What interaction reduces tetracycline absorption?</span><span class="ar">١ — ما التداخل الذي يقلل امتصاص التتراسيكلين؟</span></div><div class="content" hidden><span class="en">Chelation with Ca/Mg/Fe/Zn or antacids.</span><span class="ar">التخليب مع الكالسيوم/المغنيسيوم/الحديد/الزنك أو مضادات الحموضة.</span></div></div>
+    <div class="card"><div class="head"><span class="en">2 — Metronidazole + warfarin effect?</span><span class="ar">٢ — تأثير ميترونيدازول + وارفارين؟</span></div><div class="content" hidden><span class="en">Inhibits metabolism → ↑ INR/bleeding.</span><span class="ar">يثبط الأيض → ↑ INR/نزف.</span></div></div>
+    <div class="card"><div class="head"><span class="en">3 — Rifampicin does what to many drugs?</span><span class="ar">٣ — ماذا يفعل الريفامبيسين بالعديد من الأدوية؟</span></div><div class="content" hidden><span class="en">Induces metabolism → ↓ levels.</span><span class="ar">يحرّض الأيض → ↓ التراكيز.</span></div></div>
+    <div class="card"><div class="head"><span class="en">4 — NSAIDs + warfarin mechanism?</span><span class="ar">٤ — آلية NSAIDs + وارفارين؟</span></div><div class="content" hidden><span class="en">Protein displacement → ↑ free warfarin.</span><span class="ar">إزاحة بروتينية → ↑ وارفارين حر.</span></div></div>
+    <div class="card"><div class="head"><span class="en">5 — NSAIDs + methotrexate risk?</span><span class="ar">٥ — مخاطر NSAIDs + ميثوتريكسيت؟</span></div><div class="content" hidden><span class="en">↓ Renal clearance → toxicity.</span><span class="ar">↓ الإطراح الكلوي → سمّية.</span></div></div>
+    <div class="card"><div class="head"><span class="en">6 — Food and cefuroxime axetil?</span><span class="ar">٦ — الطعام وسيفوروكزيم أسيتيل؟</span></div><div class="content" hidden><span class="en">Food ↑ bioavailability (52% vs 37% fasting).</span><span class="ar">الطعام ↑ التوافر الحيوي (٥٢٪ مقابل ٣٧٪ صائماً).</span></div></div>
+    <div class="card"><div class="head"><span class="en">7 — Opioid + benzodiazepine risk?</span><span class="ar">٧ — خطر أفيون + بنزوديازيبين؟</span></div><div class="content" hidden><span class="en">Additive sedation/respiratory depression.</span><span class="ar">تهدئة إضافية/كبت تنفسي.</span></div></div>
+    <div class="card"><div class="head"><span class="en">8 — NSAIDs effect on antihypertensives?</span><span class="ar">٨ — تأثير NSAIDs على خافضات الضغط؟</span></div><div class="content" hidden><span class="en">Antagonize effect → poor BP control.</span><span class="ar">تُضعف التأثير → ضبط ضغط سيّئ.</span></div></div>
+    <div class="card"><div class="head"><span class="en">9 — Separate minerals from which antibiotics?</span><span class="ar">٩ — افصل المعادن عن أي مضادات حيوية؟</span></div><div class="content" hidden><span class="en">Tetracyclines and fluoroquinolones.</span><span class="ar">التتراسيكلينات والفلوروكينولونات.</span></div></div>
+  </div>
+
+</main>
+
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

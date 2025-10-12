@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>ocih-23</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;
+    --pad: 3px;
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;
+    height: var(--h);
+    padding: 0 6px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px);
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);
+    z-index: 0;
+  }
+
+  @keyframes bgToRight { 0%{transform:translateX(0%);} 70%{transform:translateX(108%);} 100%{transform:translateX(100%);} }
+  @keyframes bgToLeft  { 0%{transform:translateX(100%);} 70%{transform:translateX(-8%);} 100%{transform:translateX(0%);} }
+  @keyframes bounceActive { 0%{transform:scale(1.0);} 40%{transform:scale(1.14);} 70%{transform:scale(1.04);} 100%{transform:scale(1.08);} }
+
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none; transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none; transform: scale(1.0); }
+
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+</style>
+</head>
+<body class="lang-en">
+<header>
+  <div class="hdr wrap">
+    <div class="left">
+      <div class="title">🦷 Dentistry 3rd year</div>
+      <div class="subtitle">Lecture 23</div>
+      <button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+        <span class="lab en">EN</span>
+        <span class="lab ar">AR</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- Dua (kept ar only) -->
+  <div class="dua">اللهم افتح علينا أبواب العلم النافع، واجعل هذا الدرس سببًا للفهم والثبات والنجاح، وبارك لنا في أوقاتنا وأعمالنا يا كريم.</div>
+
+  <!-- Topic -->
+  <div class="chip-box">
+    <span class="chip">
+      <span class="en"><b>Topic: Periodontal Ligament (PDL) — Anatomy & Histology</b></span>
+      <span class="ar"><b>الموضوع: الرباط حول السني (PDL) — التشريح وعلم النسج</b></span>
+    </span>
+  </div>
+
+  <div class="sections">
+    <!-- 1. Definition & Nomenclature -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">1) What is the PDL? (Definition & Names)</span><span class="ar">١) ما هو الرباط حول السني؟ (التعريف والمسميات)</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>The periodontal ligament is a soft, highly cellular and vascular connective tissue that surrounds the tooth root and connects it to the inner wall of the alveolar bone. It continues between two mineralized tissues (cementum and bone), so “periodontal ligament” is the most appropriate term.</p>
+            <p>Nomenclature you may see: desmodont, gomphosis, pericementum, dental periosteum, alveolodental ligament, periodontal membrane — but <b>PDL</b> is preferred.</p>
+          </div>
+          <div class="ar">
+            <p>الرباط حول السني نسيج ضام لين غني بالخلايا والأوعية يحيط بجذر السن ويصل الجذر بجدار العظم السنخي الداخلي. وبما أنه يربط بين نسيجين متكلسين (الملاط والعظم)، فإن تسمية «الرباط حول السني» هي الأدق.</p>
+            <p>مسميات أخرى قد تُذكر: الدِزمودونت، الغَمص (Gomphosis)، حول الملاط، السمحاق السني، الرباط السنخي السني، الغشاء حول السني — لكن <b>PDL</b> هي التسمية المفضلة.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 1,2,3/28</span><span class="ar">الصفحات المرجعية: ١،٢،٣/٢٨</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">PDL bridges cementum and alveolar bone and is neither a typical “membrane” nor a typical “ligament”.</div><div class="ar">الرباط حول السني يصل بين الملاط والعظم السنخي وليس «غشاءً» ولا «رباطًا» تقليديًا.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Correct naming helps you find the right literature and avoid confusion with periosteum or TMJ ligaments.</div><div class="ar">التسمية الدقيقة تُسهِّل الوصول للمراجع الصحيحة وتجنب الخلط مع السمحاق أو أربطة المفصل الصدغي الفكي.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Clinical charts often abbreviate it as “PDL space” on radiographs.</div><div class="ar">يُذكر اختصار “PDL space” في تقارير الصور الشعاعية.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">Think “ligament” = load-bearing soft tissue connecting two hard tissues.</div><div class="ar">تذكّر: «رباط» = نسيج ليّن حامل للحمولة يربط بين نسيجين صلبين.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 2. Width & Radiographic -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">2) Width & Radiographic Appearance</span><span class="ar">٢) العرض والمظهر الشعاعي</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Typical width ≈ <b>0.2 mm</b> (range ~0.15–0.38 mm), thinnest mid-root. Width decreases with reduced function/unerupted teeth and increases with hyperfunction.</p>
+            <p><b>Radiograph:</b> PDL appears as a <b>thin radiolucent line</b> around the root; widening/thickening indicates altered loading or pathology.</p>
+          </div>
+          <div class="ar">
+            <p>العرض المعتاد يقارب <b>0.2 مم</b> (المدى ~0.15–0.38 مم) ويكون أرقّ في منتصف الجذر. ينقص مع قلة الوظيفة/الأسنان غير المنبثقة ويزداد مع فرط الوظيفة.</p>
+            <p><b>شعاعياً:</b> يُرى الرباط كـ<b>خط مُعتم بالأشعة (Radiolucent)</b> رفيع حول الجذر؛ اتساعه/ثخنه قد يدل على تبدّل الحمل أو مرض.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 4,5/28</span><span class="ar">الصفحات المرجعية: ٤،٥/٢٨</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">PDL widening may accompany occlusal trauma or acute periapical lesions.</div><div class="ar">اتساع الرباط قد يترافق مع رض إطباقي أو آفات حول ذروية حادة.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Remember “mid-root thinnest” for MCQ traps.</div><div class="ar">احفظ «أرقّ ما يكون في منتصف الجذر» لتجنب أسئلة الخيارات الخادعة.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Radiolucent line corresponds to the soft tissue space; lamina dura is the radiopaque compact bone.</div><div class="ar">الخط المُعتم يمثل الحيّز النسيجي الليّن؛ اللّامينا دورا عظم قشري مُشعّ.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذير</span></div><div class="body" hidden><div class="en">Don’t confuse PDL space widening with vertical root fracture lines.</div><div class="ar">لا تخلط اتساع الحيّز الرباطي مع خطوط الكسور الجذرية العمودية.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 3. Structure overview -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">3) Structure Overview</span><span class="ar">٣) البنية العامة</span></h2>
+        <div class="sec-body">
+          <div class="en"><p>PDL has three core components: <b>Fibers</b> (principal collagen bundles with Sharpey’s insertions), <b>Cells</b> (synthetic, defense, resorptive, epithelial rests, progenitors), and <b>Ground substance</b> (70% water; GAGs, proteoglycans, glycoproteins).</p></div>
+          <div class="ar"><p>يتكوّن الرباط من ثلاثة مكونات رئيسية: <b>الألياف</b> (حزم كولاجينية مع ألياف شاربي المغروسة)، <b>الخلايا</b> (تصنيعية، دفاعية، حالّة، بقايا ظهارية، خلايا سلفية)، و<b>المادة بين الخلوية</b> (٧٠٪ ماء؛ غليكوزأمينوغلَكانات، بروتيوغليكانات، غليكوبروتينات).</p></div>
+          <div class="table-wrap" aria-label="Fibers, Cells, Ground Substance">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Component</span><span class="ar">المكوّن</span></th>
+                  <th><span class="en">Key facts</span><span class="ar">نِقاط أساسية</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="en">Fibers</span><span class="ar">الألياف</span></td>
+                  <td><span class="en">Type I collagen; wavy bundles; Sharpey fibers anchor into cementum & bone.</span><span class="ar">كولاجين نمط I؛ حزم متموجة؛ ألياف شاربي مثبتة في الملاط والعظم.</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Cells</span><span class="ar">الخلايا</span></td>
+                  <td><span class="en">Fibroblasts dominate; also osteo-/cemento-blasts & -clasts, immune cells, rests of Malassez, progenitors.</span><span class="ar">يهيمن الأرومات الليفية؛ مع خلايا مُشكِّلة/هادمة للعظم والملاط، خلايا مناعية، بقايا مالاسيز، خلايا سلفية.</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Ground substance</span><span class="ar">المادة بين الخلوية</span></td>
+                  <td><span class="en">Gel matrix; rich in water; contains GAGs, proteoglycans, fibronectin, laminin; cementicles may be present.</span><span class="ar">مادة هلامية غنية بالماء؛ تحوي GAGs وبروتيوغليكانات وفايبرونيكتين ولامينين؛ قد توجد «سمنتيكلات».</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 6/28</span><span class="ar">الصفحات المرجعية: ٦/٢٨</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden><div class="en">Collagen confers tensile strength “greater than steel” per unit weight.</div><div class="ar">الكولاجين يمنح قوة شد عالية «تفوق الفولاذ» بالنسبة للوزن.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">Triad = Fibers + Cells + Ground substance.</div><div class="ar">الثلاثي: الألياف + الخلايا + المادة بين الخلوية.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Each component adapts to load and inflammation, driving clinical changes.</div><div class="ar">كل مكوّن يتكيّف مع الحمل والالتهاب، ما يفسّر التغيرات السريرية.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Map each exam question to this triad first.</div><div class="ar">اربط أي سؤال امتحاني بهذا الثلاثي أولاً.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 4. Principal fiber groups -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">4) Principal Fiber Groups</span><span class="ar">٤) مجموعات الألياف الرئيسية</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Principal fibers (mostly Type I collagen) form six groups that develop sequentially: <b>Transseptal, Alveolar crest, Horizontal, Oblique, Apical, Interradicular</b>. Sharpey fibers insert into bone and cementum.</p>
+          </div>
+          <div class="ar">
+            <p>تتألف الألياف الرئيسية (معظمها كولاجين نمط I) من ست مجموعات تتطور تدريجيًا: <b>عبر الحاجز، قمة السنخ، الأفقية، المائلة، القمية، وبين الجذور</b>. تُغرس ألياف شاربي في العظم والملاط.</p>
+          </div>
+          <div class="table-wrap" aria-label="Fiber groups and functions">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Group</span><span class="ar">المجموعة</span></th>
+                  <th><span class="en">Attachment</span><span class="ar">الارتباط</span></th>
+                  <th><span class="en">Main function</span><span class="ar">الوظيفة الأساسية</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><span class="en">Transseptal</span><span class="ar">عبر الحاجز</span></td>
+                  <td><span class="en">Cementum to cementum across alveolar crest</span><span class="ar">من الملاط إلى الملاط فوق قمة السنخ</span></td>
+                  <td><span class="en">Maintain tooth alignment; reform after bone loss</span><span class="ar">تحافظ على اصطفاف الأسنان؛ تعيد التشكل بعد فقد العظم</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Alveolar crest</span><span class="ar">قمة السنخ</span></td>
+                  <td><span class="en">Cervical cementum → alveolar crest</span><span class="ar">الملاط العنقي → قمة العظم السنخي</span></td>
+                  <td><span class="en">Resist extrusion & lateral movements</span><span class="ar">تقاوم البزوغ الزائد والحركات الجانبية</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Horizontal</span><span class="ar">الأفقية</span></td>
+                  <td><span class="en">Cementum → alveolar bone at right angles</span><span class="ar">الملاط → العظم بزاوية قائمة</span></td>
+                  <td><span class="en">Resist tipping forces</span><span class="ar">تقاوم قوى الميلان</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Oblique</span><span class="ar">المائلة</span></td>
+                  <td><span class="en">Cementum → bone in coronal oblique direction</span><span class="ar">الملاط → العظم باتجاه إكليلي مائل</span></td>
+                  <td><span class="en"><b>Largest group</b>; convert vertical load to bone tension</span><span class="ar"><b>أكبر مجموعة</b>؛ تحوّل الحمل العمودي إلى شد عظمي</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Apical</span><span class="ar">القمية</span></td>
+                  <td><span class="en">Apex cementum → socket</span><span class="ar">الملاط الذروي → الحُق</span></td>
+                  <td><span class="en">Stabilize apex; absent in incompletely formed roots</span><span class="ar">تثبّت الذروة؛ تغيب في الجذور غير المكتملة</span></td>
+                </tr>
+                <tr>
+                  <td><span class="en">Interradicular</span><span class="ar">بين الجذور</span></td>
+                  <td><span class="en">Between roots of multirooted teeth</span><span class="ar">في مناطق تفرع الجذور للأسنان متعددة الجذور</span></td>
+                  <td><span class="en">Resist separation of roots</span><span class="ar">تقـاوم تباعد الجذور</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 7,8,9,10/28</span><span class="ar">الصفحات المرجعية: ٧،٨،٩،١٠/٢٨</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Sharpey fibers are the mineralized terminal portions within bone and cementum.</div><div class="ar">ألياف شاربي هي النهايات المتكلسة داخل العظم والملاط.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">Order from CEJ apically: alveolar crest → horizontal → oblique → apical (plus transseptal & interradicular).</div><div class="ar">الترتيب من عنق السن ذروياً: السنخية القمية → الأفقية → المائلة → القمية (مع عبر الحاجز وبين الجذور).</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Vertical load is mainly handled by oblique fibers converting it to tension.</div><div class="ar">الحمل العمودي تُديره أساسًا الألياف المائلة بتحويله إلى شد.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Make a small sketch of each group’s direction before exams.</div><div class="ar">ارسم مخططًا صغيرًا لاتجاه كل مجموعة قبل الامتحان.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 5. Other fibers & remodeling -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">5) Other Fibers & Remodeling</span><span class="ar">٥) ألياف أخرى وإعادة التشكل</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Although mature elastin is absent in PDL, two immature forms exist: <b>oxytalan</b> and <b>elaunin</b>. A small-fiber network, the <b>indifferent fiber plexus</b>, interweaves among principal bundles. PDL fibers are continuously remodeled to adapt to function and stimuli.</p>
+          </div>
+          <div class="ar">
+            <p>لا يحتوي الرباط على إيلاستين ناضج، لكن توجد صورتان غير ناضجتين: <b>أوكسيتالان</b> و<b>إلاونين</b>. كما توجد شبكة ألياف صغيرة تُسمى <b>الضفيرة غير المتمايزة</b> تتداخل مع الحزم الرئيسية. تُعاد نمذجة الألياف باستمرار وفقًا للوظيفة والمثيرات.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 11/28</span><span class="ar">الصفحات المرجعية: ١١/٢٨</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Oxytalan fibers are common around blood vessels in PDL.</div><div class="ar">تشيع ألياف الأوكسيتالان حول الأوعية الدموية في الرباط.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 الأهمية</span></div><div class="body" hidden><div class="en">Remodeling capacity underlies orthodontic tooth movement.</div><div class="ar">قابلية إعادة التشكل هي أساس حركة الأسنان التقويمية.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden><div class="en">Indifferent plexus adds multi-directional support among larger bundles.</div><div class="ar">الضفيرة غير المتمايزة تمنح دعماً متعدد الاتجاهات بين الحزم الأكبر.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Associate “oxy” with vessels (oxygen) to recall oxytalan’s perivascular presence.</div><div class="ar">اربط “oxy” بالأوعية (الأكسجين) لتتذكّر توضع الأوكسيتالان حولها.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 6. Cellular elements -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">6) Cellular Elements</span><span class="ar">٦) العناصر الخلوية</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Fibroblasts</b> (most numerous): synthesize collagen and phagocytose “old” fibers. <b>Osteoblasts/cementoblasts</b> form bone/cementum; <b>osteoclasts/odontoclasts</b> resorb. <b>Immune cells</b> (neutrophils, lymphocytes, macrophages, mast cells, eosinophils) defend. <b>Rests of Malassez</b> are remnants of Hertwig’s sheath; can contribute to periapical/lateral root cysts. <b>Undifferentiated mesenchymal cells</b> act as progenitors; neurovascular-associated cells present.</p>
+          </div>
+          <div class="ar">
+            <p><b>الأرومات الليفية</b> (الأكثر): تُصنّع الكولاجين وتهضم الألياف «القديمة». <b>الخلايا المُشكِّلة للعظم/الملاط</b> تُكوّن العظم/الملاط؛ و<b>الخلايا الحالّة</b> (هادمة) تُذيب. <b>خلايا مناعية</b> (عدلات، لمفاويات، بلعميات، خلايا بدينة، حمضات). <b>بقايا مالاسيز</b> بقايا غمد هرتويغ وقد تُسهم في أكياس حول ذروية أو جانبية. <b>خلايا متوسطة غير متمايزة</b> كسلفيات؛ وخلايا مرتبطة بالعصب والأوعية.</p>
+          </div>
+          <div class="table-wrap" aria-label="Cell types in PDL">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Cell</span><span class="ar">الخليّة</span></th>
+                  <th><span class="en">Role</span><span class="ar">الدور</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td><span class="en">Fibroblast</span><span class="ar">أرومة ليفية</span></td><td><span class="en">Collagen turnover (synthesis + phagocytosis)</span><span class="ar">تجديد الكولاجين (تصنيع + بلعمة)</span></td></tr>
+                <tr><td><span class="en">Osteoblast/Cementoblast</span><span class="ar">مشكِّلة عظم/ملاط</span></td><td><span class="en">Formation of bone/cementum</span><span class="ar">تكوين العظم/الملاط</span></td></tr>
+                <tr><td><span class="en">Osteoclast/Odontoclast</span><span class="ar">هادمة عظم/سنّ</span></td><td><span class="en">Resorption</span><span class="ar">الامتصاص</span></td></tr>
+                <tr><td><span class="en">Rests of Malassez</span><span class="ar">بقايا مالاسيز</span></td><td><span class="en">Epithelial remnants; cyst potential</span><span class="ar">بقايا ظهارية؛ قد تُشكّل أكياسًا</span></td></tr>
+                <tr><td><span class="en">Immune cells</span><span class="ar">خلايا مناعية</span></td><td><span class="en">Defense & inflammation</span><span class="ar">الدفاع والالتهاب</span></td></tr>
+                <tr><td><span class="en">Undifferentiated mesenchyme</span><span class="ar">نسيج متوسط غير متمايز</span></td><td><span class="en">Progenitor pool</span><span class="ar">خزان سلفي</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 12,13,14/28</span><span class="ar">الصفحات المرجعية: ١٢،١٣،١٤/٢٨</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Proliferation of epithelial rests may form periapical or lateral root cysts.</div><div class="ar">تكاثر بقايا مالاسيز قد يؤدي إلى أكياس حول ذروية أو جانبية.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Fibroblasts align along principal fibers and show pseudopodia-like processes.</div><div class="ar">الأرومات الليفية مصطفّة مع الألياف الرئيسية ولها امتدادات تشبه الأقدام الكاذبة.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 الأهمية</span></div><div class="body" hidden><div class="en">Cell diversity explains PDL’s rapid turnover and repair capacity.</div><div class="ar">تنوع الخلايا يفسر سرعة التجدد والقدرة الإصلاحية للرباط.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Build a 2-column cheat: “Cell → Function” for quick recall.</div><div class="ar">اصنع جدول «خليّة ← وظيفة» للمراجعة السريعة.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 7. Ground substance -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">7) Ground Substance & Cementicles</span><span class="ar">٧) المادة بين الخلوية والسمنتيكلات</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Ground substance is a gel-like matrix in every nook between fibers/fibrils; integrity is essential for cell function. It contains GAGs (e.g., hyaluronic acid), proteoglycans, and glycoproteins (fibronectin, laminin). High water (~70%) supports shock absorption and diffusion. <b>Cementicles</b> are calcified masses attached or free near root surfaces.</p>
+          </div>
+          <div class="ar">
+            <p>المادة بين الخلوية عبارة عن مصفوفة هلامية تملأ كل الفجوات بين الألياف/الليفات؛ سلامتها ضرورية لعمل الخلايا. تحوي GAGs (مثل الهيالورونيك)، بروتيوغليكانات، وغليكوبروتينات (فايبرونيكتين، لامينين). محتواها العالي من الماء (~٧٠٪) يدعم امتصاص الصدمات والانتشار. <b>السمنتيكلات</b> كتل متكلسة قد تكون ملتصقة أو حرة قرب سطح الجذر.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 15,16/28</span><span class="ar">الصفحات المرجعية: ١٥،١٦/٢٨</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Most ground substance components are secreted by fibroblasts.</div><div class="ar">تُفرَز مكونات المادة بين الخلوية أساسًا من الأرومات الليفية.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Hyaluronic acid helps retain water and facilitates nutrient diffusion.</div><div class="ar">يساعد الهيالورونيك على احتباس الماء وتسهيل انتشار المغذيات.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 الأهمية</span></div><div class="body" hidden><div class="en">Edema or matrix degradation alters cell function and tooth support.</div><div class="ar">الوذمة أو تدهور المصفوفة يؤثر على عمل الخلايا ودعم السن.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذير</span></div><div class="body" hidden><div class="en">Cementicles may complicate periodontal instrumentation if prominent.</div><div class="ar">قد تُعقّد السمنتيكلات البارزة تجريف الجذر وأدوات دواعم الأسنان.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 8. Vascular, lymphatics, nerves -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">8) Blood, Lymphatics & Innervation</span><span class="ar">٨) التروية الدموية واللمفية والتعصيب</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Vessels:</b> PDL is richly vascular. Arterial supply reaches via (1) apical vessels (pulpal), (2) intra-alveolar branches penetrating bone, (3) gingival branches coronally. Veins accompany arteries.</p>
+            <p><b>Lymph:</b> Drains to submental, submandibular, jugulodigastric, and deep cervical nodes.</p>
+            <p><b>Nerves:</b> Sensory (touch, pressure, pain, proprioception) and autonomic (to vessels).</p>
+          </div>
+          <div class="ar">
+            <p><b>الأوعية:</b> الرباط غني بالتروية. يصل الدم عبر (١) أوعية ذروية تغذي اللب، (٢) فروع ضمن سنخية تخترق العظم، (٣) فروع لثوية تَدخل تاجيًّا. وترافق الأوردة الشرايين.</p>
+            <p><b>اللمف:</b> يصرّف إلى العقد تحت الذقن وتحت الفك السفلي والوداجي ذات البطنين والعنقية العميقة.</p>
+            <p><b>الأعصاب:</b> ألياف حسية (لمس، ضغط، ألم، إدراك وضعي) وألياف ودّية للأوعية.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 17,18,19/28</span><span class="ar">الصفحات المرجعية: ١٧،١٨،١٩/٢٨</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">PDL proprioception enables fine occlusal adjustments and protective reflexes.</div><div class="ar">الإحساس الموضعي في الرباط يسمح بضبط الإطباق وردود الفعل الوقائية.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Apically derived vessels explain rapid endo-perio spread.</div><div class="ar">الأوعية الذروية تفسّر سرعة انتشار آفات بين اللب والدواعم.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Three arterial sources secure collateral flow.</div><div class="ar">ثلاثة مصادر شريانية تؤمن جريانًا جانبيًا.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Mnemonic “AIG”: Apical–Intra-alveolar–Gingival.</div><div class="ar">اختصار «AIG»: ذروي–ضمن سنخي–لثوي.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 9. Unique features & clinical -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">9) Unique Features & Clinical Notes</span><span class="ar">٩) سمات مميزة وملاحظات سريرية</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Unique:</b> PDL contains cells that both form and resorb bone/cementum; and collagen bundles oriented to connect these mineralized tissues.</p>
+            <p><b>Clinical relevance:</b> Restorative dentistry must respect biologic width; occlusal trauma alters PDL; orthodontics relies on PDL remodeling; chronic periodontitis damages PDL; GTR techniques aim to regenerate lost PDL; periapical granulomas may harbor epithelium forming cysts.</p>
+          </div>
+          <div class="ar">
+            <p><b>مميز:</b> يحوي الرباط خلايا تُشكل وتُذيب العظم/الملاط؛ وحزم كولاجينية موجهة لربط النسيجين المتكلسين.</p>
+            <p><b>سريريًا:</b> الترميمات يجب أن تحترم العرض الحيوي؛ الرض الإطباقي يغير الرباط؛ الحركات التقويمية تعتمد على إعادة التشكل؛ التهاب النسج حول السنية المزمن يضر الرباط؛ تُستخدم تقنية الإرشاد التجديدي (GTR) لإصلاح التلف؛ قد تحتوي الحبيبات حول الذروية على خلايا ظهارية تُكوّن أكياسًا.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 20,21/28</span><span class="ar">الصفحات المرجعية: ٢٠،٢١/٢٨</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذير</span></div><div class="body" hidden><div class="en">Violating biologic width risks chronic inflammation and attachment loss.</div><div class="ar">انتهاك العرض الحيوي قد يسبب التهابًا مزمنًا وفقد ارتباط.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">PDL sensitivity helps detect high spots after restorations.</div><div class="ar">حساسية الرباط تُساعِد في كشف نقاط مرتفعة بعد الترميمات.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 الأهمية</span></div><div class="body" hidden><div class="en">PDL health is central to tooth longevity and periodontal therapy success.</div><div class="ar">سلامة الرباط أساس لدوام السن ونجاح علاج دواعم الأسنان.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Link each clinical scenario to a specific PDL component (fiber/cell/matrix).</div><div class="ar">اربط كل حالة سريرية بمكوّن محدد من الرباط (ألياف/خلايا/مصفوفة).</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 10. Summary -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">10) Summary</span><span class="ar">١٠) الخلاصة</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>The PDL is a specialized, dynamic connective tissue linking cementum and alveolar bone. Its <b>fibers</b> (especially oblique) bear masticatory loads; <b>cells</b> enable rapid turnover, defense, and remodeling; <b>ground substance</b> supports diffusion and shock absorption. Vascular, lymphatic, and neural elements provide nutrition and sensation. Unique bidirectional remodeling makes PDL central to orthodontics and periodontal regeneration.</p>
+          </div>
+          <div class="ar">
+            <p>الرباط حول السني نسيج ضام متخصص وديناميكي يربط الملاط بالعظم السنخي. <b>الألياف</b> (خصوصًا المائلة) تتحمّل قوى المضغ؛ <b>الخلايا</b> تؤمّن التجدد السريع والدفاع وإعادة التشكل؛ <b>المادة بين الخلوية</b> تدعم الانتشار وامتصاص الصدمات. وتوفّر الأوعية واللمف والأعصاب التغذية والحس. القدرة الثنائية على البناء والهدم تجعل الرباط محور التقويم وتجديد النسج حول السنية.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 28/28</span><span class="ar">الصفحات المرجعية: ٢٨/٢٨</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Oblique fibers are the largest group and convert vertical load to bone tension.</div><div class="ar">الألياف المائلة أكبر المجموعات وتحوّل الحمل العمودي إلى شد عظمي.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">Triad: Fibers–Cells–Matrix; Tri-supply: Apical–Intra-alveolar–Gingival.</div><div class="ar">ثلاثي: ألياف–خلايا–مصفوفة؛ وثلاثي التروية: ذروي–ضمن سنخي–لثوي.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Review the fiber groups table the night before OSCEs.</div><div class="ar">راجع جدول مجموعات الألياف قبل الـOSCE.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 الأهمية</span></div><div class="body" hidden><div class="en">Strong grasp of PDL biology guides diagnosis and treatment planning.</div><div class="ar">إتقان بيولوجيا الرباط يوجّه التشخيص وخطة العلاج.</div></div></div>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <!-- Glossary -->
+  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+  <div class="grid g3x4" id="glossary">
+    <div class="card"><div class="head">Sharpey fibers / ألياف شاربي</div><div class="content" hidden><div class="en">Mineralized terminal fiber portions inserted into bone and cementum.</div><div class="ar">نهايات ليفية متكلسة مغروسة في العظم والملاط.</div></div></div>
+    <div class="card"><div class="head">Transseptal / عبر الحاجز</div><div class="content" hidden><div class="en">Fibers spanning cementum of adjacent teeth over alveolar crest.</div><div class="ar">ألياف تمتد بين ملاط أسنان متجاورة فوق قمة السنخ.</div></div></div>
+    <div class="card"><div class="head">Oblique fibers / الألياف المائلة</div><div class="content" hidden><div class="en">Largest group, converting vertical load into bone tension.</div><div class="ar">أكبر مجموعة؛ تحوّل الحمل العمودي إلى شد عظمي.</div></div></div>
+    <div class="card"><div class="head">Rests of Malassez / بقايا مالاسيز</div><div class="content" hidden><div class="en">Epithelial remnants of Hertwig’s sheath; cyst potential.</div><div class="ar">بقايا ظهارية لغمد هرتويغ؛ قد تُكوّن أكياسًا.</div></div></div>
+    <div class="card"><div class="head">Ground substance / المادة بين الخلوية</div><div class="content" hidden><div class="en">Hydrated gel (GAGs, proteoglycans, glycoproteins) supporting diffusion.</div><div class="ar">هلام مائي (GAGs وبروتيوغليكانات وغليكوبروتينات) يدعم الانتشار.</div></div></div>
+    <div class="card"><div class="head">Cementicles / سمنتيكلات</div><div class="content" hidden><div class="en">Calcified masses attached/free near root surfaces.</div><div class="ar">كتل متكلسة ملتصقة/حرّة قرب سطح الجذر.</div></div></div>
+    <div class="card"><div class="head">Oxytalan / أوكسيتالان</div><div class="content" hidden><div class="en">Immature elastin-like fibers, often perivascular in PDL.</div><div class="ar">ألياف شبيهة بالإيلاستين غير ناضجة، حول الأوعية غالبًا.</div></div></div>
+    <div class="card"><div class="head">Biologic width / العرض الحيوي</div><div class="content" hidden><div class="en">Dimension of junctional epithelium + connective attachment to tooth.</div><div class="ar">قياس الظهارة الملتصقة + الارتباط الضام بالسن.</div></div></div>
+    <div class="card"><div class="head">GTR / الإرشاد التجديدي</div><div class="content" hidden><div class="en">Guided Tissue Regeneration—surgical technique to regenerate PDL/bone.</div><div class="ar">تقنية جراحية لتجديد الرباط والعظم حول السني.</div></div></div>
+  </div>
+
+  <!-- Flashcards -->
+  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+  <div class="grid g3x4" id="flashcards">
+    <div class="card"><div class="head"><span class="en">1 — Main components of PDL?</span><span class="ar">١ — المكونات الأساسية للرباط؟</span></div><div class="content" hidden><span class="en">Fibers, Cells, Ground substance.</span><span class="ar">الألياف، الخلايا، المادة بين الخلوية.</span></div></div>
+    <div class="card"><div class="head"><span class="en">2 — Average PDL width?</span><span class="ar">٢ — العرض الوسطي؟</span></div><div class="content" hidden><span class="en">~0.2 mm (range ~0.15–0.38 mm).</span><span class="ar">حوالي 0.2 مم (المدى ~0.15–0.38 مم).</span></div></div>
+    <div class="card"><div class="head"><span class="en">3 — Largest fiber group?</span><span class="ar">٣ — أكبر مجموعة ألياف؟</span></div><div class="content" hidden><span class="en">Oblique fibers.</span><span class="ar">الألياف المائلة.</span></div></div>
+    <div class="card"><div class="head"><span class="en">4 — Function of alveolar crest fibers?</span><span class="ar">٤ — وظيفة ألياف قمة السنخ؟</span></div><div class="content" hidden><span class="en">Prevent extrusion; resist lateral movements.</span><span class="ar">تمنع البزوغ الزائد وتقاوم الحركات الجانبية.</span></div></div>
+    <div class="card"><div class="head"><span class="en">5 — Dominant cell in PDL?</span><span class="ar">٥ — الخلية السائدة؟</span></div><div class="content" hidden><span class="en">Fibroblast.</span><span class="ar">الأرومة الليفية.</span></div></div>
+    <div class="card"><div class="head"><span class="en">6 — Two immature elastin forms?</span><span class="ar">٦ — صورتان غير ناضجتين للإيلاستين؟</span></div><div class="content" hidden><span class="en">Oxytalan and elaunin.</span><span class="ar">أوكسيتالان وإلاونين.</span></div></div>
+    <div class="card"><div class="head"><span class="en">7 — PDL on radiograph?</span><span class="ar">٧ — كيف يظهر شعاعياً؟</span></div><div class="content" hidden><span class="en">Thin radiolucent line around root.</span><span class="ar">خط مُعتم بالأشعة رفيع حول الجذر.</span></div></div>
+    <div class="card"><div class="head"><span class="en">8 — Lymph drainage of PDL?</span><span class="ar">٨ — التصريف اللمفي؟</span></div><div class="content" hidden><span class="en">Submental, submandibular, jugulodigastric, deep cervical nodes.</span><span class="ar">تحت الذقن، تحت الفك السفلي، الوداجي ذات البطنين، العنقية العميقة.</span></div></div>
+    <div class="card"><div class="head"><span class="en">9 — Clinical implication of rests of Malassez?</span><span class="ar">٩ — دلالة بقايا مالاسيز سريرياً؟</span></div><div class="content" hidden><span class="en">May proliferate to form periapical or lateral root cysts.</span><span class="ar">قد تتكاثر لتكوّن أكياسًا حول ذروية أو جانبية.</span></div></div>
+  </div>
+</main>
+
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+<!-- Built from Template.html; content distilled from ocih-23.pdf -->
+</body>
+</html>

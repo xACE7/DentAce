@@ -1,0 +1,897 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>pharma-5 — Drugs Contraindicated in Pregnancy</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+</style>
+</head>
+<body class="lang-en">
+<header>
+  <div class="hdr wrap">
+    <div class="left">
+      <div class="title">🦷 Dentistry 3rd year</div>
+      <div class="subtitle">Lecture 5</div>
+      <button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+        <span class="lab en">EN</span>
+        <span class="lab ar">AR</span>
+      </button>
+    </div>
+  </div>
+</header>
+<main class="wrap">
+  <!-- Dua (kept ar only, permanent) -->
+  <div class="dua">اللهم انفعنا بما علمتنا وزدنا علمًا، واجعل هذا العلم حجةً لنا لا علينا، ووفّقنا لخدمة المرضى برحمةٍ وحكمة. 🤍</div>
+
+  <!-- Topic -->
+  <div class="chip-box">
+    <span class="chip">
+      <span class="en"><b>Topic: Drugs Contraindicated in Pregnancy</b></span>
+      <span class="ar"><b>الموضوع: الأدوية الممنوعة في الحمل</b></span>
+    </span>
+  </div>
+
+  <div class="sections">
+
+    <!-- 1. Teratogenesis: definition & outcomes -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">1) Teratogenesis — What it means</span><span class="ar">١) التشوّه الجنينـي — التعريف</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Teratogenesis</b> = any <i>structural or functional</i> defect arising in the embryo/fetus due to a drug/agent. It also includes <b>IUGR</b>, <b>embryo/fetal death</b>, and <b>transplacental carcinogenesis</b>.</p>
+          </div>
+          <div class="ar">
+            <p><b>التشوّه الجنيني</b> هو حدوث خلل <i>شكلي أو وظيفي</i> في الجنين/الجنين المبكر بسبب دواء/عامل، ويشمل أيضًا <b>تأخر النمو داخل الرحم</b>، و<b>وفاة الجنين</b>، و<b>السرطان العابر للمشيمة</b>.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 3/15</span>
+          <span class="ar">الصفحات المرجعية: ٣/١٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Teratogenesis covers structure <i>and</i> function; not only visible malformations.</div><div class="ar">التشوّه يشمل الخلل الشكلي <i>والوظيفي</i> وليس التشوّهات الظاهرة فقط.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Counseling pregnant patients requires understanding risks beyond “birth defects”.</div><div class="ar">تثقيف الحامل يتطلب فهم مخاطر تتجاوز “عيوب الولادة”.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think: <b>SFD</b> — Structure, Function, Death (possible outcomes).</div><div class="ar">تذكّر: <b>ش‌و‌م</b> — شكل، وظيفة، موت.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 2. Developmental timing -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">2) Timing of Exposure</span><span class="ar">٢) توقيت التعرّض</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Pre-/Post-implantation (0→8 weeks)</b>: teratogens may cause <i>abortion</i>, <i>no effect</i>, an <i>anatomic defect</i>, or a <i>metabolic/functional defect</i> detectable later in life.</p>
+            <p><b>Fetal period (9 weeks→birth)</b>: influence on <i>neurologic development</i>, <i>growth</i>, <i>physiology/biochemistry</i>, <i>mental development</i>, <i>reproductive function</i>, or <i>death</i>.</p>
+          </div>
+          <div class="ar">
+            <p><b>قبل/بعد الانغراس (٠→٨ أسابيع)</b>: قد يسبب العامل <i>إجهاضًا</i>، أو <i>لا تأثير</i>، أو <i>عيبًا تشريحيًا</i>، أو <i>خللًا وظيفيًا/استقلابيًا</i> يظهر لاحقًا.</p>
+            <p><b>المرحلة الجنينية (٩ أسابيع→الولادة)</b>: يؤثر على <i>التطور العصبي</i> و<i>النمو</i> و<i>الوظائف</i> و<i>التطور العقلي</i> و<i>القدرة الإنجابية</i> أو قد يؤدي إلى <i>وفاة</i> الجنين.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 3/15</span>
+          <span class="ar">الصفحات المرجعية: ٣/١٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Early high-dose exposure → abortion; mid-organogenesis → structural defect.</div><div class="ar">التعرّض المبكر بجرعة عالية → إجهاض؛ أثناء تكوين الأعضاء → عيب بنيوي.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden=""><div class="en">Map drug risks to trimesters to predict likely outcomes.</div><div class="ar">اربط مخاطر الدواء بالثلث الحملي لتوقّع النتائج.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Do not assume “late exposure is safe”. CNS and growth remain vulnerable.</div><div class="ar">لا تفترض أن “التعرّض المتأخر آمن”. لا يزال الجهاز العصبي والنمو عرضة للخطر.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 3. Burden & examples of anomalies -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">3) Congenital Anomalies: Scope & Examples</span><span class="ar">٣) العيوب الخِلقية: العبء والأمثلة</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Burden:</b> Birth defects ≈ <i>1/5 of infant deaths</i>. Leading groups: <i>cardiac</i>, then <i>pulmonary</i>, then <i>chromosomal</i> abnormalities.</p>
+            <p><b>Illustrative anomalies:</b> anencephaly, cleft lip/palate, microtia.</p>
+          </div>
+          <div class="ar">
+            <p><b>العبء:</b> تشكّل العيوب الخِلقية نحو <i>خُمس وفيات الرضّع</i>. الأشيع: <i>القلبيّة</i> ثم <i>الرئويّة</i> ثم <i>الكروموسوميّة</i>.</p>
+            <p><b>أمثلة:</b> انعدام الدماغ، شفة/حنك مشقوق، صِغَر الأُذينة.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 4,5/15</span>
+          <span class="ar">الصفحات المرجعية: ٤، ٥/١٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Cardiac defects are the largest subgroup among fatal anomalies.</div><div class="ar">تشوّهات القلب هي المجموعة الأكبر بين الأسباب القاتلة.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Early anomaly scans guide perinatal management and counseling.</div><div class="ar">الفحوص المبكرة للعيوب الخِلقية توجه التدبير قبل الولادة والاستشارة.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden=""><div class="en">Pair each anomaly with typical teratogens during revision.</div><div class="ar">أقرِن كل شذوذ بالعوامل المشوِّهة الشائعة أثناء المراجعة.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 4. FDA pregnancy categories -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">4) FDA Categories (A–X)</span><span class="ar">٤) تصنيفات FDA للحمل (A–X)</span></h2>
+        <div class="sec-body">
+          <div class="en"><p>Meaning of traditional FDA risk categories used in the lecture:</p></div>
+          <div class="ar"><p>معاني تصنيفات مخاطر الحمل التقليدية المستخدمة في المحاضرة:</p></div>
+
+          <div class="table-wrap" aria-label="FDA categories table">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Category</span><span class="ar">الفئة</span></th>
+                  <th><span class="en">Definition</span><span class="ar">التعريف</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>A</td>
+                  <td><span class="en">No fetal risk shown in controlled human studies (all trimesters).</span><span class="ar">لا يوجد خطر مُثبت على الجنين في دراسات بشرية مضبوطة (جميع الثلثات).</span></td>
+                </tr>
+                <tr>
+                  <td>B</td>
+                  <td><span class="en">Animal risk not confirmed in human studies across trimesters.</span><span class="ar">أظهرت الحيوانات خطرًا لم يُؤكَّد في البشر عبر الثلثات.</span></td>
+                </tr>
+                <tr>
+                  <td>C</td>
+                  <td><span class="en">Risk in animals; no adequate human data or none available.</span><span class="ar">ثبت الخطر في الحيوانات؛ لا تتوافر دراسات بشرية كافية أو غير متاحة.</span></td>
+                </tr>
+                <tr>
+                  <td>D</td>
+                  <td><span class="en">Positive evidence of human fetal risk; use may be acceptable despite risks.</span><span class="ar">دليل إيجابي على خطر جنيني في البشر؛ قد يُستخدم رغم المخاطر.</span></td>
+                </tr>
+                <tr>
+                  <td>X</td>
+                  <td><span class="en">Risk clearly outweighs benefits; contraindicated in pregnancy.</span><span class="ar">الخطر يفوق الفائدة بوضوح؛ مُضاد للاستطباب في الحمل.</span></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 6/15</span>
+          <span class="ar">الصفحات المرجعية: ٦/١٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><b>A</b> = Always OK; <b>X</b> = eXclude; middle letters escalate risk.</div><div class="ar"><b>A</b> = آمنة غالبًا؛ <b>X</b> = يُستبعد تمامًا؛ والوسط تصاعدي المخاطر.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden=""><div class="en">Modern labeling uses PLLR, but this lecture uses legacy A–X.</div><div class="ar">التوسيم الحديث PLLR؛ لكن هذه المحاضرة تعتمد نظام A–X القديم.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Quickly triages drug safety when choices are limited during pregnancy.</div><div class="ar">يساعد في فرز أمان الأدوية بسرعة عند محدودية الخيارات أثناء الحمل.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 5. Examples of teratogenic agents -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">5) Classic Teratogens & Key Effects</span><span class="ar">٥) عوامل مشوِّهة تقليدية وتأثيراتها</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>• <b>Thalidomide (X):</b> limb defects and other congenital anomalies.</p>
+            <p>• <b>Warfarin (D):</b> skeletal abnormalities (e.g., spinal curvature) and limb defects.</p>
+            <p>• <b>Aminoglycosides (C) high dose:</b> VIII cranial nerve damage (ototoxicity).</p>
+            <p>• <b>ACE inhibitors (D):</b> renal tubular dysplasia; skull & pulmonary hypoplasia.</p>
+            <p>• <b>Antineoplastics (D):</b> growth retardation; cleft palate; eye, kidney, cardiac, limb, skull defects.</p>
+          </div>
+          <div class="ar">
+            <p>• <b>ثاليدوميد (X):</b> عيوب الأطراف وتشوهات خلقية أخرى.</p>
+            <p>• <b>وارفارين (D):</b> تشوهات هيكلية (مثل انحناء العمود) وعيوب الأطراف.</p>
+            <p>• <b>الأمينوغليكوزيدات (C) بجرعات عالية:</b> أذية العصب الثامن (سمّية سمعية).</p>
+            <p>• <b>مثبطات ACE (D):</b> خلل أنبوبي كلوي؛ نقص تَعَظُّم الجمجمة والرئتين.</p>
+            <p>• <b>الأدوية المضادة للسرطان (D):</b> تثبّط النمو؛ شق الحنك؛ عيوب في العين والكلية والقلب والأطراف والجمجمة.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 7/15</span>
+          <span class="ar">الصفحات المرجعية: ٧/١٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Avoid ACE inhibitors from 2nd–3rd trimester due to fetopathy.</div><div class="ar">تجنّب مثبطات ACE في الثلثين الثاني والثالث بسبب اعتلال الجنين.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Consider safer anticoagulants instead of warfarin in pregnancy.</div><div class="ar">استبدل الوارفارين بمضاد تخثّر أكثر أمانًا أثناء الحمل.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">“<b>T</b>halidomide = <b>T</b>iny limbs”.</div><div class="ar">“<b>ثاليدومايد → أطراف صغيرة</b>”.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 6. Dental patients general guidance -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">6) Dental Care During Pregnancy</span><span class="ar">٦) رعاية الأسنان أثناء الحمل</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Safe:</b> preventive, diagnostic, and restorative dental treatment <i>throughout</i> pregnancy. Local anesthetics with epinephrine (e.g., bupivacaine, lidocaine, mepivacaine) may be used.</p>
+            <p><b>Workplace caution:</b> pregnant dental personnel require special consideration when exposed to <i>nitrous oxide</i> and <i>radiation</i>.</p>
+            <p><b>Do not delay:</b> root canals or restorations can be performed safely; delaying may worsen problems.</p>
+          </div>
+          <div class="ar">
+            <p><b>آمن:</b> العلاجات الوقائية والتشخيصية والترميمية <i>طوال</i> الحمل. يمكن استخدام مخدّرات موضعية مع أدرينالين (مثل بيوبيفاكايين، ليدوكايين، ميبفيفاكاين).</p>
+            <p><b>تحذير مهني:</b> يجب مراعاة العاملات الحوامل عند التعرّض لـ<i>أكسيد النيتروس</i> و<i>الأشعة</i>.</p>
+            <p><b>لا تؤجِّلي:</b> علاج الجذور أو الحشوات آمن؛ التأخير قد يزيد التعقيد.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 8/15</span>
+          <span class="ar">الصفحات المرجعية: ٨/١٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Routine dental care is not only safe but recommended in pregnancy.</div><div class="ar">الرعاية السنية الروتينية آمنة ومُستحسنة أثناء الحمل.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Proceed with a symptomatic endodontic treatment rather than postponing.</div><div class="ar">باشري علاج العصب عند وجود أعراض بدل التأجيل.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Oral infection itself carries maternal–fetal risks if left untreated.</div><div class="ar">عدوى الفم غير المعالجة قد تضر الأم والجنين.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 7. Antibiotics table -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">7) Common Dental Drugs — Antibiotics</span><span class="ar">٧) الأدوية الشائعة في طب الأسنان — المضادات الحيوية</span></h2>
+        <div class="sec-body">
+          <div class="en"><p><i>Key remarks:</i> fetal ototoxicity with gentamycin; tooth discoloration with tetracycline; maternal toxicity/fetal death with chloramphenicol.</p></div>
+          <div class="ar"><p><i>ملاحظات مهمة:</i> سمّية سمعية جنينية مع الجنتاميسين؛ تصبّغ الأسنان مع التيتراسيكلين؛ سمّية أمومية/وفاة جنينية مع الكلورامفينيكول.</p></div>
+
+          <div class="table-wrap" aria-label="Antibiotics">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Drug</span><span class="ar">الدواء</span></th>
+                  <th><span class="en">Use in Pregnancy</span><span class="ar">الاستخدام في الحمل</span></th>
+                  <th><span class="en">Use in Lactation</span><span class="ar">الاستخدام في الإرضاع</span></th>
+                  <th><span class="en">Remarks</span><span class="ar">ملاحظات</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Amoxicillin</td><td>YES</td><td>YES</td><td><span class="en">—</span><span class="ar">—</span></td></tr>
+                <tr><td>Metronidazole</td><td>YES</td><td>YES</td><td>—</td></tr>
+                <tr><td>Erythromycin</td><td>YES</td><td>YES</td><td>—</td></tr>
+                <tr><td>Penicillin</td><td>YES</td><td>YES</td><td>—</td></tr>
+                <tr><td>Cephalosporins</td><td>YES</td><td>YES</td><td>—</td></tr>
+                <tr><td>Gentamycin</td><td>YES</td><td>YES</td><td><span class="en">Fetal ototoxicity risk</span><span class="ar">خطر سمّية سمعية جنينية</span></td></tr>
+                <tr><td>Clindamycin</td><td>YES</td><td>YES</td><td>—</td></tr>
+                <tr><td>Tetracycline</td><td>NO</td><td>NO</td><td><span class="en">Tooth discoloration</span><span class="ar">تصبّغ الأسنان</span></td></tr>
+                <tr><td>Chloramphenicol</td><td>NO</td><td>NO</td><td><span class="en">Maternal toxicity / fetal death</span><span class="ar">سمّية أمومية/وفاة جنينية</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 9/15</span>
+          <span class="ar">الصفحات المرجعية: ٩/١٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Prefer penicillins/cephalosporins for odontogenic infections.</div><div class="ar">يُفضّل البنسلينات/السيفالوسبورينات لالتهابات الأسنان.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Avoid tetracyclines completely in pregnancy/lactation.</div><div class="ar">تجنّب التيتراسيكلينات تمامًا في الحمل والإرضاع.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden=""><div class="en">Link “Tetracycline → Teeth staining”.</div><div class="ar">اربط “تيتراسيكلين → تصبّغ الأسنان”.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 8. Analgesics -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">8) Analgesics</span><span class="ar">٨) المسكنات</span></h2>
+        <div class="sec-body">
+          <div class="en"><p><i>Remarks:</i> postpartum hemorrhage with aspirin; respiratory depression with morphine.</p></div>
+          <div class="ar"><p><i>ملاحظات:</i> نزف ما بعد الولادة مع الأسبرين؛ كبت تنفّسي مع المورفين.</p></div>
+
+          <div class="table-wrap" aria-label="Analgesics">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Drug</span><span class="ar">الدواء</span></th>
+                  <th><span class="en">Use in Pregnancy</span><span class="ar">الاستخدام في الحمل</span></th>
+                  <th><span class="en">Use in Lactation</span><span class="ar">الاستخدام في الإرضاع</span></th>
+                  <th><span class="en">Remarks</span><span class="ar">ملاحظات</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Acetaminophen</td><td>YES</td><td>YES</td><td>—</td></tr>
+                <tr><td>Morphine</td><td>YES</td><td>YES</td><td><span class="en">Respiratory depression risk</span><span class="ar">خطر كبت تنفّسي</span></td></tr>
+                <tr><td>Meperidine</td><td>YES</td><td>YES</td><td>—</td></tr>
+                <tr><td>Oxycodone</td><td>WITH CAUTION</td><td>WITH CAUTION</td><td>—</td></tr>
+                <tr><td>Hydrocodone</td><td>WITH CAUTION</td><td>WITH CAUTION</td><td>—</td></tr>
+                <tr><td>Propoxyphene</td><td>WITH CAUTION</td><td>WITH CAUTION</td><td>—</td></tr>
+                <tr><td>Pentazocine</td><td>WITH CAUTION</td><td>WITH CAUTION</td><td>—</td></tr>
+                <tr><td>Aspirin</td><td>NOT IN 3RD TRIMESTER</td><td>NO</td><td><span class="en">Postpartum hemorrhage</span><span class="ar">نزف ما بعد الولادة</span></td></tr>
+                <tr><td>Ibuprofen</td><td>NOT IN 3RD TRIMESTER</td><td>NO</td><td>—</td></tr>
+                <tr><td>Naproxen</td><td>NOT IN 3RD TRIMESTER</td><td>NO</td><td>—</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 10/15</span>
+          <span class="ar">الصفحات المرجعية: ١٠/١٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Avoid NSAIDs late in pregnancy (ductus arteriosus closure risk).</div><div class="ar">تجنّب مضادات الالتهاب في أواخر الحمل (خطر انغلاق القناة الشريانية).</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Paracetamol is first-line analgesic in pregnancy.</div><div class="ar">الباراسيتامول هو الخيار الأول للألم في الحمل.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden=""><div class="en">Memorize: “NSAIDs — <b>No</b> in 3rd trimester”.</div><div class="ar">احفظ: “مضادات الالتهاب — <b>لا</b> في الثلث الثالث”.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 9. Antifungals -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">9) Antifungals</span><span class="ar">٩) مضادات الفطريات</span></h2>
+        <div class="sec-body">
+          <div class="en"><p><i>Remark:</i> fetal toxicity with ketoconazole.</p></div>
+          <div class="ar"><p><i>ملاحظة:</i> سمّية جنينية مع الكيتوكونازول.</p></div>
+          <div class="table-wrap" aria-label="Antifungals">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Drug</span><span class="ar">الدواء</span></th>
+                  <th><span class="en">Use in Pregnancy</span><span class="ar">الاستخدام في الحمل</span></th>
+                  <th><span class="en">Use in Lactation</span><span class="ar">الاستخدام في الإرضاع</span></th>
+                  <th><span class="en">Remarks</span><span class="ar">ملاحظات</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Clotrimazole</td><td>YES</td><td>YES</td><td>—</td></tr>
+                <tr><td>Nystatin</td><td>YES</td><td>YES</td><td>—</td></tr>
+                <tr><td>Fluconazole</td><td>WITH CAUTION</td><td>WITH CAUTION</td><td>—</td></tr>
+                <tr><td>Ketoconazole</td><td>WITH CAUTION</td><td>WITH CAUTION</td><td><span class="en">Fetal toxicity</span><span class="ar">سمّية جنينية</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 11/15</span>
+          <span class="ar">الصفحات المرجعية: ١١/١٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Topicals (nystatin/clotrimazole) preferred for oral candidiasis.</div><div class="ar">الموضعي (نيستاتين/كلوتريمازول) مفضّل للسلاق الفموي.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Use systemic azoles only when benefits outweigh risks.</div><div class="ar">تُستخدم الأزولات الجهازية فقط عند تفوّق الفائدة على الخطر.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden=""><div class="en">Associate “Keto = <b>K</b>aution”.</div><div class="ar">اربط “كيتو = <b>ح</b>ذر”.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 10. Local anesthetics -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">10) Local Anesthetics</span><span class="ar">١٠) المخدرات الموضعية</span></h2>
+        <div class="sec-body">
+          <div class="en"><p><i>Remark:</i> fetal bradycardia with mepivacaine & bupivacaine.</p></div>
+          <div class="ar"><p><i>ملاحظة:</i> بطء قلب جنيني مع الميبفيفاكاين والبيوبيفاكايين.</p></div>
+
+          <div class="table-wrap" aria-label="Local anesthetics">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Drug</span><span class="ar">الدواء</span></th>
+                  <th><span class="en">Use in Pregnancy</span><span class="ar">الاستخدام في الحمل</span></th>
+                  <th><span class="en">Use in Lactation</span><span class="ar">الاستخدام في الإرضاع</span></th>
+                  <th><span class="en">Remarks</span><span class="ar">ملاحظات</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Lidocaine</td><td>YES</td><td>YES</td><td>—</td></tr>
+                <tr><td>Prilocaine</td><td>YES</td><td>YES</td><td>—</td></tr>
+                <tr><td>Etidocaine</td><td>YES</td><td>YES</td><td>—</td></tr>
+                <tr><td>Mepivacaine</td><td>WITH CAUTION</td><td>YES</td><td><span class="en">Fetal bradycardia</span><span class="ar">بطء قلب جنيني</span></td></tr>
+                <tr><td>Bupivacaine</td><td>WITH CAUTION</td><td>YES</td><td><span class="en">Fetal bradycardia</span><span class="ar">بطء قلب جنيني</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 12/15</span>
+          <span class="ar">الصفحات المرجعية: ١٢/١٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Lidocaine is widely used; add epinephrine to improve hemostasis.</div><div class="ar">ليدوكايين مستخدم على نطاق واسع؛ يضاف الأدرينالين لتحسين الإرقاء.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Use minimum effective dose; aspirate to avoid intravascular injection.</div><div class="ar">استخدم أقل جرعة فعّالة؛ اسحب قبل الحقن لتجنّب الوريدي.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden=""><div class="en">“Mepi/Bupi → <b>B</b>radycardia”.</div><div class="ar">“ميبي/بيوبي → <b>ب</b>طء قلب”.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 11. Corticosteroids -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">11) Corticosteroids</span><span class="ar">١١) الكورتيكوستيرويدات</span></h2>
+        <div class="sec-body">
+          <div class="en"><p><b>Prednisolone:</b> use in pregnancy — <b>YES</b>; lactation — <b>YES</b>.</p></div>
+          <div class="ar"><p><b>بريدنيزولون:</b> في الحمل — <b>نعم</b>؛ في الإرضاع — <b>نعم</b>.</p></div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 13/15</span>
+          <span class="ar">الصفحات المرجعية: ١٣/١٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden=""><div class="en">Use lowest effective dose and shortest duration.</div><div class="ar">استخدم أقل جرعة فعّالة وأقصر مدة.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Consider stress-dose steroids for major procedures if chronically on steroids.</div><div class="ar">راعِ جرعات الإجهاد بالستيرويد للإجراءات الكبيرة عند مستخدميها المزمنين.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden=""><div class="en">Only one steroid listed — easy mark in exams.</div><div class="ar">دواء وحيد مذكور — نقطة سهلة بالامتحان.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 12. Sedatives/Hypnotics -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">12) Sedative/Hypnotic Agents</span><span class="ar">١٢) المهدّئات/المنوّمات</span></h2>
+        <div class="sec-body">
+          <div class="en"><p><i>Remarks:</i> spontaneous abortions with nitrous oxide; cleft lip/palate with benzodiazepines.</p></div>
+          <div class="ar"><p><i>ملاحظات:</i> إجهاضات تلقائية مع أكسيد النيتروس؛ شفة/حنك مشقوق مع البنزوديازيبينات.</p></div>
+
+          <div class="table-wrap" aria-label="Sedatives/Hypnotics">
+            <table>
+              <thead>
+                <tr>
+                  <th><span class="en">Drug</span><span class="ar">الدواء</span></th>
+                  <th><span class="en">Use in Pregnancy</span><span class="ar">الاستخدام في الحمل</span></th>
+                  <th><span class="en">Use in Lactation</span><span class="ar">الاستخدام في الإرضاع</span></th>
+                  <th><span class="en">Remarks</span><span class="ar">ملاحظات</span></th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr><td>Nitrous oxide</td><td>NOT IN 1ST TRIMESTER</td><td>YES</td><td><span class="en">Spontaneous abortion risk</span><span class="ar">خطر الإجهاض التلقائي</span></td></tr>
+                <tr><td>Barbiturates</td><td>NO</td><td>NO</td><td>—</td></tr>
+                <tr><td>Benzodiazepines</td><td>NO</td><td>NO</td><td><span class="en">Cleft lip/palate risk</span><span class="ar">خطر شفة/حنك مشقوق</span></td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 14/15</span>
+          <span class="ar">الصفحات المرجعية: ١٤/١٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Avoid benzodiazepines and barbiturates in pregnancy and lactation.</div><div class="ar">تجنّب البنزوديازيبينات والباربيتورات في الحمل والإرضاع.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">If anxiolysis needed, consider non-pharmacologic strategies first.</div><div class="ar">لتهدئة القلق فضّل الأساليب غير الدوائية أولًا.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Sedation choices directly impact fetal outcomes in dental settings.</div><div class="ar">اختيار المهدّئ يؤثر مباشرة على نتائج الجنين في العيادة السنية.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 13. Summary -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">13) Summary</span><span class="ar">١٣) الملخص</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>• Teratogenesis spans structural, functional, and lethal outcomes; timing dictates the pattern of injury.</p>
+            <p>• Traditional FDA A–X categories stratify risk; <b>X</b> = contraindicated.</p>
+            <p>• Key teratogens: thalidomide (limbs), warfarin (skeletal), high-dose aminoglycosides (VIII nerve), ACEi (renal/skull/lung), antineoplastics (multi-system).</p>
+            <p>• Dental care is generally safe; choose antibiotics and analgesics wisely; avoid tetracyclines, chloramphenicol, late-pregnancy NSAIDs, and high-risk sedatives.</p>
+          </div>
+          <div class="ar">
+            <p>• يشمل التشوّه البنيوي والوظيفي وحتى الوفيّات؛ يحدد التوقيت نمط الأذى.</p>
+            <p>• تصنيفات A–X تُفرّق المخاطر؛ <b>X</b> = ممنوع في الحمل.</p>
+            <p>• مشوّهات مهمة: ثاليدوميد (الأطراف)، وارفارين (الهيكل)، أمينوغليكوزيدات عالية الجرعة (العصب الثامن)، مثبطات ACE (الكلية/الجمجمة/الرئتين)، مضادات السرطان (متعددة الأجهزة).</p>
+            <p>• الرعاية السنية آمنة عمومًا؛ اختر المضادات والمسكنات بحكمة؛ تجنّب التيتراسيكلينات والكلورامفينيكول ومضادات الالتهاب في الثلث الأخير والمهدّئات عالية الخطورة.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 3–14/15</span>
+          <span class="ar">الصفحات المرجعية: ٣–١٤/١٥</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden=""><div class="en">Build a 3-column crib sheet: Drug → Category → Dental note.</div><div class="ar">اصنع ملخصًا بثلاثة أعمدة: الدواء → الفئة → ملاحظة سنية.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">“<b>X</b> = Contraindicated; <b>3rd tri</b> = No NSAIDs”.</div><div class="ar">“<b>X</b> = ممنوع؛ <b>الثلث الثالث</b> = لا لمضادات الالتهاب”.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Optimizes maternal therapy while protecting fetal development.</div><div class="ar">يحسّن علاج الأم ويحمي تطوّر الجنين.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+  </div>
+
+  <!-- Glossary -->
+  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+  <div class="grid g3x4" id="glossary">
+    <div class="card"><div class="head">Teratogenesis / التشوّه الجنيني</div><div class="content" hidden=""><div class="en">Drug-induced structural/functional fetal defects.</div><div class="ar">عيوب جنينية بنيوية/وظيفية يسببها دواء.</div></div></div>
+    <div class="card"><div class="head">IUGR / تأخر النمو داخل الرحم</div><div class="content" hidden=""><div class="en">Fetal growth below expected for age.</div><div class="ar">نمو الجنين أقل من المتوقع لعمره.</div></div></div>
+    <div class="card"><div class="head">Pre-implantation / قبل الانغراس</div><div class="content" hidden=""><div class="en">0–8 weeks period including organogenesis.</div><div class="ar">الفترة ٠–٨ أسابيع وتشمل تكوين الأعضاء.</div></div></div>
+    <div class="card"><div class="head">Fetal period / المرحلة الجنينية</div><div class="content" hidden=""><div class="en">9 weeks to birth growth & maturation.</div><div class="ar">من ٩ أسابيع حتى الولادة: نمو ونضج.</div></div></div>
+    <div class="card"><div class="head">FDA Category X / فئة X</div><div class="content" hidden=""><div class="en">Risk outweighs benefit; contraindicated.</div><div class="ar">الخطر يفوق الفائدة؛ ممنوع.</div></div></div>
+    <div class="card"><div class="head">Aminoglycoside / أمينوغليكوزيد</div><div class="content" hidden=""><div class="en">Antibiotic class; high-dose ototoxicity risk.</div><div class="ar">فئة مضادّات حيوية؛ خطر سمّية سمعية بجرعات عالية.</div></div></div>
+    <div class="card"><div class="head">ACE inhibitor / مثبط ACE</div><div class="content" hidden=""><div class="en">Antihypertensives linked to fetopathy.</div><div class="ar">خافضات ضغط مرتبطة باعتلال جنيني.</div></div></div>
+    <div class="card"><div class="head">Cleft palate / شق الحنك</div><div class="content" hidden=""><div class="en">Failure of palatal fusion; may be drug-related.</div><div class="ar">فشل التحام الحنك؛ قد يكون دوائي المنشأ.</div></div></div>
+    <div class="card"><div class="head">Bradycardia / بطء القلب</div><div class="content" hidden=""><div class="en">Lower-than-normal heart rate; fetal risk with some LA.</div><div class="ar">معدل قلب منخفض؛ خطر جنيني مع بعض المخدرات الموضعية.</div></div></div>
+    <div class="card"><div class="head">Ototoxicity / سمّية سمعية</div><div class="content" hidden=""><div class="en">Drug-induced damage to the auditory system.</div><div class="ar">أذى دوائي للجهاز السمعي.</div></div></div>
+  </div>
+
+  <!-- Flashcards -->
+  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+  <div class="grid g3x4" id="flashcards">
+    <div class="card"><div class="head"><span class="en">1 — Define teratogenesis.</span><span class="ar">١ — عرّف التشوّه الجنيني.</span></div><div class="content" hidden=""><span class="en">Structural/functional fetal defects incl. IUGR & death.</span><span class="ar">عيوب جنينية بنيوية/وظيفية وتشمل تأخر النمو والوفاة.</span></div></div>
+    <div class="card"><div class="head"><span class="en">2 — Most vulnerable period?</span><span class="ar">٢ — أكثر فترة هشاشة؟</span></div><div class="content" hidden=""><span class="en">0–8 weeks (organogenesis) for structural defects.</span><span class="ar">٠–٨ أسابيع (تكوين الأعضاء) للعيوب البنيوية.</span></div></div>
+    <div class="card"><div class="head"><span class="en">3 — Category X meaning?</span><span class="ar">٣ — معنى الفئة X؟</span></div><div class="content" hidden=""><span class="en">Risk > benefit → contraindicated.</span><span class="ar">الخطر أكبر من الفائدة → ممنوع.</span></div></div>
+    <div class="card"><div class="head"><span class="en">4 — Thalidomide causes?</span><span class="ar">٤ — ماذا يسبب الثاليدوميد؟</span></div><div class="content" hidden=""><span class="en">Limb defects ± other anomalies.</span><span class="ar">عيوب الأطراف وتشوهات أخرى.</span></div></div>
+    <div class="card"><div class="head"><span class="en">5 — Warfarin fetal effects?</span><span class="ar">٥ — تأثيرات وارفارين الجنينية؟</span></div><div class="content" hidden=""><span class="en">Skeletal (spine curvature), limb defects.</span><span class="ar">تشوهات هيكلية (انحناء العمود)، عيوب الأطراف.</span></div></div>
+    <div class="card"><div class="head"><span class="en">6 — Safe dental LA?</span><span class="ar">٦ — مخدّر موضعي آمن؟</span></div><div class="content" hidden=""><span class="en">Lidocaine (YES in pregnancy & lactation).</span><span class="ar">ليدوكايين (نعم في الحمل والإرضاع).</span></div></div>
+    <div class="card"><div class="head"><span class="en">7 — Avoid in 3rd trimester?</span><span class="ar">٧ — ما الذي يُتجنّب في الثلث الثالث؟</span></div><div class="content" hidden=""><span class="en">NSAIDs (aspirin, ibuprofen, naproxen).</span><span class="ar">مضادات الالتهاب (أسبرين، إيبوبروفين، نابروكسين).</span></div></div>
+    <div class="card"><div class="head"><span class="en">8 — Antibiotics to avoid?</span><span class="ar">٨ — مضادات حيوية يجب تجنّبها؟</span></div><div class="content" hidden=""><span class="en">Tetracycline, chloramphenicol.</span><span class="ar">تيتراسيكلين، كلورامفينيكول.</span></div></div>
+    <div class="card"><div class="head"><span class="en">9 — Sedatives with high risk?</span><span class="ar">٩ — مهدّئات عالية الخطورة؟</span></div><div class="content" hidden=""><span class="en">Benzodiazepines, barbiturates (NO).</span><span class="ar">بنزوديازيبينات، باربيتورات (لا).</span></div></div>
+  </div>
+
+  <!-- References -->
+  <div class="glossary-box" style="margin-top:20px"><h3><span class="en">📖 References (from PDF)</span><span class="ar">📖 المراجع (من الملف)</span></h3></div>
+  <div class="section" style="grid-template-columns:1fr;">
+    <div class="content-col">
+      <div class="sec-body">
+        <div class="en">
+          <p>• Bart–Johnson, Frank J. Dowd. <i>Pharmacology and Therapeutics for Dentistry</i>, 6th ed., 2011, Elsevier, USA.</p>
+          <p>• Karen Whalen, Richard Finkel, Thomas A. Panavelil. <i>Lippincott Illustrated Reviews: Pharmacology</i>, 6th ed., 2015, Wolters Kluwer, Philadelphia.</p>
+        </div>
+        <div class="ar">
+          <p>• بارت–جونسون، فرانك ج. دود. <i>علم الأدوية والعلاجات لطب الأسنان</i>، الطبعة السادسة، 2011، إلزيفير، الولايات المتحدة.</p>
+          <p>• كارين ويلان، ريتشارد فينكل، توماس أ. بانافيل. <i>مراجعات ليبنكوت المصوّرة: علم الأدوية</i>، الطبعة السادسة، 2015، ولترز كلوفر، فيلادلفيا.</p>
+        </div>
+      </div>
+      <div class="source-footer">
+        <span class="en">Source pages: 15/15</span>
+        <span class="ar">الصفحات المرجعية: ١٥/١٥</span>
+      </div>
+    </div>
+  </div>
+
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+<!--
+FILE NAME: pharma-5.html
+SOURCE PDF TOTAL PAGES: 15 (counted from page 1 including cover/index).
+Content adapted from: /mnt/data/pharma-5.pdf
+-->
+</body>
+</html>
