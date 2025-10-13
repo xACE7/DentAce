@@ -1,0 +1,833 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>rad-4 — Health Physics: Safety & Protection</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+
+  /* Charts sizing on mobiles (kept from template) */
+  .chart-svg{ width:100%; height:auto; display:block; }
+  @media (max-width: 560px){
+    .chart-svg{ height: 380px !important; }          
+    .chart-svg text{ font-size: 13.5px !important; } 
+    .chart-svg circle{ r: 7 !important; }            
+    .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } 
+    .chart-svg path{ stroke-width: 4 !important; }   
+    .chart-svg line{ stroke-width: 2.5 !important; } 
+  }
+</style>
+</head>
+<body class="lang-en">
+<header>
+  <div class="hdr wrap">
+    <div class="left">
+      <div class="title">🦷 Dentistry 3rd year</div>
+      <div class="subtitle">Lecture 4</div>
+      <button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+        <span class="lab en">EN</span>
+        <span class="lab ar">AR</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- Dua (Arabic only; not toggled) -->
+  <div class="dua">اللهم افتح لنا أبوابَ العلم، وبارك لنا في وقتِنا وفهمِنا، واجعل هذا الدرسَ سببًا لحفظِ صحةِ المرضى وسلامةِ العاملين. آمين.</div>
+
+  <!-- Topic (short) -->
+  <div class="chip-box">
+    <span class="chip">
+      <span class="en"><b>Topic: Radiation Safety & Protection in Dental Radiology</b></span>
+      <span class="ar"><b>الموضوع: سلامة الإشعاع والوقاية في طب الأسنان الشعاعي</b></span>
+    </span>
+  </div>
+
+  <div class="sections">
+    <!-- Section 1 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">Deterministic vs. Stochastic Effects</span><span class="ar">الآثار الحتمية مقابل الاحتمالية</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Deterministic (tissue reactions):</b> require a threshold high dose; severity rises with dose. Examples: organ damage, acute radiation syndrome.</p>
+            <p><b>Stochastic:</b> no known threshold; probability (not severity) increases with dose. Examples: heritable DNA damage, carcinogenesis.</p>
+            <p><b>Protection goal:</b> keep below deterministic thresholds and minimize stochastic risk.</p>
+          </div>
+          <div class="ar">
+            <p><b>الآثار الحتمية:</b> تحتاج إلى جرعة عتبية عالية؛ تزداد الشدة بزيادة الجرعة. أمثلة: تلف الأعضاء، متلازمة الإشعاع الحاد.</p>
+            <p><b>الآثار الاحتمالية:</b> لا عتبة معروفة؛ تزداد <u>الاحتمالية</u> مع الجرعة لا الشدة. أمثلة: أذيات وراثية، التسرطن الإشعاعي.</p>
+            <p><b>هدف الحماية:</b> البقاء دون عتبات الحتمي وتقليل خطر الاحتمالي قدر الإمكان.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 1,2,3,4,5/40</span>
+          <span class="ar">الصفحات المرجعية: ١،٢،٣،٤،٥/٤٠</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Deterministic effects have thresholds; stochastic effects do not.</div><div class="ar">للآثار الحتمية عتبة؛ بينما الاحتمالية بلا عتبة.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Drives dose limits (avoid tissue reactions) and ALARA (reduce chance of cancer).</div><div class="ar">يُوجّه حدود الجرعات (تجنب التفاعلات) ومبدأ ألـARA (خفض احتمال السرطان).</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Think: “D = Dose threshold”; “S = Stochastic probability.”</div><div class="ar">تذكّر: «ح = حتمي=حاجز (عتبة)» و«ا = احتمالي=احتمال».</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Severity scaling applies only to deterministic effects.</div><div class="ar">تغيّر الشدة مع الجرعة يخص الآثار الحتمية فقط.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 2 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">Sources of Radiation</span><span class="ar">مصادر الإشعاع</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Natural (background):</b> cosmic/space, terrestrial, internal (radon and progeny, in foods/buildings).</p>
+            <p><b>Artificial:</b> medical (X-rays, nuclear medicine), consumer products, occupational, nuclear fuel.</p>
+            <div class="table-wrap" aria-label="Natural vs Artificial">
+              <table>
+                <thead>
+                  <tr>
+                    <th><span class="en">Category</span><span class="ar">الفئة</span></th>
+                    <th><span class="en">Examples</span><span class="ar">أمثلة</span></th>
+                    <th><span class="en">Notes</span><span class="ar">ملاحظات</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="en">Natural (Background)</span><span class="ar">طبيعي (خلفي)</span></td>
+                    <td><span class="en">Cosmic, terrestrial, radon</span><span class="ar">كوني، أرضي، رادون</span></td>
+                    <td><span class="en">Ubiquitous, varies with altitude/soil</span><span class="ar">منتشر، يتباين حسب الارتفاع/التربة</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="en">Artificial</span><span class="ar">مصطنع</span></td>
+                    <td><span class="en">Medical imaging, nuclear medicine</span><span class="ar">التصوير الطبي، الطب النووي</span></td>
+                    <td><span class="en">Largest controllable source for public</span><span class="ar">أكبر مصدر يمكن التحكم به لعامة الناس</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="ar">
+            <p><b>الطبيعي (خلفية):</b> إشعاع كوني/فضائي، أرضي، داخلي (الرادون ونواتجه، في الطعام/المباني).</p>
+            <p><b>الاصطناعي:</b> طبي (الأشعة السينية، الطب النووي)، منتجات استهلاكية، مهني، وقود نووي.</p>
+            <p>يمثل الخلفي معظم التعرض غير الطبي، بينما الطبّي هو الأكثر قابلية للخفض.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 6,7,8,9/40</span>
+          <span class="ar">الصفحات المرجعية: ٦،٧،٨،٩/٤٠</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Dental practice sits within “artificial/medical” sources.</div><div class="ar">ممارسة طب الأسنان ضمن المصادر الاصطناعية/الطبية.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Radon adds indoor background; varies by building.</div><div class="ar">الرادون يزيد الخلفية داخل المنازل؛ يختلف حسب المبنى.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding sources guides reduction strategies.</div><div class="ar">معرفة المصادر يوجّه استراتيجيات التقليل.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Mnemonic “C-T-R” = Cosmic, Terrestrial, Radon (natural).</div><div class="ar">اختصار “ك-أ-ر” = كوني، أرضي، رادون (طبيعي).</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 3 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">Dental Radiology: Primary, Leakage, Scatter</span><span class="ar">في الأشعة السنية للأسنان: أولي، تسرب، مبعثر</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Primary beam:</b> photons emitted from the focal spot toward the patient/receptor.</p>
+            <p><b>Leakage radiation:</b> emission from parts of the X-ray tube other than the focal spot.</p>
+            <p><b>Secondary/Scatter:</b> produced within matter as X-rays interact and change direction/energy.</p>
+          </div>
+          <div class="ar">
+            <p><b>الحزمة الأولية:</b> فوتونات من البقعة البؤرية نحو المريض/المستقبل.</p>
+            <p><b>الإشعاع المتسرّب:</b> من أجزاء أنبوب الأشعة غير البقعة البؤرية.</p>
+            <p><b>الثانوي/المبعثر:</b> يتولد داخل المادة أثناء تفاعل الأشعة وتغيّر اتجاهها/طاقتها.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 10,11,12/40</span>
+          <span class="ar">الصفحات المرجعية: ١٠،١١،١٢/٤٠</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Never stand in the primary beam path.</div><div class="ar">لا تقف أبدًا في مسار الحزمة الأولية.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Reduce scatter: use rectangular collimation and proper exposure factors.</div><div class="ar">قلّل التبعثر: استخدم الكلمنجة المستطيلة وعوامل التعريض المناسبة.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Leakage is limited by tube head shielding but not zero.</div><div class="ar">يُحدّه التدريع في رأس الأنبوب لكنه ليس معدومًا.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">“P-L-S” = Primary, Leakage, Scatter.</div><div class="ar">“أ-ت-م” = أولي، تسرب، مبعثر.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 4 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">Regulatory Bodies & ALARA</span><span class="ar">الهيئات التنظيمية ومبدأ ALARA</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>ICRP</b> & <b>NCRP</b> set guidelines to protect people without unduly limiting beneficial uses.</p>
+            <p><b>ALARA</b> = As Low As Reasonably Achievable: assume any dose may carry some stochastic risk; optimize justification, optimization, and limitation.</p>
+          </div>
+          <div class="ar">
+            <p><b>اللجنة الدولية للحماية من الإشعاع (ICRP)</b> و<b>المجلس الوطني للحماية من الإشعاع (NCRP)</b> يضعان إرشادات للحماية دون إعاقة الفوائد.</p>
+            <p><b>ALARA</b> = أقل ما يمكن تحقيقه بشكل معقول: نعتبر أن أي جرعة قد تحمل خطرًا احتماليًا؛ نُحسّن التبرير، التحسين، والتحديد.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 13,14,15/40</span>
+          <span class="ar">الصفحات المرجعية: ١٣،١٤،١٥/٤٠</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">ALARA underpins all exposure reduction in dental X-ray practice.</div><div class="ar">مبدأ ALARA هو أساس تقليل التعرض في أشعة الأسنان.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Justification: do X-ray only if it changes management.</div><div class="ar">التبرير: تصوير الأشعة فقط إذا غيّر الخطة العلاجية.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Link ALARA with “optimize kVp, mAs, collimation.”</div><div class="ar">اربط ALARA بـ “تحسين kVp و mAs والكلمنة”.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Regulators aim to prevent deterministic effects and limit stochastic risk.</div><div class="ar">الهيئات تهدف لمنع الحتمي وتقليل خطر الاحتمالي.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 5 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">Dose Limits (Annual)</span><span class="ar">حدود الجرعات السنوية</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Principles:</b> prevent deterministic effects (stay below thresholds) and keep stochastic risk acceptable.</p>
+            <div class="table-wrap" aria-label="Annual dose limits (exam-style)">
+              <table>
+                <thead>
+                  <tr>
+                    <th><span class="en">Group</span><span class="ar">الفئة</span></th>
+                    <th><span class="en">Effective Dose (per year)</span><span class="ar">الجرعة الفعّالة/سنة</span></th>
+                    <th><span class="en">Tissue/Notes</span><span class="ar">الأنسجة/ملاحظات</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="en">Occupational</span><span class="ar">مهني</span></td>
+                    <td><span class="en">Follow current national/ICRP guidance</span><span class="ar">وفق الإرشادات الوطنية/ICRP الحالية</span></td>
+                    <td><span class="en">Lens, skin, extremity limits apply</span><span class="ar">حدود إضافية للعدسة والجلد والأطراف</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="en">Public</span><span class="ar">عامّة</span></td>
+                    <td><span class="en">Lower than occupational</span><span class="ar">أقل من المهني</span></td>
+                    <td><span class="en">Dental facilities must shield accordingly</span><span class="ar">يلزم التدريع وفقًا لذلك</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="ar">
+            <p><b>المبادئ:</b> منع التفاعلات النسيجية الحتمية والحفاظ على خطر السرطان مقبولًا مجتمعيًا.</p>
+            <p>طب الأسنان عادة ضمن جرعات منخفضة، لكن الالتزام بالحدود إلزامي.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 16,17,18/40</span>
+          <span class="ar">الصفحات المرجعية: ١٦،١٧،١٨/٤٠</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Dose limits guide facility design and work practices.</div><div class="ar">حدود الجرعة توجه تصميم المنشأة والممارسة.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Never justify imaging solely for administrative reasons.</div><div class="ar">لا تُجرِ التصوير لأسباب إدارية فقط.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Pregnant staff follow standard limits with added ALARA precautions.</div><div class="ar">العاملات الحوامل ضمن الحدود القياسية مع احتياطات إضافية لـ ALARA.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">“Limit = Law; ALARA = Optimization.”</div><div class="ar">«الحد = قانون؛ ألـARA = تحسين».</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 6 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">Reducing Dental Exposure: Patient Selection & Conduct</span><span class="ar">تقليل التعرض: اختيار المريض وإجراء الفحص</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Patient selection:</b> professional judgment; prescribe radiographs after clinical exam and only if results affect care; pick appropriate views.</p>
+            <p><b>Conduct of exam:</b> equipment choice, technique choice, optimized operation, and quality processing reduce dose and repeat rates.</p>
+          </div>
+          <div class="ar">
+            <p><b>اختيار المريض:</b> قرار مهني؛ تُطلب الصور بعد الفحص السريري فقط إذا أثّرت على المعالجة؛ اختيار الإسقاطات المناسبة.</p>
+            <p><b>تنفيذ الفحص:</b> اختيار الجهاز والتقنية والتشغيل الأمثل والمعالجة الجيدة يقلل الجرعة وإعادة التصوير.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 19,20,21/40</span>
+          <span class="ar">الصفحات المرجعية: ١٩،٢٠،٢١/٤٠</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Most dose savings come from avoiding unnecessary exams.</div><div class="ar">أكبر توفير بالجرعة يأتي من تجنّب الصور غير اللازمة.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Always link prescription to specific diagnostic questions.</div><div class="ar">اربط الطلب بسؤال تشخيصي محدد.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Remember: “Exam after exam” is wrong; it’s “Clinical → Decide → X-ray.”</div><div class="ar">التسلسل الصحيح: «سريري → قرار → أشعة».</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">High-quality processing reduces repeats (dose).</div><div class="ar">المعالجة الجيدة تقلل إعادة التصوير (جرعة أقل).</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 7 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">Image Receptor & FSFD</span><span class="ar">مستقبل الصورة والمسافة بؤرة-فيلم</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Intra-oral film speed:</b> D, E, F groups (F fastest → lowest dose; possible slight image trade-offs).</p>
+            <p><b>Screen-film:</b> rare-earth screens + film reduce exposure (~panoramic/ceph). T-grain films gather more light.</p>
+            <p><b>FSFD (focal spot–film distance):</b> with proper collimation, longer source-patient distance lowers dose (~32%) and improves sharpness; less beam divergence.</p>
+            <div class="table-wrap" aria-label="FSFD & PID">
+              <table>
+                <thead>
+                  <tr>
+                    <th><span class="en">Parameter</span><span class="ar">البارامتر</span></th>
+                    <th><span class="en">Spec</span><span class="ar">المواصفة</span></th>
+                    <th><span class="en">Effect</span><span class="ar">الأثر</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="en">PID length</span><span class="ar">طول الـPID</span></td>
+                    <td><span class="en">≥ 18 cm; types 20 cm (8ʺ), 41 cm (16ʺ)</span><span class="ar">≥ ١٨ سم؛ أنواع ٢٠ سم و٤١ سم</span></td>
+                    <td><span class="en">Longer → less divergence, less dose</span><span class="ar">الأطول → تباعد أقل وجرعة أقل</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="en">Skin–PID distance</span><span class="ar">المسافة بين الجلد وPID</span></td>
+                    <td><span class="en">≥ 2.5 cm</span><span class="ar">≥ ٢٫٥ سم</span></td>
+                    <td><span class="en">Standard safety clearance</span><span class="ar">مسافة أمان قياسية</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="ar">
+            <p><b>سرعة الفيلم داخل الفم:</b> المجموعات D وE وF (الأسرع F → أقل جرعة مع احتمال نقص طفيف بالجودة).</p>
+            <p><b>فيلم مع شاشات تقوية:</b> عناصر أرضية نادرة + فيلم تُخفّض الجرعة (بانوراما/سيف).</p>
+            <p><b>المسافة بؤرة-فيلم:</b> مع الكلمنة الجيدة، المسافات الأطول تُنقص الجرعة ~٣٢٪ وتحسّن الوضوح.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 22,23,24/40</span>
+          <span class="ar">الصفحات المرجعية: ٢٢،٢٣،٢٤/٤٠</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">F-speed film needs less exposure than E or D.</div><div class="ar">فيلم F يتطلب تعريضًا أقل من E أو D.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Historical note: older “regular” films needed up to ~9 s for maxillary molar.</div><div class="ar">معلومة تاريخية: أفلام قديمة احتاجت ~٩ ثوانٍ لضرس علوي.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Choosing faster receptors + long FSFD is a low-cost dose reducer.</div><div class="ar">اختيار مستقبل أسرع + مسافة أطول يخفض الجرعة بتكلفة منخفضة.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Link “Long cone” to “Lower dose + sharper image.”</div><div class="ar">اربط «مخروط طويل» بـ «جرعة أقل + صورة أوضح».</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 8 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">Collimation & Filtration</span><span class="ar">الكلمنة والترشيح</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Collimation (beam size limit):</b> for intra-oral radiography, skin field should not exceed 7 cm at >50 kVp. Rectangular PID (≈3.5×4.4 cm) can reduce dose by ~71–80%; film-holder matching further cuts ≈60%.</p>
+            <p><b>Filtration:</b> aluminum equivalent—≥1.5 mm at ≤70 kVp; ≥2.0 mm above 70 kVp—removes long-wavelength photons (non-diagnostic, higher skin dose).</p>
+          </div>
+          <div class="ar">
+            <p><b>الكلمنة:</b> في الصور داخل الفم يجب ألا تتجاوز مساحة الجلد ٧ سم عند >٥٠ كيلوفولت. الـPID المستطيل (≈٣٫٥×٤٫٤ سم) يُخفض الجرعة ~٨٠٪ تقريبًا؛ وحامل الفيلم المتطابق يُقلل إضافيًا ~٦٠٪.</p>
+            <p><b>الترشيح:</b> مكافئ ألومنيوم ≥١٫٥ مم عند ≤٧٠ ك.ف.ق، و≥٢ مم فوق ٧٠ ك.ف.ق لإزالة الفوتونات طويلة الموجة عديمة الفائدة.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 25,26,27/40</span>
+          <span class="ar">الصفحات المرجعية: ٢٥،٢٦،٢٧/٤٠</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Round cones increase patient area dose compared to rectangular.</div><div class="ar">المخاريط الدائرية ترفع مساحة الجرعة مقارنة بالمستطيلة.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Use lead-lined open-end PID and proper holders to align.</div><div class="ar">استخدم PID مفتوح النهاية مبطّنًا بالرصاص وحوامل محاذاة مناسبة.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Filtration improves beam quality (higher HVL) and reduces skin dose.</div><div class="ar">الترشيح يحسّن جودة الحزمة ويقلل جرعة الجلد.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">“Rectangle &amp; Filter = Reduce &amp; Improve.”</div><div class="ar">«مستطيل + مرشح = تخفيض + تحسين».</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 9 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">Processing Quality, Operator Position & Barriers</span><span class="ar">جودة التحميض، تموضع المُشغّل، والحواجز</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Processing:</b> manual (time–temperature) vs automatic; follow chemical/manufacturer recommendations to avoid repeats.</p>
+            <p><b>Position–Distance rule:</b> stand &ge;6 ft (≈1.8 m) from source <u>and</u> at 90–135° to beam.</p>
+            <p><b>Barriers & shielding:</b> lead aprons, thyroid collars, leaded barriers/curtains/bricks/sheets; lightweight lead-free (e.g., xenolite alloys) alternatives exist with comparable protection.</p>
+          </div>
+          <div class="ar">
+            <p><b>التحميض:</b> يدوي (زمن-حرارة) مقابل آلي؛ الالتزام بتوصيات المواد لتجنّب إعادة التصوير.</p>
+            <p><b>قاعدة المسافة-الزاوية:</b> قف على بعد ≥٦ أقدام وبزاوية ٩٠–١٣٥° من الحزمة.</p>
+            <p><b>الحواجز والتدريع:</b> مآزر رصاصية، ياقة درقية، حواجز وستائر/طوب/صفائح رصاصية؛ تتوفر بدائل خالية من الرصاص بفعالية مماثلة.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 28,29,30,31/40</span>
+          <span class="ar">الصفحات المرجعية: ٢٨،٢٩،٣٠،٣١/٤٠</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Use thyroid collar especially for children and young adults.</div><div class="ar">استخدم ياقة درقية خصوصًا للأطفال واليافعين.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Never hold the film/PID during exposure.</div><div class="ar">لا تمسك الفيلم/الـPID أثناء التعريض.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">6-ft/90–135° puts you outside primary and most scatter paths.</div><div class="ar">٦ أقدام و٩٠–١٣٥° تُبقيك خارج مسار الأولي ومعظم المبعثر.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Automatic processors demand maintenance to avoid artifacts.</div><div class="ar">المعالجات الآلية تحتاج صيانة لتفادي الشوائب الصورية.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 10 -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">Dosimetry</span><span class="ar">القياس الجرعي (الدوزيمتري)</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Definition:</b> determining/monitoring radiation exposure or dose.</p>
+            <div class="table-wrap" aria-label="Dosimetry types">
+              <table>
+                <thead>
+                  <tr>
+                    <th><span class="en">Type</span><span class="ar">النوع</span></th>
+                    <th><span class="en">Principle</span><span class="ar">المبدأ</span></th>
+                    <th><span class="en">Use</span><span class="ar">الاستخدام</span></th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><span class="en">Film badge</span><span class="ar">شارة فيلم</span></td>
+                    <td><span class="en">Darkening vs exposure</span><span class="ar">تعتيم الفيلم وفق التعرض</span></td>
+                    <td><span class="en">Monitor low levels over time; practice audit</span><span class="ar">مراقبة الجرعات المنخفضة وتقييم الممارسة</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="en">TLD (LiF/CaF:Mn)</span><span class="ar">TLD (فلوريد الليثيوم/الكالسيوم)</span></td>
+                    <td><span class="en">Trapped electrons emit light when heated; light ∝ dose</span><span class="ar">إلكترونات محتبسة تُصدر ضوءًا بالحرارة؛ الضوء ∝ الجرعة</span></td>
+                    <td><span class="en">Accurate; tissue-equivalent (LiF Z≈soft tissue)</span><span class="ar">دقيق؛ مكافئ نسيجي (LiF قريب من الأنسجة)</span></td>
+                  </tr>
+                  <tr>
+                    <td><span class="en">Ionization chamber</span><span class="ar">غرفة التأين</span></td>
+                    <td><span class="en">Collected charge in air volume</span><span class="ar">شحنة مُجمّعة في حجم هواء</span></td>
+                    <td><span class="en">Measure exposure; e.g., Victoreen condenser r-meter</span><span class="ar">قياس التعرض؛ مثل مقياس فيكتورين المكثّف</span></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="ar">
+            <p><b>التعريف:</b> قياس ومراقبة التعرض/الجرعة الإشعاعية.</p>
+            <p>أجهزة الفيلم وTLD وغرف التأين هي الأكثر شيوعًا في المراقبة المهنية.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 32,33,34,35,36,37,38,39,40/40</span>
+          <span class="ar">الصفحات المرجعية: ٣٢،٣٣،٣٤،٣٥،٣٦،٣٧،٣٨،٣٩،٤٠/٤٠</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">LiF TLD is tissue-equivalent; ideal for personnel monitoring.</div><div class="ar">TLD بفلوريد الليثيوم مكافئ نسيجي؛ مثالي لمراقبة العاملين.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Monthly film badge reports audit safety practices.</div><div class="ar">تقارير شارات الفيلم الشهرية تُقيّم ممارسات السلامة.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">TLD → “Trap-Light-Dose”.</div><div class="ar">TLD → “محبوس-ضوء-جرعة”.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Dosimetry verifies that ALARA is achieved in real practice.</div><div class="ar">القياس الجرعي يثبت تحقيق ALARA عمليًا.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- Section 11 (Summary) -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">Summary</span><span class="ar">الخلاصة</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Radiation safety in dentistry focuses on: correct indication, optimized technique (fast receptors, rectangular collimation, longer FSFD, proper filtration), quality processing, and robust staff/patient protection (position–distance, shielding, dosimetry). Prevent deterministic effects and minimize stochastic risk—always practice ALARA.</p>
+          </div>
+          <div class="ar">
+            <p>تركّز سلامة الإشعاع في طب الأسنان على: طلب مبرَّر، تقنية مُحسّنة (مستقبلات سريعة، كلمنة مستطيلة، مسافة بؤرة-فيلم أطول، ترشيح مناسب)، تحميض عالي الجودة، وحماية فعّالة للعاملين والمرضى (قاعدة المسافة-الزاوية، التدريع، القياس الجرعي). الهدف منع الحتمي وتقليل الاحتمالي—تطبيق ALARA دائمًا.</p>
+          </div>
+        </div>
+        <div class="source-footer">
+          <span class="en">Source pages: 1–40/40</span>
+          <span class="ar">الصفحات المرجعية: ١–٤٠/٤٠</span>
+        </div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Exam trio: <b>Indication</b>, <b>Optimization</b>, <b>Protection</b>.</div><div class="ar">ثلاثي الاختبار: <b>التبرير</b>، <b>التحسين</b>، <b>الحماية</b>.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">“Long cone + rectangle + filter = low dose.”</div><div class="ar">«مخروط طويل + مستطيل + مرشح = جرعة منخفضة».</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Protects patients, staff, and supports public trust.</div><div class="ar">يحمي المرضى والعاملين ويدعم ثقة المجتمع.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Use QA checklists to minimize repeats.</div><div class="ar">استخدم قوائم ضبط الجودة لتقليل الإعادات.</div></div></div>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <!-- Glossary -->
+  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+  <div class="grid g3x4" id="glossary">
+    <div class="card"><div class="head">Deterministic / حتمي</div><div class="content" hidden=""><div class="en">Effects with dose threshold; severity rises with dose.</div><div class="ar">آثار لها عتبة؛ تزداد شدتها مع الجرعة.</div></div></div>
+    <div class="card"><div class="head">Stochastic / احتمالي</div><div class="content" hidden=""><div class="en">No threshold; probability increases with dose.</div><div class="ar">بلا عتبة؛ تزداد الاحتمالية مع الجرعة.</div></div></div>
+    <div class="card"><div class="head">ALARA / المبدأ ALARA</div><div class="content" hidden=""><div class="en">As Low As Reasonably Achievable exposure.</div><div class="ar">أقل ما يمكن تحقيقه بشكل معقول من التعرض.</div></div></div>
+    <div class="card"><div class="head">FSFD / المسافة بؤرة-فيلم</div><div class="content" hidden=""><div class="en">Focal spot–film distance; longer reduces dose & improves sharpness.</div><div class="ar">المسافة بين البقعة البؤرية والفيلم؛ الأطول يقلل الجرعة ويحسّن الحدة.</div></div></div>
+    <div class="card"><div class="head">Collimation / الكلمنة</div><div class="content" hidden=""><div class="en">Limiting X-ray beam size to reduce dose and scatter.</div><div class="ar">تحديد حجم الحزمة لتقليل الجرعة والمبعثر.</div></div></div>
+    <div class="card"><div class="head">Filtration / الترشيح</div><div class="content" hidden=""><div class="en">Aluminum removes low-energy photons (non-diagnostic).</div><div class="ar">الألومنيوم يزيل الفوتونات منخفضة الطاقة غير المفيدة.</div></div></div>
+    <div class="card"><div class="head">TLD / الدوزيمتر الحراري</div><div class="content" hidden=""><div class="en">Stores energy; emits light when heated proportional to dose.</div><div class="ar">يخزن الطاقة ويُصدر ضوءًا بالحرارة يتناسب مع الجرعة.</div></div></div>
+    <div class="card"><div class="head">Ionization Chamber / غرفة التأين</div><div class="content" hidden=""><div class="en">Measures charge from ion pairs in air volume.</div><div class="ar">تقيس الشحنة الناتجة عن التأين في حجم من الهواء.</div></div></div>
+    <div class="card"><div class="head">Leakage / تسرب إشعاعي</div><div class="content" hidden=""><div class="en">Radiation from tube housing not part of primary beam.</div><div class="ar">إشعاع خارج الحزمة الأولية من غلاف الأنبوب.</div></div></div>
+    <div class="card"><div class="head">Rectangular PID / مخروط مستطيل</div><div class="content" hidden=""><div class="en">Open-end lead-lined device shaping beam to rectangle.</div><div class="ar">أداة مبطنة بالرصاص تحدد الحزمة بمستطيل.</div></div></div>
+  </div>
+
+  <!-- Flashcards -->
+  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+  <div class="grid g3x4" id="flashcards">
+    <div class="card"><div class="head"><span class="en">1 — What defines deterministic effects?</span><span class="ar">١ — ما تعريف الآثار الحتمية؟</span></div><div class="content" hidden=""><span class="en">Dose threshold; severity rises with dose.</span><span class="ar">لها عتبة جرعة؛ الشدة تزداد مع الجرعة.</span></div></div>
+    <div class="card"><div class="head"><span class="en">2 — ALARA means?</span><span class="ar">٢ — ماذا يعني ALARA؟</span></div><div class="content" hidden=""><span class="en">As Low As Reasonably Achievable.</span><span class="ar">أقل ما يمكن تحقيقه بشكل معقول.</span></div></div>
+    <div class="card"><div class="head"><span class="en">3 — Three radiation types in dental setting?</span><span class="ar">٣ — ثلاثة أنواع في عيادة الأسنان؟</span></div><div class="content" hidden=""><span class="en">Primary, leakage, scatter.</span><span class="ar">أولي، تسرب، مبعثر.</span></div></div>
+    <div class="card"><div class="head"><span class="en">4 — Fastest intra-oral film group?</span><span class="ar">٤ — أسرع مجموعة فيلم داخل الفم؟</span></div><div class="content" hidden=""><span class="en">F-speed.</span><span class="ar">النوع F.</span></div></div>
+    <div class="card"><div class="head"><span class="en">5 — Effect of longer FSFD?</span><span class="ar">٥ — أثر زيادة المسافة بؤرة-فيلم؟</span></div><div class="content" hidden=""><span class="en">Lower dose (~less divergence) and sharper image.</span><span class="ar">جرعة أقل وصورة أوضح.</span></div></div>
+    <div class="card"><div class="head"><span class="en">6 — Rectangular vs round PID?</span><span class="ar">٦ — مستطيل أم دائري؟</span></div><div class="content" hidden=""><span class="en">Rectangular reduces dose ~71–80%.</span><span class="ar">المستطيل يُخفض الجرعة بنحو ٧١–٨٠٪.</span></div></div>
+    <div class="card"><div class="head"><span class="en">7 — Filtration requirement ≥70 kVp?</span><span class="ar">٧ — الترشيح عند ≥٧٠ ك.ف.ق؟</span></div><div class="content" hidden=""><span class="en">≥2.0 mm Al eq.</span><span class="ar">٢ مم مكافئ ألومنيوم أو أكثر.</span></div></div>
+    <div class="card"><div class="head"><span class="en">8 — Operator safe position?</span><span class="ar">٨ — وضع المشغّل الآمن؟</span></div><div class="content" hidden=""><span class="en">≥6 ft away and 90–135° to beam.</span><span class="ar">على بعد ≥٦ أقدام وبزاوية ٩٠–١٣٥°.</span></div></div>
+    <div class="card"><div class="head"><span class="en">9 — TLD working principle?</span><span class="ar">٩ — مبدأ عمل TLD؟</span></div><div class="content" hidden=""><span class="en">Stored energy → light when heated; light ∝ dose.</span><span class="ar">طاقة مخزنة تُحرَّر كضوء بالحرارة؛ الضوء ∝ الجرعة.</span></div></div>
+    <div class="card"><div class="head"><span class="en">10 — Best first step to reduce dose?</span><span class="ar">١٠ — أفضل خطوة أولى لخفض الجرعة؟</span></div><div class="content" hidden=""><span class="en">Justify exams; avoid unnecessary imaging.</span><span class="ar">التبرير؛ تجنّب الصور غير الضرورية.</span></div></div>
+  </div>
+</main>
+
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

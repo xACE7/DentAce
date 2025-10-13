@@ -1,0 +1,696 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>ocih-25 — Radiographic Anatomy of Tooth Structure</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar (kept same design) */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Charts */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}
+    .chart-svg{ height: 380px !important; }
+    .chart-svg text{ font-size: 13.5px !important; }
+    .chart-svg circle{ r: 7 !important; }
+    .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; }
+    .chart-svg path{ stroke-width: 4 !important; }
+    .chart-svg line{ stroke-width: 2.5 !important; }
+  }
+
+  /* RTL/LTR control */
+  body.lang-ar { direction: rtl; text-align: right; }
+  body.lang-en { direction: ltr; text-align: left; }
+
+  /* Keep header always LTR */
+  header, header * { direction: ltr !important; text-align: left !important; }
+
+  /* Language Switcher (kept, compact, EN-left/AR-right) */
+  #langBtn{
+    --h: 40px;
+    --pad: 3px;
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;
+    height: var(--h);
+    padding: 0 6px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn::after{
+    content:"";
+    position:absolute;top: var(--pad);bottom: var(--pad);left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px);
+    border-radius: inherit;background: rgba(255,255,255,.10);
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);
+    z-index: 0;
+  }
+  @keyframes bgToRight { 0%{transform:translateX(0%);} 70%{transform:translateX(108%);} 100%{transform:translateX(100%);} }
+  @keyframes bgToLeft  { 0%{transform:translateX(100%);} 70%{transform:translateX(-8%);} 100%{transform:translateX(0%);} }
+  @keyframes bounceActive { 0%{transform:scale(1);} 40%{transform:scale(1.14);} 70%{transform:scale(1.04);} 100%{transform:scale(1.08);} }
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none; transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none; transform: scale(1.0); }
+
+  /* Source footer pinned to bottom of LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+</style>
+</head>
+<body class="lang-en">
+<header>
+  <div class="hdr wrap">
+    <div class="left">
+      <div class="title">🦷 Dentistry 3rd year</div>
+      <div class="subtitle">Lecture 25</div>
+      <button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+        <span class="lab en">EN</span>
+        <span class="lab ar">AR</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- Dua (Arabic only, fixed) -->
+  <div class="dua">اللهم افتح لنا أبواب العلم، وبارك لنا في فهم الأشعة والتشخيص، واجعل هذا العلم نافعًا للناس شفاءً ورحمة. آمين.</div>
+
+  <!-- Topic (short) -->
+  <div class="chip-box">
+    <span class="chip">
+      <span class="en"><b>Topic: Tooth Radiographic Anatomy</b></span>
+      <span class="ar"><b>الموضوع: التشريح الشعاعي للسن</b></span>
+    </span>
+  </div>
+
+  <div class="sections">
+    <!-- 1. Imaging Principles & Key Terms -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">1) Imaging Principles & Key Terms</span><span class="ar">١) مبادئ التصوير والمصطلحات الأساسية</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Radiographs form because tissues of different <b>density</b> attenuate x-rays unequally. Less-dense areas let more x-rays reach the sensor → look <b>radiolucent (dark)</b>. Dense, calcified structures absorb x-rays → look <b>radiopaque (white)</b>. Some tissues show <b>graded radiopacity</b>.</p>
+            <p><i>“What the brain does not know, the eye cannot see.” — Sir William Osler</i> → Learn normal anatomy first to recognize abnormalities.</p>
+            <p><b>Radiolucent examples:</b> caries, fossae, canals, foramina, sinuses. <b>Radiopaque examples:</b> cortical plates, lamina dura, enamel, dentin.</p>
+          </div>
+          <div class="ar">
+            <p>تتكوّن الصورة الشعاعية لأن الأنسجة متفاوتة الكثافة تُضعِف الأشعة السينية بدرجات مختلفة. المناطق الأقل كثافة تسمح بمرور أشعة أكثر فتظهر <b>منخفضة الكثافة/سوداء (Radiolucent)</b>، بينما البنى المتكلسة تمتص الأشعة فتبدو <b>مُعتمة/بيضاء (Radiopaque)</b>. وقد تظهر أنسجة بدرجات وسطية من العتمة.</p>
+            <p><i>«ما لا يعرفه الدماغ لا تراه العين» — أوسلر</i> ⇒ تعلّم التشريح الطبيعي أولًا لتمييز الشذوذات.</p>
+            <p><b>أمثلة شفافة شعاعياً:</b> النخور، الحُفَر، الأقنية، الثقوب، الجيوب. <b>أمثلة معتمة:</b> الصفائح القشرية، صفيحة السن (Lamina dura)، المينا، العاج.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 1,2/23</span><span class="ar">الصفحات المرجعية: ١،٢/٢٣</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Density ↑ → radiopacity ↑; density ↓ → radiolucency ↑.</div><div class="ar">كلما زادت الكثافة زادت العتامة؛ وكلما قلت الكثافة زادت الشفافية.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Maxillary sinus floor = a thin radiopaque line; sinus air = radiolucent.</div><div class="ar">أرضية الجيب الفكي خط معتم رفيع؛ هواء الجيب شفاف شعاعياً.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Black = holes/space; White = bone/tooth.”</div><div class="ar">«الأسود = فراغ/تجويف، الأبيض = عظم/سن».</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Correct interpretation guides diagnosis and treatment planning.</div><div class="ar">الفهم الصحيح يوجّه التشخيص وخطة العلاج.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 2. Tooth Structures: Enamel–Dentin–Pulp -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">2) Tooth Structures: Enamel–Dentin–Pulp</span><span class="ar">٢) تراكيب السن: المينا–العاج–اللُّب</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Enamel</b>: the hardest tissue (~96% inorganic) → <b>most radiopaque</b> cap. <b>Dentin</b>: ~65% inorganic → less radiopaque than enamel. <b>Amelo-dentin junction (ADJ)</b>: interface between enamel & dentin.</p>
+            <p><b>Pulp chamber/root canal</b>: soft tissue → <b>radiolucent</b>. <b>Cementum</b>: very thin; contrast with dentin is low → often <b>not distinctly visible</b> radiographically.</p>
+          </div>
+          <div class="ar">
+            <p><b>المينا</b>: أصلب نسيج (~٪٩٦ غير عضوي) ⇒ <b>الأكثر عتامة</b>. <b>العاج</b>: ~٪٦٥ غير عضوي ⇒ أقل عتامة من المينا. <b>وصلة المينا-العاج (ADJ)</b>: الحدّ الفاصل بينهما.</p>
+            <p><b>حجرة اللُّب/قناة الجذر</b>: نسيج رخو ⇒ <b>شفاف شعاعياً</b>. <b>الملاط</b>: رقيق جدًا؛ تباينه مع العاج ضعيف ⇒ غالبًا <b>غير واضح</b> شعاعياً.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 3,4/23</span><span class="ar">الصفحات المرجعية: ٣،٤/٢٣</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Radiopacity order: Enamel &gt; Dentin &gt; Cementum ≈ Bone &gt; Pulp (RL).</div><div class="ar">ترتيب العتامة: المينا &gt; العاج &gt; الملاط ≈ العظم &gt; اللُّب (شفاف).</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">ADJ appears as a subtle line between the radiopaque enamel and darker dentin.</div><div class="ar">تظهر وصلة المينا-العاج كخط خفيف بين المينا الأكثر عتامة والعاج الأغمق.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Burn-out or beam angulation errors can mimic dentin/caries changes.</div><div class="ar">قد تُشبه أخطاء الزاوية أو ظاهرة “الحرق” النخر أو تبدلات العاج.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Trace enamel first; compare dentin shade; confirm pulp outline last.</div><div class="ar">اتبع المينا أولًا؛ قارن درجة العاج؛ ثم ثبّت حدود اللُّب في النهاية.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 3. Supporting Alveolar Structures -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">3) Supporting Alveolar Structures</span><span class="ar">٣) البنى السنادية السنخية</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Alveolar process</b>: part of maxilla/mandible forming and supporting tooth sockets.</p>
+            <p><b>Lamina dura</b> (alveolar bone proper): thin, <b>dense radiopaque</b> line lining the socket; continuous with the <b>alveolar crest</b>.</p>
+            <p>Other components: <b>cortical plates</b> (facial/lingual) enclosing <b>spongy (cancellous) bone</b>.</p>
+          </div>
+          <div class="ar">
+            <p><b>الناتئ السنخي</b>: جزء من الفكّين يكوّن ويَدعم محاجر الأسنان.</p>
+            <p><b>الصفيحة السنّية (Lamina dura)</b>: خط <b>معتم كثيف</b> يبطّن التجويف السني؛ متصل مع <b>قمة السنخ</b>.</p>
+            <p>مكوّنات أخرى: <b>الصفائح القشرية</b> الدهليزية/اللسانية التي تُحاط بـ <b>العظم الإسفنجي</b>.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 5,6/23</span><span class="ar">الصفحات المرجعية: ٥،٦/٢٣</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">An intact lamina dura around a root apex suggests a <b>vital pulp</b>.</div><div class="ar">سلامة الصفيحة السنّية حول ذروة الجذر تُشير غالبًا إلى <b>حيوية اللُّب</b>.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Alveolar crest forms a sharp angle continuous with lamina dura.</div><div class="ar">قمة السنخ تُشكّل زاوية حادّة متصلة بالصفيحة السنّية.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Loss of lamina dura at an apex is consistent with a periapical abscess.</div><div class="ar">فقدان الصفيحة السنّية عند الذروة يتماشى مع خُراج حول ذروي.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Normal landmarks prevent misdiagnosing pathology.</div><div class="ar">تمييز العلامات الطبيعية يمنع تشخيصًا خاطئًا للآفات.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 4. Lamina Dura & Alveolar Crest Details -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">4) Lamina Dura & Alveolar Crest</span><span class="ar">٤) الصفيحة السنّية وقمّة السنخ</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Lamina dura</b>: attachment site for principal PDL fibers; appears as a thin, uniform, radiopaque line; continuity across interproximal areas meets the <b>alveolar crest</b>.</p>
+            <p><b>Alveolar crest</b>: coronal margin of alveolar bone between teeth; normally sharp & continuous with lamina dura; <b>rounding/irregularity</b> suggests periodontal disease.</p>
+          </div>
+          <div class="ar">
+            <p><b>الصفيحة السنّية</b>: موقع ارتكاز ألياف الرباط حول السني؛ تظهر كخط معتم رفيع منتظم؛ تتصل عبر المسافات بين السنية مع <b>قمة السنخ</b>.</p>
+            <p><b>قمة السنخ</b>: الحافة الإكليلية للعظم بين الأسنان؛ طبيعتها الحادة والمتصلة بالصفيحة السنّية طبيعية؛ <b>التدوّر/عدم الانتظام</b> يوحي بمرض لثوي.</p>
+          </div>
+
+          <!-- Small comparative bar chart (kept responsive) -->
+          <div class="chart-wrap" style="width:100%;overflow:hidden;margin-top:.5rem">
+            <div class="en">
+              <svg class="chart-svg" viewBox="0 0 860 240" aria-label="Relative radiopacity">
+                <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="99" x2="820" y1="200" y2="200"></line>
+                <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="100" x2="100" y1="55" y2="201"></line>
+                <text x="84" y="85"  fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">Enamel</text>
+                <text x="84" y="130" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">Lamina dura</text>
+                <text x="84" y="175" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">Dentin</text>
+                <rect fill="#60a5fa" height="28" opacity="0.95" rx="6" ry="6" width="320" x="110" y="65"></rect>
+                <rect fill="#22d3ee" height="28" opacity="0.95" rx="6" ry="6" width="260" x="110" y="110"></rect>
+                <rect fill="#a78bfa" height="28" opacity="0.95" rx="6" ry="6" width="210" x="110" y="155"></rect>
+                <g font-size="11" fill="#a6afc6" opacity=".95">
+                  <text x="148" y="218">10%</text><text x="213" y="218">20%</text><text x="278" y="218">30%</text>
+                  <text x="343" y="218">40%</text><text x="408" y="218">50%</text><text x="473" y="218">60%</text>
+                  <text x="538" y="218">70%</text><text x="603" y="218">80%</text><text x="668" y="218">90%</text>
+                  <text x="733" y="218">100%</text>
+                </g>
+              </svg>
+            </div>
+            <div class="ar">
+              <svg class="chart-svg" viewBox="0 0 860 240" aria-label="العتامة النسبية">
+                <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="99" x2="820" y1="200" y2="200"></line>
+                <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="100" x2="100" y1="55" y2="201"></line>
+                <text x="70" y="85"  fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">المينا</text>
+                <text x="70" y="130" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">الصفيحة السنّية</text>
+                <text x="70" y="175" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">العاج</text>
+                <rect fill="#60a5fa" height="28" opacity="0.95" rx="6" ry="6" width="320" x="110" y="65"></rect>
+                <rect fill="#22d3ee" height="28" opacity="0.95" rx="6" ry="6" width="260" x="110" y="110"></rect>
+                <rect fill="#a78bfa" height="28" opacity="0.95" rx="6" ry="6" width="210" x="110" y="155"></rect>
+                <g font-size="11" fill="#a6afc6" opacity=".95">
+                  <text x="168" y="218">10%</text><text x="233" y="218">20%</text><text x="298" y="218">30%</text>
+                  <text x="363" y="218">40%</text><text x="428" y="218">50%</text><text x="493" y="218">60%</text>
+                  <text x="558" y="218">70%</text><text x="623" y="218">80%</text><text x="688" y="218">90%</text>
+                  <text x="753" y="218">100%</text>
+                </g>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 7,8/23</span><span class="ar">الصفحات المرجعية: ٧،٨/٢٣</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Lamina dura = alveolar bone proper lining the socket.</div><div class="ar">الصفيحة السنّية = العظم السنخي المبطن للتجويف السني.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Loss of lamina dura at apex → think periapical pathology.</div><div class="ar">فقدان الصفيحة عند الذروة ⇒ يُشتبه بآفة حول ذروية.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Crest is crisp when healthy.”</div><div class="ar">«قمة حادّة تعني صحة جيدة».</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Compare interproximal crests across adjacent teeth for symmetry.</div><div class="ar">قارن القمم بين الأسنان المتجاورة لالتقاط عدم التناظر.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 5. Cortical vs Cancellous Bone -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">5) Cortical vs Cancellous Bone</span><span class="ar">٥) العظم القشري مقابل الإسفنجي</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Cortical bone</b>: compact plates on facial/lingual surfaces; produces <b>radiopaque borders</b> (e.g., inferior mandibular border, alveolar crest, corticated sinus walls).</p>
+            <p><b>Cancellous (spongy) bone</b>: lattice of <b>radiopaque trabeculae</b> with <b>radiolucent medullary spaces</b> between them.</p>
+          </div>
+          <div class="ar">
+            <p><b>العظم القشري</b>: صفائح مدمجة على السطحين الدهليزي واللساني؛ تعطي <b>حدودًا معتمة</b> (مثل الحافة السفلية للفك السفلي، قمة السنخ، جدران الجيب المَقسوطة).</p>
+            <p><b>العظم الإسفنجي</b>: شبكة من <b>الترابيق المعتمة</b> تتخللها <b>مسافات نِقْيّية شفافة</b>.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 9,10/23</span><span class="ar">الصفحات المرجعية: ٩،١٠/٢٣</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Identify the inferior mandibular cortex as a continuous radiopaque line.</div><div class="ar">تُعرَف الحافة السفلية للفك السفلي كخط معتم متصل.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Trabeculae = RO lines; marrow spaces = RL areas.</div><div class="ar">الترابيق = خطوط معتمة؛ المسافات النخاعية = مناطق شفافة.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Thin cortices or altered trabeculation may reflect systemic conditions.</div><div class="ar">ترقّق القشرة أو تغيّر التربيق قد يعكس حالات جهازية.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Differentiating cortical vs cancellous aids lesion border assessment.</div><div class="ar">تمييز القشري عن الإسفنجي يساعد في تقييم حدود الآفات.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 6. Trabecular Patterns: Maxilla vs Mandible -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">6) Trabecular Patterns: Maxilla vs Mandible</span><span class="ar">٦) أنماط التربيق: الفك العلوي مقابل السفلي</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Maxilla</b>: anterior region—thin, numerous trabeculae with small marrow spaces; posterior—larger marrow spaces.</p>
+            <p><b>Mandible</b>: anterior—thicker trabeculae, fewer and larger marrow spaces, often <b>horizontal pattern</b>; posterior—classical <b>“stepladder”</b> pattern.</p>
+          </div>
+          <div class="ar">
+            <p><b>الفك العلوي</b>: أماميًا—ترابيق رفيعة وكثيرة ومسافات نخاعية صغيرة؛ خلفيًا—مسافات نخاعية أكبر.</p>
+            <p><b>الفك السفلي</b>: أماميًا—ترابيق أكثر ثخانة ومسافات أقل لكن أكبر حجمًا بنمط <b>أفقي</b>؛ خلفيًا—نمط <b>سُلّمي (stepladder)</b> مميز.</p>
+          </div>
+
+          <!-- Simple line chart (neutral) to symbolize pattern change -->
+          <div class="chart-wrap" style="width:100%;overflow:hidden;margin-top:.5rem">
+            <div class="en">
+              <svg class="chart-svg" viewBox="0 0 880 300" aria-label="Pattern illustration">
+                <line x1="80" y1="250" x2="820" y2="250" stroke="rgba(255,255,255,.7)" stroke-width="2"></line>
+                <line x1="80" y1="60"  x2="80"  y2="250" stroke="rgba(255,255,255,.7)" stroke-width="2"></line>
+                <path d="M100,210 L200,210 L300,180 L400,180 L500,150 L600,150 L700,120" fill="none" stroke="#22d3ee" stroke-width="3"></path>
+                <path d="M100,220 C200,190 300,200 400,170 C500,160 600,180 700,160" fill="none" stroke="#60a5fa" stroke-width="3"></path>
+                <text x="190" y="80" fill="#f6f7fb" opacity=".9" font-size="12">Maxilla</text>
+                <text x="430" y="95" fill="#f6f7fb" opacity=".9" font-size="12">Mandible</text>
+              </svg>
+            </div>
+            <div class="ar">
+              <svg class="chart-svg" viewBox="0 0 880 300" aria-label="تمثيل الأنماط">
+                <line x1="80" y1="250" x2="820" y2="250" stroke="rgba(255,255,255,.7)" stroke-width="2"></line>
+                <line x1="80" y1="60"  x2="80"  y2="250" stroke="rgba(255,255,255,.7)" stroke-width="2"></line>
+                <path d="M100,210 L200,210 L300,180 L400,180 L500,150 L600,150 L700,120" fill="none" stroke="#22d3ee" stroke-width="3"></path>
+                <path d="M100,220 C200,190 300,200 400,170 C500,160 600,180 700,160" fill="none" stroke="#60a5fa" stroke-width="3"></path>
+                <text x="190" y="80" fill="#f6f7fb" opacity=".9" font-size="12">الفك العلوي</text>
+                <text x="430" y="95" fill="#f6f7fb" opacity=".9" font-size="12">الفك السفلي</text>
+              </svg>
+            </div>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 11,12/23</span><span class="ar">الصفحات المرجعية: ١١،١٢/٢٣</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Trabecular thickness and spacing vary by jaw and region.</div><div class="ar">سُمك التربيق وتباعده يختلفان حسب الفك والمنطقة.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Anterior mandible often shows coarse, horizontally oriented trabeculae.</div><div class="ar">غالبًا ما يظهر الفك السفلي الأمامي تربيقًا خشنًا أفقي الاتجاه.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Scan anterior vs posterior separately; expect different patterns.</div><div class="ar">افحص الأمام والخلف بشكل منفصل؛ توقّع اختلاف الأنماط.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 7. Periodontal Ligament (PDL) Space -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">7) Periodontal Ligament (PDL) Space</span><span class="ar">٧) المسافة الرباطية حول السنية (PDL)</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>PDL space</b> appears as a thin <b>radiolucent</b> line between root cementum and lamina dura. Typically <b>slightly wider coronally</b> and <b>narrower near the apex</b>. Loss of the space suggests <b>ankylosis</b>.</p>
+          </div>
+          <div class="ar">
+            <p>تظهر <b>مسافة الرباط حول السني</b> كخط <b>شفاف شعاعياً</b> بين ملاط الجذر والصفيحة السنّية. تكون عادةً <b>أوسع قليلًا قرب العنق</b> و<b>أضيق قرب الذروة</b>. غيابها يوحي بـ<b>الالتحام العظمي (Ankylosis)</b>.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 13,14/23</span><span class="ar">الصفحات المرجعية: ١٣،١٤/٢٣</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Uniform PDL + intact lamina dura = normal periapex.</div><div class="ar">مسافة رباطية منتظمة + صفيحة سليمة = ذروة طبيعية.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Widened PDL can indicate trauma or inflammation.</div><div class="ar">اتساع المسافة قد يدل على رض أو التهاب.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Beam angulation errors may falsely alter perceived PDL width.</div><div class="ar">قد تغيّر أخطاء زاوية الحزمة عرض المسافة الظاهر.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Black line hugs the root = PDL.”</div><div class="ar">«خط أسود يعانق الجذر = الرباط».</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 8. Identification & “When you see… think…” -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">8) Pattern Recognition: “When you see… think…”</span><span class="ar">٨) التعرّف على النمط: «عندما ترى… فكر في…»</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Use heuristics to map common appearances to meanings: <b>uniform RO line</b> around root → <b>lamina dura</b>; <b>RL line</b> hugging root → <b>PDL space</b>; <b>coarse horizontal trabeculae</b> → anterior mandible; <b>stepladder pattern</b> → posterior mandible.</p>
+            <p>Practice: identify enamel cap, dentin, ADJ, pulp chamber/canal, lamina dura, alveolar crest on periapicals and bitewings.</p>
+          </div>
+          <div class="ar">
+            <p>اربط المظاهر الشائعة بالدلالات: <b>خط معتم منتظم</b> حول الجذر ⇒ <b>الصفيحة السنّية</b>؛ <b>خط شفاف ملاصق</b> للجذر ⇒ <b>مسافة الرباط</b>؛ <b>تربيق خشن أفقي</b> ⇒ أمام الفك السفلي؛ <b>نمط سُلّمي</b> ⇒ خلف الفك السفلي.</p>
+            <p>تدريب: حدِّد غطاء المينا، العاج، وصلة المينا-العاج، حجرة/قناة اللُّب، الصفيحة، قمة السنخ في الصور الذروية والعضّية.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 15,16/23</span><span class="ar">الصفحات المرجعية: ١٥،١٦/٢٣</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Trace outlines in a fixed order: enamel → dentin → pulp → PDL → lamina dura.</div><div class="ar">اتّبع ترتيبًا ثابتًا في التتبّع: المينا → العاج → اللُّب → الرباط → الصفيحة.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Round RL at apex with loss of lamina dura → likely periapical rarefaction.</div><div class="ar">شفافية مستديرة عند الذروة مع فقدان الصفيحة ⇒ نُدرة حول ذروية محتملة.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Always correlate with vitality tests and clinical findings.</div><div class="ar">قارن دائمًا مع اختبارات الحيوية والمعطيات السريرية.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 9. Quick Questions (from PDF end) -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">9) Quick Check</span><span class="ar">٩) فحص سريع</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <ul>
+              <li><b>True/False</b>: PDL space appears radiopaque. → <b>False</b> (it is radiolucent).</li>
+              <li><b>Lamina dura corresponds to</b>… → <b>Outer layer of dense cortical bone (socket lining)</b>.</li>
+              <li><b>Term for structure that allows x-rays through</b> → <b>Radiolucent</b>.</li>
+              <li><b>Mandibular trabecular pattern</b> → both RO trabeculae & RL spaces (coarse; horizontal/stepladder).</li>
+            </ul>
+          </div>
+          <div class="ar">
+            <ul>
+              <li><b>صح/خطأ</b>: تظهر مسافة الرباط معتمة. → <b>خطأ</b> (هي شفافة).</li>
+              <li><b>توافق الصفيحة السنّية</b>… → <b>الطبقة القشرية الكثيفة المبطِّنة للتجويف السني</b>.</li>
+              <li><b>المصطلح للبنية التي تسمح بمرور الأشعة</b> → <b>Radiolucent (منخفضة الكثافة)</b>.</li>
+              <li><b>نمط التربيق في الفك السفلي</b> → ترابيق معتمة ومسافات شفافة (خشن؛ أفقي/سُلّمي).</li>
+            </ul>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 20,21/23</span><span class="ar">الصفحات المرجعية: ٢٠،٢١/٢٣</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Quiz items align with definitions above.</div><div class="ar">تتوافق أسئلة المراجعة مع التعاريف أعلاه.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Convert each question to a flashcard to reinforce memory.</div><div class="ar">حوِّل كل سؤال إلى بطاقة مراجعة لتعزيز التذكّر.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Checks rapid recall before clinic.</div><div class="ar">يختبر سرعة الاستدعاء قبل العيادة.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 10. Summary -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">10) Summary</span><span class="ar">١٠) الخلاصة</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Radiographic anatomy hinges on density contrasts: Enamel is most RO; dentin less; pulp RL. Lamina dura is a thin RO socket lining continuous with a sharp alveolar crest. Cortical bone makes crisp RO borders; cancellous bone shows RO trabeculae with RL spaces. Maxilla vs mandible have distinct trabecular patterns. PDL space is a thin RL line—loss suggests ankylosis; widening suggests trauma/inflammation. Master the normal to detect the abnormal.</p>
+          </div>
+          <div class="ar">
+            <p>يقوم التشريح الشعاعي على فروق الكثافة: المينا الأكثر عتامة، العاج أقل، اللُّب شفّاف. الصفيحة السنّية خط معتم رفيع يبطّن التجويف ومتصل بقمة سنخية حادّة. يكوّن العظم القشري حدودًا معتمة واضحة، بينما يُظهر العظم الإسفنجي ترابيق معتمة مع مسافات شفافة. للفك العلوي والسفلي أنماط تربيق مختلفة. المسافة الرباطية خط شفاف رفيع—فقدانه يوحي بالالتحام، واتساعه يدل على رض/التهاب. إتقان الطبيعي يمكّنك من كشف غير الطبيعي.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 1,3,5,7,9,11,13,20/23</span><span class="ar">الصفحات المرجعية: ١،٣،٥،٧،٩،١١،١٣،٢٠/٢٣</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“RO = calcified; RL = spaces/soft tissue.”</div><div class="ar">«العتامة = متكلّس؛ الشفافية = فراغ/نسج رخوة».</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Text cites White &amp; Pharoah; Langlais &amp; Langland.</div><div class="ar">المراجع: وايت وفارو؛ لانغليه ولانغلاند.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Accurate landmark reading prevents diagnostic errors.</div><div class="ar">قراءة العلامات بدقة تمنع أخطاء التشخيص.</div></div></div>
+        </div>
+      </aside>
+    </section>
+  </div>
+
+  <!-- Glossary -->
+  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+  <div class="grid g3x4" id="glossary">
+    <div class="card"><div class="head">Radiolucent / منخفضة الكثافة</div><div class="content" hidden><div class="en">Appears dark; allows x-rays to pass.</div><div class="ar">تظهر سوداء؛ تسمح بمرور الأشعة.</div></div></div>
+    <div class="card"><div class="head">Radiopaque / معتم</div><div class="content" hidden><div class="en">Appears white; absorbs x-rays.</div><div class="ar">تظهر بيضاء؛ تمتص الأشعة.</div></div></div>
+    <div class="card"><div class="head">Enamel / المينا</div><div class="content" hidden><div class="en">Hardest tooth tissue; highly RO.</div><div class="ar">أصلب أنسجة السن؛ عالية العتامة.</div></div></div>
+    <div class="card"><div class="head">Dentin / العاج</div><div class="content" hidden><div class="en">Less RO than enamel; bulk of tooth.</div><div class="ar">أقل عتامة من المينا؛ يشكّل معظم السن.</div></div></div>
+    <div class="card"><div class="head">Pulp / اللُّب</div><div class="content" hidden><div class="en">Soft tissue; radiolucent.</div><div class="ar">نسيج رخو؛ شفاف شعاعياً.</div></div></div>
+    <div class="card"><div class="head">Lamina dura / الصفيحة السنّية</div><div class="content" hidden><div class="en">Dense RO line lining the socket.</div><div class="ar">خط معتم يبطّن التجويف السني.</div></div></div>
+    <div class="card"><div class="head">Alveolar crest / قمة السنخ</div><div class="content" hidden><div class="en">Coronal margin between teeth; sharp when healthy.</div><div class="ar">الحافة الإكليلية بين الأسنان؛ حادّة في الحالة الطبيعية.</div></div></div>
+    <div class="card"><div class="head">Cortical bone / العظم القشري</div><div class="content" hidden><div class="en">Compact; forms RO borders.</div><div class="ar">مضغوط؛ يكوّن حدودًا معتمة.</div></div></div>
+    <div class="card"><div class="head">Cancellous bone / العظم الإسفنجي</div><div class="content" hidden><div class="en">RO trabeculae + RL marrow spaces.</div><div class="ar">ترابيق معتمة ومسافات نخاعية شفافة.</div></div></div>
+    <div class="card"><div class="head">PDL space / المسافة الرباطية</div><div class="content" hidden><div class="en">Thin RL line between root and socket.</div><div class="ar">خط شفاف بين الجذر والتجويف.</div></div></div>
+    <div class="card"><div class="head">Ankylosis / التحام عظمي</div><div class="content" hidden><div class="en">Loss of PDL; root fused to bone.</div><div class="ar">زوال المسافة الرباطية؛ التحام الجذر بالعظم.</div></div></div>
+  </div>
+
+  <!-- Flashcards -->
+  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+  <div class="grid g3x4" id="flashcards">
+    <div class="card"><div class="head"><span class="en">1 — Which tissues are most radiopaque?</span><span class="ar">١ — ما أكثر الأنسجة عتامة؟</span></div><div class="content" hidden><span class="en">Enamel, dense cortical bone (lamina dura).</span><span class="ar">المينا والعظم القشري الكثيف (الصفيحة السنّية).</span></div></div>
+    <div class="card"><div class="head"><span class="en">2 — What appears radiolucent inside teeth?</span><span class="ar">٢ — ما الذي يظهر شفافًا داخل السن؟</span></div><div class="content" hidden><span class="en">Pulp chamber and root canals.</span><span class="ar">حجرة اللُّب وقنوات الجذر.</span></div></div>
+    <div class="card"><div class="head"><span class="en">3 — Define lamina dura.</span><span class="ar">٣ — عرّف الصفيحة السنّية.</span></div><div class="content" hidden><span class="en">Thin RO socket lining, continuous with alveolar crest.</span><span class="ar">طبقة معتمة رفيعة تبطّن التجويف ومتّصلة بقمة السنخ.</span></div></div>
+    <div class="card"><div class="head"><span class="en">4 — Normal PDL space look?</span><span class="ar">٤ — كيف تبدو المسافة الرباطية الطبيعية؟</span></div><div class="content" hidden><span class="en">Thin uniform RL line, slightly wider coronally.</span><span class="ar">خط شفاف رفيع منتظم، أوسع قليلًا قرب العنق.</span></div></div>
+    <div class="card"><div class="head"><span class="en">5 — Loss of PDL suggests?</span><span class="ar">٥ — يدلّ غياب المسافة الرباطية على؟</span></div><div class="content" hidden><span class="en">Ankylosis.</span><span class="ar">الالتحام العظمي.</span></div></div>
+    <div class="card"><div class="head"><span class="en">6 — Maxillary vs mandibular trabeculae?</span><span class="ar">٦ — تربيق الفك العلوي مقابل السفلي؟</span></div><div class="content" hidden><span class="en">Maxilla: finer anterior; Mandible: coarser, horizontal/stepladder posterior.</span><span class="ar">العلوي: أدق أماميًا؛ السفلي: أخشن وأفقي/سلّمي خلفيًا.</span></div></div>
+    <div class="card"><div class="head"><span class="en">7 — Example of radiolucent bony structure?</span><span class="ar">٧ — مثال لبنية عظمية شفافة؟</span></div><div class="content" hidden><span class="en">Foramen, fossa, sinus cavity.</span><span class="ar">الثُّقبة، الحفرة، جوف الجيب.</span></div></div>
+    <div class="card"><div class="head"><span class="en">8 — Alveolar crest in health?</span><span class="ar">٨ — قمة السنخ في الحالة الطبيعية؟</span></div><div class="content" hidden><span class="en">Sharp, continuous with lamina dura.</span><span class="ar">حادّة ومتصلة بالصفيحة السنّية.</span></div></div>
+    <div class="card"><div class="head"><span class="en">9 — Which appears as white line around root?</span><span class="ar">٩ — ما الخط الأبيض حول الجذر؟</span></div><div class="content" hidden><span class="en">Lamina dura.</span><span class="ar">الصفيحة السنّية.</span></div></div>
+  </div>
+
+</main>
+
+<script>
+  // Language toggle
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.nextElementSibling || h.parentElement.querySelector('.body');
+      const content = h.parentElement.querySelector('.body');
+      (content||body).hidden = !(content||body).hidden;
+    });
+  });
+  document.querySelectorAll('.callout .body').forEach(b=>{ if(!b.hasAttribute('hidden')) b.setAttribute('hidden',''); });
+
+  // Glossary toggle
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    const cont=card.querySelector('.content'); cont.hidden=true;
+    card.addEventListener('click',()=>{ card.classList.toggle('open'); cont.hidden=!cont.hidden; });
+  });
+
+  // Flashcards toggle
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    const cont=card.querySelector('.content'); cont.hidden=true;
+    card.addEventListener('click',()=>{ card.classList.toggle('open'); cont.hidden=!cont.hidden; });
+  });
+</script>
+<!-- Notes:
+- Header preserved; subtitle set to Lecture 25 (from PDF series numbering).
+- Content simplified; ILOs/overview skipped.
+- Footer references use actual PDF pagination (total = 23).
+- Charts kept lightweight & responsive; bilingual.
+-->
+</body>
+</html>

@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}  
+  .opt-btn.correct{border-left:6px solid var(--ok);outline:none;background:rgba(255,255,255,0.03);}  
+  .opt-btn.wrong{border-left:6px solid var(--bad);outline:none;background:rgba(255,255,255,0.03);}  
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}  
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 5</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (from Lecture 5: Intra-oral Radiographic Techniques & Object Localization) -----------
+const mcqs = [
+  {q:"What does 'periapical' refer to in intraoral radiography?",opts:["Around the apex of a tooth","Around the crown only","Around the periodontal ligament only","Around the entire jaw"],correct:0,explain:"'Peri' = around; 'apical' = apex. Periapical radiographs image the region around tooth apices."},
+  {q:"Which two periapical techniques are standard for intraoral imaging?",opts:["Bisecting angle and paralleling","Occlusal and bitewing","Panoramic and cephalometric","Tomography and CBCT"],correct:0,explain:"The slides list Bisecting Angle (short cone/Cieszynski) and Paralleling (long cone)."},
+  {q:"Cieszynski’s rule of isometry underpins which technique?",opts:["Bisecting angle technique","Paralleling technique","Bitewing technique","Right‑angle localization"],correct:0,explain:"Bisecting angle relies on isometry: two triangles are equal if they share one side and have two equal angles."},
+  {q:"Primary goal for horizontal angulation in bitewing or periapical views is to:",opts:["Pass the central ray through the contact areas","Aim apically by +10°","Aim occlusally by −10°","Align perpendicular to the film and tooth"],correct:0,explain:"Horizontal angulation should be 0° to pass through interproximal contacts and avoid overlap."},
+  {q:"Vertical angulation for maxillary canines in bisecting angle technique is approximately:",opts:["+45°","+20°","−20°","+30°"],correct:0,explain:"Maxillary canines: about +45°. Other maxillary: incisors +40°, premolars +30°, molars +20°."},
+  {q:"Vertical angulation for mandibular incisors (bisecting angle) is:",opts:["−15°","−5°","+15°","0°"],correct:0,explain:"Mandibular incisors ≈ −15°. Mandibular: canines −20°, premolars −10°, molars −5°."},
+  {q:"Which statement best defines intraoral radiographs?",opts:["Film/receiver placed inside the mouth; beam projected from outside","Beam and film both placed outside the mouth","Sensor always placed extraorally with long cone","Image receptor placed on skin surface only"],correct:0,explain:"Intraoral radiographs place the receptor intraorally while the x‑ray source remains extraoral."},
+  {q:"A quality intraoral radiograph should include at least how much periapical bone beyond the apex?",opts:["≥2 mm","≥0.5 mm","≥5 mm","Exactly 1 mm"],correct:0,explain:"Criteria of quality include showing at least 2 mm of periapical bone."},
+  {q:"Which is NOT a listed criterion of radiographic quality?",opts:["Maximal geometric distortion","Complete area of interest with roots","Optimal density and contrast","At least 2 mm of periapical bone"],correct:0,explain:"Least possible geometric distortion is desired; 'maximal' is incorrect."},
+  {q:"Paralleling technique is also known as:",opts:["Long cone technique","Short cone technique","Right‑angle technique","Vertex technique"],correct:0,explain:"Paralleling employs a long cone to reduce divergence and distortion."},
+  {q:"In bitewing radiography, the typical vertical angulation is approximately:",opts:["+10°","0°","−10°","+30°"],correct:0,explain:"Slides specify vertical angulation around +10° for bitewings."},
+  {q:"Bitewing radiographs are primarily indicated for:",opts:["Interproximal caries detection","Periapical pathology visualization","Sinus evaluation","TMJ assessment"],correct:0,explain:"Indications include incipient/interproximal caries, progression, restorations, early bone loss, calculus."},
+  {q:"Which is a contraindication for bitewing radiography?",opts:["Periapical infection","Interproximal caries","Calculus assessment","Monitoring restorations"],correct:0,explain:"When periapical infection is suspected, periapical views (not bitewings) are indicated."},
+  {q:"A full‑mouth intraoral series commonly comprises:",opts:["≈21 exposures (≈17 IOPA + 4 bitewings)","10 bitewings only","30 periapicals only","One panoramic with two bitewings"],correct:0,explain:"Slide shows '21 (17 + 4)' with IOPA and Bitewing listed."},
+  {q:"Object localization by parallax is also called:",opts:["Tube‑shift or Clark’s SLOB rule","Waters’ projection","Right‑angle tomography","Paralleling rule"],correct:0,explain:"Synonyms: Tube‑shift, Clark’s rule, SLOB (Same Lingual Opposite Buccal) / BOPS."},
+  {q:"According to SLOB, if the tube is shifted mesially and the image of the object moves mesially, the object lies:",opts:["Lingual to the reference","Buccal to the reference","At the same depth as the reference","Outside the jaws"],correct:0,explain:"Same Lingual: image moves in the same direction as tube if object is lingual (farther from tube)."},
+  {q:"Right‑angle localization typically combines which views?",opts:["Occlusal and periapical (IOPA)","Two bitewings","Panoramic and cephalometric","Paralleling and bisecting on the same tooth"],correct:0,explain:"The method uses an occlusal radiograph at right angles to a periapical view."},
+  {q:"Which occlusal projection uses approximately +65° vertical angulation?",opts:["True/Cross‑sectional maxillary","Anterior maxillary","Lateral/Topographical maxillary","Vertex occlusal"],correct:0,explain:"Slides list True/Cross‑sectional maxillary at about +65°."},
+  {q:"Typical vertical angulation for anterior maxillary occlusal is:",opts:["+45°","−55°","+60°","−90°"],correct:0,explain:"Anterior maxillary occlusal ≈ +45°."},
+  {q:"Which mandibular occlusal view is around −90°?",opts:["Cross‑sectional mandibular","Anterior mandibular","Topographical maxillary","Vertex occlusal"],correct:0,explain:"Slides show cross‑sectional mandibular ≈ −90°; lateral/topographical mandibular also near −90°."},
+  {q:"A key advantage of bitewings is:",opts:["Edge enhancement for early changes","Visualization of periapical area","Wide field of the maxillary sinus","Evaluation of condylar position"],correct:0,explain:"Advantages note 'edge enhancement' and clear early radiographic changes interproximally."},
+  {q:"Which is a limitation of bitewing radiographs?",opts:["Radicular and periradicular structures not visible","Caries cannot be assessed","Crown contacts are always overlapped","They require extraoral sensors"],correct:0,explain:"Bitewings do not show apices and periapical regions."},
+  {q:"Horizontal parallax to localize objects generally changes the tube position in which plane?",opts:["Mesiodistal (horizontal) plane","Vertical (superio‑inferior) plane","Axial rotation only","No tube movement is required"],correct:0,explain:"Parallax principle relies on changing beam angulation—commonly mesial vs distal tube shift."},
+  {q:"Which best describes vertical angulation across all teeth?",opts:["Different for each tooth due to varied long‑axis inclinations","Always 0° in both jaws","Always +10° in maxilla and −10° in mandible","Depends only on receptor size"],correct:0,explain:"Slides emphasize vertical angulations differ for every single tooth."},
+  {q:"For horizontal angulation in periapicals, the PID surface should be:",opts:["Parallel to the labial/buccal surface of teeth","Perpendicular to the occlusal plane","Angled 15° mesially","Parallel to the receptor only"],correct:0,explain:"Slides: horizontal 0°—PID surface parallel to labial/buccal surfaces; beam through contacts."},
+  {q:"Which set correctly matches maxillary periapical vertical angulations (bisecting)?",opts:["Incisors +40°, Canines +45°, Premolars +30°, Molars +20°","Incisors −15°, Canines −20°, Premolars −10°, Molars −5°","Incisors +20°, Canines +40°, Premolars +45°, Molars +30°","Incisors 0°, Canines +10°, Premolars +20°, Molars +30°"],correct:0,explain:"These are the listed maxillary values."},
+  {q:"Which set correctly matches mandibular periapical vertical angulations (bisecting)?",opts:["Incisors −15°, Canines −20°, Premolars −10°, Molars −5°","Incisors +15°, Canines +20°, Premolars +10°, Molars +5°","Incisors −5°, Canines −10°, Premolars −15°, Molars −20°","All mandibular teeth 0°"],correct:0,explain:"These are the listed mandibular values."},
+  {q:"Which is NOT an indication for occlusal radiography listed in the lecture?",opts:["Assessment of TMJ disc displacement","Evaluation of cyst/tumor extent","Sialolith detection","Localization of unerupted teeth"],correct:0,explain:"TMJ disc assessment is not an occlusal indication on the slides; others are listed."},
+  {q:"The reference structure for parallax localization is commonly:",opts:["The root of an adjacent tooth","The mandibular canal only","The maxillary sinus floor only","The cusp tip of the same tooth"],correct:0,explain:"Slides specify the root of an adjacent tooth as the reference object."},
+  {q:"If an object appears to move opposite to the tube shift, it is positioned:",opts:["Buccally","Lingually","At midline","Outside the field"],correct:0,explain:"Opposite Buccal: if the image moves opposite the tube shift, the object is on the buccal."},
+  {q:"Which statement about bitewing anatomy visibility is correct?",opts:["Apices are generally not captured","Entire root including apex is always shown","Sinus borders are the main focus","Only mandibular teeth are imaged"],correct:0,explain:"Bitewings are not periapical; apices typically not seen—hence the contraindication for periapical infection."}
+];
+
+const tfs = [
+  {q:"Intraoral radiographs place the image receptor inside the mouth.",answer:true,explain:"Definition given on the slides."},
+  {q:"Paralleling technique is synonymous with the short‑cone method.",answer:false,explain:"Paralleling uses a long cone; short‑cone refers to bisecting angle."},
+  {q:"At least 2 mm of periapical bone should be visible on a quality periapical radiograph.",answer:true,explain:"Listed under criteria of quality."},
+  {q:"Horizontal angulation should be 15° to open contacts in bitewings.",answer:false,explain:"It should be 0° with the beam through contacts to avoid overlap."},
+  {q:"Bitewing radiographs are ideal for diagnosing periapical infections.",answer:false,explain:"They do not show apical regions; periapicals are indicated."},
+  {q:"SLOB stands for Same Lingual Opposite Buccal.",answer:true,explain:"Yes—synonym for the tube‑shift parallax rule (Clark)."},
+  {q:"Right‑angle localization uses an occlusal view with a periapical view.",answer:true,explain:"That combination provides orthogonal projections."},
+  {q:"Anterior maxillary occlusal typically uses about −55° vertical angulation.",answer:false,explain:"Anterior maxillary is around +45°. −55° relates to anterior mandibular occlusal (~−55°)."},
+  {q:"Edge enhancement and early change visibility are advantages of bitewings.",answer:true,explain:"Stated advantage in the lecture."}
+];
+
+const saqs = [
+  // 1. Direct answer
+  {q:"Define Cieszynski’s rule of isometry as applied in dental radiography.",a:"Two triangles are equal when they share one complete side and have two equal angles; used in bisecting angle technique to project the tooth with minimal distortion."},
+  // 2. List (≥3) — show as numbered table
+  {q:"List four criteria of a quality intraoral radiograph.",a:`<ol><li>Entire area of interest including complete roots</li><li>≥2 mm of periapical bone beyond apices</li><li>Least possible geometric distortion</li><li>Optimal density and contrast for interpretation</li></ol>`},
+  // 3. Comparison — numbered table
+  {q:"Compare bisecting angle vs paralleling techniques (two points).",a:`<ol><li>Geometry: Bisecting uses tooth–receptor bisector (short cone); Paralleling uses receptor parallel to long axis (long cone).</li><li>Distortion: Bisecting more prone to distortion/elongation/foreshortening; Paralleling reduces distortion with long PID.</li></ol>`},
+  // 4. Case-based
+  {q:"A maxillary canine requires a periapical using bisecting angle. What approximate vertical angulation would you set, and what should the horizontal angulation achieve?",a:"About +45° vertically; horizontally 0° with central ray through contact areas to avoid overlap."},
+  // 5. List
+  {q:"Enumerate five indications for occlusal radiography.",a:`<ol><li>Assess size and extent of cysts/tumors</li><li>Determine medial/lateral spread of mandibular or palatal disease</li><li>Detect/assess fractures of alveolar bone and teeth</li><li>Diagnose sialoliths and locate foreign bodies</li><li>Evaluate unerupted canines/supernumeraries/odontomes; useful in trismus; periapical assessment when needed</li></ol>`},
+  // 6. Direct/short
+  {q:"Explain the SLOB outcome when the tube is shifted distally and the image of a foreign body shifts mesially.",a:"Opposite movement implies the object is on the buccal side (Opposite Buccal)."}
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null),
+  tf: Array(tfs.length).fill(null),
+  saq: Array(saqs.length).fill(false)
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

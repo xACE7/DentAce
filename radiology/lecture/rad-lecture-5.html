@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — rad-5</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+
+  /* Simple neutral charts kept from template (readable on mobile) */
+  .chart-svg{ width:100%; height:auto; display:block; }
+  @media (max-width: 560px){
+    .chart-svg{ height: 380px !important; }
+    .chart-svg text{ font-size: 13.5px !important; }
+    .chart-svg circle{ r: 7 !important; }
+    .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; }
+    .chart-svg path{ stroke-width: 4 !important; }
+    .chart-svg line{ stroke-width: 2.5 !important; }
+  }
+</style>
+</head>
+<body class="lang-en">
+<header>
+  <div class="hdr wrap">
+    <div class="left">
+      <div class="title">🦷 Dentistry 3rd year</div>
+      <div class="subtitle">Lecture 5</div>
+      <button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+        <span class="lab en">EN</span>
+        <span class="lab ar">AR</span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<main class="wrap">
+  <!-- Dua (kept ar only) -->
+  <div class="dua">اللهم افتح علينا فتوح العارفين، وعلّمنا ما ينفعنا، وانفعنا بما علّمتنا، وزدنا علمًا نافعًا وعملاً صالحًا.</div>
+
+  <!-- Topic -->
+  <div class="chip-box">
+    <span class="chip">
+      <span class="en"><b>Topic: Intra-oral Radiographic Techniques & Object Localization</b></span>
+      <span class="ar"><b>الموضوع: تقنيات الأشعة داخل الفم وتحديد موضع الأجسام</b></span>
+    </span>
+  </div>
+
+  <div class="sections">
+
+    <!-- 1. Intra-oral radiographs & image quality criteria -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">1) Intra-oral Radiographs & Quality</span><span class="ar">١) الأشعة داخل الفم ومعايير الجودة</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Intra-oral radiographs</b> are taken with the image receptor placed inside the mouth. Main types: Periapical (IOPA), Bitewing, and Occlusal.</p>
+            <p><b>Quality criteria:</b> capture the full region of interest including complete roots; show ≥2&nbsp;mm of periapical bone; minimal geometric distortion; diagnostic density/contrast.</p>
+            <div class="table-wrap" aria-label="Types of intra-oral radiographs">
+              <table>
+                <thead>
+                  <tr><th>Type</th><th>What it shows</th><th>Typical use</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Periapical</td><td>Entire tooth + apex</td><td>Periapical pathology, endodontics</td></tr>
+                  <tr><td>Bitewing</td><td>Crowns + alveolar crest</td><td>Interproximal caries, early bone loss, restorations</td></tr>
+                  <tr><td>Occlusal</td><td>Wide arch segments</td><td>Swellings, sialoliths, fractures, impacted teeth</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="ar">
+            <p><b>الأشعة داخل الفم</b> تُلتقط بوضع المستقبل داخل الفم. الأنواع الرئيسية: ذروي (IOPA)، جناحي العضة، والعضّي.</p>
+            <p><b>معايير الجودة:</b> تشمل كامل منطقة الاهتمام مع الجذور كاملة؛ تُظهر ≥2 مم من العظم حول الذروة؛ أقل تشوّه هندسي؛ كثافة وتباين تشخيصيان.</p>
+            <div class="table-wrap" aria-label="أنواع الأشعة داخل الفم">
+              <table>
+                <thead>
+                  <tr><th>النوع</th><th>ما يُظهره</th><th>الاستخدام المعتاد</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>ذروي</td><td>السن كاملًا مع الذروة</td><td>آفات حول الذروة، المعالجة اللبّية</td></tr>
+                  <tr><td>جناحي العضة</td><td>تيجان الأسنان + قمة العظم السنخي</td><td>نخور بينية، فقد عظمي مبكر، ترميمات</td></tr>
+                  <tr><td>عضّي</td><td>مقاطع واسعة من القوس</td><td>تورمات، حصيات لعابية، كسور، أسنان منطَمِرة</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 3,4,5,6/42</span><span class="ar">الصفحات المرجعية: ٣،٤،٥،٦/٤٢</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">≥2&nbsp;mm periapical bone is required to judge periodontal & periapical status.</div><div class="ar">يلزم ≥٢ مم من العظم حول الذروة لتقييم الحالة حول السنية وحول الذروة.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">IOPA detects a small periapical radiolucency missed on bitewing.</div><div class="ar">صورة ذروية تكشف منطقة شفافة صغيرة لا تظهر في الجناحي.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Poor coverage or distortion can hide disease and alter treatment plans.</div><div class="ar">التغطية الضعيفة أو التشوّه قد يُخفي المرض ويغيّر خطة العلاج.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Memorize which modality answers which clinical question.</div><div class="ar">احفظ أي نمط يُجيب عن أي سؤال سريري.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 2. Periapical imaging (overview) -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">2) Periapical Imaging: Two Techniques</span><span class="ar">٢) التصوير الذروي: تقنيتان</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Two approaches:</b> Bisecting-angle (short cone) and Paralleling (long cone).</p>
+            <p><b>Key aim:</b> place the receptor and direct the x-ray beam to reproduce tooth length and relationships with minimal distortion.</p>
+          </div>
+          <div class="ar">
+            <p><b>نهجان رئيسيان:</b> تقنية شطر الزاوية (قمع قصير) وتقنية التوازي (قمع طويل).</p>
+            <p><b>الهدف:</b> وضع المستقبل وتوجيه الحزمة لإظهار طول السن والعلاقات بدقة مع أقل تشوّه.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 7,8,9,10/42</span><span class="ar">الصفحات المرجعية: ٧،٨،٩،١٠/٤٢</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">Periapical = “around the apex”.</div><div class="ar">ذروي = “حول الذروة”.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden><div class="en">Use holders to stabilize the receptor and standardize geometry.</div><div class="ar">استخدم الحوامل لتثبيت المستقبل وتوحيد الهندسة.</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Consistent geometry improves reproducibility across visits.</div><div class="ar">الهندسة الثابتة تحسّن قابلية التكرار بين الزيارات.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 3. Bisecting-angle: principle & technique -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">3) Bisecting-Angle Technique (Cieszynski’s Rule)</span><span class="ar">٣) تقنية شطر الزاوية (قاعدة تشيزينسكي)</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Principle:</b> “Rule of isometry”—if the central ray is directed perpendicular to the <i>bisector</i> of the angle between the tooth’s long axis and the receptor, the tooth length is reproduced.</p>
+            <p><b>Geometry:</b> Receptor close to tooth, beam perpendicular to the bisector.</p>
+            <p><b>Common error:</b> incorrect vertical angulation → foreshortening/elongation.</p>
+          </div>
+          <div class="ar">
+            <p><b>المبدأ:</b> “قاعدة التساوي في القياس” — توجيه الحزمة عموديًا على <i>منصّف</i> الزاوية بين محور السن والمستقبل يُحافظ على الطول الحقيقي.</p>
+            <p><b>الهندسة:</b> مستقبل قريب من السن، وحزمة عمودية على المنصّف.</p>
+            <p><b>خطأ شائع:</b> زوايا رأسية غير صحيحة → قصر/استطالة الصورة.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 11,12,13,14,15/42</span><span class="ar">الصفحات المرجعية: ١١،١٢،١٣،١٤،١٥/٤٢</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Useful when receptor cannot be placed parallel (e.g., shallow palate).</div><div class="ar">مفيد عندما يتعذّر جعل المستقبل موازيًا (مثل الحنك الضحل).</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Greater distortion risk than paralleling; standardization is harder.</div><div class="ar">خطر تشوّه أعلى من التوازي؛ صعب التوحيد.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Maxillary molar with shallow palate → choose bisecting.</div><div class="ar">رحى علوية مع حنك ضحل → اختر تقنية شطر الزاوية.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 4. Angulations (vertical/horizontal) -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">4) Angulations You Must Know</span><span class="ar">٤) الزوايا الواجب حفظها</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Horizontal:</b> central ray through contact areas (≈ 0° relative to contacts) to avoid overlap.</p>
+            <p><b>Vertical (typical bisecting values):</b></p>
+            <div class="table-wrap" aria-label="Vertical angulations">
+              <table>
+                <thead>
+                  <tr><th>Arch</th><th>Tooth group</th><th>Angle (°)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Maxillary</td><td>Incisors</td><td>+40</td></tr>
+                  <tr><td>Maxillary</td><td>Canines</td><td>+45</td></tr>
+                  <tr><td>Maxillary</td><td>Premolars</td><td>+30</td></tr>
+                  <tr><td>Maxillary</td><td>Molars</td><td>+20</td></tr>
+                  <tr><td>Mandibular</td><td>Incisors</td><td>−15</td></tr>
+                  <tr><td>Mandibular</td><td>Canines</td><td>−20</td></tr>
+                  <tr><td>Mandibular</td><td>Premolars</td><td>−10</td></tr>
+                  <tr><td>Mandibular</td><td>Molars</td><td>−5</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="ar">
+            <p><b>الأفقي:</b> تمرير الشعاع عبر نقاط التماس (≈ ٠°) لمنع تراكب التيجان.</p>
+            <p><b>العمودي (قيم شائعة في الشطر):</b></p>
+            <div class="table-wrap" aria-label="الزوايا الرأسية">
+              <table>
+                <thead>
+                  <tr><th>القوس</th><th>مجموعة الأسنان</th><th>الزاوية (°)</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>فك علوي</td><td>قواطع</td><td>+40</td></tr>
+                  <tr><td>فك علوي</td><td>أنابيب (أنياب)</td><td>+45</td></tr>
+                  <tr><td>فك علوي</td><td>ضواحك</td><td>+30</td></tr>
+                  <tr><td>فك علوي</td><td>أرحاء</td><td>+20</td></tr>
+                  <tr><td>فك سفلي</td><td>قواطع</td><td>−15</td></tr>
+                  <tr><td>فك سفلي</td><td>أنياب</td><td>−20</td></tr>
+                  <tr><td>فك سفلي</td><td>ضواحك</td><td>−10</td></tr>
+                  <tr><td>فك سفلي</td><td>أرحاء</td><td>−5</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 16,17,18/42</span><span class="ar">الصفحات المرجعية: ١٦،١٧،١٨/٤٢</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">Maxilla = positive; Mandible = negative.</div><div class="ar">الفك العلوي = موجب؛ السفلي = سالب.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Wrong vertical angulation → foreshortening/elongation.</div><div class="ar">زاوية رأسية خاطئة → قصر/استطالة للصورة.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Link numbers to tooth position (anterior > posterior).</div><div class="ar">اربط القيم بموقع السن (أمامي أكبر من خلفي).</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 5. Paralleling technique -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">5) Paralleling Technique (Long Cone)</span><span class="ar">٥) تقنية التوازي (قمع طويل)</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Principle:</b> Receptor <i>parallel</i> to the long axis; central ray <i>perpendicular</i> to both. Uses beam-aiming device and long cone to reduce divergence.</p>
+            <p><b>Pros:</b> minimal distortion, reproducible; <b>Cons:</b> may be uncomfortable (palatal tori/shallow floor).</p>
+          </div>
+          <div class="ar">
+            <p><b>المبدأ:</b> المستقبل <i>موازٍ</i> لمحور السن؛ الشعاع عمودي على كليهما. يُستخدم موجّه وحاجز طويل لتقليل تفرّق الحزمة.</p>
+            <p><b>المزايا:</b> تشوّه أقل وقابلية تكرار؛ <b>العيوب:</b> قد يكون غير مريح في بعض التشريح.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 19,20,21/42</span><span class="ar">الصفحات المرجعية: ١٩،٢٠،٢١/٤٢</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Most recommended for periapicals due to accuracy.</div><div class="ar">يوصى به غالبًا للصور الذروية لدقته.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Use size-2 receptor for posterior, size-1 for anterior (paediatric: size-0/1).</div><div class="ar">مقاس ٢ خلفي، مقاس ١ أمامي (أطفال: ٠/١).</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Remember: <i>Parallel + Perpendicular</i> = least distortion.</div><div class="ar">تذكّر: <i>توازي + عمودي</i> = أقل تشوّه.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 6. Bitewing radiography -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">6) Bitewing Radiography</span><span class="ar">٦) صور جناحي العضة</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Indications:</b> incipient/interproximal caries, progression monitoring, restorations, early bone loss, calculus.</p>
+            <p><b>Contraindications:</b> periapical infection (need periapical views).</p>
+            <p><b>Angulations:</b> horizontal through contacts; vertical about <b>+10°</b> with occlusal plane horizontal.</p>
+            <div class="table-wrap" aria-label="Bitewing at a glance">
+              <table>
+                <thead><tr><th>Item</th><th>Key point</th></tr></thead>
+                <tbody>
+                  <tr><td>What it shows</td><td>Crown-to-crest; not periapices</td></tr>
+                  <tr><td>Strength</td><td>Edge enhancement—earlier radiographic changes</td></tr>
+                  <tr><td>Limitation</td><td>Radicular/periradicular area not visible</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="ar">
+            <p><b>الاستطبابات:</b> نخور بدئية/بينية، متابعة التقدم، الترميمات، الفقد العظمي المبكر، الجير.</p>
+            <p><b>مضادات:</b> إنتان حول الذروة (تحتاج صورًا ذروية).</p>
+            <p><b>الزوايا:</b> أفقي عبر التماس؛ رأسي نحو <b>+10°</b> مع جعل مستوى الإطباق أفقيًا.</p>
+            <div class="table-wrap" aria-label="ملخص الجناحي">
+              <table>
+                <thead><tr><th>البند</th><th>الخلاصة</th></tr></thead>
+                <tbody>
+                  <tr><td>ما يُظهره</td><td>من التيجان حتى قمة العظم السنخي؛ لا يُظهر الذُرى</td></tr>
+                  <tr><td>قوة</td><td>وضوح الحواف — يكشف التغيرات المبكرة</td></tr>
+                  <tr><td>قيد</td><td>عدم رؤية المناطق الجذرية/حول الجذر</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 22,23,24,25,26,27,28/42</span><span class="ar">الصفحات المرجعية: ٢٢،٢٣،٢٤،٢٥،٢٦،٢٧،٢٨/٤٢</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Baseline + 6-month bitewings to monitor proximal white-spot lesions.</div><div class="ar">صورة بداية وبعد ٦ أشهر لمراقبة آفات بيضاء بينية.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Centre the sensor to include distal of canine to distal of second molar.</div><div class="ar">تمركز المستقبل ليشمل البعيد للأنياب حتى البعيد للرحى الثانية.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Contact overlap means wrong horizontal angulation—retake.</div><div class="ar">تراكب التماسات = زاوية أفقية خاطئة—أعد الالتقاط.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Remember “+10° up” for bitewings.</div><div class="ar">تذكّر “+10° للأعلى” في الجناحي.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 7. Full-mouth survey -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">7) Full-Mouth Radiography (FMS/FMRS)</span><span class="ar">٧) صور الفم الكاملة</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Typical set: <b>21 films</b> (≈ <b>17 periapicals + 4 bitewings</b>) covering all teeth and supporting bone.</p>
+          </div>
+          <div class="ar">
+            <p>التجميعة المعتادة: <b>٢١ صورة</b> (حوالي <b>١٧ ذروية + ٤ جناحي</b>) لتغطية الأسنان والعظم الداعم.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 29/42</span><span class="ar">الصفحات المرجعية: ٢٩/٤٢</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">A standardized series improves longitudinal comparison.</div><div class="ar">التسلسل المعياري يُحسّن المقارنات عبر الزمن.</div></div></div>
+          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden><div class="en">Adjust the series based on dentition and risk status.</div><div class="ar">عدّل السلسلة حسب نوع الأسنان والخطر.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Memorize “17 + 4”.</div><div class="ar">احفظ “١٧ + ٤”.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 8. Object localization: overview & indications -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">8) Object Localization: Why & When</span><span class="ar">٨) تحديد موضع الأجسام: لماذا ومتى؟</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Problem:</b> radiographs are 2D of 3D objects—buccal/lingual position is lost.</p>
+            <p><b>Indications:</b> impacted teeth, foreign bodies, locating canals in endodontics, mapping mandibular canal (e.g., pre-BSSO), and more.</p>
+          </div>
+          <div class="ar">
+            <p><b>المشكلة:</b> الأشعة ثنائية الأبعاد لأجسام ثلاثية الأبعاد—تضيع المعلومة الدهليزية/اللسانية.</p>
+            <p><b>الاستطبابات:</b> أسنان منطَمِرة، أجسام غريبة، تحديد القنوات في علاج الجذور، تحديد القناة السفلية (قبل جراحة الانشطار السهمي)، وغيرها.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 30,31/42</span><span class="ar">الصفحات المرجعية: ٣٠،٣١/٤٢</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Depth errors can cause surgical or endodontic mishaps.</div><div class="ar">أخطاء العمق قد تُسبّب مشاكل جراحية أو لبّية.</div></div></div>
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Use localization before removing foreign bodies near vital structures.</div><div class="ar">أجرِ التحديد قبل إزالة أجسام قريبة من تراكيب حيوية.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Think “2D ≠ depth”—always ask where (B/L)?</div><div class="ar">تذكّر: الصورة ثنائية الأبعاد لا تُظهر العمق—اسأل أين (دهليزي/لساني)؟</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 9. Parallax (SLOB/BOPS/Clark) -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">9) Parallax (Tube-Shift): SLOB / BOPS / Clark’s Rule</span><span class="ar">٩) طريقة المنظور (إزاحة الأنبوب): قاعدة SLOB / BOPS / كلارك</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p><b>Principle:</b> Apparent movement of an object relative to a reference when beam angulation changes.</p>
+            <p><b>Rule:</b> If the object is <b>lingual</b>, it moves in the <i>Same</i> direction as tube shift (<b>SLOB</b>); if <b>buccal</b>, it moves in the <i>Opposite</i> direction (<b>Opposite Buccal</b>).</p>
+            <p><b>Reference object:</b> usually the root of an adjacent tooth.</p>
+          </div>
+          <div class="ar">
+            <p><b>المبدأ:</b> يظهر الجسم وكأنه يتحرّك نسبةً لمرجع عند تغيير زاوية الحزمة.</p>
+            <p><b>القاعدة:</b> إن كان الجسم <b>لسانيًا</b> يتحرّك مع اتجاه إزاحة الأنبوب (Same Lingual)، وإن كان <b>دهليزيًا</b> يتحرّك بعكسها (Opposite Buccal).</p>
+            <p><b>الجسم المرجعي:</b> جذر السن المجاور عادةً.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 32,33,34,35/42</span><span class="ar">الصفحات المرجعية: ٣٢،٣٣،٣٤،٣٥/٤٢</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Tube shifted mesially: foreign body image also shifts mesially → it’s lingual.</div><div class="ar">إزاحة الأنبوب ميزِيًا: صورة الجسم تتحرّك ميزِيًا → موقعه لساني.</div></div></div>
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">SLOB = Same Lingual, Opposite Buccal.</div><div class="ar">SLOB = اللساني يتحرّك معاً، الدهليزي بعكس.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Draw two roots and arrows—practice mesial vs distal shifts.</div><div class="ar">ارسم جذرين وسهامًا—تدرّب على الإزاحة الميزية والبعيدة.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 10. Right-angle technique -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">10) Right-Angle Technique</span><span class="ar">١٠) تقنية الزاوية القائمة</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Combine an occlusal radiograph with a periapical at right angles to localize objects in three dimensions.</p>
+          </div>
+          <div class="ar">
+            <p>دمج صورة عضّية مع صورة ذروية بزوايا متعامدة لتحديد الموضع بثلاثة أبعاد.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 36/42</span><span class="ar">الصفحات المرجعية: ٣٦/٤٢</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Helpful for buccolingual position of unerupted canines.</div><div class="ar">مفيد لتحديد الاتجاه الدهليزي/اللساني للأنياب غير البازغة.</div></div></div>
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Provides true cross-sectional view with occlusal film.</div><div class="ar">يوفّر مقطعًا عرضيًا حقيقيًا عبر الصورة العضّية.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Think “IOPA + Occlusal = 3D”.</div><div class="ar">تذكّر “ذروية + عضّية = ثلاثي الأبعاد”.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 11. Occlusal radiography: indications -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">11) Occlusal Radiography: Indications</span><span class="ar">١١) التصوير العضّي: الاستطبابات</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Evaluate cysts/tumours size and extent; mediolateral disease spread; alveolar & tooth fractures; sialoliths; foreign bodies; trismus cases; periapical assessment; unerupted canines, supernumeraries, odontomas; localization of unerupted teeth.</p>
+          </div>
+          <div class="ar">
+            <p>تقييم حجم وتمدد الأكياس/الأورام؛ الامتداد الأنسي-الوحشي؛ كسور العظم السنخي والأسنان؛ حصيات لعابية؛ أجسام غريبة؛ حالات التقلص الفكي؛ تقييم حول الذروة؛ أنياب غير بازغة، أسنان زائدة، أودونتومات؛ تحديد موضع الأسنان غير البازغة.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 37,38/42</span><span class="ar">الصفحات المرجعية: ٣٧،٣٨/٤٢</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Occlusal images give a wide field not possible with IOPA alone.</div><div class="ar">الصور العضّية تعطي مجالًا واسعًا لا يتحقّق بالذروية وحدها.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Submandibular sialolith seen as radiopaque mass on mandibular occlusal.</div><div class="ar">حصاة تحت الفك السفلي تظهر كتكوّن مُشعّ على صورة عضّية سفلية.</div></div></div>
+          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Keep occlusal plane stable to avoid motion blur.</div><div class="ar">ثبّت مستوى الإطباق لتجنّب طمس الحركة.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 12. Occlusal techniques & angles -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">12) Occlusal Projections & Typical Angles</span><span class="ar">١٢) الإسقاطات العضّية وزواياها</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <div class="table-wrap" aria-label="Occlusal techniques and typical vertical angulations">
+              <table>
+                <thead>
+                  <tr><th>Arch</th><th>Projection</th><th>Typical Vertical Angle</th><th>Use</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>Maxillary</td><td>True/Cross-sectional</td><td>+65°</td><td>Palatal vault, mediolateral extent</td></tr>
+                  <tr><td>Maxillary</td><td>Anterior occlusal</td><td>+45°</td><td>Anterior lesions/unerupted teeth</td></tr>
+                  <tr><td>Maxillary</td><td>Lateral/Topographical</td><td>+60°</td><td>Unilateral areas</td></tr>
+                  <tr><td>Maxillary</td><td>Vertex occlusal</td><td>+90°</td><td>(Historic; rarely used)</td></tr>
+                  <tr><td>Mandibular</td><td>Anterior occlusal</td><td>−55°</td><td>Anterior mandible lesions</td></tr>
+                  <tr><td>Mandibular</td><td>Cross-sectional</td><td>−90°</td><td>Floor of mouth, sialoliths</td></tr>
+                  <tr><td>Mandibular</td><td>Lateral/Topographical</td><td>−90°</td><td>Unilateral areas</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+          <div class="ar">
+            <div class="table-wrap" aria-label="التقنيات العضّية والزوايا">
+              <table>
+                <thead>
+                  <tr><th>القوس</th><th>الإسقاط</th><th>الزاوية الرأسية</th><th>الاستخدام</th></tr>
+                </thead>
+                <tbody>
+                  <tr><td>علوي</td><td>مستعرض/مقطعي حقيقي</td><td>+65°</td><td>قبو الحنك، الامتداد الأنسي-الوحشي</td></tr>
+                  <tr><td>علوي</td><td>أمامي عضّي</td><td>+45°</td><td>آفات أمامية/أسنان غير بازغة</td></tr>
+                  <tr><td>علوي</td><td>جانبي/طبوغرافي</td><td>+60°</td><td>مناطق وحيدة الجانب</td></tr>
+                  <tr><td>علوي</td><td>من القمة</td><td>+90°</td><td>(تاريخي؛ نادر الاستعمال)</td></tr>
+                  <tr><td>سفلي</td><td>أمامي عضّي</td><td>−55°</td><td>آفات الفك الأمامي</td></tr>
+                  <tr><td>سفلي</td><td>مستعرض</td><td>−90°</td><td>أرضية الفم، حصيات لعابية</td></tr>
+                  <tr><td>سفلي</td><td>جانبي/طبوغرافي</td><td>−90°</td><td>مناطق وحيدة الجانب</td></tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 39,40,41/42</span><span class="ar">الصفحات المرجعية: ٣٩،٤٠،٤١/٤٢</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Cross-sectional views are excellent for detecting sialoliths.</div><div class="ar">العرض المستعرض ممتاز لكشف الحصيات اللعابية.</div></div></div>
+          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Anterior maxillary occlusal shows mesiodens position.</div><div class="ar">الصورة العضّية العلوية الأمامية تُظهر موضع سن زائد (ميسيودِنس).</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Pair each projection with its angle till automatic.</div><div class="ar">اربط كل إسقاط بزوايته حتى يتكوّن لديك انعكاس تلقائي.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+    <!-- 13. Summary -->
+    <section class="section">
+      <div class="content-col">
+        <h2 class="sec-head"><span class="en">13) Summary</span><span class="ar">١٣) الخلاصة</span></h2>
+        <div class="sec-body">
+          <div class="en">
+            <p>Periapicals use either <b>paralleling</b> (preferred; accurate) or <b>bisecting</b> (when anatomy limits). Know vertical angles for bisecting. <b>Bitewings</b> (≈+10°) are for proximal caries and early bone changes; they don’t show apices. <b>Occlusal</b> views provide a wide field and multiple projections with fixed angles. To recover depth, use <b>Parallax</b> (SLOB/BOPS) or the <b>Right-angle</b> method.</p>
+          </div>
+          <div class="ar">
+            <p>تُلتقط الذرويات بتقنية <b>التوازي</b> (مفضّلة ودقيقة) أو <b>شطر الزاوية</b> (عند محدودية التشريح). احفظ الزوايا الرأسية للشطر. <b>الجناحي</b> (+10° تقريبًا) لنخور بينية وتغيرات عظمية مبكرة ولا يُظهر الذروات. تمنحك الصور <b>العضّية</b> مجالًا واسعًا وإسقاطات متعددة بزوايا ثابتة. لاستعادة البعد الثالث استخدم <b>المنظور/الإزاحة</b> (SLOB/BOPS) أو <b>الزاوية القائمة</b>.</p>
+          </div>
+        </div>
+        <div class="source-footer"><span class="en">Source pages: 42/42</span><span class="ar">الصفحات المرجعية: ٤٢/٤٢</span></div>
+      </div>
+      <aside class="callouts-col">
+        <div class="callouts">
+          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Parallel → Perpendicular → Precise.”</div><div class="ar">“توازي → عمودي → دقة.”</div></div></div>
+          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Choosing the right technique avoids misdiagnosis and retreatment.</div><div class="ar">اختيار التقنية الصحيحة يمنع سوء التشخيص وإعادة العلاج.</div></div></div>
+          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح</span></div><div class="body" hidden><div class="en">Turn each angle/value into a flashcard until instant recall.</div><div class="ar">حوّل كل زاوية/قيمة إلى بطاقة مراجعة حتى تتذكرها فورًا.</div></div></div>
+        </div>
+      </aside>
+    </section>
+
+  </div><!-- /sections -->
+
+  <!-- Glossary -->
+  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+  <div class="grid g3x4" id="glossary">
+    <div class="card"><div class="head">Periapical / حول الذروة</div><div class="content" hidden><div class="en">Imaging of entire tooth including apex.</div><div class="ar">تصوير السن كاملًا بما في ذلك الذروة.</div></div></div>
+    <div class="card"><div class="head">Bitewing / جناحي العضة</div><div class="content" hidden><div class="en">Shows crowns & crestal bone; interproximal caries.</div><div class="ar">يُظهر التيجان وقمة العظم؛ نخور بينية.</div></div></div>
+    <div class="card"><div class="head">Occlusal / عضّي</div><div class="content" hidden><div class="en">Wide field projection for jaws/arches.</div><div class="ar">إسقاط واسع لقوسي الفك.</div></div></div>
+    <div class="card"><div class="head">Paralleling / التوازي</div><div class="content" hidden><div class="en">Receptor parallel; beam perpendicular.</div><div class="ar">مستقبل موازٍ؛ شعاع عمودي.</div></div></div>
+    <div class="card"><div class="head">Bisecting-Angle / شطر الزاوية</div><div class="content" hidden><div class="en">Beam perpendicular to angle bisector.</div><div class="ar">الحزمة عمودية على منصّف الزاوية.</div></div></div>
+    <div class="card"><div class="head">SLOB / SLOB</div><div class="content" hidden><div class="en">Same Lingual, Opposite Buccal movement rule.</div><div class="ar">قاعدة حركة: اللساني مع الاتجاه والدهليزي عكسه.</div></div></div>
+    <div class="card"><div class="head">Topographical / طبوغرافي</div><div class="content" hidden><div class="en">Occlusal view emphasizing surface contours.</div><div class="ar">عرض عضّي يركّز على محيط السطوح.</div></div></div>
+    <div class="card"><div class="head">Cieszynski’s Rule / قاعدة تشيزينسكي</div><div class="content" hidden><div class="en">Isometry for accurate tooth length in bisecting.</div><div class="ar">التساوي في القياس لحفظ طول السن في الشطر.</div></div></div>
+    <div class="card"><div class="head">IOPA / صورة ذروية</div><div class="content" hidden><div class="en">Periapical radiograph (Intra-Oral Peri-Apical).</div><div class="ar">صورة داخل الفم حول الذروة.</div></div></div>
+    <div class="card"><div class="head">BSSO / شق سهمي ثنائي للفك</div><div class="content" hidden><div class="en">Bilateral sagittal split osteotomy; needs canal mapping.</div><div class="ar">عملية قطع عظمي سهمي ثنائي؛ تحتاج تحديد القناة السفلية.</div></div></div>
+  </div>
+
+  <!-- Flashcards -->
+  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+  <div class="grid g3x4" id="flashcards">
+    <div class="card"><div class="head"><span class="en">1 — What is the vertical angle for maxillary canines (bisecting)?</span><span class="ar">١ — ما الزاوية الرأسية للأنياب العلوية (الشطر)؟</span></div><div class="content" hidden><span class="en">A: About +45°.</span><span class="ar">ج: نحو +45°.</span></div></div>
+    <div class="card"><div class="head"><span class="en">2 — Bitewing vertical angulation?</span><span class="ar">٢ — الزاوية الرأسية للجناحي؟</span></div><div class="content" hidden><span class="en">A: ~+10°.</span><span class="ar">ج: نحو +10°.</span></div></div>
+    <div class="card"><div class="head"><span class="en">3 — SLOB means?</span><span class="ar">٣ — ماذا تعني SLOB؟</span></div><div class="content" hidden><span class="en">A: Same Lingual, Opposite Buccal.</span><span class="ar">ج: اللساني يتحرّك معًا، الدهليزي بالعكس.</span></div></div>
+    <div class="card"><div class="head"><span class="en">4 — Why prefer paralleling for periapicals?</span><span class="ar">٤ — لماذا نفضّل التوازي للذرويات؟</span></div><div class="content" hidden><span class="en">A: Least distortion and reproducible.</span><span class="ar">ج: أقل تشوّه وقابلية تكرار عالية.</span></div></div>
+    <div class="card"><div class="head"><span class="en">5 — What doesn’t bitewing show?</span><span class="ar">٥ — ماذا لا يُظهر الجناحي؟</span></div><div class="content" hidden><span class="en">A: Periapices and radicular areas.</span><span class="ar">ج: الذروات والمناطق الجذرية.</span></div></div>
+    <div class="card"><div class="head"><span class="en">6 — Right-angle method uses which two views?</span><span class="ar">٦ — أي صورتين تستخدمهما تقنية الزاوية القائمة؟</span></div><div class="content" hidden><span class="en">A: Periapical + occlusal.</span><span class="ar">ج: ذروية + عضّية.</span></div></div>
+    <div class="card"><div class="head"><span class="en">7 — Horizontal angulation rule?</span><span class="ar">٧ — قاعدة الزاوية الأفقية؟</span></div><div class="content" hidden><span class="en">A: Beam through contact points (≈0°).</span><span class="ar">ج: تمرير الشعاع عبر نقاط التماس (≈٠°).</span></div></div>
+    <div class="card"><div class="head"><span class="en">8 — Common error in bisecting?</span><span class="ar">٨ — خطأ شائع في الشطر؟</span></div><div class="content" hidden><span class="en">A: Incorrect vertical angle → foreshortening/elongation.</span><span class="ar">ج: زاوية رأسية خاطئة → قصر/استطالة.</span></div></div>
+    <div class="card"><div class="head"><span class="en">9 — Full-mouth survey numbers?</span><span class="ar">٩ — أعداد سلسلة الفم الكامل؟</span></div><div class="content" hidden><span class="en">A: ~21 (≈17 periapicals + 4 bitewings).</span><span class="ar">ج: نحو ٢١ (≈١٧ ذروية + ٤ جناحي).</span></div></div>
+  </div>
+</main>
+
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+<!--
+FILE NAME: save as `rad-5.html` (matches PDF name: rad-5.pdf)
+This is a self-contained, offline-ready, bilingual interactive study guide.
+-->
+</body>
+</html>

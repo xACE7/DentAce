@@ -1,0 +1,440 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}  
+  .opt-btn.correct{border-left:6px solid var(--ok);outline:none;background:rgba(255,255,255,0.03);}  
+  .opt-btn.wrong{border-left:6px solid var(--bad);outline:none;background:rgba(255,255,255,0.03);}  
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}  
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}  
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);}  
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{margin:16px 0;padding:12px 14px;border-radius:14px;background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}  
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 4</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data from rad-4.pdf -----------
+const mcqs = [
+  { q: "Deterministic effects of radiation are best described as:", opts:["Random effects with no dose threshold","Heritable DNA damage with long latency","Definitive tissue reactions that occur above a threshold dose","Effects independent of dose rate"], correct:2, explain:"Slides define deterministic effects as 'definitive' damaging effects that depend on dose and have thresholds (e.g., organ damage, ARS)." },
+  { q: "Stochastic effects are characterized by:", opts:["Guaranteed occurrence once threshold is reached","Severity increases with dose but probability is constant","May occur at any dose; probability increases with dose","Limited to acute radiation syndrome"], correct:2, explain:"Stochastic effects may occur at any dose; probability (not severity) increases with dose (e.g., mutation, carcinogenesis)." },
+  { q: "Which is NOT listed as a source of natural background radiation?", opts:["Cosmic/space radiation","Terrestrial sources","Radon and its progeny","Diagnostic X‑ray equipment"], correct:3, explain:"Diagnostic X‑rays are medical (artificial), not natural background." },
+  { q: "According to the lecture, approximately what fraction of radiation exposure is natural versus artificial?", opts:["50% natural, 50% artificial","83% natural, 17% artificial","30% natural, 70% artificial","95% natural, 5% artificial"], correct:1, explain:"Figure notes: ~83% natural and ~17% artificial sources." },
+  { q: "Which component originates from the target focal spot only?", opts:["Primary beam","Radiation leakage","Secondary radiation","Scattered radiation"], correct:0, explain:"Primary beam is emitted by the focal spot; leakage and scatter are different components." },
+  { q: "Radiation leakage is:", opts:["Any radiation produced outside the X‑ray spectrum","Radiation emitted from parts other than the focal spot","Background cosmic radiation","Light emission from phosphors"], correct:1, explain:"Leakage = radiation emitted by any part of the tube other than the focal spot." },
+  { q: "The aim of radiation protection (ICRP/NCRP) is to:", opts:["Eliminate all exposures completely","Allow beneficial practices while providing appropriate protection","Maximize image quality regardless of dose","Permit unlimited occupational exposure"], correct:1, explain:"Aim: provide appropriate protection without unduly limiting beneficial practices." },
+  { q: "ALARA stands for:", opts:["As Low As Reasonably Achievable","All Levels Are Reasonably Acceptable","Average Level As Required Annually","Applied Limits Against Radiation Absorption"], correct:0, explain:"ALARA: keep doses As Low As Reasonably Achievable." },
+  { q: "Dose limits are intended primarily to:", opts:["Increase stochastic effects to acceptable levels","Prevent deterministic effects and reduce stochastic risk","Improve film speed","Eliminate the need for shielding"], correct:1, explain:"Two goals stated: prevent deterministic effects (stay below thresholds) and reduce stochastic incidence." },
+  { q: "In patient selection, radiographs should be prescribed:", opts:["Before any clinical exam","Only after clinical examination based on professional judgment","Routinely for all patients regardless of need","As an alternative to clinical assessment"], correct:1, explain:"Slides: Diagnostic radiographs only after clinical exam; not an alternative to assessment." },
+  { q: "Which statement about film speed is TRUE?", opts:["F‑speed film requires more exposure than D‑speed","Fast films reduce exposure but may decrease image quality","Only D and E speeds exist in dentistry","Film speed is unrelated to exposure time"], correct:1, explain:"Faster films need less exposure; note possible image quality trade‑off." },
+  { q: "If E‑speed film exposure time is 1 s, the F‑speed exposure time is:", opts:["2 s","1 s","0.5 s","0.25 s"], correct:2, explain:"Slide example: F is twice as fast as E → 0.5 s when E is 1 s." },
+  { q: "Regular dental X‑ray film historically required ~9 s to image which region?", opts:["Mandibular incisors","Maxillary molar","TMJ","Maxillary canine"], correct:1, explain:"Slide states ~9 seconds for a maxillary molar radiograph." },
+  { q: "Using intensifying screens with rare‑earth phosphor plus film in pano/ceph can reduce exposure by approximately:", opts:["10%","25%","55%","90%"], correct:2, explain:"Slide: Combination results in ~55% reduction." },
+  { q: "Which pair correctly matches phosphor and emitted light?", opts:["Calcium tungstate – green","Gadolinium/Lanthanum – green","Gadolinium/Lanthanum – blue","All rare earths emit blue only"], correct:1, explain:"Rare earth (Gd, La) emit green; calcium tungstate emits blue." },
+  { q: "T‑grain films are advantageous because they:", opts:["Absorb less light from screens","Have greater grain cross‑section to gather more light","Eliminate the need for intensifying screens","Are slower than D‑speed"], correct:1, explain:"Slides: T‑grain films have greater grain cross‑section and gather more light." },
+  { q: "Extending focal spot‑to‑film distance (FSFD) primarily does what?", opts:["Increases beam divergence","Reduces patient dose and increases resolution","Increases scatter at the patient","Requires higher kVp by regulation"], correct:1, explain:"Long FSFD reduces exposure (~32%) and increases resolution due to less divergence." },
+  { q: "Approximate reduction in patient exposure when using an extended FSFD is:", opts:["10%","32%","50%","80%"], correct:1, explain:"Slide states ~32% reduction." },
+  { q: "Federal regulation for PID length requires not less than:", opts:["10 cm","14 cm","18 cm (≈7 in)","2.5 cm"], correct:2, explain:"Slide: Length of PID not less than 18 cm (7 inches)." },
+  { q: "Minimum distance of PID from skin is:", opts:["0.5 cm","1.0 cm","2.5 cm (≈1 in)","5.0 cm"], correct:2, explain:"Slide: Distance from skin not less than 2.5 cm (1 inch)." },
+  { q: "For intraoral radiography above 50 kVp, the maximum patient skin surface diameter exposed should NOT exceed:", opts:["3 cm","5 cm","7 cm","10 cm"], correct:2, explain:"Federal requirement cited: ≤7 cm at >50 kVp." },
+  { q: "Rectangular open‑ended, lead‑lined PID exit opening (≈3.5 × 4.4 cm) reduces exposure by:", opts:["15–20%","35–40%","71–80%",">90%"], correct:2, explain:"Slides: rectangular PID reduces exposure by 71–80%." },
+  { q: "Use of rectangular/circular film holders can reduce exposure by roughly:", opts:["10%","30%","60%","100%"], correct:2, explain:"Slides: film holders reduce exposure by ~60%." },
+  { q: "Filtration requirement for intraoral at 70 kVp is at least:", opts:["0.5 mm Al","1.0 mm Al","1.5 mm Al","2.5 mm Al"], correct:2, explain:"Slide: ≥1.5 mm Al at 70 kVp (and 2 mm above 70 kVp)." },
+  { q: "Which of the following is a stated benefit of collimation?", opts:["Increased film fog","Increased patient exposure","Decreased scatter and improved image quality","Need for higher mA"], correct:2, explain:"Slides list: less exposure, decreased scatter, decreased fog, increased quality." },
+  { q: "During processing, which factor set is highlighted for manual development?", opts:["High‑temperature quick dip","Time‑temperature method","Ultraviolet fixation","No need to follow manufacturer recommendations"], correct:1, explain:"Manual processing emphasized Time‑Temperature method and quality chemicals." },
+  { q: "Operator position rule recommends standing:", opts:["Directly in line with the primary beam","Within 1 ft of the tube head","At least 6 ft away and at 90°–135° to the beam","Behind the patient’s head at 0°"], correct:2, explain:"Slides: 6 ft distance at an angle of 90–135 degrees from the beam." },
+  { q: "Which barrier is specifically recommended for thyroid protection?", opts:["Lead bricks","Lead sheet","Thyroid collar","Lead curtain only"], correct:2, explain:"Slides: Lead apron and thyroid collar; thyroid collar protects the thyroid." },
+  { q: "Lead‑free aprons (e.g., Xenolite alloy) provide:", opts:["Less protection than lead and are heavier","Comparable protection without the weight or lead hazards","Protection only at >100 kVp","No clinical use in dentistry"], correct:1, explain:"Slides: Xenolite lead‑free aprons offer same protection with less weight and no lead risk." },
+  { q: "Which dosimeter uses trapped electrons in crystals releasing light upon heating?", opts:["Film badge","Ionization chamber","Thermoluminescent dosimeter (TLD)","Geiger counter"], correct:2, explain:"Slides: LiF (and CaF:Mn) crystals emit visible light when heated; light ∝ absorbed dose." },
+  { q: "The Victoreen condenser r‑meter is used to measure:", opts:["Film speed","X‑ray exposure with ionization chambers","Background cosmic flux","Screen phosphor emission"], correct:1, explain:"Slides: Ionization chamber device frequently used for measuring X‑ray exposure." }
+];
+
+const tfs = [
+  { q:"Primary beam equals radiation emitted by the focal spot.", answer:true, explain:"Defined as emission from the focal spot of the target." },
+  { q:"Stochastic effects depend on exceeding a threshold dose.", answer:false, explain:"They have no threshold; probability increases with dose." },
+  { q:"Extended FSFD makes the beam less divergent.", answer:true, explain:"Longer distance reduces divergence and improves resolution." },
+  { q:"Rectangular PID increases patient dose compared with circular PID.", answer:false, explain:"Rectangular PID reduces dose by ~71–80%." },
+  { q:"Minimum aluminum filtration is greater for machines operating above 70 kVp than at 70 kVp.", answer:true, explain:"Slides: 1.5 mm Al at 70 kVp; 2 mm above 70 kVp." },
+  { q:"Film holders can reduce patient exposure by about 60%.", answer:true, explain:"Stated directly in slides." },
+  { q:"Lead‑free aprons are heavier than traditional lead aprons.", answer:false, explain:"Slides: They offer same protection without heavy weight." },
+  { q:"LiF crystals used in TLDs have absorption similar to soft tissue due to low atomic number.", answer:true, explain:"Slides highlight this property." },
+  { q:"Dosimetry refers to determining the unit of radiation exposure or dose.", answer:true, explain:"Slide definition of dosimetry." }
+];
+
+const saqs = [
+  { q: "Define the ALARA principle and its relevance in dental radiology.", a: "As Low As Reasonably Achievable: all exposures should be minimized while achieving diagnostic goals. It underpins selection criteria, equipment choices, and techniques to reduce dose." },
+  { q: "List major categories of radiation sources affecting humans.", a: `<table style='width:100%'><tr><th>#</th><th>Category</th><th>Examples</th></tr><tr><td>1</td><td>Background (Natural)</td><td>Cosmic, terrestrial, radon/progeny, internal</td></tr><tr><td>2</td><td>Medical (Artificial)</td><td>X‑rays, nuclear medicine</td></tr><tr><td>3</td><td>Consumer/Occupational/Nuclear fuel</td><td>Products, workplace, fuel cycle</td></tr></table>` },
+  { q: "Compare deterministic and stochastic effects of radiation.", a: `<table style='width:100%'><tr><th>#</th><th>Deterministic</th><th>Stochastic</th></tr><tr><td>1</td><td>Have dose thresholds</td><td>No threshold; probability ↑ with dose</td></tr><tr><td>2</td><td>Severity increases with dose</td><td>Severity not dose‑dependent</td></tr><tr><td>3</td><td>Examples: organ damage, ARS</td><td>Examples: mutation, carcinogenesis</td></tr></table>` },
+  { q: "Case: You must image a maxillary molar while minimizing dose. State two equipment/geometry choices to reduce exposure and justify.", a: "Use rectangular lead‑lined PID (~71–80% reduction) and extended FSFD (≈32% reduction), which reduce beam size/divergence and improve resolution." },
+  { q: "Enumerate three personnel radiation monitoring or measurement methods.", a: `<ol style='margin:0;padding-left:18px'><li>Film badges</li><li>Thermoluminescent dosimeters (LiF/CaF:Mn)</li><li>Ionization chambers (e.g., Victoreen condenser r‑meter)</li></ol>` },
+  { q: "Contrast rectangular vs circular PID for intraoral radiography.", a: `<table style='width:100%'><tr><th>#</th><th>Rectangular PID</th><th>Circular PID</th></tr><tr><td>1</td><td>Exit ~3.5×4.4 cm</td><td>Larger exit opening</td></tr><tr><td>2</td><td>Reduces dose by ~71–80%</td><td>Higher dose than rectangular</td></tr><tr><td>3</td><td>Decreases scatter/fog; improves quality</td><td>Less effective at limiting beam</td></tr></table>` }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null),
+  tf: Array(tfs.length).fill(null),
+  saq: Array(saqs.length).fill(false)
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>
