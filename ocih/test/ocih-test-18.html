@@ -127,6 +127,9 @@
   }
   .score .part{color:var(--muted);font-weight:600}
   .score b{color:var(--text)}
+  table{width:100%;border-collapse:collapse;margin-top:10px;}
+  th,td{padding:8px;text-align:left;border:1px solid var(--card-border);}
+  th{background-color:var(--glass);}
 </style>
 </head>
 <body>
@@ -139,7 +142,7 @@
 
   <main class="wrap">
 
-    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
 
     <section class="score" id="scoreTop">
       <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
@@ -169,65 +172,293 @@
   </main>
 
 <script>
-// ----------- Data (from Lecture 18: Dentin Part 1 & 2) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q:`Dentin is best defined as:`, opts:[`The outermost mineralized tissue covering the crown`,`A non-mineralized connective tissue in the pulp`,`The mineralized tissue forming the main bulk of the tooth`,`A calcified layer covering the root externally`], correct:2, explain:`Dentin forms the main bulk of the tooth; enamel covers it in the crown and cementum in the root.` },
-  { q:`In the crown, dentin is covered by:`, opts:[`Cementum`,`Enamel`,`Pulp`,`Periodontium`], correct:1, explain:`Crown dentin is covered by enamel; root dentin by cementum.` },
-  { q:`Which TWO major properties distinguish dentin from enamel?`, opts:[`Brittleness and opacity`,`Sensitivity and formation throughout life`,`Color and radio-opacity`,`Hardness and solubility`], correct:1, explain:`Dentin is sensitive and continues to form throughout life, unlike enamel.` },
-  { q:`Which statement about the hardness of dentin is TRUE?`, opts:[`Harder than enamel`,`Softer than cementum and bone`,`Hardness is between enamel and cementum/bone`,`Same hardness as enamel`], correct:2, explain:`Dentin is less hard than enamel but harder than cementum and bone.` },
-  { q:`Radiographically, dentin appears:`, opts:[`More radiolucent than cementum and enamel`,`More radiopaque than enamel`,`More radiolucent than enamel and more radiopaque than cementum`,`Equal radiopacity to pulp`], correct:2, explain:`Dentin is more radiolucent than enamel but more radiopaque than cementum.` },
-  { q:`Typical thickness of dentin ranges approximately from:`, opts:[`0.5–2 mm`,`3–10 mm`,`12–15 mm`,`10–20 µm`], correct:1, explain:`Overall dentin thickness varies from about 3–10 mm; 10–20 µm refers to mantle dentin thickness.` },
-  { q:`Dominant collagen type in dentin organic matrix is:`, opts:[`Type II`,`Type I (~90%)`,`Type III`,`Type IV`], correct:1, explain:`Type I collagen constitutes about 90% of dentin collagen.` },
-  { q:`Overall composition of dentin by weight is about:`, opts:[`95% inorganic, 5% organic`,`70% organic, 30% inorganic`,`65–70% inorganic, 30–35% organic plus water`,`50% inorganic, 50% organic`], correct:2, explain:`Dentin contains roughly 65–70% inorganic (hydroxyapatite) and 30–35% organic + water.` },
-  { q:`Odontoblasts are derived from:`, opts:[`Outer enamel epithelium`,`Peripheral dental papilla cells (undifferentiated mesenchymal cells)`,`Stellate reticulum`,`Dental follicle only`], correct:1, explain:`Odontoblasts differentiate from peripheral dental papilla (UMCs).` },
-  { q:`During predentin formation the odontoblast shows prominent:`, opts:[`Smooth ER and lysosomes`,`RER, mitochondria, Golgi, abundant RNA, and alkaline phosphatase`,`Cilia and desmosomes`,`Keratin filaments`], correct:1, explain:`Secretory activity requires RER, mitochondria, Golgi, RNA; alkaline phosphatase is associated with mineralization.` },
-  { q:`The early odontoblastic processes are:`, opts:[`Single and short`,`Multiple, then later become single (Tomes’ fiber)`,`Absent until maturation`,`Cytoplasmic blebs confined to pulp`], correct:1, explain:`Initially multiple processes form; as dentin is laid, they recede leaving a single Tomes’ fiber.` },
-  { q:`Predentin is primarily composed of:`, opts:[`Amelogenins only`,`Collagen fibers and ground substance`,`Cementum matrix`,`Fluorapatite only`], correct:1, explain:`Matrix formation (predentin) includes collagen fibers and ground substance before mineralization.` },
-  { q:`Mantle dentin is characterized by collagen fibers oriented:`, opts:[`Parallel to the DEJ in crown`,`Perpendicular to the DEJ in crown`,`Randomly in crown`,`Parallel to DCJ in crown`], correct:1, explain:`In crown, mantle dentin fibers are perpendicular to DEJ; in root they are parallel to DCJ.` },
-  { q:`Approximate thickness of mantle dentin is:`, opts:[`10–20 µm`,`3–10 mm`,`0.5–1.0 mm`,`50–100 µm`], correct:0, explain:`First-formed mantle dentin layer is about 10–20 µm thick.` },
-  { q:`Circumpulpal dentin fibers are generally oriented:`, opts:[`Perpendicular to DEJ`,`Parallel to DEJ (right/oblique to dentinal tubules)`,`Parallel to DCJ in crown`,`Random with no pattern`], correct:1, explain:`Circumpulpal dentin fibers run parallel to DEJ, often at a right/oblique angle to tubules.` },
-  { q:`Initial mineralization pattern at the mantle dentin area is:`, opts:[`Globular`,`Linear`,`Lamellar`,`Nodular only in root`], correct:1, explain:`Mantle dentin mineralizes in a linear pattern.` },
-  { q:`Just below mantle dentin in circumpulpal dentin, mineralization is typically:`, opts:[`Linear`,`Globular`,`Lamellar`,`Absent`], correct:1, explain:`A globular pattern appears just below mantle dentin in circumpulpal dentin.` },
-  { q:`Which is TRUE about odontoblast arrangement along the pulp?`, opts:[`Uniformly flat throughout`,`Pseudostratified columnar in pulp chamber crown, becoming flat apically`,`Cuboidal at crown, columnar apically`,`Random with no regional differences`], correct:1, explain:`Cells are closely packed/pseudostratified in crown, columnar near root start, cuboidal mid-root, flat apically.` },
-  { q:`The unit structural feature of dentin is the:`, opts:[`Enamel prism`,`Dentinal tubule`,`Cementocyte lacuna`,`Sharpey’s fiber`], correct:1, explain:`Dentin consists of numerous parallel dentinal tubules with odontoblastic processes.` },
-  { q:`Course of dentinal tubules in the cervical region of crown most commonly shows:`, opts:[`Straight course`,`S-shaped curvature`,`Random spirals`,`No consistent pattern`], correct:1, explain:`In crown cervical areas, dentinal tubules commonly show an S-shaped course.` },
-  { q:`Secondary curvatures of dentinal tubules refer to:`, opts:[`Major S-curve in crown`,`Fine undulations along the tubule path`,`Changes at the DEJ only`,`Absence of branches`], correct:1, explain:`Secondary curvatures are small, rhythmic undulations superimposed on the primary path.` },
-  { q:`The space between odontoblastic process and the tubule wall is called:`, opts:[`Lacuna`,`Peri-odontoblastic space (contains dentinal fluid)`,`Canaliculus`,`Matrix cleft`], correct:1, explain:`Periodontoblastic space contains dentinal fluid; together with the process it forms the soft tissue of dentin.` },
-  { q:`Peritubular dentin is:`, opts:[`Less mineralized than intertubular dentin`,`~40% more mineralized than surrounding dentin and lines the tubule`,`Confined to mantle dentin only`,`Absent in crown`], correct:1, explain:`Peritubular dentin forms the inner wall of tubules and is about 40% more mineralized.` },
-  { q:`In transverse ground section, peritubular dentin appears as:`, opts:[`Dark opaque bands`,`Translucent rings around tubules`,`Random pores`,`Interglobular spaces`], correct:1, explain:`Highly calcified peritubular dentin looks like translucent rings around tubules in TS.` },
-  { q:`Intertubular dentin:`, opts:[`Forms minor portion of dentin`,`Is present only near DEJ`,`Forms the main bulk between tubules`,`Is unmineralized`], correct:2, explain:`Intertubular dentin forms the main bulk between tubules.` },
-  { q:`Interglobular dentin is typically found:`, opts:[`In root adjacent to cementum always`,`In crown just below mantle dentin; in badly formed teeth may appear in root`,`Only at DEJ`,`Only in pulp horns`], correct:1, explain:`IGD commonly appears beneath mantle dentin in crown; may be present in root of poorly formed teeth.` },
-  { q:`Dentinal tubules in interglobular dentin:`, opts:[`End blindly`,`Do not cross this zone`,`Cross it lacking peritubular dentin`,`Show increased peritubular deposition`], correct:2, explain:`DTs cross IGD but without peritubular dentin lining.` },
-  { q:`Tomes’ granular layer results from:`, opts:[`Hypomineralized globules`,`Looping of terminal portions of dentinal tubules`,`Bacterial invasion`,`Post-eruptive attrition`], correct:1, explain:`Granular appearance arises due to looping of terminal portions of dentinal tubules.` },
-  { q:`Location of Tomes’ granular layer is:`, opts:[`Crown beneath DEJ`,`Root adjacent to cementum`,`Pulpal surface only`,`Enamel surface`], correct:1, explain:`It is seen in the root next to cementum.` },
-  { q:`Incremental lines of Von Ebner represent:`, opts:[`Daily enamel deposition`,`Five-day cycles (≈20 µm apart) in dentin reflecting collagen orientation changes`,`Monthly growth bands`,`Areas of hypercalcification only`], correct:1, explain:`Von Ebner lines show 5-day incremental pattern, ~20 µm apart, often with hypocalcification.` },
+    {
+        q: "What is the primary function of dentin?",
+        opts: ["To form the main bulk of the tooth", "To cover the crown", "To provide blood supply to the tooth", "To protect the enamel"],
+        correct: 0,
+        explain: "Dentin is the mineralized tissue that forms the main bulk of the tooth, underlying the enamel in the crown and the cementum in the root."
+    },
+    {
+        q: "Which property differentiates dentin from enamel?",
+        opts: ["It is harder than enamel", "It is formed throughout life", "It is completely inorganic", "It is not sensitive"],
+        correct: 1,
+        explain: "Dentin is formed throughout life (secondary and tertiary dentin), whereas enamel formation ceases after tooth eruption. Dentin is also sensitive."
+    },
+    {
+        q: "What is the color of healthy dentin?",
+        opts: ["Bright white", "Slightly grayish", "Light yellowish", "Transparent"],
+        correct: 2,
+        explain: "Dentin has a light yellowish color, which can influence the overall shade of the tooth as it shows through the translucent enamel."
+    },
+    {
+        q: "What is the approximate inorganic composition of dentin by weight?",
+        opts: ["96%", "45%", "65-70%", "20%"],
+        correct: 2,
+        explain: "Dentin is composed of 65-70% inorganic material, primarily hydroxyapatite crystals."
+    },
+    {
+        q: "What is the main organic component of dentin?",
+        opts: ["Keratin", "Collagen type II", "Collagen type I", "Elastin"],
+        correct: 2,
+        explain: "The organic matrix of dentin is about 90% Collagen type I, which provides a scaffold for mineralization."
+    },
+    {
+        q: "Odontoblasts differentiate from which cells?",
+        opts: ["Ameloblasts", "Inner dental epithelium cells", "Stellate reticulum cells", "Peripheral dental papilla cells (UMC)"],
+        correct: 3,
+        explain: "Odontoblasts, the cells that form dentin, differentiate from the undifferentiated mesenchymal cells (UMC) of the dental papilla."
+    },
+    {
+        q: "What is the name of the unmineralized organic matrix of dentin?",
+        opts: ["Enameloid", "Cementoid", "Predentin", "Osteoid"],
+        correct: 2,
+        explain: "Predentin is the initially laid down, unmineralized organic matrix of dentin that subsequently mineralizes to become mature dentin."
+    },
+    {
+        q: "The single cytoplasmic extension of an odontoblast left within the dentin matrix is called:",
+        opts: ["Enamel spindle", "Tomes' process", "Tomes' fiber", "Sharpey's fiber"],
+        correct: 2,
+        explain: "As odontoblasts recede, they leave a single process within the forming dentin matrix. This process is known as Tomes' fiber."
+    },
+    {
+        q: "The first layer of dentin formed, located near the DEJ, is called:",
+        opts: ["Circumpulpal dentin", "Mantle dentin", "Secondary dentin", "Tertiary dentin"],
+        correct: 1,
+        explain: "Mantle dentin is the first-formed layer, about 10-20 µm thick, located in the crown and root, differing slightly in fiber orientation from the rest of the dentin."
+    },
+    {
+        q: "Mineralization of mantle dentin is initiated by what structures?",
+        opts: ["Collagen fibers", "Golgi apparatus", "Matrix vesicles", "Ameloblasts"],
+        correct: 2,
+        explain: "Mineralization in mantle dentin begins with budding of matrix vesicles from odontoblasts, which contain enzymes and ions that initiate crystallization."
+    },
+    {
+        q: "What is the pattern of mineralization in circumpulpal dentin just below the mantle layer?",
+        opts: ["Linear", "Globular", "Reticular", "Lamellar"],
+        correct: 1,
+        explain: "Mineralization in the circumpulpal dentin occurs in a globular (or calcospheric) pattern, where globules of hydroxyapatite fuse."
+    },
+    {
+        q: "What is the main histological unit of dentin?",
+        opts: ["Enamel rod", "Osteon", "Dentinal tubule", "Cementocyte"],
+        correct: 2,
+        explain: "Dentin is composed of millions of microscopic parallel tubules, called dentinal tubules, which radiate from the pulp to the periphery."
+    },
+    {
+        q: "The space between the odontoblastic process and the wall of the dentinal tubule is called:",
+        opts: ["Periodontoblastic space", "Intertubular space", "Peritubular space", "Canaliculus"],
+        correct: 0,
+        explain: "The periodontoblastic space is filled with dentinal fluid (lymph) and surrounds the odontoblastic process (Tome's fiber)."
+    },
+    {
+        q: "Which type of dentin is highly calcified and forms the immediate wall of the dentinal tubule?",
+        opts: ["Intertubular dentin", "Mantle dentin", "Peritubular dentin", "Predentin"],
+        correct: 2,
+        explain: "Peritubular (or Intratubular) dentin is a hypermineralized collar of dentin that lines the tubule wall, being about 40% more mineralized than the surrounding dentin."
+    },
+    {
+        q: "What forms the main bulk of the dentin and is located between the dentinal tubules?",
+        opts: ["Peritubular dentin", "Intertubular dentin", "Mantle dentin", "Predentin"],
+        correct: 1,
+        explain: "Intertubular dentin constitutes the primary structural component of dentin, located between the peritubular dentin rings."
+    },
+    {
+        q: "How does the direction of collagen fibers in mantle dentin differ from circumpulpal dentin in the crown?",
+        opts: ["Parallel to DEJ", "Perpendicular to DEJ", "Randomly oriented", "They are absent"],
+        correct: 1,
+        explain: "In the crown, the large collagen fibers of mantle dentin are oriented perpendicular (at a right angle) to the dentinoenamel junction (DEJ)."
+    },
+    {
+        q: "Unmineralized or hypomineralized areas resulting from the failure of fusion of calcification globules are known as:",
+        opts: ["Tomes' granular layer", "Incremental lines of Owen", "Interglobular dentin", "Sclerotic dentin"],
+        correct: 2,
+        explain: "Interglobular dentin consists of areas where globular zones of mineralization have failed to coalesce, leaving behind unmineralized organic matrix."
+    },
+    {
+        q: "Where is Tomes' granular layer typically found?",
+        opts: ["Just below the DEJ in the crown", "Adjacent to the cementum in the root", "Surrounding the pulp chamber", "Within the mantle dentin"],
+        correct: 1,
+        explain: "Tomes' granular layer is a specific feature of root dentin, appearing as a granular zone adjacent to the dentinocemental junction (DCJ)."
+    },
+    {
+        q: "The incremental lines in dentin that represent a 5-day cycle of formation are called:",
+        opts: ["Contour lines of Owen", "Neonatal lines", "Striae of Retzius", "Incremental lines of von Ebner"],
+        correct: 3,
+        explain: "The lines of von Ebner are fine lines that represent the daily rhythmic, incremental deposition of dentin, with more pronounced lines occurring in a 5-day cycle."
+    },
+    {
+        q: "Accentuated contour lines representing disturbances in mineralization due to illness or malnutrition are known as:",
+        opts: ["Lines of von Ebner", "Neonatal lines", "Contour lines of Owen", "Hunter-Schreger bands"],
+        correct: 2,
+        explain: "Contour lines of Owen are hypocalcified bands that reflect a systemic disturbance that affected the odontoblasts during dentin formation."
+    },
+    {
+        q: "What is the shape of odontoblasts in the crown (pulp chamber)?",
+        opts: ["Flat", "Cuboidal", "Columnar or pseudostratified columnar", "Squamous"],
+        correct: 2,
+        explain: "In the crown, where dentin formation is most active, odontoblasts are tall and closely packed, appearing as columnar or pseudostratified columnar cells."
+    },
+    {
+        q: "The lateral branches of odontoblastic processes are responsible for dentin's:",
+        opts: ["Hardness", "Color", "Permeability", "Elasticity"],
+        correct: 2,
+        explain: "The lateral branches connect adjacent odontoblastic processes, forming a network that contributes to the permeability of dentin."
+    },
+    {
+        q: "How does the diameter of dentinal tubules change from the pulp towards the DEJ?",
+        opts: ["It widens", "It remains constant", "It tapers (narrows)", "It branches without changing diameter"],
+        correct: 2,
+        explain: "Dentinal tubules are widest at the pulpal surface and taper to a smaller diameter as they approach the DEJ or DCJ."
+    },
+    {
+        q: "A neonatal line is found in which teeth?",
+        opts: ["All permanent teeth", "All deciduous teeth and first permanent molars", "Only canines and incisors", "Only premolars"],
+        correct: 1,
+        explain: "The neonatal line is an enlarged incremental line that marks the disruption in formation and mineralization occurring at birth, found in all primary teeth and the cusps of first permanent molars."
+    },
+    {
+        q: "Which method is used to study the organic components of dentin?",
+        opts: ["Ground section", "Decalcified section", "Electron microscopy", "Radiography"],
+        correct: 1,
+        explain: "To study the organic matrix (like collagen), the mineral component must be removed using an acid, a process called decalcification."
+    },
+    {
+        q: "In which direction do dentinal tubules run in the cuspal areas?",
+        opts: ["S-shaped", "Straight", "Apically curved", "Horizontally"],
+        correct: 1,
+        explain: "In the area of cusps or incisal edges, the dentinal tubules follow a relatively straight path from the pulp towards the DEJ."
+    },
+    {
+        q: "Peritubular dentin is continuously formed, leading to:",
+        opts: ["Widening of the tubule", "Narrowing of the tubule", "Increased permeability", "Decreased hardness"],
+        correct: 1,
+        explain: "The continuous deposition of peritubular dentin throughout life causes the diameter of the dentinal tubule to decrease, a process which can lead to sclerosis."
+    },
+    {
+        q: "The ground substance for circumpulpal dentin comes from:",
+        opts: ["The cell-free zone only", "Ameloblasts", "Odontoblasts", "Blood plasma"],
+        correct: 2,
+        explain: "Odontoblasts are responsible for synthesizing and secreting the organic ground substance (non-collagenous proteins, etc.) for circumpulpal dentin."
+    },
+    {
+        q: "What is the approximate thickness of dentin?",
+        opts: ["0.1-0.5 mm", "1-2 mm", "3-10 mm", "Over 15 mm"],
+        correct: 2,
+        explain: "The thickness of dentin varies depending on the tooth and location but generally ranges from 3 to 10 millimeters."
+    },
+    {
+        q: "Radiographically, how does dentin compare to enamel?",
+        opts: ["More radiolucent", "More radio-opaque", "Same radiodensity", "Completely radiolucent"],
+        correct: 0,
+        explain: "Because it is less mineralized, dentin is more radiolucent (appears darker on an X-ray) than enamel, but more radio-opaque (lighter) than pulp."
+    }
 ];
 
 const tfs = [
-  { q:`Dentin is a visco-elastic tissue.`, answer:true, explain:`Physical property: dentin exhibits visco-elastic behavior.` },
-  { q:`Mantle dentin constitutes the bulk thickness of dentin.`, answer:false, explain:`Circumpulpal dentin forms the bulk; mantle is only 10–20 µm.` },
-  { q:`Odontoblastic processes give lateral branches that contribute to dentin permeability.`, answer:true, explain:`Lateral branches interconnect, increasing permeability.` },
-  { q:`Peritubular dentin is less mineralized than intertubular dentin.`, answer:false, explain:`Peritubular is ~40% more mineralized.` },
-  { q:`Dentinal tubules are generally straight at cusp tips and apical root regions.`, answer:true, explain:`They are straight near cusp tip/incisal edge and apically, S-shaped cervically.` },
-  { q:`Interglobular dentin does not follow incremental line patterns.`, answer:false, explain:`IGD follows incremental line pattern; Tomes’ granular layer does not.` },
-  { q:`The periodontoblastic space contains dentinal fluid (lymph).`, answer:true, explain:`Yes, this space houses dentinal fluid.` },
-  { q:`Neonatal line indicates episodes of illness only during adolescence.`, answer:false, explain:`It denotes the birth-related environmental change; present in deciduous teeth and 1st permanent molars.` },
-  { q:`Circumpulpal dentin mineralization is purely linear throughout.`, answer:false, explain:`It is globular below mantle and mixed in the remaining circumpulpal dentin.` },
+    {
+        q: "Dentin is harder than enamel but softer than cementum.",
+        answer: false,
+        explain: "Dentin is softer than enamel but harder than both cementum and bone."
+    },
+    {
+        q: "The organic material in dentin is approximately 30-35% of its total weight.",
+        answer: true,
+        explain: "Dentin consists of 30-35% organic material (mainly collagen) and water, and 65-70% inorganic material."
+    },
+    {
+        q: "Odontoblasts initially form a single process which later branches out.",
+        answer: false,
+        explain: "Odontoblasts initially have more than one process, which later merge, leaving a single main process (Tomes' fiber) as dentin is laid down."
+    },
+    {
+        q: "The quiescent state of odontoblasts means they stop forming dentin completely.",
+        answer: false,
+        explain: "In the quiescent state, odontoblasts decrease in size and form dentin at a much slower rate (secondary dentin), but they do not stop completely."
+    },
+    {
+        q: "Matrix vesicles are rich in alkaline phosphatase, which is crucial for mineralization.",
+        answer: true,
+        explain: "The membrane of matrix vesicles is rich in alkaline phosphatase, an enzyme that plays a key role in initiating the crystallization of hydroxyapatite."
+    },
+    {
+        q: "Dentinal tubules are uniform in diameter from the pulp to the DEJ.",
+        answer: false,
+        explain: "Dentinal tubules taper and become narrower as they extend from the pulpal surface towards the dentinoenamel junction (DEJ)."
+    },
+    {
+        q: "Peritubular dentin is less mineralized than intertubular dentin.",
+        answer: false,
+        explain: "Peritubular dentin is significantly more mineralized (by about 40%) than the surrounding intertubular dentin."
+    },
+    {
+        q: "Interglobular dentin represents a defect in mineralization and is always present in root dentin.",
+        answer: false,
+        explain: "Interglobular dentin is a mineralization defect but it is typically found in the crown, just below the mantle dentin. It is not always present."
+    },
+    {
+        q: "Tomes' granular layer is caused by the looping of terminal dentinal tubules.",
+        answer: true,
+        explain: "This granular-appearing layer, found in the root dentin adjacent to the cementum, is believed to be caused by the looping and coalescing of the terminal portions of dentinal tubules."
+    }
 ];
 
 const saqs = [
-  // 1. Direct Answer
-  { q: "Define dentin.", a: "Mineralized tissue forming the main bulk of the tooth (crown covered by enamel; root by cementum)." },
-  // 2. List / Enumeration (3+)
-  { q: "List three physical properties of dentin.", a: "1) Light yellowish color. 2) Visco-elastic. 3) Hardness: < enamel, > cementum/bone." },
-  // 3. Comparison (numbered table)
-  { q: "Compare mantle dentin and circumpulpal dentin (thickness, fiber direction, mineralization pattern).", a: `<table border="1" style="width:100%;text-align:left"><tr><th>#</th><th>Mantle</th><th>Circumpulpal</th></tr><tr><td>1</td><td>10–20 µm</td><td>Bulk of dentin</td></tr><tr><td>2</td><td>Fibers ⟂ to DEJ (crown); ∥ DCJ (root)</td><td>Fibers ∥ DEJ (right/oblique to tubules)</td></tr><tr><td>3</td><td>Linear mineralization</td><td>Globular then mixed</td></tr></table>` },
-  // 4. Case-based Scenario
-  { q: "A radiograph shows a translucent ring around many dentinal tubules in TS. What structure is this and what does it imply?", a: "Peritubular dentin; indicates ~40% higher mineralization lining the tubules." },
-  // 5. Direct/short
-  { q: "Name the cell that forms dentin and its process.", a: "Odontoblast; odontoblastic process (Tomes’ fiber)." },
-  // 6. List / Enumeration
-  { q: "Give two causes/contexts for the neonatal line and state where it is seen.", a: "1) Birth-related environmental change. 2) Nutritional disturbance at birth; present in all primary teeth & first permanent molars." },
+    {
+        q: "Describe the two major properties that differentiate dentin from enamel.",
+        a: "Dentin differs from enamel in two key ways:<br>1. <b>Sensitivity:</b> Dentin is a sensitive tissue due to the presence of odontoblastic processes and fluid within the dentinal tubules, which can transmit stimuli to the pulp. Enamel is insensitive.<br>2. <b>Lifelong Formation:</b> Dentin is formed throughout the life of the tooth. After the primary dentin is formed, secondary dentin continues to be deposited slowly, and tertiary (reparative) dentin can be formed in response to stimuli. Enamel formation ceases once the tooth erupts."
+    },
+    {
+        q: "List three physical properties of dentin.",
+        a: "Here are three physical properties of dentin: <br>1. <b>Color:</b> Light yellowish. <br>2. <b>Hardness:</b> Less hard than enamel, but harder than cementum and bone. <br>3. <b>Visco-Elasticity:</b> It has a slight flexibility that provides support to the overlying brittle enamel, preventing fracture."
+    },
+    {
+        q: "Compare and contrast mantle dentin and circumpulpal dentin.",
+        a: `<table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Mantle Dentin</th>
+                        <th>Circumpulpal Dentin</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>Location</b></td>
+                        <td>The first-formed, outermost layer (10-20 µm).</td>
+                        <td>Forms the remaining bulk of the dentin, surrounding the pulp.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Collagen Fibers</b></td>
+                        <td>Large diameter fibers, perpendicular to the DEJ (in crown).</td>
+                        <td>Smaller diameter fibers, parallel to the DEJ.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Mineralization</b></td>
+                        <td>Initiated by matrix vesicles; occurs in a linear pattern.</td>
+                        <td>Occurs via globular (calcospheric) calcification; no matrix vesicles.</td>
+                    </tr>
+                </tbody>
+            </table>`
+    },
+    {
+        q: "Explain the process of dentinogenesis, starting from the differentiation of odontoblasts to the formation of predentin.",
+        a: "Dentinogenesis begins with the differentiation of odontoblasts from the peripheral cells of the dental papilla, induced by signals from the inner dental epithelium. These cells elongate into columnar cells. Next, they become protein-secreting cells, developing organelles like RER and Golgi bodies, and begin to secrete the organic matrix of dentin, known as predentin. This predentin is composed mainly of type I collagen fibers and ground substance. The odontoblasts then recede pulpally, leaving behind a process (Tomes' fiber) as they deposit successive layers of predentin, which will later be mineralized."
+    },
+    {
+        q: "A patient who had a severe fever and nutritional deficiency during childhood now has teeth that show distinct accentuated lines in the dentin on a radiograph. What are these lines called, and what do they represent?",
+        a: "These lines are called the <b>Contour lines of Owen</b>. They represent a disturbance in the mineralization process of dentin that occurred during the period of illness and inadequate nutrition. They are essentially hypocalcified bands within the dentin that follow the contour of the developing dentin at the time of the systemic disruption. They are a permanent record of the metabolic stress the child experienced."
+    },
+    {
+        q: "List and describe the three main components found within and immediately surrounding a single dentinal tubule.",
+        a: `Here are the three components:
+            <ol>
+                <li><b>Odontoblastic Process (Tome's Fiber):</b> This is the cytoplasmic extension of the odontoblast cell body that occupies the dentinal tubule.</li>
+                <li><b>Periodontoblastic Space:</b> This is the space between the odontoblastic process and the tubule wall. It is filled with dentinal fluid (tissue fluid).</li>
+                <li><b>Peritubular Dentin (Intratubular Dentin):</b> This is a highly calcified ring of dentin that forms the immediate wall of the tubule. It is about 40% more mineralized than the surrounding dentin.</li>
+            </ol>`
+    }
 ];
 
 // ----------- State -----------
@@ -384,13 +615,14 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
   </div>
   <div class="answer" hidden>${item.a}</div>
 `;
+
 
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');
@@ -414,30 +646,37 @@ saqs.forEach((item, idx)=>{
 
 // ----------- Score + Reset -----------
 function recalc(){
-  const mcqScore = state.mcq.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const tfScore = state.tf.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const saqScore = state.saq.filter(Boolean).length;
-  const total = mcqScore + tfScore + saqScore;
+    const mcqScore = state.mcq.reduce((s, v, i) => {
+        if (v === null) return s;
+        const item = mcqs[i];
+        const card = mcqGrid.children[i];
+        const buttons = card.querySelectorAll('.opt-btn');
 
-  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
-  ids.forEach(id=>{
-    const el = document.getElementById(id);
-    if(!el) return;
-    if(id.includes('Mcq')) el.textContent = mcqScore;
-    if(id.includes('Tf')) el.textContent = tfScore;
-    if(id.includes('Saq')) el.textContent = saqScore;
-    if(id.includes('Total')) el.textContent = total;
-  });
+        const visualToOriginal = shuffleIndices(4);
+        const originalToVisual = Array(4);
+        visualToOriginal.forEach((orig, vis) => { originalToVisual[orig] = vis; });
+        const correctVisualIndex = originalToVisual[item.correct];
+
+        return s + (v === correctVisualIndex ? 1 : 0);
+    }, 0);
+
+    const tfScore = state.tf.reduce((s, v, i) => {
+        if (v === null) return s;
+        return s + (v === tfs[i].answer ? 1 : 0);
+    }, 0);
+
+    const saqScore = state.saq.filter(Boolean).length;
+    const total = mcqScore + tfScore + saqScore;
+
+    const ids = ["sMcq", "sTf", "sSaq", "sTotal", "sMcq2", "sTf2", "sSaq2", "sTotal2"];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (id.includes('Mcq')) el.textContent = mcqScore;
+        if (id.includes('Tf')) el.textContent = tfScore;
+        if (id.includes('Saq')) el.textContent = saqScore;
+        if (id.includes('Total')) el.textContent = total;
+    });
 }
 
 document.getElementById('resetAll').addEventListener('click', ()=>{
@@ -456,6 +695,7 @@ document.getElementById('resetAll').addEventListener('click', ()=>{
   recalc();
 });
 
+// Initial calculation to set scores to 0
 recalc();
 </script>
 </body>

@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .answer table{width:100%;border-collapse:collapse;margin-top:8px;}
+  .answer th, .answer td{border:1px solid var(--card-border);padding:8px;text-align:left;}
+  .answer th{background-color:var(--glass);}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align:items-center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">General Pathology</h1>
+      <p class="subtitle">Test based on Lecture 5</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+  {
+    q: "Which of the following is defined as the local death of a large group of cells within a living body?",
+    opts: ["Apoptosis", "Necrosis", "Gangrene", "Autophagy"],
+    correct: 1,
+    explain: "Necrosis is the pathological death of a large group of cells, characterized by cell swelling and inflammation."
+  },
+  {
+    q: "The most common type of necrosis, caused by a sudden cut in blood supply (ischemia), is:",
+    opts: ["Liquefactive necrosis", "Caseation necrosis", "Coagulative necrosis", "Fat necrosis"],
+    correct: 2,
+    explain: "Coagulative necrosis is the most common type and occurs in all solid organs except the brain due to ischemia."
+  },
+  {
+    q: "In which organ would you typically find liquefactive necrosis following an ischemic event?",
+    opts: ["Heart", "Kidney", "Spleen", "Brain"],
+    correct: 3,
+    explain: "The brain is the primary site for liquefactive necrosis because its tissue is rich in lipids and lytic enzymes but lacks a strong structural framework."
+  },
+  {
+    q: "Caseation necrosis is characteristically associated with which type of infection?",
+    opts: ["Bacterial abscess", "Fungal infection", "Tuberculous (TB) infection", "Viral infection"],
+    correct: 2,
+    explain: "Caseation necrosis, with its 'cheese-like' appearance, is a hallmark of tuberculosis."
+  },
+  {
+    q: "A patient with acute pancreatitis develops chalky white deposits in the peritoneum. This is an example of:",
+    opts: ["Traumatic fat necrosis", "Enzymatic fat necrosis", "Fibrinoid necrosis", "Coagulative necrosis"],
+    correct: 1,
+    explain: "Enzymatic fat necrosis occurs when released pancreatic enzymes liquefy fat cells in the peritoneal cavity."
+  },
+  {
+    q: "Fibrinoid necrosis is most commonly observed in which location?",
+    opts: ["Brain and spinal cord", "Adipose tissue", "Blood vessel walls", "Lymph nodes"],
+    correct: 2,
+    explain: "Fibrinoid necrosis is typically seen in the walls of arteries, often in the context of autoimmune diseases (vasculitis)."
+  },
+  {
+    q: "Which term describes the process of programmed cell death for removing single, unwanted cells?",
+    opts: ["Necrosis", "Apoptosis", "Pyknosis", "Karyolysis"],
+    correct: 1,
+    explain: "Apoptosis is a highly regulated, energy-dependent process of programmed cell death that eliminates individual cells without inflammation."
+  },
+  {
+    q: "Which of the following is a physiological cause of apoptosis?",
+    opts: ["DNA damage from radiation", "Elimination of self-reactive lymphocytes", "Viral infections like HIV", "Cytotoxic anticancer drugs"],
+    correct: 1,
+    explain: "Eliminating potentially harmful self-reactive lymphocytes is a normal physiological process to maintain immune tolerance."
+  },
+  {
+    q: "The nuclear change in necrosis characterized by shrinkage and increased basophilia is known as:",
+    opts: ["Karyorrhexis", "Karyolysis", "Pyknosis", "Apoptotic body formation"],
+    correct: 2,
+    explain: "Pyknosis is the first stage of nuclear change in necrosis, where the nucleus shrinks into a dense, dark mass."
+  },
+  {
+    q: "What is the key morphological difference between a necrotic cell and an apoptotic cell?",
+    opts: ["Necrotic cells shrink, while apoptotic cells swell.", "Necrotic cells have an intact plasma membrane.", "Necrotic cells swell, while apoptotic cells shrink.", "Necrotic cells form apoptotic bodies."],
+    correct: 2,
+    explain: "Cell swelling is a hallmark of necrosis due to loss of membrane integrity, whereas cell shrinkage is characteristic of apoptosis."
+  },
+  {
+    q: "The foul odor associated with gangrene is primarily caused by:",
+    opts: ["Release of pancreatic enzymes", "Hydrogen sulphide from putrefaction", "Leakage of cytochrome c", "Fibrin deposition"],
+    correct: 1,
+    explain: "Saprophytic bacteria cause putrefaction, breaking down proteins and liberating hydrogen sulphide, which creates a foul smell."
+  },
+  {
+    q: "Which type of gangrene is characterized by a clear line of demarcation between dead and healthy tissue?",
+    opts: ["Moist gangrene", "Gas gangrene", "Infective gangrene", "Dry gangrene"],
+    correct: 3,
+    explain: "Dry gangrene, resulting from gradual arterial occlusion, develops a distinct red line of demarcation separating it from viable tissue."
+  },
+  {
+    q: "A strangulated hernia leading to necrosis of the intestine is an example of:",
+    opts: ["Dry gangrene", "Moist gangrene", "Caseation necrosis", "Traumatic fat necrosis"],
+    correct: 1,
+    explain: "Internal organs like the intestine are rich in fluids and subject to venous congestion, leading to moist gangrene when blood supply is cut off."
+  },
+  {
+    q: "Gas gangrene is a deadly infection most commonly caused by which bacteria?",
+    opts: ["Treponema vincenti", "Bacillus fusiformis", "Mycobacterium tuberculosis", "Clostridium perfringens"],
+    correct: 3,
+    explain: "Clostridium perfringens is the primary causative agent of gas gangrene, producing gas within the necrotic tissue."
+  },
+  {
+    q: "The major, intrinsic pathway of apoptosis is centered around which organelle?",
+    opts: ["Nucleus", "Endoplasmic Reticulum", "Mitochondrion", "Lysosome"],
+    correct: 2,
+    explain: "The intrinsic pathway is also called the mitochondrial pathway, as it is initiated by the leakage of proteins like cytochrome c from the mitochondria."
+  },
+  {
+    q: "Which family of proteins acts as anti-apoptotic, maintaining mitochondrial membrane integrity?",
+    opts: ["Caspases", "Bax/Bak", "Bcl-2", "BH3-only proteins"],
+    correct: 2,
+    explain: "Bcl-2 and related proteins are anti-apoptotic; they prevent the leakage of mitochondrial contents that would otherwise trigger cell death."
+  },
+  {
+    q: "The final executioners of apoptosis, which cleave cellular proteins, are known as:",
+    opts: ["Kinases", "Bcl-2 proteins", "Caspases", "Cytochromes"],
+    correct: 2,
+    explain: "Both apoptotic pathways converge on the activation of caspases, which are proteases that dismantle the cell."
+  },
+  {
+    q: "What is the fate of apoptotic bodies?",
+    opts: ["They leak their contents, causing inflammation.", "They are phagocytosed by macrophages.", "They calcify and form nodules.", "They are expelled from the body."],
+    correct: 1,
+    explain: "Apoptotic bodies are membrane-bound fragments that are efficiently cleared by phagocytes, preventing inflammation."
+  },
+  {
+    q: "Which of these features is characteristic of necrosis but NOT apoptosis?",
+    opts: ["Cell shrinkage", "Nuclear fragmentation", "Phagocytosis of cell remnants", "Significant inflammatory response"],
+    correct: 3,
+    explain: "Necrosis involves cell lysis and leakage of contents, which induces a significant inflammatory response. Apoptosis is a clean process with no inflammation."
+  },
+  {
+    q: "Fragmentation of the nucleus into multiple small fragments during necrosis is termed:",
+    opts: ["Pyknosis", "Karyorrhexis", "Karyolysis", "Condensation"],
+    correct: 1,
+    explain: "Karyorrhexis is the fragmentation of the pyknotic nucleus into smaller pieces."
+  },
+  {
+    q: "What is the gross appearance of tissue affected by coagulative necrosis?",
+    opts: ["Creamy yellow pus", "Friable and cheese-like", "Firm and opaque white", "Liquid viscous mass"],
+    correct: 2,
+    explain: "In coagulative necrosis, the tissue becomes firm and opaque while retaining its basic architectural outline for some time."
+  },
+  {
+    q: "Infective gangrene of the cheeks in debilitated children is known as:",
+    opts: ["Bed sores", "Strangulated hernia", "Cancrum oris", "Gas gangrene"],
+    correct: 2,
+    explain: "Cancrum oris is a specific type of infective gangrene affecting the cheeks, caused by bacteria like Treponema vincenti."
+  },
+  {
+    q: "The black color of gangrenous tissue is due to the formation of:",
+    opts: ["Melanin", "Hemosiderin", "Iron sulphide", "Lipofuscin"],
+    correct: 2,
+    explain: "Hydrogen sulphide produced by bacteria combines with iron from hemoglobin to form iron sulphide, which stains the tissue black."
+  },
+  {
+    q: "Which of the following is a pathological cause of apoptosis?",
+    opts: ["Neutrophil removal after inflammation", "Embryogenesis", "Death of virus-infected cells", "Hormone-dependent involution"],
+    correct: 2,
+    explain: "Eliminating cells infected by viruses is a pathological process to prevent the spread of the infection, mediated by apoptosis."
+  },
+  {
+    q: "In microscopic view, the cytoplasm of a necrotic cell typically stains more pink or red. This change is called:",
+    opts: ["Basophilia", "Eosinophilia", "Hydropic change", "Metaplasia"],
+    correct: 1,
+    explain: "Necrotic cells show increased eosinophilia (stain red with eosin dye) due to the denaturation of cytoplasmic proteins and loss of RNA."
+  },
+  {
+    q: "Which form of necrosis results in the complete loss of tissue architecture, appearing as a pink, structureless, and homogenous area microscopically?",
+    opts: ["Coagulative necrosis", "Liquefactive necrosis", "Fibrinoid necrosis", "Caseation necrosis"],
+    correct: 3,
+    explain: "In caseation necrosis, the tissue architecture is completely obliterated and replaced by a granular, eosinophilic, amorphous debris."
+  },
+  {
+    q: "Moist gangrene is 'moist' because of:",
+    opts: ["High environmental humidity", "Bacterial secretion of fluids", "Occlusion of venous drainage", "Excessive arterial blood flow"],
+    correct: 2,
+    explain: "Moist gangrene typically involves venous occlusion, which prevents fluid from leaving the tissue, leading to congestion and edema."
+  },
+  {
+    q: "What is the final step of nuclear destruction in necrosis where the nucleus dissolves?",
+    opts: ["Pyknosis", "Karyorrhexis", "Karyolysis", "Chromatin condensation"],
+    correct: 2,
+    explain: "Karyolysis is the complete dissolution of the nucleus after it has undergone pyknosis and karyorrhexis."
+  },
+  {
+    q: "Pro-apoptotic proteins like Bax and Bak function by:",
+    opts: ["Inhibiting caspases", "Maintaining mitochondrial integrity", "Activating Bcl-2", "Forming channels in the mitochondrial membrane"],
+    correct: 3,
+    explain: "Bax and Bak are pro-apoptotic proteins that, when activated, create channels in the mitochondrial membrane, allowing cytochrome c to leak out and initiate apoptosis."
+  },
+  {
+    q: "Self-separation (auto-amputation) may occur in which type of gangrene?",
+    opts: ["Moist gangrene", "Gas gangrene", "Dry gangrene", "Infective gangrene"],
+    correct: 2,
+    explain: "Due to the clear line of demarcation and dry, mummified state, self-separation can occur over time in dry gangrene."
+  }
+];
+
+const tfs = [
+  {
+    q: "Necrosis typically affects single cells or small groups of cells, while apoptosis affects large areas.",
+    answer: false,
+    explain: "The opposite is true. Necrosis affects large groups of cells, whereas apoptosis is focused on single or small clusters of cells."
+  },
+  {
+    q: "In coagulative necrosis, the basic tissue architecture is preserved for several days after cell death.",
+    answer: true,
+    explain: "A key feature of coagulative necrosis is the persistence of the tissue's structural outline, even though the cells themselves are dead."
+  },
+  {
+    q: "Liquefactive necrosis is the characteristic type of necrosis found in tuberculous infections.",
+    answer: false,
+    explain: "Tuberculous infections are characterized by caseation necrosis, not liquefactive necrosis."
+  },
+  {
+    q: "Apoptosis is considered a 'clean' process because it does not induce an inflammatory response.",
+    answer: true,
+    explain: "Unlike necrosis, apoptosis does not involve cell rupture. Apoptotic bodies are tidily removed by phagocytes, preventing inflammation."
+  },
+  {
+    q: "The Bcl-2 protein is pro-apoptotic, meaning it promotes cell death.",
+    answer: false,
+    explain: "Bcl-2 is an anti-apoptotic protein. It works to prevent apoptosis by maintaining the integrity of the mitochondrial membrane."
+  },
+  {
+    q: "Dry gangrene is characterized by a well-defined line of demarcation separating it from healthy tissue.",
+    answer: true,
+    explain: "The slow progression of arterial occlusion in dry gangrene allows for an inflammatory border, or line of demarcation, to form."
+  },
+  {
+    q: "Gas gangrene is a non-lethal condition that resolves without treatment.",
+    answer: false,
+    explain: "Gas gangrene is described as a deadly form of gangrene that requires immediate medical intervention."
+  },
+  {
+    q: "Fibrinoid necrosis is most commonly seen in adipose tissue after trauma.",
+    answer: false,
+    explain: "Fibrinoid necrosis occurs in blood vessel walls. Fat necrosis occurs in adipose tissue after trauma or enzymatic action."
+  },
+  {
+    q: "Karyolysis refers to the fragmentation of the nucleus into small pieces.",
+    answer: false,
+    explain: "Karyolysis is the dissolution of the nucleus. Karyorrhexis is the term for its fragmentation."
+  }
+];
+
+const saqs = [
+  {
+    q: "Describe the key microscopic changes that occur in the cytoplasm and nucleus of a cell undergoing necrosis.",
+    a: "<b>Cytoplasmic Changes:</b> The cytoplasm becomes more eosinophilic (stains pink/red) due to protein denaturation and loss of RNA. The cell membrane becomes indistinct and may rupture.<br><br><b>Nuclear Changes (in order):</b><br>1. <b>Pyknosis:</b> The nucleus shrinks and becomes a dense, dark mass.<br>2. <b>Karyorrhexis:</b> The pyknotic nucleus fragments into smaller pieces.<br>3. <b>Karyolysis:</b> The nuclear fragments completely dissolve and disappear."
+  },
+  {
+    q: "List the five principal types of necrosis based on their morphological patterns.",
+    a: "The five main types of necrosis are:<br><ol><li>Coagulative necrosis</li><li>Liquefactive necrosis</li><li>Caseation necrosis</li><li>Fat necrosis</li><li>Fibrinoid necrosis</li></ol>"
+  },
+  {
+    q: "Present a comparison between Necrosis and Apoptosis, highlighting three key differences.",
+    a: `This table shows the main differences:
+       <table>
+         <thead>
+           <tr><th>Feature</th><th>Necrosis</th><th>Apoptosis</th></tr>
+         </thead>
+         <tbody>
+           <tr><td><b>Cell Size</b></td><td>Enlarged (swelling)</td><td>Reduced (shrinkage)</td></tr>
+           <tr><td><b>Plasma Membrane</b></td><td>Disrupted / Ruptured</td><td>Intact</td></tr>
+           <tr><td><b>Inflammatory Response</b></td><td>Frequent and significant</td><td>No inflammatory response</td></tr>
+         </tbody>
+       </table>`
+  },
+  {
+    q: "A 65-year-old male suffers a stroke from a blocked cerebral artery. Imaging reveals a localized area of dead tissue that has transformed into a viscous liquid. What type of necrosis is this, and why does it characteristically occur in the brain?",
+    a: "<b>Type of Necrosis:</b> Liquefactive necrosis.<br><br><b>Reason:</b> This type occurs in the Central Nervous System (CNS) because brain tissue is rich in lytic enzymes and lipids but lacks a substantial connective tissue stroma. The dead cells are completely digested, transforming the tissue into a liquid mass or cyst."
+  },
+  {
+    q: "What is the fundamental difference between physiological and pathological apoptosis? Provide one clear example for each.",
+    a: "The fundamental difference is the purpose.<br><br><b>Physiological apoptosis</b> is a normal, programmed process to eliminate cells that are no longer needed or are transient during development. <b>Example:</b> The removal of neutrophils after an acute inflammatory response has subsided.<br><br><b>Pathological apoptosis</b> is a process that eliminates cells that are injured beyond repair before they can cause further harm. <b>Example:</b> The death of a cell with significant DNA damage caused by radiation, to prevent it from becoming cancerous."
+  },
+  {
+    q: "Describe the defining gross characteristics of Dry Gangrene, including its common site and appearance.",
+    a: "<b>Common Site:</b> Exposed organs, typically the limbs (e.g., foot or toes), which are distal from the heart.<br><br><b>Appearance:</b> The affected part is black, dry, shrunken, and mummified. A distinct red line of demarcation separates the dead tissue from the adjacent healthy tissue. Self-separation (auto-amputation) may occur over time."
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v === null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v === null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

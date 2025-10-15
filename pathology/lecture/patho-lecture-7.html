@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Two-Column Sections</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+  strong { color: #8b5cf6; font-weight: 800;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+    
+  table th, table td {
+    text-align: inherit;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
+</style>
+</head>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 7</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِّن لِّسَانِي يَفْقَهُوا قَوْلِي</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Chronic Inflammation</b></span>
+<span class="ar"><b>الموضوع: الالتهاب المزمن</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Introduction to Chronic Inflammation</span><span class="ar">مقدمة في الالتهاب المزمن</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Chronic inflammation</strong> is an inflammatory response that has a <strong>prolonged duration</strong>, lasting for weeks, months, or even years. This occurs when the causative stimuli persist in the body. A key feature of chronic inflammation is that <strong>active inflammation, tissue injury, <span style="color: #8b5cf6; font-weight: bold;">and</span> healing processes all happen simultaneously</strong>.</p>
+<p>It differs significantly from acute inflammation:</p>
+<ul>
+<li><strong>Onset:</strong> Chronic inflammation has an insidious (slow) onset, unlike the rapid onset of acute inflammation (minutes to hours).</li>
+<li><strong>Duration:</strong> It is of longer duration, whereas acute inflammation is short (hours to weeks).</li>
+<li><strong>Cellular Infiltrate:</strong> Chronic inflammation is characterized by an influx of <strong>lymphocytes <span style="color: #8b5cf6; font-weight: bold;">and</span> macrophages</strong>. In contrast, acute inflammation mainly involves neutrophils <span style="color: #8b5cf6; font-weight: bold;">and</span> fluid exudation.</li>
+<li><strong>Tissue Changes:</strong> It is associated with vascular proliferation (angiogenesis) <span style="color: #8b5cf6; font-weight: bold;">and</span> connective tissue proliferation (fibrosis).</li>
+</ul>
+</div>
+<div class="ar">
+<p><strong>الالتهاب المزمن</strong> هو استجابة التهابية ذات <strong>مدة طويلة</strong>، تستمر لأسابيع أو أشهر أو حتى سنوات. يحدث هذا عندما تستمر المحفزات المسببة للمرض في الجسم. السمة الرئيسية للالتهاب المزمن هي أن <strong>الالتهاب النشط، وإصابة الأنسجة، <span style="color: #8b5cf6; font-weight: bold;">و</span>عمليات الشفاء تحدث جميعها في وقت واحد</strong>.</p>
+<p>يختلف بشكل كبير عن الالتهاب الحاد:</p>
+<ul>
+<li><strong>البداية:</strong> يبدأ الالتهاب المزمن بشكل تدريجي (بطيء)، على عكس البداية السريعة للالتهاب الحاد (دقائق إلى ساعات).</li>
+<li><strong>المدة:</strong> يستمر لفترة أطول، بينما الالتهاب الحاد قصير (ساعات إلى أسابيع).</li>
+<li><strong>الخلايا المتسللة:</strong> يتميز الالتهاب المزمن بتدفق <strong>الخلايا الليمفاوية <span style="color: #8b5cf6; font-weight: bold;">و</span>الخلايا البلعمية الكبيرة</strong>. في المقابل، يشمل الالتهاب الحاد بشكل أساسي الخلايا المتعادلة <span style="color: #8b5cf6; font-weight: bold;">و</span>نضح السوائل.</li>
+<li><strong>تغيرات الأنسجة:</strong> يرتبط بتكاثر الأوعية الدموية (تكون الأوعية) <span style="color: #8b5cf6; font-weight: bold;">و</span>تكاثر النسيج الضام (التليف).</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 6, 7 of 26</span>
+<span class="ar">المصدر: الصفحات 6، 7 من 26</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Acute inflammation features fluid exudation and neutrophils, while chronic inflammation involves lymphocytes, macrophages, and fibrosis.</div><div class="ar">يتميز الالتهاب الحاد بنضح السوائل والخلايا المتعادلة، بينما يشمل الالتهاب المزمن الخلايا الليمفاوية والخلايا البلعمية الكبيرة والتليف.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding the duration and cellular response helps diagnose the underlying cause of a disease and determine the correct treatment approach.</div><div class="ar">يساعد فهم مدة ونوع الاستجابة الخلوية في تشخيص السبب الكامن وراء المرض وتحديد نهج العلاج الصحيح.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember "LMF": <strong>L</strong>ong duration, <strong>M</strong>acrophages, <strong>F</strong>ibrosis for chronic inflammation.</div><div class="ar">تذكر "م.ز.ت": <strong>م</strong>دة طويلة، <strong>ز</strong>يادة في الخلايا البلعمية، <strong>ت</strong>ليف للالتهاب المزمن.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Causes of Chronic Inflammation</span><span class="ar">أسباب الالتهاب المزمن</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Chronic inflammation arises from stimuli that are difficult for the body to eliminate. The main causes include:</p>
+<ul>
+    <li><strong>Persistent Infections:</strong> Caused by microbes that are difficult to eradicate. These organisms often evoke a delayed-type hypersensitivity immune response. Examples include Mycobacterium tuberculosis (TB) <span style="color: #8b5cf6; font-weight: bold;">and</span> certain viruses.</li>
+    <li><strong>Recurrent or Persistent Acute Inflammation:</strong> Repeated episodes of acute inflammation or the failure to completely resolve an acute inflammatory process can lead to a chronic state.</li>
+    <li><strong>Immune-Mediated Inflammation:</strong> This occurs when the immune system mistakenly attacks the body's own tissues (autoimmune diseases) or reacts excessively to environmental substances (allergic diseases). In these conditions, the self-antigens or environmental antigens persist, causing a continuous immune reaction.</li>
+</ul>
+</div>
+<div class="ar">
+<p>ينشأ الالتهاب المزمن من محفزات يصعب على الجسم التخلص منها. تشمل الأسباب الرئيسية ما يلي:</p>
+<ul>
+    <li><strong>العدوى المستمرة:</strong> تسببها الميكروبات التي يصعب القضاء عليها. غالبًا ما تثير هذه الكائنات استجابة مناعية من نوع فرط الحساسية المتأخر. من الأمثلة على ذلك المتفطرة السلية (السل) <span style="color: #8b5cf6; font-weight: bold;">و</span>بعض الفيروسات.</li>
+    <li><strong>الالتهاب الحاد المتكرر أو المستمر:</strong> يمكن أن تؤدي النوبات المتكررة من الالتهاب الحاد أو الفشل في حل عملية التهابية حادة بالكامل إلى حالة مزمنة.</li>
+    <li><strong>الالتهاب بوساطة مناعية:</strong> يحدث هذا عندما يهاجم الجهاز المناعي أنسجة الجسم عن طريق الخطأ (أمراض المناعة الذاتية) أو يتفاعل بشكل مفرط مع المواد البيئية (أمراض الحساسية). في هذه الحالات، تستمر المستضدات الذاتية أو المستضدات البيئية، مما يسبب رد فعل مناعي مستمر.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 8 of 26</span>
+<span class="ar">المصدر: الصفحة 8 من 26</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Tuberculosis (TB) is a classic example of chronic inflammation caused by a persistent infection that the immune system struggles to clear.</div><div class="ar">السل (TB) هو مثال كلاسيكي للالتهاب المزمن الناجم عن عدوى مستمرة يكافح الجهاز المناعي للقضاء عليها.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Autoimmune diseases like Rheumatoid Arthritis involve chronic inflammation where the immune system attacks joint tissues, leading to persistent pain and damage.</div><div class="ar">تشمل أمراض المناعة الذاتية مثل التهاب المفاصل الروماتويدي التهابًا مزمنًا حيث يهاجم الجهاز المناعي أنسجة المفاصل، مما يؤدي إلى ألم وتلف مستمرين.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The persistence of the causative agent is the fundamental trigger for the transition from acute to chronic inflammation.</div><div class="ar">استمرار العامل المسبب هو المحفز الأساسي للانتقال من الالتهاب الحاد إلى الالتهاب المزمن.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Key Cellular Players</span><span class="ar">الخلايا الرئيسية المشاركة</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Chronic inflammation is defined by the infiltration of mononuclear cells. The dominant cellular player is the <strong>macrophage</strong>.</p>
+<ul>
+    <li><strong>Macrophages:</strong> These cells originate from <strong>monocytes</strong> circulating in the blood. Monocytes migrate into tissues within 48 hours of injury <span style="color: #8b5cf6; font-weight: bold;">and</span> differentiate into macrophages. Macrophages have different names in different organs:
+        <ul>
+            <li><strong>Kupffer cells</strong> in the liver</li>
+            <li><strong>Microglia</strong> in the Central Nervous System (CNS)</li>
+            <li><strong>Histiocytes</strong> in the spleen</li>
+            <li><strong>Alveolar macrophages</strong> in the lungs</li>
+        </ul>
+    </li>
+    <li><strong>Lymphocytes:</strong> These cells are mobilized in response to specific antigens <span style="color: #8b5cf6; font-weight: bold;">and</span> interact with macrophages in a bidirectional way, amplifying the inflammatory response.</li>
+    <li><strong>Plasma Cells:</strong> These are differentiated B-lymphocytes that produce antibodies directed against persistent antigens.</li>
+    <li><strong>Eosinophils:</strong> Often present in immune reactions mediated by IgE <span style="color: #8b5cf6; font-weight: bold;">and</span> in parasitic infections.</li>
+</ul>
+</div>
+<div class="ar">
+<p>يُعرَّف الالتهاب المزمن بتسلل الخلايا أحادية النواة. اللاعب الخلوي المهيمن هو <strong>الخلية البلعمية الكبيرة (الماكروفاج)</strong>.</p>
+<ul>
+    <li><strong>الخلايا البلعمية الكبيرة:</strong> تنشأ هذه الخلايا من <strong>الخلايا الوحيدة (المونوسايت)</strong> التي تدور في الدم. تهاجر الخلايا الوحيدة إلى الأنسجة في غضون 48 ساعة من الإصابة <span style="color: #8b5cf6; font-weight: bold;">و</span>تتمايز إلى خلايا بلعمية كبيرة. للخلايا البلعمية أسماء مختلفة في أعضاء مختلفة:
+        <ul>
+            <li><strong>خلايا كوبفر</strong> في الكبد</li>
+            <li><strong>الخلايا الدبقية الصغيرة</strong> في الجهاز العصبي المركزي (CNS)</li>
+            <li><strong>المنسجات</strong> في الطحال</li>
+            <li><strong>الخلايا البلعمية السنخية</strong> في الرئتين</li>
+        </ul>
+    </li>
+    <li><strong>الخلايا الليمفاوية:</strong> يتم تحريك هذه الخلايا استجابة لمستضدات معينة <span style="color: #8b5cf6; font-weight: bold;">و</span>تتفاعل مع الخلايا البلعمية بطريقة ثنائية الاتجاه، مما يضخم الاستجابة الالتهابية.</li>
+    <li><strong>خلايا البلازما:</strong> هي خلايا ليمفاوية بائية متمايزة تنتج أجسامًا مضادة موجهة ضد المستضدات المستمرة.</li>
+    <li><strong>الحمضات (الإيزينوفيل):</strong> غالبًا ما تكون موجودة في التفاعلات المناعية التي يتوسطها IgE <span style="color: #8b5cf6; font-weight: bold;">و</span>في العدوى الطفيلية.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 9, 10 of 26</span>
+<span class="ar">المصدر: الصفحات 9، 10 من 26</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember macrophages by location: <strong>K</strong>ingdom (Kupffer/Liver), <strong>M</strong>ind (Microglia/CNS), <strong>H</strong>eap (Histiocytes/Spleen), <strong>A</strong>ir (Alveolar/Lung).</div><div class="ar">تذكر أسماء الخلايا البلعمية حسب الموقع: خلايا <strong>كوبفر</strong> في الكبد، الخلايا <strong>الدبقية الصغيرة</strong> في الجهاز العصبي، <strong>المنسجات</strong> في الطحال، الخلايا <strong>السنخية</strong> في الرئة.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The macrophage is the central cell in chronic inflammation, acting as both a phagocyte and an orchestrator of the immune response.</div><div class="ar">الخلية البلعمية الكبيرة هي الخلية المركزية في الالتهاب المزمن، حيث تعمل كخلية بلعمية ومنظمة للاستجابة المناعية.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">The interaction between T-lymphocytes and macrophages is critical. T-cells activate macrophages, and macrophages present antigens to T-cells, creating a cycle that sustains inflammation.</div><div class="ar">التفاعل بين الخلايا الليمفاوية التائية والخلايا البلعمية أمر بالغ الأهمية. الخلايا التائية تنشط الخلايا البلعمية، والخلايا البلعمية تقدم المستضدات للخلايا التائية، مما يخلق دورة تحافظ على الالتهاب.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Histological Characteristics</span><span class="ar">الخصائص النسيجية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Chronic inflammation has three major histological characteristics that often occur simultaneously:</p>
+<ol>
+    <li><strong>Mononuclear Cell Infiltration:</strong> This is the hallmark feature, consisting of an accumulation of <strong>macrophages, lymphocytes, <span style="color: #8b5cf6; font-weight: bold;">and</span> plasma cells</strong> in the affected tissue.</li>
+    <li><strong>Tissue Destruction or Necrosis:</strong> This damage is primarily caused by the products released from the inflammatory cells themselves. Persistent inflammation leads to ongoing injury to the surrounding tissues.</li>
+    <li><strong>Healing by Proliferative Changes:</strong> The body attempts to repair the damage. This involves:
+        <ul>
+            <li><strong>Angiogenesis:</strong> Proliferation of small blood vessels to supply the healing area.</li>
+            <li><strong>Fibrosis:</strong> Proliferation of fibroblasts, which lay down collagen <span style="color: #8b5cf6; font-weight: bold;">and</span> other connective tissue components, leading to scarring.</li>
+        </ul>
+    </li>
+</ol>
+</div>
+<div class="ar">
+<p>يتميز الالتهاب المزمن بثلاث خصائص نسيجية رئيسية غالبًا ما تحدث في وقت واحد:</p>
+<ol>
+    <li><strong>تسلل الخلايا أحادية النواة:</strong> هذه هي السمة المميزة، وتتكون من تراكم <strong>الخلايا البلعمية الكبيرة، والخلايا الليمفاوية، <span style="color: #8b5cf6; font-weight: bold;">و</span>خلايا البلازما</strong> في النسيج المصاب.</li>
+    <li><strong>تدمير الأنسجة أو النخر:</strong> يحدث هذا الضرر بشكل أساسي بسبب المنتجات التي تطلقها الخلايا الالتهابية نفسها. يؤدي الالتهاب المستمر إلى إصابة مستمرة للأنسجة المحيطة.</li>
+    <li><strong>الشفاء عن طريق التغيرات التكاثرية:</strong> يحاول الجسم إصلاح الضرر. وهذا يشمل:
+        <ul>
+            <li><strong>تكون الأوعية الدموية (Angiogenesis):</strong> تكاثر الأوعية الدموية الصغيرة لتزويد منطقة الشفاء.</li>
+            <li><strong>التليف (Fibrosis):</strong> تكاثر الخلايا الليفية، التي تضع الكولاجين <span style="color: #8b5cf6; font-weight: bold;">و</span>مكونات النسيج الضام الأخرى، مما يؤدي إلى تندب.</li>
+        </ul>
+    </li>
+</ol>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 11 of 26</span>
+<span class="ar">المصدر: الصفحة 11 من 26</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The simultaneous destruction and healing is crucial. While the body tries to repair, the ongoing inflammation can lead to excessive fibrosis, which can impair organ function.</div><div class="ar">التدمير والشفاء المتزامنان أمران حاسمان. بينما يحاول الجسم الإصلاح، يمكن أن يؤدي الالتهاب المستمر إلى تليف مفرط، مما قد يضعف وظيفة العضو.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">In chronic liver disease (cirrhosis), fibrosis replaces functional liver cells, leading to liver failure. This is a direct consequence of the healing process in chronic inflammation.</div><div class="ar">في أمراض الكبد المزمنة (تليف الكبد)، يحل التليف محل خلايا الكبد الوظيفية، مما يؤدي إلى فشل الكبد. هذه نتيجة مباشرة لعملية الشفاء في الالتهاب المزمن.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Unlike acute inflammation which resolves, chronic inflammation is a continuous cycle of injury and repair.</div><div class="ar">على عكس الالتهاب الحاد الذي يزول، الالتهاب المزمن هو دورة مستمرة من الإصابة والإصلاح.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Types of Chronic Inflammation</span><span class="ar">أنواع الالتهاب المزمن</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Chronic inflammation can be classified based on its etiology <span style="color: #8b5cf6; font-weight: bold;">and</span> histological features.</p>
+<p><strong>Based on Etiology (Cause):</strong></p>
+<ul>
+    <li><strong>Non-Specific:</strong> The causative agent is non-specific <span style="color: #8b5cf6; font-weight: bold;">and</span> results in the formation of granulation tissue <span style="color: #8b5cf6; font-weight: bold;">and</span> fibrosis. The histological appearance does not point to a single specific cause. Examples include a chronic ulcer or osteomyelitis.</li>
+    <li><strong>Specific:</strong> The causative agent triggers a specific <span style="color: #8b5cf6; font-weight: bold;">and</span> recognizable histological response. The classic example is <strong>granulomatous inflammation</strong>, such as that seen in tuberculosis.</li>
+</ul>
+<p><strong>Based on Histologic Features:</strong></p>
+<ul>
+    <li><strong>Chronic Non-Specific Inflammation:</strong> Characterized by a mix of inflammatory cells, granulation tissue, <span style="color: #8b5cf6; font-weight: bold;">and</span> fibrosis.</li>
+    <li><strong>Chronic Granulomatous Inflammation:</strong> A distinctive pattern characterized by the formation of granulomas.</li>
+</ul>
+</div>
+<div class="ar">
+<p>يمكن تصنيف الالتهاب المزمن بناءً على مسبباته <span style="color: #8b5cf6; font-weight: bold;">و</span>خصائصه النسيجية.</p>
+<p><strong>بناءً على المسببات (السبب):</strong></p>
+<ul>
+    <li><strong>غير محدد:</strong> يكون العامل المسبب غير محدد <span style="color: #8b5cf6; font-weight: bold;">و</span>يؤدي إلى تكوين نسيج حبيبي <span style="color: #8b5cf6; font-weight: bold;">و</span>تليف. لا يشير المظهر النسيجي إلى سبب محدد واحد. تشمل الأمثلة القرحة المزمنة أو التهاب العظم والنقي.</li>
+    <li><strong>محدد:</strong> يثير العامل المسبب استجابة نسيجية محددة <span style="color: #8b5cf6; font-weight: bold;">و</span>يمكن التعرف عليها. المثال الكلاسيكي هو <strong>الالتهاب الورمي الحبيبي</strong>، مثل الذي يظهر في مرض السل.</li>
+</ul>
+<p><strong>بناءً على الخصائص النسيجية:</strong></p>
+<ul>
+    <li><strong>الالتهاب المزمن غير المحدد:</strong> يتميز بمزيج من الخلايا الالتهابية، والنسيج الحبيبي، <span style="color: #8b5cf6; font-weight: bold;">و</span>التليف.</li>
+    <li><strong>الالتهاب الورمي الحبيبي المزمن:</strong> نمط مميز يتميز بتكوين الأورام الحبيبية.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 12 of 26</span>
+<span class="ar">المصدر: الصفحة 12 من 26</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">A chronic skin ulcer shows non-specific inflammation, while a lung lesion from TB shows specific granulomatous inflammation.</div><div class="ar">تظهر قرحة الجلد المزمنة التهابًا غير محدد، بينما تظهر آفة الرئة الناتجة عن السل التهابًا حبيبيًا محددًا.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The key difference is recognizability. A pathologist can often diagnose a specific disease like TB just by seeing the granuloma under a microscope.</div><div class="ar">الفرق الرئيسي هو إمكانية التعرف. يمكن لأخصائي علم الأمراض غالبًا تشخيص مرض معين مثل السل بمجرد رؤية الورم الحبيبي تحت المجهر.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Don't confuse "granulation tissue" (part of non-specific healing) with a "granuloma" (a specific inflammatory structure).</div><div class="ar">لا تخلط بين "النسيج الحبيبي" (جزء من الشفاء غير المحدد) و "الورم الحبيبي" (بنية التهابية محددة).</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Granulomatous Inflammation</span><span class="ar">الالتهاب الورمي الحبيبي</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Granulomatous inflammation</strong> is a distinctive pattern of chronic inflammation. It is characterized by collections of <strong>activated macrophages</strong>, which are often called <strong>epitheloid cells</strong> due to their resemblance to epithelial cells.</p>
+<p>The formation of a granuloma is a protective defense reaction by the host. It is an attempt to contain <span style="color: #8b5cf6; font-weight: bold;">and</span> wall off an offending agent that is difficult to eradicate, such as Mycobacterium tuberculosis. However, the persistence of this poorly digestible antigen eventually causes significant tissue destruction.</p>
+</div>
+<div class="ar">
+<p><strong>الالتهاب الورمي الحبيبي</strong> هو نمط مميز من الالتهاب المزمن. يتميز بتجمعات من <strong>الخلايا البلعمية الكبيرة المنشطة</strong>، والتي غالبًا ما تسمى <strong>الخلايا شبيهة الظهارية</strong> بسبب تشابهها مع الخلايا الظهارية.</p>
+<p>تكوين الورم الحبيبي هو رد فعل دفاعي وقائي من قبل المضيف. إنها محاولة لاحتواء <span style="color: #8b5cf6; font-weight: bold;">و</span>عزل عامل مؤذٍ يصعب القضاء عليه، مثل المتفطرة السلية. ومع ذلك، فإن استمرار هذا المستضد صعب الهضم يؤدي في النهاية إلى تدمير كبير للأنسجة.</p>
+</div>
+<div aria-label="Scrollable table" class="table-wrap">
+<table>
+<thead>
+<tr>
+<th><span class="en">Disease</span><span class="ar">المرض</span></th>
+<th><span class="en">Cause</span><span class="ar">السبب</span></th>
+<th><span class="en">Histologic Features</span><span class="ar">الخصائص النسيجية</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="en">Tuberculosis</span><span class="ar">السل</span></td>
+<td><span class="en"><em>Mycobacterium tuberculosis</em></span><span class="ar"><em>المتفطرة السلية</em></span></td>
+<td><span class="en">Caseating granuloma (central cheese-like necrosis)</span><span class="ar">ورم حبيبي متجبن (نخر مركزي شبيه بالجبن)</span></td>
+</tr>
+<tr>
+<td><span class="en">Leprosy</span><span class="ar">الجذام</span></td>
+<td><span class="en"><em>Mycobacterium leprae</em></span><span class="ar"><em>المتفطرة الجذامية</em></span></td>
+<td><span class="en">Non-caseating granuloma</span><span class="ar">ورم حبيبي غير متجبن</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 15, 16 of 26</span>
+<span class="ar">المصدر: الصفحات 15، 16 من 26</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">While the granuloma's purpose is protective, the inflammatory mediators released can cause severe collateral damage to surrounding healthy tissue.</div><div class="ar">بينما الغرض من الورم الحبيبي هو الحماية، يمكن للوسائط الالتهابية المنبعثة أن تسبب أضرارًا جانبية شديدة للأنسجة السليمة المحيطة.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The term "epitheloid" comes from the cell's appearance: abundant pink cytoplasm and indistinct cell borders, resembling epithelial cells.</div><div class="ar">مصطلح "شبيه الظهارية" يأتي من مظهر الخلية: سيتوبلازم وردي وفير وحدود خلوية غير واضحة، تشبه الخلايا الظهارية.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Tuberculosis is the most common cause of granulomatous inflammation worldwide.</div><div class="ar">السل هو السبب الأكثر شيوعًا للالتهاب الورمي الحبيبي في جميع أنحاء العالم.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Structure and Formation of a Granuloma</span><span class="ar">تركيب وتكوين الورم الحبيبي</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>A granuloma is a well-defined lesion with a specific structure. The key factors for its formation are the <strong>presence of a poorly digestible irritant</strong> <span style="color: #8b5cf6; font-weight: bold;">and</span> <strong>cell-mediated immunity</strong> to that irritant.</p>
+<p><strong>Composition of a Granuloma:</strong></p>
+<ul>
+    <li><strong>Activated Macrophages (Epithelioid Cells):</strong> These form the core of the granuloma. They have abundant pink cytoplasm <span style="color: #8b5cf6; font-weight: bold;">and</span> indistinct cell boundaries.</li>
+    <li><strong>Multinucleated Giant Cells:</strong> Formed by the fusion of several activated macrophages. In TB, these are called <strong>Langhans' type</strong> giant cells, where nuclei are arranged in a horseshoe shape at the periphery.</li>
+    <li><strong>Lymphoid Rim:</strong> The core is surrounded by a collar of T-lymphocytes.</li>
+    <li><strong>Central Necrosis:</strong> In some granulomas, like those in TB, the center becomes necrotic, with a cheesy appearance called <strong>caseous necrosis</strong>.</li>
+    <li><strong>Fibroblasts:</strong> Older granulomas may have an outer rim of fibroblasts <span style="color: #8b5cf6; font-weight: bold;">and</span> collagen (fibrosis).</li>
+</ul>
+<p><strong>Pathogenesis (Steps of Formation):</strong></p>
+<ol>
+    <li>Macrophages engulf the antigen (e.g., M. tuberculosis) but fail to digest it.</li>
+    <li>As Antigen-Presenting Cells (APCs), they present the antigen to CD4+ T-helper cells.</li>
+    <li>The T-cells become activated <span style="color: #8b5cf6; font-weight: bold;">and</span> release cytokines, most importantly <strong>Interferon-gamma (IFN-γ)</strong>.</li>
+    <li>IFN-γ powerfully activates macrophages, transforming them into epithelioid cells <span style="color: #8b5cf6; font-weight: bold;">and</span> promoting their fusion into giant cells, thus forming the granuloma.</li>
+</ol>
+</div>
+<div class="ar">
+<p>الورم الحبيبي هو آفة محددة جيدًا ذات بنية معينة. العوامل الرئيسية لتكوينه هي <strong>وجود مهيج صعب الهضم</strong> <span style="color: #8b5cf6; font-weight: bold;">و</span><strong>المناعة الخلوية</strong> ضد هذا المهيج.</p>
+<p><strong>مكونات الورم الحبيبي:</strong></p>
+<ul>
+    <li><strong>الخلايا البلعمية المنشطة (الخلايا شبيهة الظهارية):</strong> تشكل هذه الخلايا نواة الورم الحبيبي. لديها سيتوبلازم وردي وفير <span style="color: #8b5cf6; font-weight: bold;">و</span>حدود خلوية غير واضحة.</li>
+    <li><strong>الخلايا العملاقة متعددة النوى:</strong> تتكون من اندماج عدة خلايا بلعمية منشطة. في السل، تسمى هذه الخلايا العملاقة من <strong>نوع لانجهانز</strong>، حيث تترتب النوى على شكل حدوة حصان في المحيط.</li>
+    <li><strong>الحافة الليمفاوية:</strong> النواة محاطة بطوق من الخلايا الليمفاوية التائية.</li>
+    <li><strong>النخر المركزي:</strong> في بعض الأورام الحبيبية، مثل تلك الموجودة في السل، يصبح المركز نخريًا، بمظهر جبني يسمى <strong>النخر المتجبن</strong>.</li>
+    <li><strong>الخلايا الليفية:</strong> قد تحتوي الأورام الحبيبية الأقدم على حافة خارجية من الخلايا الليفية <span style="color: #8b5cf6; font-weight: bold;">و</span>الكولاجين (التليف).</li>
+</ul>
+<p><strong>الت病ogenesis (خطوات التكوين):</strong></p>
+<ol>
+    <li>تبتلع الخلايا البلعمية المستضد (مثل M. tuberculosis) لكنها تفشل في هضمه.</li>
+    <li>كخلايا مقدمة للمستضد (APCs)، تقدم المستضد إلى خلايا T المساعدة CD4+.</li>
+    <li>تنشط الخلايا التائية <span style="color: #8b5cf6; font-weight: bold;">و</span>تطلق السيتوكينات، وأهمها <strong>إنترفيرون-جاما (IFN-γ)</strong>.</li>
+    <li>ينشط IFN-γ بقوة الخلايا البلعمية، ويحولها إلى خلايا شبيهة بالظهارية <span style="color: #8b5cf6; font-weight: bold;">و</span>يعزز اندماجها في خلايا عملاقة، وبالتالي يتكون الورم الحبيبي.</li>
+</ol>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 17, 19, 20, 21, 22 of 26</span>
+<span class="ar">المصدر: الصفحات 17، 19، 20، 21، 22 من 26</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong>IFN-γ</strong> is the key cytokine that "Interferes" with the microbe by activating macrophages.</div><div class="ar"><strong>IFN-γ</strong> هو السيتوكين الرئيسي الذي "يتداخل" مع الميكروب عن طريق تنشيط الخلايا البلعمية.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Langhans' giant cells, with their peripheral horseshoe arrangement of nuclei, are highly characteristic of granulomas caused by tuberculosis.</div><div class="ar">الخلايا العملاقة من نوع لانجهانز، بترتيبها المحيطي للنوى على شكل حدوة حصان، هي سمة مميزة للغاية للأورام الحبيبية الناتجة عن السل.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The process of granuloma formation demonstrates a sophisticated, yet potentially damaging, interplay between the innate (macrophage) and adaptive (T-cell) immune systems.</div><div class="ar">توضح عملية تكوين الورم الحبيبي تفاعلًا متطورًا، ولكنه قد يكون ضارًا، بين جهازي المناعة الفطري (الخلايا البلعمية) والتكيفي (الخلايا التائية).</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Systemic Effects of Inflammation</span><span class="ar">التأثيرات الجهازية للالتهاب</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Inflammation, whether acute or chronic, can produce systemic effects known as the <strong>acute-phase response</strong>. These effects are mediated by cytokines like IL-1, IL-6, <span style="color: #8b5cf6; font-weight: bold;">and</span> TNF.</p>
+<ul>
+    <li><strong>Fever:</strong> Bacterial products (pyrogens) stimulate leukocytes to release cytokines that increase cyclooxygenase activity in the hypothalamus. This produces prostaglandins (PGE2), which reset the body's temperature set-point to a higher level.</li>
+    <li><strong>Leukocytosis:</strong> An increase in the number of circulating white blood cells. The type of cell that increases can indicate the cause:
+        <ul>
+            <li><strong>Neutrophilia:</strong> Increased neutrophils, typically in bacterial infections (acute).</li>
+            <li><strong>Lymphocytosis:</strong> Increased lymphocytes, often in viral infections (chronic).</li>
+            <li><strong>Eosinophilia:</strong> Increased eosinophils, seen in allergic reactions <span style="color: #8b5cf6; font-weight: bold;">and</span> parasitic infections.</li>
+        </ul>
+    </li>
+    <li><strong>Increased Acute-Phase Proteins:</strong> The liver produces proteins like <strong>C-reactive protein (CRP)</strong> <span style="color: #8b5cf6; font-weight: bold;">and</span> fibrinogen. Increased fibrinogen causes red blood cells to stack together (rouleaux formation), increasing the <strong>Erythrocyte Sedimentation Rate (ESR)</strong>.</li>
+</ul>
+</div>
+<div class="ar">
+<p>يمكن أن ينتج عن الالتهاب، سواء كان حادًا أو مزمنًا، تأثيرات جهازية تُعرف باسم <strong>استجابة الطور الحاد</strong>. تتوسط هذه التأثيرات السيتوكينات مثل IL-1 و IL-6 <span style="color: #8b5cf6; font-weight: bold;">و</span> TNF.</p>
+<ul>
+    <li><strong>الحمى:</strong> تحفز منتجات البكتيريا (مولدات الحمى) الكريات البيض على إطلاق السيتوكينات التي تزيد من نشاط إنزيمات الأكسدة الحلقية في منطقة ما تحت المهاد. وهذا ينتج البروستاجلاندينات (PGE2)، التي تعيد ضبط نقطة ضبط درجة حرارة الجسم إلى مستوى أعلى.</li>
+    <li><strong>كثرة الكريات البيض:</strong> زيادة في عدد خلايا الدم البيضاء المتداولة. يمكن أن يشير نوع الخلية التي تزداد إلى السبب:
+        <ul>
+            <li><strong>كثرة العدلات:</strong> زيادة في الخلايا المتعادلة، عادة في العدوى البكتيرية (الحادة).</li>
+            <li><strong>كثرة اللمفاويات:</strong> زيادة في الخلايا الليمفاوية، غالبًا في العدوى الفيروسية (المزمنة).</li>
+            <li><strong>كثرة الحمضات:</strong> زيادة في الحمضات، تظهر في ردود الفعل التحسسية <span style="color: #8b5cf6; font-weight: bold;">و</span>العدوى الطفيلية.</li>
+        </ul>
+    </li>
+    <li><strong>زيادة بروتينات الطور الحاد:</strong> ينتج الكبد بروتينات مثل <strong>البروتين التفاعلي C (CRP)</strong> <span style="color: #8b5cf6; font-weight: bold;">و</span>الفيبرينوجين. يتسبب زيادة الفيبرينوجين في تكدس خلايا الدم الحمراء معًا (تكوين الرولو)، مما يزيد من <strong>معدل ترسيب كرات الدم الحمراء (ESR)</strong>.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 23 of 26</span>
+<span class="ar">المصدر: الصفحة 23 من 26</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">ESR and CRP levels are common, non-specific blood tests used to detect and monitor inflammatory activity in diseases like rheumatoid arthritis or infections.</div><div class="ar">مستويات ESR و CRP هي اختبارات دم شائعة وغير محددة تستخدم للكشف عن ومراقبة النشاط الالتهابي في أمراض مثل التهاب المفاصل الروماتويدي أو العدوى.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Fever is a protective response. Higher body temperatures can inhibit the growth of some microbes and enhance immune responses.</div><div class="ar">الحمى هي استجابة وقائية. يمكن أن تمنع درجات حرارة الجسم المرتفعة نمو بعض الميكروبات وتعزز الاستجابات المناعية.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">NSAIDs like aspirin reduce fever by inhibiting the cyclooxygenase enzyme, thereby blocking prostaglandin synthesis.</div><div class="ar">تقلل مضادات الالتهاب غير الستيرويدية مثل الأسبرين من الحمى عن طريق تثبيط إنزيم الأكسدة الحلقية، وبالتالي تمنع تخليق البروستاجلاندين.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Summary</span><span class="ar">ملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Chronic inflammation</strong> is a prolonged response where inflammation, tissue injury, <span style="color: #8b5cf6; font-weight: bold;">and</span> repair coexist. It is fundamentally a protective response, but its persistence can be harmful.</p>
+<ul>
+    <li><strong>Key Features:</strong> Insidious onset, long duration, <span style="color: #8b5cf6; font-weight: bold;">and</span> characterized by <strong>macrophages <span style="color: #8b5cf6; font-weight: bold;">and</span> lymphocytes</strong>.</li>
+    <li><strong>Causes:</strong> Persistent infections (e.g., TB), immune-mediated diseases, <span style="color: #8b5cf6; font-weight: bold;">and</span> prolonged exposure to toxins.</li>
+    <li><strong>Histology:</strong> Marked by mononuclear cell infiltration, tissue destruction, <span style="color: #8b5cf6; font-weight: bold;">and</span> healing via fibrosis <span style="color: #8b5cf6; font-weight: bold;">and</span> angiogenesis.</li>
+    <li><strong>Granulomatous Inflammation:</strong> A specific type designed to contain hard-to-eradicate agents, forming structures called <strong>granulomas</strong>. These consist of activated macrophages (epithelioid cells), giant cells, <span style="color: #8b5cf6; font-weight: bold;">and</span> lymphocytes.</li>
+    <li><strong>Systemic Effects:</strong> Include fever, leukocytosis, <span style="color: #8b5cf6; font-weight: bold;">and</span> elevated acute-phase proteins (CRP, ESR).</li>
+</ul>
+<p>Without inflammation, infections would go unchecked <span style="color: #8b5cf6; font-weight: bold;">and</span> wounds would never heal. However, when it becomes chronic, the processes designed to heal can themselves cause disease <span style="color: #8b5cf6; font-weight: bold;">and</span> tissue destruction.</p>
+</div>
+<div class="ar">
+<p><strong>الالتهاب المزمن</strong> هو استجابة مطولة حيث يتواجد الالتهاب وإصابة الأنسجة <span style="color: #8b5cf6; font-weight: bold;">و</span>الإصلاح معًا. إنه في الأساس استجابة وقائية، لكن استمراره يمكن أن يكون ضارًا.</p>
+<ul>
+    <li><strong>السمات الرئيسية:</strong> بداية تدريجية، مدة طويلة، <span style="color: #8b5cf6; font-weight: bold;">و</span>يتميز بوجود <strong>الخلايا البلعمية <span style="color: #8b5cf6; font-weight: bold;">و</span>الخلايا الليمفاوية</strong>.</li>
+    <li><strong>الأسباب:</strong> العدوى المستمرة (مثل السل)، وأمراض المناعة الذاتية، <span style="color: #8b5cf6; font-weight: bold;">و</span>التعرض المطول للسموم.</li>
+    <li><strong>علم الأنسجة:</strong> يتميز بتسلل الخلايا أحادية النواة، وتدمير الأنسجة، <span style="color: #8b5cf6; font-weight: bold;">و</span>الشفاء عن طريق التليف <span style="color: #8b5cf6; font-weight: bold;">و</span>تكون الأوعية.</li>
+    <li><strong>الالتهاب الورمي الحبيبي:</strong> نوع محدد مصمم لاحتواء العوامل التي يصعب القضاء عليها، مكونًا هياكل تسمى <strong>الأورام الحبيبية</strong>. تتكون هذه من الخلايا البلعمية المنشطة (الخلايا شبيهة الظهارية)، والخلايا العملاقة، <span style="color: #8b5cf6; font-weight: bold;">و</span>الخلايا الليمفاوية.</li>
+    <li><strong>التأثيرات الجهازية:</strong> تشمل الحمى، وكثرة الكريات البيض، <span style="color: #8b5cf6; font-weight: bold;">و</span>ارتفاع بروتينات الطور الحاد (CRP، ESR).</li>
+</ul>
+<p>بدون الالتهاب، لن يتم السيطرة على العدوى <span style="color: #8b5cf6; font-weight: bold;">و</span>لن تلتئم الجروح أبدًا. ومع ذلك، عندما يصبح مزمنًا، يمكن للعمليات المصممة للشفاء أن تسبب المرض <span style="color: #8b5cf6; font-weight: bold;">و</span>تدمير الأنسجة.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: All Pages</span>
+<span class="ar">المصدر: جميع الصفحات</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Inflammation is a double-edged sword. It is essential for survival, but chronic, unregulated inflammation is the basis of many major diseases, including heart disease, diabetes, and cancer.</div><div class="ar">الالتهاب سيف ذو حدين. إنه ضروري للبقاء على قيد الحياة، لكن الالتهاب المزمن غير المنظم هو أساس العديد من الأمراض الرئيسية، بما في ذلك أمراض القلب والسكري والسرطان.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Create a comparison table for Acute vs. Chronic inflammation covering all aspects: onset, duration, cells, mediators, outcomes, and systemic effects.</div><div class="ar">أنشئ جدول مقارنة بين الالتهاب الحاد والمزمن يغطي جميع الجوانب: البداية، المدة، الخلايا، الوسطاء، النتائج، والتأثيرات الجهازية.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Many modern therapies for chronic diseases are anti-inflammatory drugs that target the specific cells and mediators involved in the chronic inflammatory process.</div><div class="ar">العديد من العلاجات الحديثة للأمراض المزمنة هي أدوية مضادة للالتهابات تستهدف الخلايا والوسطاء المحددين المشاركين في عملية الالتهاب المزمن.</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Chronic Inflammation / الالتهاب المزمن</div><div class="content" hidden=""><div class="en">A prolonged inflammatory response (weeks to years) involving simultaneous inflammation, tissue destruction, and attempts at repair.</div><div class="ar">استجابة التهابية طويلة الأمد (أسابيع إلى سنوات) تشمل التهابًا وتدميرًا للأنسجة ومحاولات إصلاح في وقت واحد.</div></div></div>
+<div class="card"><div class="head">Macrophage / الخلية البلعمية الكبيرة</div><div class="content" hidden=""><div class="en">A large phagocytic cell derived from blood monocytes, acting as the dominant cell in chronic inflammation.</div><div class="ar">خلية بلعمية كبيرة مشتقة من الخلايا الوحيدة في الدم، وتعمل كالخلية المهيمنة في الالتهاب المزمن.</div></div></div>
+<div class="card"><div class="head">Fibrosis / التليف</div><div class="content" hidden=""><div class="en">The formation of excess fibrous connective tissue in an organ or tissue as a reparative or reactive process, leading to scarring.</div><div class="ar">تكوين نسيج ضام ليفي زائد في عضو أو نسيج كعملية إصلاحية أو تفاعلية، مما يؤدي إلى تندب.</div></div></div>
+<div class="card"><div class="head">Angiogenesis / تكوّن الأوعية</div><div class="content" hidden=""><div class="en">The formation of new blood vessels, a key process in healing and chronic inflammation.</div><div class="ar">تكوين أوعية دموية جديدة، وهي عملية رئيسية في الشفاء والالتهاب المزمن.</div></div></div>
+<div class="card"><div class="head">Granuloma / الورم الحبيبي</div><div class="content" hidden=""><div class="en">A microscopic collection of activated macrophages (epitheloid cells) and other inflammatory cells, formed to wall off a persistent irritant.</div><div class="ar">تجمع مجهري من الخلايا البلعمية المنشطة (الخلايا شبيهة الظهارية) وخلايا التهابية أخرى، تتكون لعزل مهيج مستمر.</div></div></div>
+<div class="card"><div class="head">Epithelioid Cell / الخلية شبيهة الظهارية</div><div class="content" hidden=""><div class="en">An activated macrophage found in granulomas, characterized by abundant pink cytoplasm and indistinct cell borders.</div><div class="ar">خلية بلعمية منشطة توجد في الأورام الحبيبية، تتميز بسيتوبلازم وردي وفير وحدود خلوية غير واضحة.</div></div></div>
+<div class="card"><div class="head">Giant Cell / الخلية العملاقة</div><div class="content" hidden=""><div class="en">A large, multinucleated cell formed by the fusion of several macrophages, commonly seen in granulomas (e.g., Langhans' type).</div><div class="ar">خلية كبيرة متعددة النوى تتكون من اندماج عدة خلايا بلعمية، وتُرى بشكل شائع في الأورام الحبيبية (مثل نوع لانجهانز).</div></div></div>
+<div class="card"><div class="head">Caseous Necrosis / النخر المتجبن</div><div class="content" hidden=""><div class="en">A form of cell death in which the tissue maintains a cheese-like appearance. It is characteristic of tuberculosis granulomas.</div><div class="ar">شكل من أشكال موت الخلايا حيث يحافظ النسيج على مظهر شبيه بالجبن. وهو سمة مميزة للأورام الحبيبية السلية.</div></div></div>
+<div class="card"><div class="head">Cytokine / السيتوكين</div><div class="content" hidden=""><div class="en">A small protein released by cells that has a specific effect on the interactions between cells, on communications, or on the behavior of cells.</div><div class="ar">بروتين صغير تطلقه الخلايا وله تأثير محدد على التفاعلات بين الخلايا، أو على الاتصالات، أو على سلوك الخلايا.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — What is the main time difference between acute and chronic inflammation?</span><span class="ar">١ — ما هو الفرق الزمني الرئيسي بين الالتهاب الحاد والمزمن؟</span></div><div class="content" hidden=""><span class="en">A: Acute is short-term (hours to weeks), while chronic is long-term (weeks to years).</span><span class="ar">ج: الالتهاب الحاد قصير الأمد (ساعات إلى أسابيع)، بينما الالتهاب المزمن طويل الأمد (أسابيع إلى سنوات).</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — What are the two dominant cell types in chronic inflammation?</span><span class="ar">٢ — ما هما نوعا الخلايا المهيمنان في الالتهاب المزمن؟</span></div><div class="content" hidden=""><span class="en">A: Macrophages and lymphocytes.</span><span class="ar">ج: الخلايا البلعمية الكبيرة والخلايا الليمفاوية.</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — Name one cause of chronic inflammation.</span><span class="ar">٣ — اذكر سببًا واحدًا للالتهاب المزمن.</span></div><div class="content" hidden=""><span class="en">A: Persistent infections (like TB), immune-mediated diseases, or prolonged exposure to toxic agents.</span><span class="ar">ج: العدوى المستمرة (مثل السل)، أمراض المناعة الذاتية، أو التعرض المطول للعوامل السامة.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — What are the three main histological features of chronic inflammation?</span><span class="ar">٤ — ما هي السمات النسيجية الرئيسية الثلاث للالتهاب المزمن؟</span></div><div class="content" hidden=""><span class="en">A: 1) Mononuclear cell infiltration, 2) Tissue destruction, and 3) Attempts at healing (fibrosis).</span><span class="ar">ج: ١) تسلل الخلايا أحادية النواة، ٢) تدمير الأنسجة، و ٣) محاولات الشفاء (التليف).</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — Macrophages in the central nervous system (CNS) are called...?</span><span class="ar">٥ — ماذا تسمى الخلايا البلعمية في الجهاز العصبي المركزي؟</span></div><div class="content" hidden=""><span class="en">A: Microglia.</span><span class="ar">ج: الخلايا الدبقية الصغيرة.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — What is a granuloma?</span><span class="ar">٦ — ما هو الورم الحبيبي؟</span></div><div class="content" hidden=""><span class="en">A: A collection of activated macrophages (epitheloid cells), often with a rim of lymphocytes, formed to wall off a persistent agent.</span><span class="ar">ج: تجمع من الخلايا البلعمية المنشطة (الخلايا شبيهة الظهارية)، غالبًا مع حافة من الخلايا الليمفاوية، يتكون لعزل عامل مستمر.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — What is the key cytokine that activates macrophages in granuloma formation?</span><span class="ar">٧ — ما هو السيتوكين الرئيسي الذي ينشط الخلايا البلعمية في تكوين الورم الحبيبي؟</span></div><div class="content" hidden=""><span class="en">A: Interferon-gamma (IFN-γ).</span><span class="ar">ج: إنترفيرون-جاما (IFN-γ).</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — Tuberculosis causes what specific type of necrosis in its granulomas?</span><span class="ar">٨ — ما هو نوع النخر المحدد الذي يسببه السل في أورامه الحبيبية؟</span></div><div class="content" hidden=""><span class="en">A: Caseous necrosis (cheese-like).</span><span class="ar">ج: النخر المتجبن (شبيه بالجبن).</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — An increase in ESR and CRP in blood tests indicates what?</span><span class="ar">٩ — على ماذا تدل زيادة ESR و CRP في اختبارات الدم؟</span></div><div class="content" hidden=""><span class="en">A: Systemic inflammation (the acute-phase response).</span><span class="ar">ج: وجود التهاب جهازي (استجابة الطور الحاد).</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

@@ -92,17 +92,32 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}  
-  .opt-btn.correct{border-left:6px solid var(--ok);outline:none;background:rgba(255,255,255,0.03);}  
-  .opt-btn.wrong{border-left:6px solid var(--bad);outline:none;background:rgba(255,255,255,0.03);}  
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}  
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer table{width:100%;border-collapse:collapse;margin-top:10px;}
+  .answer th, .answer td{border:1px solid var(--card-border);padding:8px;text-align:left;}
+  .answer th{background:rgba(255,255,255,0.05);}
+  .answer ol{padding-left:20px;margin:0;}
+
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -159,61 +174,263 @@
   </main>
 
 <script>
-// ----------- Data (from Lecture 4: Drug–Drug & Drug–Food Interactions) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q: "Which best describes a drug–drug interaction (DDI)?", opts:["An idiosyncratic immune reaction","A change in drug response due to another drug","A placebo effect amplified by counseling","A manufacturing impurity causing toxicity"], correct:1, explain:"DDIs alter response (efficacy/toxicity) of one drug due to another." },
-  { q: "Greater number of medications primarily leads to:", opts:["Lower chance of DDIs","No change in safety","Higher chance of DDIs","Guaranteed toxicity"], correct:2, explain:"Polypharmacy increases the probability of interactions." },
-  { q: "Which is a pharmacokinetic absorption interaction?", opts:["Opioids + benzodiazepines → respiratory depression","Tetracycline chelation with calcium → reduced absorption","NSAIDs + corticosteroids → ↑ GI bleeding","NSAIDs antagonize ACE inhibitors"], correct:1, explain:"Chelation in the gut reduces absorption of tetracyclines/fluoroquinolones." },
-  { q: "Competition for plasma protein binding can most clinically affect:", opts:["Topical antiseptics","Inhaled bronchodilators","Warfarin displaced by NSAIDs","Epinephrine in local anesthetic"], correct:2, explain:"NSAIDs can displace warfarin from albumin → ↑ free drug → bleeding risk." },
-  { q: "CYP450 inhibition relevant to dentistry:", opts:["Rifampicin speeds warfarin clearance","Metronidazole inhibits warfarin metabolism","Adrenaline blocks β-receptors","Ibuprofen induces CYP3A4"], correct:1, explain:"Metronidazole inhibits warfarin metabolism → excessive anticoagulation." },
-  { q: "CYP450 induction example:", opts:["Metronidazole","Tinidazole","Rifampicin","Amoxicillin"], correct:2, explain:"Rifampicin induces metabolism of many drugs → reduced efficacy." },
-  { q: "Which pair shows reduced renal clearance leading to toxicity?", opts:["NSAIDs with methotrexate","Paracetamol with codeine","Lidocaine with epinephrine","Aspirin with fluoride"], correct:0, explain:"NSAIDs ↓ renal prostaglandins → ↓ methotrexate clearance → toxicity." },
-  { q: "Additive/synergistic pharmacodynamic interaction:", opts:["NSAIDs antagonize diuretics","Opioids + benzodiazepines → enhanced sedation","Rifampicin + azoles → metabolic induction","Warfarin + metronidazole → inhibition"], correct:1, explain:"Two CNS depressants together potentiate sedation/respiratory depression." },
-  { q: "Antagonistic pharmacodynamic interaction relevant to BP:", opts:["NSAIDs antagonize antihypertensives","Codeine antagonizes naloxone","Epinephrine antagonizes insulin","Warfarin antagonizes vitamin K completely"], correct:0, explain:"NSAIDs blunt effect of β-blockers/ACEi/diuretics → poorer BP control." },
-  { q: "Chelation with minerals most reduces which drug group?", opts:["Macrolides","Tetracyclines/fluoroquinolones","Penicillins","Cephalosporins (parenteral)"], correct:1, explain:"Divalent/trivalent cations bind tetracyclines/quinolones → insoluble complexes." },
-  { q: "Best timing when calcium/iron supplements are necessary with ciprofloxacin:", opts:["Take together with milk","Drug 2 h before or 6 h after minerals","Take at bedtime with yogurt","No timing separation needed"], correct:1, explain:"Separate by 2 h before or 6 h after to avoid chelation." },
-  { q: "Cefuroxime axetil (Ceftin) bioavailability is:", opts:["Higher in fasting state (≈52%)","Unaffected by meals","Higher after a meal (≈52% vs 37% fasting)","Zero with food"], correct:2, explain:"Ceftin ~52% after a meal vs ~37% fasting." },
-  { q: "Which antibiotic can reduce efficacy of oral contraceptives?", opts:["Ampicillin","Metronidazole","Azithromycin","Clindamycin"], correct:0, explain:"Ampicillin is associated with failure of contraception in some cases." },
-  { q: "Which combination increases bleeding risk?", opts:["Tinidazole + warfarin","Lidocaine + epinephrine","Amoxicillin + clavulanate","Nystatin + ibuprofen"], correct:0, explain:"Nitroimidazoles inhibit warfarin metabolism → bleeding." },
-  { q: "Which combination may decrease lithium excretion?", opts:["Metronidazole + lithium","Rifampicin + lithium","Ampicillin + lithium","Paracetamol + lithium"], correct:0, explain:"Metronidazole/Tinidazole can decrease lithium clearance → toxicity." },
-  { q: "CNS toxicity/seizures are more likely with:", opts:["Ciprofloxacin + NSAIDs","Ibuprofen + paracetamol","Penicillin V + ibuprofen","Clindamycin + acetaminophen"], correct:0, explain:"Quinolones with NSAIDs can enhance CNS toxicity including seizures." },
-  { q: "Epinephrine in local anesthetic given to a patient on propranolol may:", opts:["Lower BP via β2 activation","Have no effect","Cause a rise in BP (unopposed α)","Completely block anesthesia"], correct:2, explain:"Nonselective β-blockade → unopposed α1 vasoconstriction → ↑ BP." },
-  { q: "Therapeutically important interactions are those that:", opts:["Only change taste","Alter intended response, cause toxicity, or affect nutrition","Only cause mild nausea","Only occur with IV drugs"], correct:1, explain:"They alter response/toxicity or nutritional status." },
-  { q: "Which group is at higher risk for food–nutrient interactions?", opts:["Healthy young adults","Elderly and malnourished patients","Short-term travelers only","Athletes only"], correct:1, explain:"Elderly, pregnant, infants, malnourished, chronic disease, etc." },
-  { q: "Most appropriate counseling for dairy with tetracycline:", opts:["Encourage taking with milk","Avoid dairy near dosing due to chelation","No restrictions with any tetracycline","Only avoid if lactose intolerant"], correct:1, explain:"Dairy calcium chelates tetracycline → reduced absorption." },
-  { q: "Warfarin patient prescribed metronidazole—primary concern?", opts:["Hypertension","Bleeding due to ↑ INR","Hypoglycemia","Arrhythmia"], correct:1, explain:"Metronidazole inhibits warfarin metabolism → excessive anticoagulation." },
-  { q: "Which step is part of evaluating interactions per objectives?", opts:["Ignore patient history","Group medications and evaluate","Rely only on brand names","Assume food never matters"], correct:1, explain:"Evaluate meds, know famous interactions, group meds, and listen to patient." },
-  { q: "Absorption interaction via GI motility/complexation applies to:", opts:["Warfarin + NSAID","Tetracycline + antacids (Al³⁺)","Opioid + benzodiazepine","NSAID + corticosteroid"], correct:1, explain:"Antacids with aluminum/magnesium chelate tetracyclines/quinolones." },
-  { q: "Distribution interaction most typical:", opts:["Protein-binding displacement (NSAID → warfarin)","First-pass extraction","Enzyme induction","Enterohepatic cycling"], correct:0, explain:"Competition for albumin binding increases free warfarin." },
-  { q: "Elimination interaction example:", opts:["Cefuroxime + food","NSAIDs ↓ renal clearance of methotrexate","Rifampicin induction","Opioids + alcohol"], correct:1, explain:"Renal prostaglandin inhibition reduces methotrexate clearance." },
-  { q: "Additive ulcer risk arises when combining:", opts:["NSAIDs + corticosteroids","Amoxicillin + nystatin","Paracetamol + codeine","Fluoride + chlorhexidine"], correct:0, explain:"NSAIDs with corticosteroids increase GI ulcer/bleeding risk." },
-  { q: "Which action helps prevent clinically significant DDIs?", opts:["Skip medication review","Check for CYP inhibitors/inducers and counsel on food","Assume supplements are harmless","Dose all drugs together with meals"], correct:1, explain:"Systematic review and counseling reduce preventable morbidity." },
-  { q: "When must minerals be separated from ciprofloxacin?", opts:["Only calcium; iron is fine","Calcium, iron, magnesium, zinc and Al-containing antacids","Only zinc","No minerals interact"], correct:1, explain:"Divalent/trivalent cations and Al antacids chelate quinolones." },
-  { q: "Rifampicin may reduce efficacy of which classes in dentistry?", opts:["Antifungals and corticosteroids","Local anesthetics","Topical fluorides","Antihistamines only"], correct:0, explain:"Induction increases clearance → reduced efficacy of many drugs including azoles, steroids." },
-  { q: "Key preventive step before prescribing to a polypharmacy patient:", opts:["Avoid asking about OTCs","Hear your patient and review all meds (including OTC/herbals)","Assume no food interactions","Stop all current meds"], correct:1, explain:"History taking (\"hear your patient\") is essential." }
+    {
+        q: "What is the primary risk of taking more medications simultaneously?",
+        opts: ["Decreased cost of treatment", "Increased chance of drug interactions", "Faster recovery time", "Reduced need for dental visits"],
+        correct: 1,
+        explain: "The more medications a patient takes, the greater the likelihood that these drugs will interact with each other, potentially causing adverse effects."
+    },
+    {
+        q: "Combining a pain medication like hydrocodone with a sedating antihistamine like diphenhydramine results in what type of effect?",
+        opts: ["Antagonistic drowsiness", "Additive drowsiness", "No change in alertness", "Reduced pain relief"],
+        correct: 1,
+        explain: "Both hydrocodone and diphenhydramine cause drowsiness as a side effect. Taking them together leads to an additive effect, resulting in increased drowsiness."
+    },
+    {
+        q: "Which of the following is NOT a pharmacokinetic phase where drug interactions can occur?",
+        opts: ["Absorption", "Distribution", "Metabolism", "Replication"],
+        correct: 3,
+        explain: "Drug interactions occur during absorption, distribution, metabolism, and elimination. Replication is not a phase of pharmacokinetics."
+    },
+    {
+        q: "Taking tetracyclines with dairy products can lead to:",
+        opts: ["Increased absorption of the drug", "Reduced absorption due to chelation", "Enhanced drug efficacy", "No significant interaction"],
+        correct: 1,
+        explain: "Tetracyclines can chelate (bind) with calcium in dairy products, forming insoluble complexes that reduce the drug's absorption from the GI tract."
+    },
+    {
+        q: "What is the mechanism of interaction when NSAIDs displace warfarin from albumin?",
+        opts: ["Absorption interaction", "Metabolic interaction", "Distribution interaction", "Elimination interaction"],
+        correct: 2,
+        explain: "This is a distribution interaction. Both drugs compete for binding sites on plasma proteins (albumin). NSAIDs can displace warfarin, increasing its free concentration and the risk of bleeding."
+    },
+    {
+        q: "Metronidazole inhibits the metabolism of which of the following drugs, increasing its anticoagulant effect?",
+        opts: ["Aspirin", "Ibuprofen", "Warfarin", "Paracetamol"],
+        correct: 2,
+        explain: "Metronidazole inhibits hepatic enzymes (CYP450) responsible for warfarin metabolism, leading to excessive anticoagulation and an increased risk of bleeding."
+    },
+    {
+        q: "What effect does Rifampicin, a CYP450 inducer, have on other drugs like antifungals?",
+        opts: ["It increases their efficacy", "It has no effect on them", "It reduces their efficacy", "It increases their toxicity"],
+        correct: 2,
+        explain: "Rifampicin induces hepatic enzymes, which accelerates the metabolism of many drugs, including antifungals, thereby reducing their therapeutic efficacy."
+    },
+    {
+        q: "NSAIDs can reduce the renal clearance of methotrexate, leading to:",
+        opts: ["Reduced methotrexate efficacy", "Increased methotrexate toxicity", "No change in methotrexate levels", "Faster elimination of methotrexate"],
+        correct: 1,
+        explain: "NSAIDs can impair renal function by reducing prostaglandin synthesis, which in turn decreases the renal clearance of methotrexate, leading to its accumulation and potential toxicity."
+    },
+    {
+        q: "Combining opioids and benzodiazepines can lead to what pharmacodynamic interaction?",
+        opts: ["Antagonistic effect", "Synergistic or additive effect", "Reduced sedation", "Competitive inhibition"],
+        correct: 1,
+        explain: "Both opioids and benzodiazepines are CNS depressants. When taken together, they have a synergistic/additive effect, leading to enhanced sedation and respiratory depression."
+    },
+    {
+        q: "What is the potential outcome of taking NSAIDs concurrently with corticosteroids?",
+        opts: ["Decreased risk of GI ulcers", "Increased risk of GI ulceration/bleeding", "Improved blood pressure control", "Enhanced analgesic effect"],
+        correct: 1,
+        explain: "Both NSAIDs and corticosteroids can irritate the gastric mucosa. Their combined use increases the risk of developing gastrointestinal ulcers and bleeding."
+    },
+    {
+        q: "How do NSAIDs interact with antihypertensive drugs like β-blockers?",
+        opts: ["They enhance their effect", "They have no interaction", "They antagonize their effect", "They increase their absorption"],
+        correct: 2,
+        explain: "NSAIDs can antagonize the effects of many antihypertensives, including β-blockers, ACE inhibitors, and diuretics, leading to poor blood pressure control."
+    },
+    {
+        q: "Which of the following patient groups is generally considered at lower risk for food-nutrient interactions?",
+        opts: ["Elderly patients", "Pregnant women", "Healthy young adults", "Malnourished patients"],
+        correct: 2,
+        explain: "Patients who are elderly, pregnant, malnourished, or have chronic diseases are at higher risk. Healthy young adults are generally at a lower risk."
+    },
+    {
+        q: "The bioavailability of the antibiotic Ceftin is higher when taken:",
+        opts: ["In a fasting state", "With a glass of water", "After a meal", "With dairy products"],
+        correct: 2,
+        explain: "Food can enhance the absorption of some drugs. The bioavailability of Ceftin is significantly higher (52%) when taken after a meal compared to in a fasting state (37%)."
+    },
+    {
+        q: "To avoid interaction with calcium, iron, or other minerals, when should Ciprofloxacin be administered?",
+        opts: ["Simultaneously with the mineral supplement", "30 minutes before the mineral", "2 hours before or 6 hours after the mineral", "Immediately after the mineral"],
+        correct: 2,
+        explain: "To prevent chelation and reduced absorption, ciprofloxacin or tetracycline should be given 2 hours before or 6 hours after consuming minerals like calcium, iron, zinc, or magnesium."
+    },
+    {
+        q: "What is a likely interaction when Ampicillin is taken with oral contraceptives?",
+        opts: ["Increased contraceptive efficacy", "Failure of contraception", "Risk of hypertension", "Enhanced antibiotic effect"],
+        correct: 1,
+        explain: "Ampicillin can interfere with the gut flora that helps recycle contraceptive hormones, potentially leading to contraceptive failure. Alternative contraception should be advised."
+    },
+    {
+        q: "The interaction between Propranolol and adrenaline (in local anesthetic) can cause:",
+        opts: ["A sudden drop in blood pressure", "A significant rise in blood pressure", "Anaphylactic shock", "No significant change in vitals"],
+        correct: 1,
+        explain: "Propranolol, a non-selective beta-blocker, can block adrenaline's vasodilatory effects, leading to unopposed alpha-receptor stimulation and a potential hypertensive crisis."
+    },
+    {
+        q: "Which process involves drugs competing for binding sites on plasma proteins like albumin?",
+        opts: ["Metabolism", "Elimination", "Absorption", "Distribution"],
+        correct: 3,
+        explain: "Distribution is the process where drugs are transported throughout the body, often bound to plasma proteins. Competition for these binding sites is a common source of drug interactions."
+    },
+    {
+        q: "A drug that increases the activity of CYP450 enzymes is known as an:",
+        opts: ["Inhibitor", "Inducer", "Agonist", "Antagonist"],
+        correct: 1,
+        explain: "An enzyme inducer is a drug that increases the metabolic activity of an enzyme system, such as CYP450, leading to faster metabolism of other drugs."
+    },
+    {
+        q: "Which interaction type occurs at the drug's site of action or via the same physiological systems?",
+        opts: ["Pharmacokinetic", "Pharmacodynamic", "Pharmaceutical", "Physicochemical"],
+        correct: 1,
+        explain: "Pharmacodynamic interactions are those that occur at the receptor or target site, altering the drug's effect without changing its concentration."
+    },
+    {
+        q: "Combining an NSAID with Ciprofloxacin can lead to what adverse effect?",
+        opts: ["Reduced renal function", "Enhanced CNS toxicity and seizures", "Liver damage", "Failure of the antibiotic"],
+        correct: 1,
+        explain: "This combination can lead to enhanced central nervous system toxicity, including an increased risk of seizures."
+    },
+    {
+        q: "Metronidazole can decrease the excretion of which substance, potentially leading to toxicity?",
+        opts: ["Sodium", "Potassium", "Lithium salts", "Calcium"],
+        correct: 2,
+        explain: "Metronidazole can impair the renal excretion of lithium, causing it to accumulate to toxic levels."
+    },
+    {
+        q: "An antagonistic effect is when:",
+        opts: ["Two drugs combine to produce an enhanced effect", "One drug reduces or blocks the effect of another drug", "A drug binds to a mineral, preventing absorption", "A drug's metabolism is slowed down by another drug"],
+        correct: 1,
+        explain: "Antagonism occurs when one drug interferes with the action of another, often by blocking its receptor, resulting in a reduced therapeutic effect."
+    },
+    {
+        q: "Which type of product is well-known for forming insoluble complexes with Ciprofloxacin?",
+        opts: ["High-fiber foods", "Grapefruit juice", "Dairy products", "Foods high in Vitamin K"],
+        correct: 2,
+        explain: "The calcium in dairy products can form insoluble complexes (chelation) with Ciprofloxacin and Tetracycline, significantly reducing their absorption."
+    },
+    {
+        q: "An additive drug effect is best described as:",
+        opts: ["The effect is greater than the sum of the two drugs", "The effect is equal to the sum of the individual effects", "One drug cancels out the other", "One drug has no effect on the other"],
+        correct: 1,
+        explain: "An additive effect is where the combined effect of two drugs is equal to the sum of their individual effects (e.g., 1+1=2)."
+    },
+    {
+        q: "The interaction between two CNS depressants is an example of what?",
+        opts: ["Pharmacokinetic antagonism", "Pharmacodynamic synergism", "Altered drug distribution", "Induced drug metabolism"],
+        correct: 1,
+        explain: "This is a pharmacodynamic interaction where two drugs acting on the CNS produce a combined effect (synergism or addition) that is greater than either drug alone."
+    },
+    {
+        q: "Which of the following is a primary objective for improving awareness of drug interactions?",
+        opts: ["Prescribing more medications", "Evaluating a patient's full medication list", "Focusing only on dental drugs", "Discouraging patient questions"],
+        correct: 1,
+        explain: "A key objective is to thoroughly evaluate all medications a patient is taking, including over-the-counter drugs and supplements, to identify potential interactions."
+    },
+    {
+        q: "What is the consequence of a drug interaction that alters the intended response to a medication?",
+        opts: ["It is always beneficial", "It can lead to therapeutic failure or toxicity", "It only affects nutritional status", "It is therapeutically irrelevant"],
+        correct: 1,
+        explain: "Therapeutically important interactions are those that alter the intended response, which can manifest as either a failure to achieve the desired effect or the development of drug toxicity."
+    },
+    {
+        q: "A drug interaction that increases the blood level and possible toxicity of another drug is likely due to:",
+        opts: ["Enzyme induction", "Enzyme inhibition", "Reduced absorption", "Antagonistic effects"],
+        correct: 1,
+        explain: "Enzyme inhibition slows down the metabolism of a drug, causing its concentration in the blood to rise, which can lead to toxicity."
+    },
+    {
+        q: "Taking Ampicillin with oral anticoagulants like warfarin can lead to:",
+        opts: ["Reduced risk of bleeding", "Increased risk of bleeding", "Failure of the antibiotic", "No interaction"],
+        correct: 1,
+        explain: "Ampicillin can disrupt gut flora that produce Vitamin K, potentially enhancing the effect of oral anticoagulants and increasing the risk of bleeding."
+    },
+    {
+        q: "Drug-drug interactions are considered a preventable cause of:",
+        opts: ["Morbidity", "Genetic disorders", "Congenital defects", "Chronic disease"],
+        correct: 0,
+        explain: "Many adverse drug events caused by drug-drug interactions are preventable through careful medication review and patient education, thus reducing patient harm (morbidity)."
+    }
 ];
 
 const tfs = [
-  { q:"DDIs can either decrease efficacy or increase toxicity of a drug.", answer:true, explain:"Both directions are possible." },
-  { q:"Chelation of tetracyclines with calcium increases absorption.", answer:false, explain:"Chelation forms insoluble complexes → decreased absorption." },
-  { q:"Metronidazole induces CYP enzymes, lowering warfarin levels.", answer:false, explain:"It inhibits warfarin metabolism → ↑ INR/bleeding." },
-  { q:"Rifampicin can reduce the effectiveness of corticosteroids via enzyme induction.", answer:true, explain:"Induction increases clearance." },
-  { q:"NSAIDs may antagonize the effect of ACE inhibitors on blood pressure.", answer:true, explain:"They blunt antihypertensive effects." },
-  { q:"Combining opioids with benzodiazepines may cause enhanced sedation and respiratory depression.", answer:true, explain:"Additive CNS depressant effects." },
-  { q:"Cefuroxime axetil has lower bioavailability with food than fasting.", answer:false, explain:"It is higher after a meal (~52% vs ~37% fasting)." },
-  { q:"Mineral supplements (Fe, Ca, Mg, Zn) do not interact with ciprofloxacin.", answer:false, explain:"They chelate quinolones → reduced absorption." },
-  { q:"Propranolol may exaggerate pressor response to epinephrine in dental local anesthetic.", answer:true, explain:"Unopposed α1 vasoconstriction → ↑ BP." }
+    {
+        q: "Drug-drug interactions can only decrease how well medications work.",
+        answer: false,
+        explain: "Interactions can also increase side effects or lead to drug toxicity by increasing blood levels of a drug."
+    },
+    {
+        q: "NSAIDs displacing warfarin from albumin is an example of a metabolic interaction.",
+        answer: false,
+        explain: "This is a distribution interaction, as it relates to competition for plasma protein binding, not metabolism by enzymes."
+    },
+    {
+        q: "Rifampicin induces hepatic enzymes, which can lead to reduced efficacy of other drugs.",
+        answer: true,
+        explain: "As a CYP450 inducer, Rifampicin accelerates the metabolism of many drugs, lowering their concentration and effectiveness."
+    },
+    {
+        q: "Combining NSAIDs with corticosteroids decreases the risk of gastrointestinal bleeding.",
+        answer: false,
+        explain: "This combination significantly increases the risk of GI ulceration and bleeding due to their combined effects on the gastric mucosa."
+    },
+    {
+        q: "Food always decreases the absorption and bioavailability of drugs.",
+        answer: false,
+        explain: "Food can enhance the absorption of some drugs. For example, the bioavailability of Ceftin is higher after a meal."
+    },
+    {
+        q: "A malnourished patient is considered at high risk for food-nutrient interactions.",
+        answer: true,
+        explain: "Malnourished patients, along with the elderly, infants, and those with chronic diseases, are particularly vulnerable to such interactions."
+    },
+    {
+        q: "Taking Ciprofloxacin with a glass of milk is recommended to enhance its absorption.",
+        answer: false,
+        explain: "Calcium in milk chelates with Ciprofloxacin, forming an insoluble complex that significantly reduces its absorption."
+    },
+    {
+        q: "An antagonistic drug interaction results in an enhanced therapeutic response.",
+        answer: false,
+        explain: "An antagonistic interaction is one where a drug's effect is reduced or blocked by another, potentially leading to therapeutic failure."
+    },
+    {
+        q: "Metronidazole can increase the risk of bleeding when taken with warfarin.",
+        answer: true,
+        explain: "Metronidazole inhibits the metabolism of warfarin, leading to higher levels of the anticoagulant and an increased risk of bleeding."
+    }
 ];
 
 const saqs = [
-  { q:"Define a drug–food interaction relevant to dentistry.", a:"A change in a drug’s effect caused by food/nutrients (e.g., dairy ↓ tetracycline absorption)." },
-  { q:"List three patient groups at higher risk for food–nutrient interactions.", a:"1) Elderly 2) Pregnant/infant/fetus 3) Malnourished or chronic disease" },
-  { q:"Compare additive/synergistic vs antagonistic interactions in therapy.", a:`<table style="width:100%;border-collapse:collapse"><thead><tr><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">#</th><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">Additive/Synergistic</th><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">Antagonistic</th></tr></thead><tbody>
-  <tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">1</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Opioids + benzodiazepines → ↑ sedation</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">NSAIDs ↓ effect of ACEi/β-blockers</td></tr>
-</tbody></table>` },
-  { q:"A 62‑year‑old on warfarin needs metronidazole for an oral infection. What major risk should you counsel about?", a:"Bleeding due to inhibited warfarin metabolism (↑ INR)." },
-  { q:"How should ciprofloxacin be timed with mineral supplements or antacids?", a:"Give drug 2 h before or 6 h after Ca/Fe/Mg/Zn or Al‑antacids." },
-  { q:"Explain how NSAIDs can increase free warfarin levels.", a:"Protein‑binding displacement from albumin → ↑ free warfarin → bleeding risk." }
+    {
+        q: "Define a pharmacodynamic drug interaction and provide one example mentioned in the lecture.",
+        a: "A pharmacodynamic interaction is one that occurs at the drug's site of action or involves interference with the same physiological systems. It alters the drug's effect without changing its concentration. <br><b>Example:</b> Combining CNS depressants like opioids and benzodiazepines, which results in an additive sedative effect."
+    },
+    {
+        q: "A patient is prescribed warfarin (an anticoagulant) for a heart condition. They begin taking an over-the-counter NSAID for dental pain. What is the potential interaction, and what is the underlying mechanism?",
+        a: "The potential interaction is an increased risk of bleeding. The mechanism is a distribution interaction: the NSAID competes with warfarin for binding sites on plasma albumin. This displaces warfarin, increasing the concentration of free, active warfarin in the blood, which enhances its anticoagulant effect."
+    },
+    {
+        q: "List three distinct patient populations that are at a higher risk for food-nutrient interactions.",
+        a: "<ol><li>Elderly patients</li><li>Patients with chronic diseases</li><li>Pregnant women / Fetus / Infant</li><li>Malnourished patients</li></ol>(Any three are correct)"
+    },
+    {
+        q: "Compare and contrast synergistic and antagonistic pharmacodynamic effects using examples.",
+        a: `<table><thead><tr><th>Effect Type</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><strong>1. Synergistic/Additive</strong></td><td>The combined effect of two drugs is equal to or greater than the sum of their individual effects.</td><td>Opioids + Benzodiazepines leading to enhanced CNS depression.</td></tr><tr><td><strong>2. Antagonistic</strong></td><td>One drug reduces or blocks the effect of another drug, leading to a diminished response.</td><td>NSAIDs reducing the effectiveness of antihypertensive drugs like β-blockers.</td></tr></tbody></table>`
+    },
+    {
+        q: "Explain the interaction between tetracycline antibiotics and dairy products. What is the mechanism and clinical outcome?",
+        a: "The mechanism is chelation. Calcium ions in dairy products bind to the tetracycline molecule, forming an insoluble complex. This complex cannot be absorbed from the gastrointestinal tract. The clinical outcome is reduced absorption of the antibiotic, leading to lower blood concentrations and potential therapeutic failure."
+    },
+    {
+        q: "Describe the four main stages of pharmacokinetics where drug-drug interactions can occur.",
+        a: `<ol><li><b>Absorption:</b> Interactions in the GI tract that affect how much of a drug is absorbed (e.g., chelation).</li><li><b>Distribution:</b> Competition between drugs for binding sites on plasma proteins like albumin.</li><li><b>Metabolism:</b> One drug inhibiting or inducing the hepatic enzymes (like CYP450) responsible for metabolizing another drug.</li><li><b>Elimination:</b> Competition between drugs for renal excretion pathways, altering how quickly a drug is cleared from the body.</li></ol>`
+    }
 ];
 
 // ----------- State -----------
@@ -274,12 +491,15 @@ mcqs.forEach((item, idx)=>{
       const v = Number(btn.dataset.v);
       state.mcq[idx] = v;
 
+      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
+      // Always mark the correct option (green)
       const correctBtn = buttons[correctVisualIndex];
       correctBtn.classList.add('correct');
 
       if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
@@ -331,13 +551,16 @@ tfs.forEach((item, idx)=>{
       const val = btn.dataset.v === "true";
       state.tf[idx] = val;
 
+      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
+      // Always mark the correct button (green)
       const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
       correctBtn.classList.add('correct');
 
       const isCorrect = (val === item.answer);
       if(!isCorrect){
+        // mark chosen wrong (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
@@ -364,13 +587,14 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
   </div>
   <div class="answer" hidden>${item.a}</div>
 `;
+
 
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');
@@ -421,6 +645,9 @@ function recalc(){
 }
 
 document.getElementById('resetAll').addEventListener('click', ()=>{
+  if (!confirm("Are you sure you want to reset all answers and scores?")) {
+    return;
+  }
   document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
   document.querySelectorAll('.opt-btn').forEach(b=>{
     b.classList.remove('correct','wrong');

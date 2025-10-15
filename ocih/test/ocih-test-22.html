@@ -107,12 +107,16 @@
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer table{width:100%;border-collapse:collapse;text-align:left;}
+  .answer th, .answer td{padding:8px;border:1px solid var(--card-border);}
+  .answer tr:nth-child(odd){background:rgba(255,255,255,0.05);}
+
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -169,388 +173,265 @@
   </main>
 
 <script>
-// ----------- Data (from ocih-22.pdf) -----------
+// ----------- Data -----------
 const mcqs = [
   {
-    q: "What is the principal function of cementum?",
-    opts: [
-      "Attachment of periodontal ligament collagen fibers to anchor the tooth",
-      "Provide a vascular supply to the root surface",
-      "Transmit pain from root surface via nerve fibers",
-      "Store calcium as a metabolic reservoir for the pulp"
-    ],
+    q: "What is the primary function of cementum?",
+    opts: ["Anchorage of periodontal ligament fibers", "Providing nutrition to the dentin", "Forming the bulk of the tooth structure", "Responding to sensory stimuli"],
     correct: 0,
-    explain: "Cementum's primary role is fiber attachment linking tooth to alveolar bone (PDL)."
+    explain: "The main function of cementum is to provide a medium for the attachment of collagen fibers from the periodontal ligament, thus anchoring the tooth to the alveolar bone."
   },
   {
-    q: "Hypophosphatasia affecting anterior deciduous teeth is characterized by which cementum change?",
-    opts: [
-      "Almost total absence of cementum",
-      "Generalized hypercementosis",
-      "Replacement of acellular with enamel-like tissue",
-      "Extensive ankylosis"
-    ],
-    correct: 0,
-    explain: "Hypophosphatasia shows near absence of cementum with premature tooth loss."
+    q: "Which condition is characterized by an almost total absence of cementum, leading to premature tooth loss?",
+    opts: ["Paget's disease", "Hypophosphatasia", "Acromegaly", "Hypercementosis"],
+    correct: 1,
+    explain: "Hypophosphatasia is a rare hereditary disease where the lack of cementum formation results in failed PDL attachment and subsequent premature loss of deciduous teeth."
   },
   {
-    q: "Which statement best explains how cementum contributes to functional adaptation?",
-    opts: [
-      "Apical deposition can compensate for occlusal wear",
-      "Cementum resorbs rapidly allowing tooth movement",
-      "Cementum secretes growth factors that erupt teeth overnight",
-      "Enamel drops induce cementum apoptosis"
-    ],
-    correct: 0,
-    explain: "Additional apical cementum helps maintain occlusion despite wear."
+    q: "How does cementum deposition compensate for occlusal wear?",
+    opts: ["By increasing its vascularity", "By resorbing at the cervical margin", "By depositing new cementum in the apical area", "By forming enamel-like structures"],
+    correct: 2,
+    explain: "Continuous deposition of cementum at the apex allows for slight tooth eruption, which compensates for the loss of tooth substance from occlusal wear and maintains proper occlusion."
   },
   {
-    q: "Under normal conditions, cementum is typically…",
-    opts: [
-      "Not resorbed",
-      "Highly resorbed",
-      "Vascular",
-      "Heavily innervated"
-    ],
-    correct: 0,
-    explain: "Cementum is relatively resistant to resorption and is avascular and non‑innervated."
+    q: "Which type of cementum is formed during rapid repair of root damage?",
+    opts: ["Acellular afibrillar cementum", "Acellular primary cementum", "Cellular cementum", "Mixed cementum"],
+    correct: 2,
+    explain: "Cellular cementum forms faster than acellular cementum and is typically responsible for repairing damage to roots, such as fractures and resorptions."
   },
   {
-    q: "Cementum formed during rapid repair of root defects is usually",
-    opts: [
-      "Cellular cementum",
-      "Acellular extrinsic fiber cementum",
-      "Enamel-like aprismatic tissue",
-      "Cartilaginous tissue"
-    ],
-    correct: 0,
-    explain: "Faster repair yields cellular cementum; slow repair may resemble primary (acellular) cementum."
+    q: "Where is acellular primary cementum typically located?",
+    opts: ["Only at the apex of the root", "From the cervical margin to the apical third", "Exclusively in furcation areas", "Overlying enamel spurs"],
+    correct: 1,
+    explain: "Acellular (primary) cementum is the first type formed and covers the root from the cementoenamel junction to the apical third, primarily serving an anchorage function."
   },
   {
-    q: "Cementum receives its nutrition primarily from:",
-    opts: [
-      "The surrounding vascular periodontal ligament",
-      "Intrinsic cemental capillaries",
-      "Pulpal vessels via dentinal tubules",
-      "Alveolar bone marrow sinusoids"
-    ],
-    correct: 0,
-    explain: "Cementum is avascular; diffusion from PDL supplies it."
+    q: "How does cementum receive its nutrition?",
+    opts: ["From internal blood vessels", "Directly from the dentin", "From the surrounding vascular periodontal ligament", "It does not require nutrition"],
+    correct: 2,
+    explain: "Cementum is avascular, meaning it has no internal blood supply. It receives all its nutrients from the blood vessels within the adjacent periodontal ligament."
   },
   {
-    q: "Which of the following is TRUE about cementum formation over the life of a tooth?",
-    opts: [
-      "It can continue throughout life",
-      "It stops after root completion",
-      "It reverses to dentin after eruption",
-      "It only forms during orthodontic movement"
-    ],
-    correct: 0,
-    explain: "Like other dental hard tissues, cementum can form throughout life."
-  },
-  {
-    q: "With aging, cementum shows greatest increase in thickness at:",
-    opts: [
-      "The root apex",
-      "The cervical enamel junction",
-      "Middle third of the crown",
-      "Pulp chamber roof"
-    ],
-    correct: 0,
-    explain: "Thickness increases particularly apically due to active eruption."
-  },
-  {
-    q: "Compared with other surfaces, which surface tends to show increased cementum deposition with age?",
-    opts: [
-      "Lingual surface",
-      "Buccal surface",
-      "Mesial surface",
-      "Distal surface"
-    ],
-    correct: 0,
-    explain: "Slides note a relative increase on lingual surfaces."
-  },
-  {
-    q: "Cementum thickness from age 10 to 75 years generally:",
-    opts: [
-      "Triples",
-      "Halves",
-      "Remains unchanged",
-      "Decreases by one third"
-    ],
-    correct: 0,
-    explain: "Stated that it triples across that age span."
-  },
-  {
-    q: "As cementum thickens with age, cementocytes tend to:",
-    opts: [
-      "Die due to reduced nutrition and waste removal",
-      "Proliferate due to increased vascularity",
-      "Differentiate into odontoblasts",
-      "Migrate into enamel"
-    ],
-    correct: 0,
-    explain: "Thicker layers reduce diffusion; cementocytes may die."
-  },
-  {
-    q: "Hypercementosis is best defined as:",
-    opts: [
-      "Abnormal thickening of cementum (diffuse or circumscribed)",
-      "Inflammatory resorption of cementum",
-      "Absence of cementum",
-      "Replacement of cementum by bone"
-    ],
-    correct: 0,
-    explain: "Hypercementosis refers to excessive cementum deposition."
-  },
-  {
-    q: "A classic radiographic feature of hypercementosis is that the area is enveloped by:",
-    opts: [
-      "An intact PDL space and lamina dura",
-      "A radiolucent halo without lamina dura",
-      "A sclerotic bone collar replacing the PDL",
-      "Calcified pulp stones"
-    ],
-    correct: 0,
-    explain: "The normal PDL radiolucency and lamina dura outline the hypercementotic area."
-  },
-  {
-    q: "Localized hypercementosis may appear as spur/prong extensions especially in:",
-    opts: [
-      "Teeth exposed to great occlusal stress",
-      "Teeth with fluorosis",
-      "Teeth with enamel hypoplasia only",
-      "Primary molars during exfoliation"
-    ],
-    correct: 0,
-    explain: "Stress increases surface area for fiber attachment, forming spurs."
-  },
-  {
-    q: "Which condition is commonly associated with generalized hypercementosis?",
-    opts: [
-      "Paget’s disease",
-      "Amelogenesis imperfecta",
-      "Hypophosphatemic rickets",
-      "Dentin dysplasia"
-    ],
-    correct: 0,
-    explain: "Paget’s disease is listed among systemic associations."
-  },
-  {
-    q: "Localized hypercementosis can be seen in all EXCEPT:",
-    opts: [
-      "Benign cementoblastoma",
-      "Cemento-osseous dysplasia",
-      "Acromegaly",
-      "Periapical cemento-osseous resorption"
-    ],
+    q: "What is the term for the abnormal thickening of cementum?",
+    opts: ["Ankylosis", "Cemental tear", "Hypoplasia", "Hypercementosis"],
     correct: 3,
-    explain: "The first three are associated; 'periapical cemento-osseous resorption' is not a listed association."
+    explain: "Hypercementosis is the excessive deposition of cementum on the root surface, which can be localized to one tooth or generalized across the dentition."
   },
   {
-    q: "Hypercementosis secondary to chronic periapical inflammation may complicate extraction by:",
-    opts: [
-      "Requiring removal of surrounding bone",
-      "Causing immediate ankylosis of all roots",
-      "Eliminating the PDL space entirely",
-      "Fusing enamel to bone"
-    ],
-    correct: 0,
-    explain: "Bulbous roots can necessitate sectioning or bone removal."
+    q: "Generalized hypercementosis is a known oral manifestation of which systemic disease?",
+    opts: ["Hypophosphatasia", "Diabetes", "Paget's disease", "Arthritis"],
+    correct: 2,
+    explain: "Paget's disease of bone is a systemic condition that can cause generalized hypercementosis, affecting multiple teeth."
   },
   {
-    q: "Cemental tears are most likely after:",
-    opts: [
-      "Severe traumatic blow to a tooth",
-      "Mild thermal stimulus",
-      "Application of topical fluoride",
-      "Eruption of third molars"
-    ],
-    correct: 0,
-    explain: "Fragments of cementum can detach from dentin after trauma."
+    q: "What are the spikelike excrescences sometimes seen in hypercementosis?",
+    opts: ["Calcified enamel drops", "Resorbed areas of dentin", "Coalescence of cementicles or calcified PDL fibers", "Newly formed blood vessels"],
+    correct: 2,
+    explain: "These prong-like extensions can be due to the fusion of free cementicles to the root surface or the calcification of periodontal fibers at their insertion sites."
   },
   {
-    q: "In periodontal pockets, plaque products can lead to which management consideration?",
-    opts: [
-      "Mechanical/chemical removal of altered cemental surface",
-      "Leaving the surface untouched to avoid sensitivity",
-      "Intentional demineralization to stimulate repair",
-      "Endodontic treatment to stop diffusion"
-    ],
-    correct: 0,
-    explain: "Altered exposed cementum may hinder healing and is often debrided."
+    q: "In 'functional repair' of cementum resorption, how is the normal width of the PDL space restored?",
+    opts: ["By depositing a thick layer of new cementum", "By the formation of a bony projection", "By shrinking the periodontal ligament", "By resorbing the opposing bone"],
+    correct: 1,
+    explain: "In functional repair, only a thin layer of cementum is deposited on the resorbed root. The normal PDL width is then re-established by the apposition of new bone on the alveolar side."
   },
   {
-    q: "Fusion of bone and cementum leading to immobility describes:",
-    opts: [
-      "Ankylosis",
-      "Hyperplasia",
-      "Cementolysis",
-      "Dentinogenesis"
-    ],
-    correct: 0,
-    explain: "Ankylosis results from abnormal cemental deposition and bone fusion."
+    q: "Which property makes cementum more resistant to resorption than bone?",
+    opts: ["Its higher mineral content", "Its avascular nature", "Its rich nerve supply", "Its rapid remodeling capacity"],
+    correct: 1,
+    explain: "Cementum's lack of vascularity makes it more resistant to pressure-induced resorption compared to the highly vascular alveolar bone, which is a key principle in orthodontics."
   },
   {
-    q: "Cemental caries most commonly occur on:",
-    opts: [
-      "Exposed root surfaces",
-      "Intact enamel surfaces",
-      "Pulp chamber walls",
-      "Apex within alveolar bone only"
-    ],
-    correct: 0,
-    explain: "They are lesions of exposed cementum on roots."
+    q: "What is a 'cemental tear'?",
+    opts: ["A developmental defect in cementum", "A type of root caries", "Fragments of cementum severed from the dentin", "A form of hypercementosis"],
+    correct: 2,
+    explain: "A cemental tear is an injury, often due to a severe blow or trauma, where a piece of the cementum layer is fractured and detached from the underlying dentin."
   },
   {
-    q: "Which statement correctly compares cementum and bone?",
-    opts: [
-      "Both contain hydroxyapatite as the major inorganic component",
-      "Cementum lacks hydroxyapatite while bone contains it",
-      "Bone lacks collagen, cementum is all collagen",
-      "Cementum contains no non‑collagenous proteins"
-    ],
-    correct: 0,
-    explain: "Both tissues are mineralized largely with hydroxyapatite."
+    q: "What is the fusion of bone and cementum called?",
+    opts: ["Hyperplasia", "Dysplasia", "Ankylosis", "Concrescence"],
+    correct: 2,
+    explain: "Ankylosis is the fusion of the alveolar bone directly to the cementum, which obliterates the periodontal ligament space and immobilizes the tooth."
   },
   {
-    q: "The typical inorganic fraction is approximately ______ in cementum and ______ in bone.",
-    opts: [
-      "45%; 67%",
-      "67%; 45%",
-      "33%; 67%",
-      "55%; 45%"
-    ],
+    q: "Compared to bone, cementum has a:",
+    opts: ["Lower inorganic content", "Higher rate of apposition", "Higher remodeling capacity", "Rich nerve supply"],
     correct: 0,
-    explain: "Slides list 45% inorganic for cementum and 67% for bone."
+    explain: "Cementum is about 45% inorganic material, whereas bone is about 67% inorganic. Bone also has a much faster apposition rate and effective remodeling capacity."
   },
   {
-    q: "Rate of apposition is roughly ______ for acellular cementum and ______ for lamellar bone.",
-    opts: [
-      "0.005–0.01 μm/day; 1–2 μm/day",
-      "1–2 μm/day; 0.005–0.01 μm/day",
-      "0.1 μm/day; 10 μm/day",
-      "Equal for both tissues"
-    ],
-    correct: 0,
-    explain: "Acellular cementum is much slower than lamellar bone."
+    q: "What cells are responsible for producing cementum?",
+    opts: ["Odontoblasts", "Osteoblasts", "Cementoblasts", "Ameloblasts"],
+    correct: 2,
+    explain: "Cementoblasts are the cells that form cementum. They are derived from either HERS (Hertwig's Epithelial Root Sheath) or the dental follicle."
   },
   {
-    q: "Vascularity and innervation of cementum are best described as:",
-    opts: [
-      "Avascular and lacking nerve supply",
-      "Highly vascular and richly innervated",
-      "Avascular but richly innervated",
-      "Vascular but aneural"
-    ],
-    correct: 0,
-    explain: "Cementum has neither intrinsic vessels nor nerves."
+    q: "Which type of cementum is found in the middle to apical third of the root and in furcations?",
+    opts: ["Acellular afibrillar", "Acellular primary", "Cellular secondary", "Enameloid cementum"],
+    correct: 2,
+    explain: "Cellular (secondary) cementum is typically found in the apical and interradicular regions, where it plays a role in adaptation and repair."
   },
   {
-    q: "Compared with bone, cementum is generally:",
-    opts: [
-      "More resistant to resorption",
-      "Less resistant to resorption",
-      "Equal in resorption",
-      "Completely resistant to any resorption"
-    ],
+    q: "What is the primary organic component of both cementum and bone matrix?",
+    opts: ["Type I collagen", "Elastin fibers", "Keratin", "Type IV collagen"],
     correct: 0,
-    explain: "Cementum resorbs less readily than bone—clinically relevant for orthodontics."
+    explain: "The extracellular matrix of both cementum and bone is predominantly composed of Type I collagen fibers, providing a scaffold for mineralization."
   },
   {
-    q: "Remodeling capacity of cementum is:",
-    opts: [
-      "Limited compared with bone",
-      "Equal to bone",
-      "Greater than bone",
-      "Absent but replaced by enamel remodeling"
-    ],
-    correct: 0,
-    explain: "Bone has effective remodeling; cementum is limited."
+    q: "What happens to cementocytes in older layers of thick cementum?",
+    opts: ["They transform into cementoblasts", "They increase in number and size", "They gradually die", "They migrate to the PDL"],
+    correct: 2,
+    explain: "As cementum thickness increases with age, the cementocytes trapped deep within the matrix (lacunae) lose access to nutrition from the PDL and eventually die."
   },
   {
-    q: "Following resorption cessation, repair may occur by:",
-    opts: [
-      "Acellular cementum, cellular cementum, or both sequentially",
-      "Replacement by enamel prisms only",
-      "Dentinogenesis exclusively",
-      "No repair is possible"
-    ],
-    correct: 0,
-    explain: "Slides depict repair by acellular, cellular or a sequence of both."
+    q: "Acellular afibrillar cementum is most commonly found:",
+    opts: ["At the root apex", "In furcation areas", "As spurs or patches over enamel near the CEJ", "Uniformly covering the entire root"],
+    correct: 2,
+    explain: "This specific type of cementum, lacking fibers and cells, is found in small patches near the cementoenamel junction and is considered to have no known function."
   },
   {
-    q: "If the root contour is re‑established after repair, this is termed:",
-    opts: [
-      "Anatomic repair",
-      "Functional repair",
-      "Reactive hyperplasia",
-      "Physiologic adaptation"
-    ],
-    correct: 0,
-    explain: "Anatomic repair restores the original root outline."
+    q: "What is the main purpose of localized hypercementosis, such as a spur-like extension?",
+    opts: ["To repair a root fracture", "To increase the surface area for fiber attachment", "To fight periapical infection", "To compensate for enamel loss"],
+    correct: 1,
+    explain: "In teeth exposed to great stress, localized hypercementosis can form to provide a larger surface area for the periodontal ligament fibers to attach, resulting in a firmer anchorage."
   },
   {
-    q: "Restoration of periodontal space width by bony projection despite thin cementum is called:",
-    opts: [
-      "Functional repair",
-      "Anatomic repair",
-      "Pathologic ankylosis",
-      "Cementolytic remodeling"
-    ],
-    correct: 0,
-    explain: "Functional repair normalizes the space without re‑creating full root contour."
+    q: "Radiographically, how can hypercementosis be distinguished from normal root structure?",
+    opts: ["There is no visible periodontal ligament space around it", "It appears radiolucent compared to dentin", "The PDL and lamina dura are seen enveloping it", "It always fuses with the alveolar bone"],
+    correct: 2,
+    explain: "A key diagnostic feature is that the radiolucent PDL shadow and radiopaque lamina dura are always seen on the outer border of the hypercementosis area, just as they would be on a normal root."
   },
   {
-    q: "Cementoblasts that form all cementum types are derived from:",
-    opts: [
-      "HERS or the dental follicle",
-      "Ameloblasts in the enamel organ",
-      "Odontoblasts of the pulp",
-      "Osteoclast precursors"
-    ],
-    correct: 0,
-    explain: "Slides conclude cementoblasts derive from Hertwig’s sheath or follicle."
+    q: "The rate of apposition for acellular cementum is approximately:",
+    opts: ["1-2 µm/day", "10-15 µm/day", "0.005-0.01 µm/day", "0.5-1 µm/day"],
+    correct: 2,
+    explain: "Acellular cementum forms very slowly, at a rate of 0.005-0.01 µm/day, compared to lamellar bone which forms at a much faster rate of 1-2 µm/day."
   },
   {
-    q: "Which protein(s) are present in both cementum and bone in the non‑collagenous fraction?",
-    opts: [
-      "Bone sialoprotein and osteopontin",
-      "Amelogenin and tuftelin",
-      "Myosin and actin",
-      "Aggrecan and elastin"
-    ],
+    q: "Which non-collagenous proteins are present in both cementum and bone?",
+    opts: ["Amelogenin and Enamelin", "Keratin and Fibrillin", "Bone sialoprotein and Osteopontin", "Dentin phosphoprotein and DSP"],
+    correct: 2,
+    explain: "Bone sialoprotein and Osteopontin are key non-collagenous proteins involved in mineralization and are found in both bone and, in smaller quantities, cementum."
+  },
+  {
+    q: "In which situation might a tooth with hypercementosis require sectioning before extraction?",
+    opts: ["If it is a single-rooted anterior tooth", "If the hypercementosis is very minor", "If it is a multi-rooted tooth with bulbous roots", "If the patient has Paget's disease"],
+    correct: 2,
+    explain: "If a multi-rooted tooth has significant hypercementosis, the enlarged, bulbous roots can lock it into the socket, necessitating surgical sectioning of the tooth for a successful extraction."
+  },
+  {
+    q: "What causes alterations in the physical and chemical characteristics of cementum exposed in periodontal pockets?",
+    opts: ["Excessive occlusal forces", "Systemic diseases like diabetes", "Plaque and its by-products", "Age-related changes"],
+    correct: 2,
+    explain: "When cementum is exposed to the oral environment due to periodontal disease, bacterial plaque and its toxins can alter its surface, which may interfere with healing."
+  },
+  {
+    q: "The function of 'Adaptation' for cellular cementum is best demonstrated in which location?",
+    opts: ["Cervical third of the root", "Middle to apical third and furcations", "Cementoenamel junction", "Entire root surface uniformly"],
+    correct: 1,
+    explain: "Cellular cementum is primarily located in the apical and furcation areas, where its faster deposition rate allows it to adapt to tooth movement and repair damage."
+  },
+  {
+    q: "The inorganic component of cementum is predominantly:",
+    opts: ["Fluorapatite", "Calcium carbonate", "Calcium and phosphate as hydroxyapatite", "Magnesium phosphate"],
+    correct: 2,
+    explain: "Similar to other hard tissues like bone and dentin, the mineral component of cementum is mainly calcium and phosphate in the form of hydroxyapatite crystals."
+  },
+  {
+    q: "Which cells are involved in the resorption of cementum?",
+    opts: ["Cementoclasts (Odontoclasts)", "Osteoblasts", "Fibroblasts", "Cementocytes"],
     correct: 0,
-    explain: "Both tissues include BSP and OPN (notably in different quantities)."
+    explain: "Odontoclasts (sometimes called cementoclasts when acting on cementum) are large, multinucleated cells responsible for resorbing dental hard tissues."
+  },
+  {
+    q: "The continuous formation of cementum helps to maintain the width of the:",
+    opts: ["Pulp chamber", "Dentin tubules", "Periodontal ligament", "Lamina dura"],
+    correct: 2,
+    explain: "As new layers of cementum are added to the root, it helps maintain a consistent width for the periodontal ligament, which is crucial for proper tooth function and support."
+  },
+  {
+    q: "Which type of cementum has fibers that are entirely of intrinsic origin (from cementoblasts)?",
+    opts: ["Acellular primary cementum", "Cellular secondary cementum", "Mixed cementum", "Acellular afibrillar cementum"],
+    correct: 1,
+    explain: "Cellular cementum contains intrinsic fibers, which are produced by the cementoblasts themselves. In contrast, acellular cementum's fibers are primarily extrinsic (Sharpey's fibers from the PDL)."
   }
 ];
 
 const tfs = [
-  { q: "Cementum is avascular and lacks a nerve supply.", answer: true, explain: "Nutrition diffuses from PDL; there are no intrinsic nerves." },
-  { q: "Cementum formation ceases once the tooth erupts.", answer: false, explain: "It can form throughout life." },
-  { q: "Hypercementosis always requires treatment.", answer: false, explain: "Generally no treatment unless it complicates extraction." },
-  { q: "With age, cementum thickness commonly increases, especially apically.", answer: true, explain: "Active eruption contributes to apical thickening." },
-  { q: "Radiographically, hypercementosis obliterates the PDL space and lamina dura.", answer: false, explain: "They remain visible enveloping the area." },
-  { q: "Cementum is more resistant to resorption than bone.", answer: true, explain: "Listed under clinical considerations." },
-  { q: "Repair of resorbed cementum can only occur by cellular cementum.", answer: false, explain: "It may be acellular, cellular, or both sequentially." },
-  { q: "Ankylosis is fusion of bone and cementum.", answer: true, explain: "Abnormal cemental deposition may lead to ankylosis." },
-  { q: "Hypophosphatasia is associated with generalized hypercementosis.", answer: false, explain: "Hypophosphatasia is linked to hypoplasia/aplasia of cementum." }
+  {
+    q: "Cementum is a vascular tissue with a rich nerve supply.",
+    answer: false,
+    explain: "Cementum is avascular (no blood vessels) and has no nerve supply. It receives its nutrition from the adjacent periodontal ligament."
+  },
+  {
+    q: "The thickness of cementum generally decreases with age.",
+    answer: false,
+    explain: "Cementum thickness triples from age 10 to 75. This deposition, especially at the apex, compensates for occlusal wear."
+  },
+  {
+    q: "Generalized hypercementosis can be associated with Paget's disease.",
+    answer: true,
+    explain: "Paget's disease is a systemic bone disorder that is known to cause generalized, excessive deposition of cementum on the roots of teeth."
+  },
+  {
+    q: "Anatomic repair of cementum completely restores the original root outline.",
+    answer: true,
+    explain: "In anatomic repair, new cementum is deposited in the resorbed area to a degree that it fully reconstructs the original contour of the root surface."
+  },
+  {
+    q: "Bone is more resistant to resorption than cementum.",
+    answer: false,
+    explain: "Cementum is more resistant to resorption than bone, primarily because it is avascular. This principle is fundamental to orthodontic tooth movement."
+  },
+  {
+    q: "Cellular cementum is mainly responsible for anchorage.",
+    answer: false,
+    explain: "The primary function of cellular cementum is adaptation and repair. Anchorage is the primary function of acellular cementum."
+  },
+  {
+    q: "Cementum can form throughout the life of a tooth.",
+    answer: true,
+    explain: "Like other dental hard tissues, cementum deposition is a continuous process that occurs throughout the life of the tooth, allowing for adaptation and repair."
+  },
+  {
+    q: "The inorganic mineral content of cementum is higher than that of bone.",
+    answer: false,
+    explain: "Cementum has a lower inorganic content (~45%) compared to bone (~67%), making it a softer hard tissue."
+  },
+  {
+    q: "A cemental tear can result from severe trauma to a tooth.",
+    answer: true,
+    explain: "A severe blow or excessive occlusal force can cause a fracture in the cementum layer, separating fragments of it from the underlying dentin."
+  }
 ];
 
 const saqs = [
-  // 1. Direct answer
-  { q: "State the primary function of cementum.", a: "Anchorage: attachment of PDL collagen fibers to link tooth and alveolar bone." },
-  // 2. List/enumeration (≥3)
-  { q: "List three age‑related changes observed in cementum.", a: "1) Increased thickness (esp. apically). 2) Greater lingual deposition. 3) Increased cementocyte death due to reduced nutrition." },
-  // 3. Comparison (numbered table)
-  { q: "Compare cementum and bone for composition, vascularity and remodeling capacity.", a: `<table style="width:100%;border-collapse:collapse"><thead><tr><th>#</th><th>Feature</th><th>Cementum</th><th>Bone</th></tr></thead><tbody><tr><td>1</td><td>Inorganic %</td><td>~45%</td><td>~67%</td></tr><tr><td>2</td><td>Vascularity</td><td>Avascular</td><td>Vascular</td></tr><tr><td>3</td><td>Remodeling</td><td>Limited</td><td>Effective</td></tr></tbody></table>` },
-  // 4. Case-based scenario
-  { q: "A 55‑year‑old with heavy occlusal wear shows bulbous apical roots radiographically, yet the PDL space and lamina dura outline remain intact. What is the most likely diagnosis?", a: "Hypercementosis related to occlusal stress; extraction may require sectioning or bone removal." },
-  // 5. Direct short definition
-  { q: "Define anatomic vs functional repair of cementum in one line.", a: "Anatomic: root outline re‑established; Functional: PDL width restored via bony projection despite thin cementum." },
-  // 6. Enumeration (associations)
-  { q: "Name three conditions associated with hypercementosis.", a: "1) Paget’s disease. 2) Benign cementoblastoma / cemento‑osseous dysplasia. 3) Acromegaly (also calcinosis, some arthritis)." }
+  {
+    q: "Describe the process of 'functional repair' following cemental resorption.",
+    a: "Functional repair occurs when the resorbed area on the root is repaired with only a thin layer of new cementum, which does not restore the original root contour. To compensate and restore the normal width of the periodontal ligament space, new alveolar bone is deposited on the opposing socket wall."
+  },
+  {
+    q: "List the four main types of cementum classified by cellularity and fiber origin.",
+    a: "<ol style='padding-left:20px;'><li><b>Acellular (primary) cementum:</b> Extrinsic fibers, for anchorage.</li><li><b>Cellular (secondary) cementum:</b> Intrinsic fibers, for adaptation/repair.</li><li><b>Mixed cementum:</b> Alternating layers with intrinsic and extrinsic fibers.</li><li><b>Acellular afibrillar cementum:</b> No cells or fibers, found near CEJ.</li></ol>"
+  },
+  {
+    q: "Explain why cementum is more resistant to resorption than bone during orthodontic tooth movement.",
+    a: "Cementum's higher resistance to resorption is primarily attributed to it being avascular and having a protective surface layer of cementoid. The lack of blood supply makes it less susceptible to the pressure-induced resorption process that readily affects the vascular alveolar bone, allowing the tooth to move through the bone."
+  },
+  {
+    q: "A radiograph of a patient's molar shows a localized, bulbous enlargement of the root in the apical third, but the periodontal ligament space and lamina dura appear intact around the enlargement. What is this condition called and what is a common local cause?",
+    a: "This condition is <b>hypercementosis</b> (localized). A common local cause is excessive occlusal stress or chronic periapical inflammation, which stimulates cementoblasts to deposit excessive amounts of cementum as an adaptive response."
+  },
+  {
+    q: "List the three primary functions of cementum.",
+    a: "<ol style='padding-left:20px;'><li><b>Anchorage:</b> To provide attachment for the collagen fibers of the periodontal ligament, securing the tooth in the alveolar bone.</li><li><b>Adaptation:</b> To compensate for tooth wear and maintain tooth position through continuous deposition, especially at the apex.</li><li><b>Repair:</b> To repair root fractures and resorptive defects on the root surface.</li></ol>"
+  },
+  {
+    q: "Present a comparison between cementum and bone regarding their vascularity, nerve supply, and remodeling capacity.",
+    a: "<table><thead><tr><th>Feature</th><th>Cementum</th><th>Bone</th></tr></thead><tbody><tr><td>Vascularity</td><td>Avascular (no blood vessels)</td><td>Vascular (contains blood vessels)</td></tr><tr><td>Nerve Supply</td><td>Lacks nerve supply</td><td>Richly innervated</td></tr><tr><td>Remodeling Capacity</td><td>Limited remodeling</td><td>Effective and continuous remodeling</td></tr></tbody></table>"
+  }
 ];
+
 
 // ----------- State -----------
 const state = {
@@ -706,7 +587,7 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
@@ -729,6 +610,8 @@ saqs.forEach((item, idx)=>{
     state.saq[idx] = now;
     toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
     toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    toggleBtn.classList.toggle('primary', now);
+    toggleBtn.classList.toggle('ghost', !now);
     recalc();
   });
 
@@ -764,6 +647,9 @@ function recalc(){
 }
 
 document.getElementById('resetAll').addEventListener('click', ()=>{
+  if (!confirm('Are you sure you want to reset all answers and scores?')) {
+    return;
+  }
   document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
   document.querySelectorAll('.opt-btn').forEach(b=>{
     b.classList.remove('correct','wrong');
@@ -773,12 +659,19 @@ document.getElementById('resetAll').addEventListener('click', ()=>{
   document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
   document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
   document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
-  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{
+      b.textContent="I was correct";
+      b.style.outline="none";
+      b.classList.remove('primary');
+      b.classList.add('ghost');
+  });
+
 
   state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
   recalc();
 });
 
+// Initial calculation on load
 recalc();
 </script>
 </body>

@@ -92,7 +92,7 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
   /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
@@ -107,12 +107,13 @@
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer ol, .answer ul { padding-left: 20px; }
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -169,59 +170,413 @@
   </main>
 
 <script>
-// ----------- Data (from Lecture 3: Radiation Biology) -----------
+// ----------- Data -----------
 const mcqs = [
-  {q:"Radiation Biology primarily studies:", opts:["Production of X-ray images","Effects of ionizing radiation on living systems","Shielding materials for reactors","Electrical properties of detectors"], correct:1, explain:"Radiation Biology is the study of effects of ionizing radiation on living systems."},
-  {q:"The 'bystander effect' best describes:", opts:["Only cells directly ionized are damaged","Cells shielded by lead are unaffected","Unirradiated cells exhibit effects due to signaling from irradiated neighbors","Only DNA is affected, not proteins"], correct:2, explain:"Bystander effects involve cell–cell and cell–matrix signaling causing effects in non‑hit cells."},
-  {q:"Deterministic effects are characterized by:", opts:["No threshold and probability increases with dose","A threshold and severity increases with dose","Purely genetic transmission only","Independent of dose rate"], correct:1, explain:"Deterministic (tissue) reactions have a threshold; severity rises with dose (e.g., mucositis)."},
-  {q:"A classic example of a stochastic effect is:", opts:["Radiation mucositis","Skin erythema","Desquamation","Radiation‑induced cancer"], correct:3, explain:"Stochastic effects (e.g., cancer) have no threshold; probability, not severity, increases with dose."},
-  {q:"Initial physical/chemical interaction of ionizing radiation with tissue occurs within:", opts:["10^-3 s","10^-6 s","10^-10 s","10^-13 s"], correct:3, explain:"The initial interaction occurs in ~10^(-13) seconds."},
-  {q:"Which statement about persistence of radiation effects is TRUE?", opts:["They vanish within minutes","They last only during exposure","They may persist for hours to generations","They stop at cell division"], correct:2, explain:"Cellular and genetic effects may persist for hours, decades, or generations."},
-  {q:"Direct effect of radiation means:", opts:["Ionization of water to form radicals","Photon/secondary electron ionizes a biologic molecule","Formation of ozone","Thermal denaturation only"], correct:1, explain:"In direct action, energy deposit directly ionizes target biomolecules (e.g., DNA)."},
-  {q:"Indirect effect primarily results from:", opts:["Photoelectric effect in lead","Radiolysis of water producing radicals","Compton scatter in detector","Bremsstrahlung production"], correct:1, explain:"Water radiolysis yields H• and OH• radicals that damage biomolecules (indirect action)."},
-  {q:"Free radicals are generated after irradiation in approximately:", opts:["Seconds","Milliseconds","Microseconds","< 10^-10 seconds"], correct:3, explain:"Free radical generation occurs extremely rapidly (<10^(-10) s)."},
-  {q:"Fates of free radicals formed in biomolecules include:", opts:["Only polymerization","Only oxidation","Dissociation and cross‑linking","No chemical change"], correct:2, explain:"Radicals stabilize via dissociation or cross‑linking reactions."},
-  {q:"Approximately what fraction of biologic damage is attributed to DIRECT effects?", opts:["~10%","~1/3","~1/2","~2/3"], correct:1, explain:"About one‑third of effects are direct; two‑thirds indirect."},
-  {q:"The radical most implicated in indirect radiation damage to tissues is:", opts:["Hydrogen radical (H•)","Hydroxyl radical (OH•)","Superoxide exclusively","Nitric oxide"], correct:1, explain:"OH• is considered the most important radical for indirect damage in aqueous systems."},
-  {q:"Cell radiosensitivity increases with:", opts:["Lower mitotic rate","High degree of differentiation","Great mitotic future and primitiveness","Post‑mitotic specialization"], correct:2, explain:"High mitotic rate, primitive cells, and future mitoses increase radiosensitivity."},
-  {q:"Vegetative intermitotic cells are:", opts:["Most radioresistant, rarely divide","Most radiosensitive precursor cells (e.g., basal mucosal cells)","Terminally differentiated neurons","Only present in bone marrow"], correct:1, explain:"They divide regularly, have long mitotic futures; very radiosensitive."},
-  {q:"Differentiating intermitotic cells:", opts:["Never divide","Divide less frequently with some differentiation (e.g., spermatocytes)","Are identical to fixed post‑mitotic cells","Always more sensitive than vegetative intermitotic cells"], correct:1, explain:"They divide less often and differentiate between divisions; less radiosensitive than vegetative intermitotic."},
-  {q:"Multipotential connective‑tissue cells (e.g., fibroblasts, endothelial cells) are:", opts:["Highly resistant","Intermediate in radiosensitivity","Most sensitive","Non‑dividing"], correct:1, explain:"These cells divide in response to demand and show intermediate sensitivity."},
-  {q:"Reverting post‑mitotic cells (e.g., salivary acinar cells) are:", opts:["Highly radiosensitive","Intermediate","Radioresistant due to infrequent division","Non‑cellular structures"], correct:2, explain:"They divide infrequently and are specialized, hence relatively radioresistant."},
-  {q:"Fixed post‑mitotic cells such as neurons and striated muscle are:", opts:["Most resistant, incapable of division when mature","Moderately sensitive","Among the most proliferative","Targets of radiolysis primarily"], correct:0, explain:"Fixed post‑mitotic cells are highly differentiated and most resistant."},
-  {q:"The most radiosensitive site within the cell is:", opts:["Cell membrane","Mitochondrial matrix","DNA in the nucleus","Lysosomes"], correct:2, explain:"Nuclear DNA is the critical target; breaks and cross‑links are key lesions."},
-  {q:"Chromatid aberrations arise when exposure occurs:", opts:["Before DNA replication (G1/early S)","After DNA synthesis (G2 or mid/late S)","Only during mitosis","Only in G0"], correct:1, explain:"Chromatid lesions occur post‑replication; chromosome aberrations pre‑replication."},
-  {q:"Compared with chromatid aberrations, chromosome aberrations are:", opts:["More likely to be perfectly repaired","Typically not repaired or misrepaired leading to mutation","Only cosmetic changes","Exclusive to meiosis"], correct:1, explain:"Chromosome aberrations (G1 exposure) are often misrepaired and mutagenic."},
-  {q:"Significant cytoplasmic organelle damage generally requires doses around:", opts:["0.5–2 Gy","5–10 Gy","30–50 Gy",">200 Gy only"], correct:2, explain:"Mitochondrial swelling and cristae disruption are noted at ~30–50 Gy."},
-  {q:"Early whole‑body high‑dose syndromes (deterministic) include:", opts:["Leukemia only","Hematologic, GI, and CNS syndromes","Thyroid nodules exclusively","Ultraviolet phototoxicity"], correct:1, explain:"Acute deterministic effects include hematologic, gastrointestinal, and CNS syndromes."},
-  {q:"A late effect associated with prolonged low doses (diagnostic range) is:", opts:["Sunburn","Leukemia","Acute desquamation","Immediate erythema"], correct:1, explain:"Late stochastic effects include cancers such as leukemia."},
-  {q:"Long‑term tissue injury in irradiated fields primarily reflects:", opts:["Epithelial hyperplasia alone","Fine vascular damage with fibrosis and impaired nutrition","Pure neural apoptosis","Increased capillary density"], correct:1, explain:"Capillary swelling, degeneration, necrosis → permeability ↑ → progressive fibrosis → hypoxia → cell death."},
-  {q:"Regarding oral mucosa during head & neck RT:", opts:["Basal cells are radioresistant","Breakdown with pseudomembrane typically by end of 2nd week","Healing never occurs","Always hypervascular for years"], correct:1, explain:"Basal vegetative cells are sensitive; mucositis with pseudomembrane forms ~2nd week; healing by ~2 months."},
-  {q:"Supportive care for radiation‑induced mucositis may include:", opts:["Chlorhexidine mouth rinse and topical anesthetics","High‑dose systemic steroids for all","Complete tooth brushing cessation","Aspirin mouthwash"], correct:0, explain:"Good oral hygiene, topical anesthetics (e.g., lidocaine/benzydamine) and chlorhexidine may be used."},
-  {q:"Taste dysfunction in RT of head & neck typically:", opts:["Begins day 1 and is permanent in all","Occurs around weeks 2–3; often recovers in 2–4 months","Is unrelated to saliva","Worsens with zinc supplementation"], correct:1, explain:"Taste buds affected ~2–3 weeks; often recover in 2–4 months; zinc sulfate 220 mg bid may help."},
-  {q:"Which salivary component is more radiosensitive?", opts:["Mucous acini > serous acini","Serous acini > mucous acini; parotid > submandibular/sublingual","Ductal cells most sensitive","All glands equal"], correct:1, explain:"Serous acini are more radiosensitive; parotid is more sensitive than SMG/SLG; parenchyma > ducts."},
-  {q:"Which pattern is characteristic of radiation caries?", opts:["Only interproximal lesions","Superficial buccal/occlusal lesions, cervical cementum/dentin caries, and dark crown pigmentation","Exclusive root fractures","Enamel fluorosis"], correct:1, explain:"Radiation caries often shows these three patterns due to hyposalivation and flora changes."}
+    {
+        q: "According to the 'Bystander Effect' theory, how do irradiated cells cause damage to neighboring non-irradiated cells?",
+        opts: [
+            "By triggering cell-cell and cell-matrix communication.",
+            "Through direct ionization of adjacent cells.",
+            "By releasing heat and causing thermal damage.",
+            "By absorbing all available nutrients in the local environment."
+        ],
+        correct: 0,
+        explain: "The Bystander Effect involves irradiated cells releasing signals that affect nearby cells, unlike the Hit Theory where only directly ionized cells are damaged."
+    },
+    {
+        q: "Which of the following is an example of a stochastic effect of radiation?",
+        opts: [
+            "Radiation-induced cancer",
+            "Radiation mucositis",
+            "Erythema",
+            "Desquamation"
+        ],
+        correct: 0,
+        explain: "Stochastic effects are probabilistic ('may develop') and not dependent on the dose amount for their severity, like cancer. Deterministic effects are definitive damaging effects at specific high doses."
+    },
+    {
+        q: "What proportion of the harmful effects of radiation is caused by the indirect effect?",
+        opts: [
+            "1/3",
+            "2/3",
+            "1/2",
+            "3/4"
+        ],
+        correct: 1,
+        explain: "Approximately two-thirds of the harmful biological effects of x-radiation are caused by indirect effects, primarily through the radiolysis of water."
+    },
+    {
+        q: "Which free radical, formed from the radiolysis of water, is considered more important in causing tissue damage?",
+        opts: [
+            "Hydrogen (H)",
+            "Hydroxyl (OH)",
+            "Superoxide (O2-)",
+            "Peroxide (H2O2)"
+        ],
+        correct: 1,
+        explain: "The hydroxyl radical (OH) is extremely reactive and is considered the more significant contributor to tissue damage among the free radicals formed from water."
+    },
+    {
+        q: "Which of the following cell types is classified as the MOST radiosensitive?",
+        opts: [
+            "Vegetative Intermitotic Cells",
+            "Reverting Post-mitotic Cells",
+            "Fixed Post-mitotic Cells",
+            "Multipotential Connective Tissue Cells"
+        ],
+        correct: 0,
+        explain: "Vegetative Intermitotic Cells (e.g., basal cells of oral mucosa) divide regularly, have a long mitotic future, and are the most radiosensitive."
+    },
+    {
+        q: "According to the organ radiosensitivity classification, which of the following has a HIGH radiosensitivity?",
+        opts: [
+            "Bone Marrow",
+            "Salivary Glands",
+            "Mature Erythrocytes",
+            "Muscle Cells"
+        ],
+        correct: 0,
+        explain: "Bone marrow, along with lymphoid organs, testes, and intestines, is classified as having high radiosensitivity. Salivary glands are intermediate, while mature erythrocytes and muscle are low."
+    },
+    {
+        q: "Radiation exposure occurring in which phase of the cell cycle leads to a 'Chromosome Aberration' affecting both arms of the chromosome?",
+        opts: [
+            "G1 or early S phase",
+            "G2 or late S phase",
+            "Mitosis",
+            "Anaphase"
+        ],
+        correct: 0,
+        explain: "Chromosome Aberration occurs when radiation exposure happens before DNA replication (G1 or early S), causing damage that is replicated and appears in both arms."
+    },
+    {
+        q: "What is the primary cause of long-term radiation damage to tissues and organs?",
+        opts: [
+            "Damage to the fine vasculature",
+            "Direct damage to nerve cells",
+            "Persistent inflammation",
+            "Depletion of stem cells"
+        ],
+        correct: 0,
+        explain: "Long-term effects depend primarily on the extent of damage to the fine vasculature, which leads to impaired nutrition, oxygenation, and waste removal, ultimately causing cell death."
+    },
+    {
+        q: "Radiation-induced mucositis in the oral cavity typically begins to manifest at what point during radiotherapy?",
+        opts: [
+            "Immediately after the first dose",
+            "At the end of the first week",
+            "At the end of the second week",
+            "Two months after treatment completion"
+        ],
+        correct: 2,
+        explain: "At the end of the second week of radiotherapy, cells in the basal layer begin to die, leading to the breakdown of the mucous membrane and the formation of a pseudomembrane."
+    },
+    {
+        q: "Which type of salivary gland acini are more radiosensitive?",
+        opts: [
+            "Serous acini",
+            "Mucous acini",
+            "Both are equally sensitive",
+            "Neither are sensitive"
+        ],
+        correct: 0,
+        explain: "Serous acini are more radiosensitive than mucous acini. This is why the parotid gland (predominantly serous) is more affected than submandibular or sublingual glands."
+    },
+    {
+        q: "Osteoradionecrosis is a serious complication of radiation to the bone, characterized by what state?",
+        opts: [
+            "Hypovascular, Hypoxic, and Hypocellular",
+            "Hypervascular, Hyperoxic, and Hypercellular",
+            "Increased osteoblastic activity",
+            "Rapid bone remodeling"
+        ],
+        correct: 0,
+        explain: "Radiation damages bone vasculature (hypovascular), reduces oxygen (hypoxic), and destroys osteoblasts and osteoclasts (hypocellular), leading to osteoradionecrosis."
+    },
+    {
+        q: "The initial interaction between ionizing radiation and tissues occurs within an extremely short timeframe, approximately:",
+        opts: [
+            "10^-13 seconds",
+            "10^-3 seconds",
+            "1 second",
+            "10 minutes"
+        ],
+        correct: 0,
+        explain: "The initial physical interaction of ionizing radiation with biologic matter is nearly instantaneous, taking place in about 10^-13 seconds."
+    },
+    {
+        q: "Which is a characteristic of Differentiating Intermitotic Cells?",
+        opts: [
+            "They divide less often and undergo some differentiation.",
+            "They are the most radiosensitive cell type.",
+            "They are highly specialized and incapable of division.",
+            "They divide regularly and have a long mitotic future."
+        ],
+        correct: 0,
+        explain: "Differentiating Intermitotic Cells (e.g., spermatocytes) are less radiosensitive than vegetative cells because they divide less frequently and differentiate between divisions."
+    },
+    {
+        q: "Damage to DNA by radiation can lead to which of the following outcomes?",
+        opts: [
+            "Mutation, Carcinogenesis, and Cell Death",
+            "Only immediate cell death",
+            "Increased protein synthesis",
+            "Strengthening of hydrogen bonds"
+        ],
+        correct: 0,
+        explain: "Radiation-induced DNA damage, such as base-pair changes or strand breaks, can result in mutation, cancer development (carcinogenesis), or cell death."
+    },
+    {
+        q: "What happens to the oral microbial flora as a result of radiation-induced xerostomia?",
+        opts: [
+            "It becomes more acidogenic.",
+            "It becomes more alkaline.",
+            "It is completely eradicated.",
+            "It is replaced by fungal flora only."
+        ],
+        correct: 0,
+        explain: "The reduction in saliva flow, pH, and buffering capacity causes the oral microbial flora to shift towards being more acid-producing (acidogenic), increasing caries risk."
+    },
+    {
+        q: "Which of the following is NOT a type of radiation caries described in the lecture?",
+        opts: [
+            "Pitting caries on the enamel surface.",
+            "Superficial buccal, occlusal, and incisal caries.",
+            "Cementum and dentine caries at the cervical region.",
+            "Dark pigmentation of the entire crown."
+        ],
+        correct: 0,
+        explain: "The lecture describes widespread superficial caries, cervical caries, and dark pigmentation. Pitting caries is a more typical pattern for non-radiation-related caries."
+    },
+    {
+        q: "A 'Chromatid Aberration' results from radiation exposure during which phase of the cell cycle?",
+        opts: [
+            "G2 or late S phase",
+            "G1 or early S phase",
+            "Prophase",
+            "Telophase"
+        ],
+        correct: 0,
+        explain: "If radiation exposure occurs after DNA has been synthesized (in G2 or late S), only one arm of the chromosome (a chromatid) is affected."
+    },
+    {
+        q: "What is the primary cause of mandibular dysfunction following radiotherapy?",
+        opts: [
+            "Fibrosis of the muscles of mastication",
+            "Direct damage to the temporomandibular joint",
+            "Ankylosis of the condyle",
+            "Neurological damage to the trigeminal nerve"
+        ],
+        correct: 0,
+        explain: "Musculoskeletal syndromes, including trismus and mandibular dysfunction, arise due to the development of fibrosis in the irradiated muscles."
+    },
+    {
+        q: "Which tissue in a developing tooth is most radiosensitive?",
+        opts: [
+            "Pulpal tissue",
+            "Enamel",
+            "Dentin",
+            "Cementum"
+        ],
+        correct: 0,
+        explain: "If radiation occurs before tooth development, the pulpal tissue, containing reverting post-mitotic cells, is sensitive and the tooth bud can be destroyed."
+    },
+    {
+        q: "A definitive damaging effect that occurs when exposed to a specific high dose of radiation is called a:",
+        opts: [
+            "Deterministic Effect",
+            "Stochastic Effect",
+            "Bystander Effect",
+            "Indirect Effect"
+        ],
+        correct: 0,
+        explain: "Deterministic effects are direct, dose-dependent consequences of high-dose radiation exposure, with a threshold below which they do not occur."
+    },
+    {
+        q: "Which cells are classified as 'Reverting Post-mitotic cells' and are relatively radioresistant?",
+        opts: [
+            "Acinar and ductal cells of salivary glands",
+            "Spermatogenic cells",
+            "Basal cells of oral mucous membrane",
+            "Erythroblastic series"
+        ],
+        correct: 0,
+        explain: "Reverting post-mitotic cells are specialized, divide infrequently, and are therefore radioresistant. Examples include cells of the salivary glands, liver, and kidney."
+    },
+    {
+        q: "What is the consequence of radiation damage to proteins?",
+        opts: [
+            "Changes in secondary and tertiary structures",
+            "Formation of new, stronger proteins",
+            "An increase in enzyme activity only",
+            "Breakage of peptide bonds"
+        ],
+        correct: 0,
+        explain: "Radiation can disrupt side chains, hydrogen bonds, and disulfide bonds, leading to changes in the secondary and tertiary structures of proteins, altering their function."
+    },
+    {
+        q: "How does radiation affect taste buds?",
+        opts: [
+            "Taste perception is lost by the 2nd-3rd week but can recover.",
+            "Taste is permanently and completely lost after a single dose.",
+            "Only the ability to taste sweet flavors is affected.",
+            "Taste perception becomes hypersensitive."
+        ],
+        correct: 0,
+        explain: "Taste buds are affected in the second to third week of therapy, leading to loss of taste (ageusia). This usually reverts to normal in 2-4 months, though very high doses can cause permanent damage."
+    },
+    {
+        q: "The direct effect of radiation involves:",
+        opts: [
+            "Direct ionization of a biologic molecule like DNA.",
+            "Formation of free radicals from water.",
+            "Communication between irradiated and non-irradiated cells.",
+            "Damage to the fine vasculature."
+        ],
+        correct: 0,
+        explain: "The direct effect occurs when the energy of a photon or secondary electron is deposited directly within and ionizes a critical biologic macromolecule."
+    },
+    {
+        q: "Which of the following organs has LOW radiosensitivity?",
+        opts: [
+            "Nerves",
+            "Intestine",
+            "Testes",
+            "Lymphoid tissue"
+        ],
+        correct: 0,
+        explain: "Nerves and muscle cells are composed of fixed post-mitotic cells and are highly radioresistant (low sensitivity). Intestines, testes, and lymphoid tissues are highly radiosensitive."
+    },
+    {
+        q: "Higher doses of radiation (30-50Gy) are required to cause significant damage to which part of the cell?",
+        opts: [
+            "Cytoplasmic organelles like mitochondria",
+            "The cell nucleus",
+            "The DNA within the nucleus",
+            "The cell membrane"
+        ],
+        correct: 0,
+        explain: "The nucleus and its DNA are the most radiosensitive components. Much higher doses are needed to directly damage cytoplasmic organelles like mitochondria."
+    },
+    {
+        q: "How long after radiotherapy should non-emergency tooth extractions ideally be postponed?",
+        opts: [
+            "At least 6 months",
+            "1 week",
+            "1 month",
+            "It can be done at any time"
+        ],
+        correct: 0,
+        explain: "To minimize the risk of osteoradionecrosis, it is desirable to postpone extractions for at least 6 months following radiotherapy to allow for some tissue recovery."
+    },
+    {
+        q: "Radiation before the initiation of tooth calcification can lead to:",
+        opts: [
+            "Destruction of the tooth bud",
+            "Only dwarfed teeth",
+            "Only retarded root development",
+            "Accelerated tooth eruption"
+        ],
+        correct: 0,
+        explain: "If radiation precedes calcification, the sensitive pulpal tissue can be destroyed, leading to failure of the tooth to form."
+    },
+    {
+        q: "Which treatment agent is a sialogogue used to stimulate saliva flow in patients with xerostomia?",
+        opts: [
+            "Pilocarpine",
+            "Chlorhexidine Gluconate",
+            "Benzocaine",
+            "Milk of Magnesia"
+        ],
+        correct: 0,
+        explain: "Pilocarpine is a sialogogue, a medication that stimulates the salivary glands to produce more saliva. The others are for hygiene, anesthesia, or coating."
+    },
+    {
+        q: "What change in irradiated bone leads to it being termed 'hypocellular'?",
+        opts: [
+            "Destruction of Osteoblasts and Osteoclasts",
+            "Loss of mineral content only",
+            "Replacement of marrow with vascular tissue",
+            "Fibrosis of the periosteum"
+        ],
+        correct: 0,
+        explain: "The term 'hypocellular' refers to the loss of cells. In irradiated bone, both bone-forming cells (osteoblasts) and bone-resorbing cells (osteoclasts) are destroyed."
+    }
 ];
 
 const tfs = [
-  {q:"Parotid gland is generally more radiosensitive than the submandibular gland.", answer:true, explain:"Serous‑predominant parotid shows greater sensitivity."},
-  {q:"Hydroxyl radical (OH•) is less important than hydrogen radical (H•) in tissue damage.", answer:false, explain:"OH• is the principal damaging species in indirect effects."},
-  {q:"Disruption of DNA base pairing can lead to mutation, carcinogenesis, and cell death.", answer:true, explain:"DNA damage is central to biological effects."},
-  {q:"The cytoplasm is more radiosensitive than nuclear DNA.", answer:false, explain:"DNA in the nucleus is the most radiosensitive critical target."},
-  {q:"Deterministic early effects arise after high doses and show a threshold.", answer:true, explain:"Severity increases with dose above threshold."},
-  {q:"Late effects from diagnostic‑level exposures are typically stochastic.", answer:true, explain:"Probability of effect increases with cumulative dose without a threshold."},
-  {q:"Fixed post‑mitotic cells divide readily after maturation.", answer:false, explain:"They are highly differentiated and do not divide."},
-  {q:"Osteoradionecrosis is preceded by hypovascular, hypoxic, and hypocellular changes in bone and marrow.", answer:true, explain:"Radiation damages vasculature and cellularity leading to ORN."},
-  {q:"Radiation increases salivary buffering capacity and pH, reducing caries risk.", answer:false, explain:"Buffering capacity and pH drop; flora becomes more acidogenic, increasing caries risk."}
+    {
+        q: "The 'Hit Theory' suggests that radiation damage is confined only to cells that are directly ionized.",
+        answer: true,
+        explain: "This is the core concept of the Hit Theory, which posits that damage only occurs in the cell directly 'hit' by ionization."
+    },
+    {
+        q: "Stochastic effects of radiation, such as cancer, have a clear dose threshold below which they do not occur.",
+        answer: false,
+        explain: "Stochastic effects are probabilistic and do not have a dose threshold. Deterministic effects are the ones with a dose threshold."
+    },
+    {
+        q: "Fixed post-mitotic cells, such as neurons, are the most radiosensitive cells in the body.",
+        answer: false,
+        explain: "Fixed post-mitotic cells are the most radioresistant because they are highly differentiated and do not divide. The most radiosensitive cells are those that divide regularly."
+    },
+    {
+        q: "The indirect effect of radiation accounts for approximately one-third of the biological damage.",
+        answer: false,
+        explain: "The indirect effect, via radiolysis of water, accounts for two-thirds of the biological damage. The direct effect accounts for one-third."
+    },
+    {
+        q: "Healing of radiation mucositis is typically complete within 2 weeks after therapy ends.",
+        answer: false,
+        explain: "Healing from mucositis typically completes by 2 months, not 2 weeks. The mucosa may remain thin and atrophic for much longer."
+    },
+    {
+        q: "In developing teeth, radiation exposure after the initiation of calcification can still cause malformations like dwarfed teeth.",
+        answer: true,
+        explain: "Even after calcification has begun, radiation can interfere with development, leading to malformations such as retarded root development or dwarfed teeth."
+    },
+    {
+        q: "The parotid gland is more radiosensitive than the submandibular gland.",
+        answer: true,
+        explain: "The parotid gland is predominantly serous acini, which are more radiosensitive than the mucous acini found in greater proportions in the submandibular and sublingual glands."
+    },
+    {
+        q: "The nucleus of a cell is more radioresistant than its cytoplasm.",
+        answer: false,
+        explain: "The nucleus, and specifically the DNA within it, is the most radiosensitive part of the cell. Higher doses are required to damage cytoplasmic organelles."
+    },
+    {
+        q: "Radiation caries is caused by direct radiation damage to the enamel structure, making it weaker.",
+        answer: false,
+        explain: "Radiation caries is an indirect effect caused by radiation-induced hyposalivation (xerostomia), which leads to a reduced pH, loss of buffering capacity, and a shift in oral flora."
+    }
 ];
 
 const saqs = [
-  { q: "Explain the radiation bystander effect in one or two sentences.", a: "Non‑irradiated cells exhibit biological effects because irradiated cells release mediators (e.g., ROS, cytokines) and signal via cell–cell or cell–matrix pathways. Thus, damage is not limited to directly ‘hit’ cells." },
-  { q: "List key sequelae of radiation‑induced oral mucositis.", a: `<table style='width:100%'><thead><tr><th>#</th><th>Sequela</th></tr></thead><tbody><tr><td>1</td><td>Severe pain and dysphagia</td></tr><tr><td>2</td><td>Local/systemic infection risk</td></tr><tr><td>3</td><td>Compromised oral/pharyngeal function</td></tr><tr><td>4</td><td>Oral bleeding</td></tr></tbody></table>` },
-  { q: "Compare chromatid versus chromosome aberrations after irradiation.", a: `<table style='width:100%'><thead><tr><th>#</th><th>Feature</th><th>Chromatid aberration</th><th>Chromosome aberration</th></tr></thead><tbody><tr><td>1</td><td>Timing of exposure</td><td>After DNA synthesis (G2 or mid/late S)</td><td>Before replication (G1 or early S)</td></tr><tr><td>2</td><td>Extent affected</td><td>One chromatid (one arm)</td><td>Both chromatids (both arms)</td></tr><tr><td>3</td><td>Repair propensity</td><td>Often repaired or go unrecognized</td><td>Frequently misrepaired → mutation</td></tr></tbody></table>` },
-  { q: "A 58‑year‑old on head & neck radiotherapy complains of persistent dry mouth, thick saliva, and difficulty forming a bolus. Suggest concise management steps.", a: "Reinforce oral hygiene; topical fluoride. Encourage frequent water sips and saliva substitutes (mouth‑wetting agents). Consider sialogogues such as pilocarpine (e.g., 15 mg/day divided) or bethanechol (75–200 mg/day) when not contraindicated." },
-  { q: "State three factors that increase cellular radiosensitivity.", a: `<table style='width:100%'><thead><tr><th>#</th><th>Factor</th></tr></thead><tbody><tr><td>1</td><td>High mitotic rate</td></tr><tr><td>2</td><td>Cells with future mitoses</td></tr><tr><td>3</td><td>Primitive/poorly differentiated state</td></tr></tbody></table>` },
-  { q: "Define deterministic and stochastic radiation effects briefly.", a: "Deterministic: tissue reactions with a dose threshold and severity increasing with dose (e.g., mucositis). Stochastic: no threshold; probability increases with dose (e.g., cancer)." }
+    {
+        q: "A 65-year-old patient is undergoing radiotherapy for a tumor in the tonsillar region. After three weeks, he reports severe oral pain, difficulty swallowing, and has a yellow pseudomembrane on his soft palate. What is this condition and why does it occur?",
+        a: "<b>Condition:</b> Radiation Mucositis.<br><b>Mechanism:</b> It occurs because radiation kills the rapidly dividing basal cells of the oral mucous membrane (vegetative intermitotic cells). Without replacement cells, the mucosa thins and breaks down, leading to inflammation, ulceration, and the formation of a pseudomembrane."
+    },
+    {
+        q: "List the 3 main factors that determine the radiosensitivity of a cell.",
+        a: "The three main factors are: <ol><li><b>Mitotic Rate:</b> Cells that divide more frequently are more sensitive.</li><li><b>Future Mitosis Potential:</b> Cells that will undergo many future divisions are more sensitive.</li><li><b>Cell Differentiation:</b> Primitive, undifferentiated cells are more sensitive than specialized, mature cells.</li></ol>"
+    },
+    {
+        q: "Compare and contrast the Direct and Indirect effects of radiation.",
+        a: "<b>Direct Effect:</b><br><ul><li>The energy of the photon directly ionizes a critical biologic molecule (e.g., DNA).</li><li>Accounts for about 1/3 of biological damage.</li></ul><b>Indirect Effect:</b><br><ul><li>The photon ionizes water molecules, creating highly reactive free radicals (H• and OH•).</li><li>These free radicals then diffuse and damage biologic molecules.</li><li>Accounts for about 2/3 of biological damage.</li></ul>"
+    },
+    {
+        q: "Explain the pathogenesis of Osteoradionecrosis in bone that has been irradiated.",
+        a: "Radiation damages the fine vasculature of the periosteum and cortical bone, leading to a state that is:<br><b>1. Hypovascular:</b> Reduced blood supply.<br><b>2. Hypoxic:</b> Reduced oxygen supply.<br><b>3. Hypocellular:</b> Destroys osteoblasts and osteoclasts.<br>This compromised, non-vital bone has a greatly reduced ability to heal and respond to trauma or infection, leading to necrosis."
+    },
+    {
+        q: "List three major effects of radiation on salivary glands and the resulting clinical condition.",
+        a: "Effects of radiation on salivary glands include:<br><ol><li><b>Paranchymal Degeneration:</b> Progressive fibrosis and loss of acinar cells.</li><li><b>Loss of Fine Vasculature:</b> Reduces the gland's functional capacity.</li><li><b>Inflammation:</b> Acute and chronic inflammation of the gland tissue.</li></ol>The primary clinical condition resulting from this damage is <b>Xerostomia</b> (dry mouth)."
+    },
+    {
+        q: "Describe the difference between a Chromosome Aberration and a Chromatid Aberration based on the timing of radiation exposure.",
+        a: "<b>1. Chromosome Aberration:</b> Occurs when radiation exposure happens <u>before DNA replication</u> (in the G1 or early S phase). The damage is then duplicated, so both arms of the chromosome are affected after mitosis.<br><br><b>2. Chromatid Aberration:</b> Occurs when radiation exposure happens <u>after DNA synthesis</u> (in the G2 or late S phase). The damage affects only one arm (one chromatid) of the chromosome."
+    }
 ];
 
 // ----------- State -----------
@@ -378,7 +733,7 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;margin-bottom:10px;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
@@ -401,6 +756,7 @@ saqs.forEach((item, idx)=>{
     state.saq[idx] = now;
     toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
     toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    toggleBtn.style.borderColor = now ? "rgba(34,197,94,.7)" : "rgba(255,255,255,0.18)";
     recalc();
   });
 
@@ -442,10 +798,14 @@ document.getElementById('resetAll').addEventListener('click', ()=>{
     b.removeAttribute('disabled');
   });
   document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
-  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
   document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
   document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
-  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{
+    b.textContent="I was correct";
+    b.style.outline="none";
+    b.style.borderColor = "rgba(255,255,255,0.18)";
+  });
 
   state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
   recalc();
@@ -455,3 +815,4 @@ recalc();
 </script>
 </body>
 </html>
+

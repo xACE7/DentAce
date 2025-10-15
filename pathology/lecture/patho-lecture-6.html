@@ -1,0 +1,824 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Two-Column Sections</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+  strong { color: #8b5cf6; font-weight: 800; }
+  ul { padding-left: 20px; margin: 0; }
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+  .lang-ar ul { padding-right: 20px; padding-left: 0; }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
+</style>
+</head>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 6</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِنْ لِسَانِي يَفْقَهُوا قَوْلِي</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Acute Inflammation</b></span>
+<span class="ar"><b>الموضوع: الالتهاب الحاد</b></span>
+</span>
+</div>
+<div class="sections">
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Introduction to Inflammation</span><span class="ar">مقدمة في الالتهاب</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Inflammation</strong> is defined as the protective, local response of blood vessels to injury. It is the body's first reaction aimed at eliminating infections and harmful agents, which also promotes immunity and tissue repair.</p>
+<p>Generally, inflammation is a beneficial process, not a disease. However, it can become harmful in the case of <strong>autoimmune diseases</strong>, where the body's immune system attacks its own tissues.</p>
+<p>The main causes of inflammation include:</p>
+<ul>
+<li><strong>Infections:</strong> Caused by bacteria, viruses, or other pathogens.</li>
+<li><strong>Chemical agents:</strong> Such as toxins or irritants like those from smoking.</li>
+<li><strong>Physical agents:</strong> Including heat, radiation, and physical trauma.</li>
+<li><strong>Immune reactions:</strong> Such as allergies and autoimmune responses.</li>
+<li><strong>Tissue necrosis and foreign bodies:</strong> Dead tissue or objects that don't belong in the body can also trigger inflammation.</li>
+</ul>
+</div>
+<div class="ar">
+<p>يُعرَّف <strong>الالتهاب</strong> بأنه استجابة وقائية وموضعية للأوعية الدموية للإصابة. وهو أول رد فعل للجسم يهدف إلى القضاء على العدوى والعوامل الضارة، مما يعزز أيضًا المناعة وإصلاح الأنسجة.</p>
+<p>بشكل عام، الالتهاب عملية مفيدة وليس مرضًا. ومع ذلك، يمكن أن يصبح ضارًا في حالة <strong>أمراض المناعة الذاتية</strong>، حيث يهاجم جهاز المناعة في الجسم أنسجته.</p>
+<p>تشمل الأسباب الرئيسية للالتهاب ما يلي:</p>
+<ul>
+<li><strong>العدوى:</strong> تسببها البكتيريا أو الفيروسات أو مسببات الأمراض الأخرى.</li>
+<li><strong>العوامل الكيميائية:</strong> مثل السموم أو المهيجات كتلك الناتجة عن التدخين.</li>
+<li><strong>العوامل الفيزيائية:</strong> تشمل الحرارة والإشعاع والصدمات الجسدية.</li>
+<li><strong>التفاعلات المناعية:</strong> مثل الحساسية والاستجابات المناعية الذاتية.</li>
+<li><strong>النخر النسيجي والأجسام الغريبة:</strong> يمكن للأنسجة الميتة أو الأجسام التي لا تنتمي إلى الجسم أن تثير الالتهاب أيضًا.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 4 of 21</span>
+<span class="ar">المصدر: صفحة 4 من 21</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Inflammation is a protective response, not a disease, except in autoimmune conditions where it becomes harmful.</div><div class="ar">الالتهاب هو استجابة وقائية وليس مرضاً، إلا في حالات أمراض المناعة الذاتية حيث يصبح ضاراً.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding inflammation is key because it's the body's primary mechanism for fighting off infection and healing from injury.</div><div class="ar">فهم الالتهاب أساسي لأنه الآلية الرئيسية للجسم لمكافحة العدوى والشفاء من الإصابات.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Causes of inflammation are diverse, ranging from a bacterial infection to a physical injury like a burn from sun heat or trauma.</div><div class="ar">أسباب الالتهاب متنوعة، تتراوح من عدوى بكتيرية إلى إصابة جسدية مثل حروق الشمس أو الصدمات.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Terminology and Types</span><span class="ar">المصطلحات والأنواع</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>To name an inflammation, the suffix <strong>~itis</strong> is typically added to the name of the affected organ. For example, appendicitis (appendix) and hepatitis (liver). An exception is pneumonia for lung inflammation.</p>
+<p>Specific examples include:</p>
+<ul>
+<li><strong>Stomatitis:</strong> Inflammation of the oral mucosa.</li>
+<li><strong>Sialadenitis:</strong> Inflammation of the salivary glands.</li>
+<li><strong>Keratitis:</strong> Inflammation of the cornea.</li>
+<li><strong>Panniculitis:</strong> Inflammation of adipose (fat) tissue.</li>
+<li><strong>Glossitis:</strong> Inflammation of the tongue.</li>
+</ul>
+<p>Inflammation is classified based on its duration:</p>
+<ul>
+<li><strong>Acute:</strong> Has a rapid onset and short duration.</li>
+<li><strong>Subacute:</strong> An intermediate stage, often seen in the heart, thyroid, or brain.</li>
+<li><strong>Chronic:</strong> Has a long duration and is persistent.</li>
+</ul>
+</div>
+<div class="ar">
+<p>لتسمية الالتهاب، تُضاف عادةً اللاحقة <strong>"itis~"</strong> إلى اسم العضو المصاب. على سبيل المثال، التهاب الزائدة الدودية (appendicitis) والتهاب الكبد (hepatitis). والاستثناء هو الالتهاب الرئوي (pneumonia) لالتهاب الرئة.</p>
+<p>أمثلة محددة تشمل:</p>
+<ul>
+<li><strong>التهاب الفم (Stomatitis):</strong> التهاب الغشاء المخاطي للفم.</li>
+<li><strong>التهاب الغدد اللعابية (Sialadenitis):</strong> التهاب الغدد اللعابية.</li>
+<li><strong>التهاب القرنية (Keratitis):</strong> التهاب قرنية العين.</li>
+<li><strong>التهاب السبلة الشحمية (Panniculitis):</strong> التهاب النسيج الدهني.</li>
+<li><strong>التهاب اللسان (Glossitis):</strong> التهاب اللسان.</li>
+</ul>
+<p>يُصنَّف الالتهاب بناءً على مدته:</p>
+<ul>
+<li><strong>حاد:</strong> يبدأ بسرعة ويدوم لفترة قصيرة.</li>
+<li><strong>تحت الحاد:</strong> مرحلة متوسطة، غالبًا ما تُرى في القلب أو الغدة الدرقية أو الدماغ.</li>
+<li><strong>مزمن:</strong> يستمر لفترة طويلة ويكون مستمرًا.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 5 of 21</span>
+<span class="ar">المصدر: صفحة 5 من 21</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember the suffix <strong>~itis</strong> means inflammation. It's a simple way to identify many inflammatory conditions.</div><div class="ar">تذكر أن اللاحقة <strong>"itis~"</strong> تعني التهاب. إنها طريقة بسيطة للتعرف على العديد من الحالات الالتهابية.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Appendicitis is inflammation of the appendix. Hepatitis is inflammation of the liver. However, pneumonia is inflammation of the lungs, which is an exception to the rule.</div><div class="ar">التهاب الزائدة الدودية هو التهاب في الزائدة الدودية. والتهاب الكبد هو التهاب في الكبد. ومع ذلك، فإن الالتهاب الرئوي هو التهاب في الرئتين، وهو استثناء للقاعدة.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Acute inflammation is rapid and short-lived, while chronic inflammation is long-lasting and persistent.</div><div class="ar">الالتهاب الحاد سريع وقصير الأمد، بينما الالتهاب المزمن طويل الأمد ومستمر.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Cardinal Signs of Acute Inflammation</span><span class="ar">العلامات الأساسية للالتهاب الحاد</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Acute inflammation is characterized by five classic signs, also known as cardinal signs. The first four were described by the Roman encyclopedist Celsus, and the fifth was added later by Rudolf Virchow.</p>
+<ul>
+<li><strong>Redness (Rubor):</strong> The area appears red due to increased blood flow.</li>
+<li><strong>Hotness (Calor):</strong> The inflamed area feels warm, also due to increased blood flow.</li>
+<li><strong>Swelling (Tumor):</strong> Caused by the accumulation of fluid in the tissues.</li>
+<li><strong>Pain (Dolor):</strong> Results from chemical mediators and increased pressure on nerve endings.</li>
+<li><strong>Loss of function (Functio laesa):</strong> The affected area may not function properly due to pain and swelling.</li>
+</ul>
+<p>These signs are clinically observable in conditions like dermatitis (skin inflammation) and arthritis (joint inflammation).</p>
+</div>
+<div class="ar">
+<p>يتميز الالتهاب الحاد بخمس علامات كلاسيكية، تُعرف أيضًا بالعلامات الأساسية. وصف الموسوعي الروماني سيلسوس الأربع الأولى، وأضاف رودولف فيرشو الخامسة لاحقًا.</p>
+<ul>
+<li><strong>الاحمرار (Rubor):</strong> تظهر المنطقة حمراء بسبب زيادة تدفق الدم.</li>
+<li><strong>الحرارة (Calor):</strong> تشعر المنطقة الملتهبة بالدفء، أيضًا بسبب زيادة تدفق الدم.</li>
+<li><strong>التورم (Tumor):</strong> يحدث بسبب تراكم السوائل في الأنسجة.</li>
+<li><strong>الألم (Dolor):</strong> ينتج عن الوسطاء الكيميائيين وزيادة الضغط على النهايات العصبية.</li>
+<li><strong>فقدان الوظيفة (Functio laesa):</strong> قد لا تعمل المنطقة المصابة بشكل صحيح بسبب الألم والتورم.</li>
+</ul>
+<p>هذه العلامات يمكن ملاحظتها سريريًا في حالات مثل التهاب الجلد (dermatitis) والتهاب المفاصل (arthritis).</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 6 of 21</span>
+<span class="ar">المصدر: صفحة 6 من 21</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember the five signs with their Latin names: <strong>Rubor</strong> (Redness), <strong>Calor</strong> (Hotness), <strong>Tumor</strong> (Swelling), <strong>Dolor</strong> (Pain), and <strong>Functio laesa</strong> (Loss of function).</div><div class="ar">تذكر العلامات الخمس بأسمائها اللاتينية: <strong>Rubor</strong> (احمرار)، <strong>Calor</strong> (حرارة)، <strong>Tumor</strong> (تورم)، <strong>Dolor</strong> (ألم)، و<strong>Functio laesa</strong> (فقدان الوظيفة).</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">A patient with arthritis exhibits all five cardinal signs: the joint is red, swollen, painful, warm to the touch, and has limited movement (loss of function).</div><div class="ar">يُظهر مريض التهاب المفاصل جميع العلامات الأساسية الخمس: المفصل أحمر، متورم، مؤلم، دافئ الملمس، وحركته محدودة (فقدان الوظيفة).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Celsus (a Roman writer) first described the four signs: redness, hotness, swelling, and pain. Virchow (a German physician) later added the fifth sign, loss of function.</div><div class="ar">سيلسوس (كاتب روماني) هو أول من وصف العلامات الأربع: الاحمرار، والحرارة، والتورم، والألم. وأضاف فيرشو (طبيب ألماني) لاحقًا العلامة الخامسة، وهي فقدان الوظيفة.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Mechanism: Vascular Events</span><span class="ar">الآلية: الأحداث الوعائية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>The cardinal signs of inflammation are caused by specific vascular events that happen in response to injury. There are two main changes:</p>
+<p>1. <strong>Changes in Vascular Diameter (Vasodilation):</strong></p>
+<ul>
+<li>Blood vessels widen, an effect primarily mediated by <strong>Nitric Oxide</strong> and <strong>Histamine</strong>.</li>
+<li>This leads to <strong>Hyperemia</strong>, which is an increased local blood flow.</li>
+<li>Hyperemia is directly responsible for the <strong>Redness</strong> and <strong>Hotness</strong> seen in inflammation.</li>
+</ul>
+<p>2. <strong>Increased Vascular Permeability:</strong></p>
+<ul>
+<li>The walls of blood vessels become more porous, allowing fluid to leak out. This is mediated by substances like <strong>Histamine</strong> and <strong>Serotonin</strong>.</li>
+<li>This leakage of protein-rich fluid is called <strong>Exudation</strong>.</li>
+<li>The accumulation of this exudate in the tissues causes <strong>Swelling</strong> (edema). A common example is the fluid-filled blister from a burn.</li>
+</ul>
+</div>
+<div class="ar">
+<p>تنتج العلامات الأساسية للالتهاب عن أحداث وعائية محددة تحدث استجابةً للإصابة. هناك تغييران رئيسيان:</p>
+<p>1. <strong>تغيرات في قطر الأوعية الدموية (توسع الأوعية - Vasodilation):</strong></p>
+<ul>
+<li>تتسع الأوعية الدموية، وهو تأثير يتم بوساطة <strong>أكسيد النيتريك</strong> و<strong>الهيستامين</strong> بشكل أساسي.</li>
+<li>يؤدي هذا إلى <strong>فرط الدم (Hyperemia)</strong>، وهو زيادة في تدفق الدم الموضعي.</li>
+<li>فرط الدم هو المسؤول المباشر عن <strong>الاحمرار</strong> و<strong>الحرارة</strong> اللذين يظهران في الالتهاب.</li>
+</ul>
+<p>2. <strong>زيادة نفاذية الأوعية الدموية:</strong></p>
+<ul>
+<li>تصبح جدران الأوعية الدموية أكثر مسامية، مما يسمح بتسرب السوائل. يتم هذا بوساطة مواد مثل <strong>الهيستامين</strong> و<strong>السيروتونين</strong>.</li>
+<li>يُطلق على تسرب هذا السائل الغني بالبروتين اسم <strong>النضحة (Exudation)</strong>.</li>
+<li>يؤدي تراكم هذه النضحة في الأنسجة إلى <strong>التورم</strong> (الوذمة). مثال شائع هو البثور المليئة بالسوائل الناتجة عن الحروق.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 7, 8 of 21</span>
+<span class="ar">المصدر: صفحات 7، 8 من 21</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Vasodilation increases blood flow to bring immune cells and proteins to the site of injury, which is why the area becomes red and hot.</div><div class="ar">يؤدي توسع الأوعية الدموية إلى زيادة تدفق الدم لجلب الخلايا المناعية والبروتينات إلى موقع الإصابة، وهذا هو سبب احمرار المنطقة وارتفاع درجة حرارتها.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Key mediators for vasodilation are <strong>Nitric Oxide</strong> and <strong>Histamine</strong>. Increased permeability is mainly caused by <strong>Histamine</strong> and <strong>Bradykinin</strong>.</div><div class="ar">الوسطاء الرئيسيون لتوسع الأوعية الدموية هم <strong>أكسيد النيتريك</strong> و<strong>الهيستامين</strong>. وتحدث زيادة النفاذية بشكل أساسي بسبب <strong>الهيستامين</strong> و<strong>البراديكينين</strong>.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">The leakage of fluid (exudate) from permeable vessels is what causes swelling. A skin blister is a perfect visual example of this process.</div><div class="ar">تسرب السوائل (النضحة) من الأوعية ذات النفاذية المتزايدة هو ما يسبب التورم. وتعتبر البثور الجلدية مثالًا مرئيًا مثاليًا لهذه العملية.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Mechanism: Cellular Events</span><span class="ar">الآلية: الأحداث الخلوية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Following the vascular changes, a sequence of cellular events occurs, involving the migration of white blood cells (leukocytes) from the bloodstream to the site of injury. The main cell type in acute inflammation is the <strong>Neutrophil</strong>, also known as a Polymorphonuclear Leukocyte (PMN).</p>
+<p>The steps of leukocyte migration are:</p>
+<ol>
+<li><strong>Margination and Adhesion:</strong> Leukocytes move to the edge of the blood vessel and stick to the vessel wall. This is mediated by molecules like <strong>Integrins</strong> and <strong>Cadherins</strong>.</li>
+<li><strong>Rolling:</strong> The leukocytes tumble along the vessel wall, a process mediated by <strong>Selectins</strong>.</li>
+<li><strong>Diapedesis (Transmigration):</strong> The leukocytes squeeze through the gaps between endothelial cells to exit the blood vessel.</li>
+<li><strong>Chemotaxis:</strong> The directed movement of leukocytes towards the site of injury, guided by chemical signals like <strong>Interleukins</strong>, C5a, and LTB-4.</li>
+</ol>
+<p>Once at the site, neutrophils are activated for microbial killing.</p>
+</div>
+<div class="ar">
+<p>بعد التغيرات الوعائية، تحدث سلسلة من الأحداث الخلوية، تشمل هجرة خلايا الدم البيضاء (الكريات البيضاء) من مجرى الدم إلى موقع الإصابة. النوع الرئيسي من الخلايا في الالتهاب الحاد هو <strong>العدلات (Neutrophil)</strong>، المعروفة أيضًا باسم الكريات البيضاء متعددة النوى (PMN).</p>
+<p>خطوات هجرة الكريات البيضاء هي:</p>
+<ol>
+<li><strong>التهميش والالتصاق:</strong> تتحرك الكريات البيضاء إلى حافة الوعاء الدموي وتلتصق بجداره. يتم هذا بوساطة جزيئات مثل <strong>الإنتغرينات</strong> و<strong>الكادهيرينات</strong>.</li>
+<li><strong>التدحرج:</strong> تتدحرج الكريات البيضاء على طول جدار الوعاء، وهي عملية تتم بوساطة <strong>السليكتينات</strong>.</li>
+<li><strong>الانفاذ (Diapedesis):</strong> تعصر الكريات البيضاء نفسها من خلال الفجوات بين الخلايا البطانية للخروج من الوعاء الدموي.</li>
+<li><strong>الانجذاب الكيميائي (Chemotaxis):</strong> الحركة الموجهة للكريات البيضاء نحو موقع الإصابة، مسترشدة بإشارات كيميائية مثل <strong>الإنترلوكينات</strong>، وC5a، وLTB-4.</li>
+</ol>
+<p>بمجرد وصولها إلى الموقع، يتم تنشيط العدلات لقتل الميكروبات.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 9, 10 of 21</span>
+<span class="ar">المصدر: صفحات 9، 10 من 21</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The main cell in acute inflammation is the <strong>Neutrophil</strong> (also called PMN). Its primary job is to kill bacteria and other microbes.</div><div class="ar">الخلية الرئيسية في الالتهاب الحاد هي <strong>العدلات (Neutrophil)</strong>، وتسمى أيضًا PMN. وظيفتها الأساسية هي قتل البكتيريا والميكروبات الأخرى.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember the steps in order: Margination → Rolling → Adhesion → Diapedesis → Chemotaxis. This is how immune cells get to the fight.</div><div class="ar">تذكر الخطوات بالترتيب: التهميش ← التدحرج ← الالتصاق ← الانفاذ ← الانجذاب الكيميائي. هكذا تصل الخلايا المناعية إلى موقع المعركة.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">In response to inflammation, the bone marrow produces more leukocytes. This results in an elevated white blood cell count, known as <strong>Leukocytosis</strong>, which is a key finding in blood tests.</div><div class="ar">استجابةً للالتهاب، ينتج نخاع العظم المزيد من الكريات البيضاء. ينتج عن ذلك ارتفاع عدد خلايا الدم البيضاء، المعروف باسم <strong>زيادة الكريات البيضاء (Leukocytosis)</strong>، وهو اكتشاف رئيسي في فحوصات الدم.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Phagocytosis and Chemical Mediators</span><span class="ar">البلعمة والوسطاء الكيميائيون</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Once leukocytes arrive at the site, they perform two key functions:</p>
+<ul>
+    <li><strong>Phagocytosis:</strong> The engulfment or "eating" of antigens (like bacteria) by WBCs. This process is enhanced by opsonins like C3b.</li>
+    <li><strong>Microbial Killing:</strong> Once engulfed, the bacteria are killed inside the cell using free radicals and enzymes like lysozymes.</li>
+</ul>
+<p>These processes are controlled by <strong>inflammatory mediators</strong>, which are chemical substances produced during inflammation. They can be cell-derived or plasma-derived (from the liver).</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>Mediator</th><th>Source</th><th>Action</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>Histamine/Serotonin</strong></td><td>Mast cells</td><td>↑ Permeability, Vasodilation</td></tr>
+<tr><td><strong>Prostaglandins</strong></td><td>WBCs, Platelets</td><td>Fever, Pain, Vasodilation</td></tr>
+<tr><td><strong>Interleukins</strong></td><td>All white cells</td><td>Chemotaxis</td></tr>
+<tr><td><strong>Nitric Oxide</strong></td><td>Endothelial cells</td><td>Vasodilation</td></tr>
+<tr><td><strong>Bradykinin</strong></td><td>Liver (plasma)</td><td>Pain, Muscle contraction</td></tr>
+<tr><td><strong>Leukotrienes (LTB-4)</strong></td><td>WBCs</td><td>Chemotaxis</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="ar">
+<p>بمجرد وصول الكريات البيضاء إلى الموقع، تؤدي وظيفتين رئيسيتين:</p>
+<ul>
+    <li><strong>البلعمة (Phagocytosis):</strong> ابتلاع أو "أكل" المستضدات (مثل البكتيريا) بواسطة خلايا الدم البيضاء. يتم تعزيز هذه العملية بواسطة الأبسونينات مثل C3b.</li>
+    <li><strong>قتل الميكروبات:</strong> بعد ابتلاعها، تُقتل البكتيريا داخل الخلية باستخدام الجذور الحرة والإنزيمات مثل الليزوزيمات.</li>
+</ul>
+<p>يتم التحكم في هذه العمليات بواسطة <strong>الوسطاء الالتهابيين</strong>، وهي مواد كيميائية تُنتج أثناء الالتهاب. يمكن أن تكون مشتقة من الخلايا أو من البلازما (من الكبد).</p>
+<div class="table-wrap">
+<table>
+<thead>
+<tr><th>الوسيط</th><th>المصدر</th><th>التأثير</th></tr>
+</thead>
+<tbody>
+<tr><td><strong>الهيستامين/السيروتونين</strong></td><td>الخلايا البدينة</td><td>↑ النفاذية، توسع الأوعية</td></tr>
+<tr><td><strong>البروستاجلاندينات</strong></td><td>خلايا الدم البيضاء، الصفائح الدموية</td><td>الحمى، الألم، توسع الأوعية</td></tr>
+<tr><td><strong>الإنترلوكينات</strong></td><td>جميع خلايا الدم البيضاء</td><td>الانجذاب الكيميائي</td></tr>
+<tr><td><strong>أكسيد النيتريك</strong></td><td>الخلايا البطانية</td><td>توسع الأوعية</td></tr>
+<tr><td><strong>البراديكينين</strong></td><td>الكبد (بلازما)</td><td>الألم، تقلص العضلات</td></tr>
+<tr><td><strong>اللوكوترينات (LTB-4)</strong></td><td>خلايا الدم البيضاء</td><td>الانجذاب الكيميائي</td></tr>
+</tbody>
+</table>
+</div>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 10, 11 of 21</span>
+<span class="ar">المصدر: صفحات 10، 11 من 21</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Mediators can be <strong>cell-derived</strong> (histamine, prostaglandins) or <strong>plasma-derived</strong> (kinins, complements), which are produced by the liver.</div><div class="ar">يمكن أن تكون الوسطاء <strong>مشتقة من الخلايا</strong> (الهيستامين، البروستاجلاندينات) أو <strong>مشتقة من البلازما</strong> (الكينينات، المتممات)، والتي ينتجها الكبد.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Aspirin is an effective anti-inflammatory drug because it inhibits the production of <strong>prostaglandins</strong>, thereby reducing both fever (anti-pyretic) and pain (analgesic).</div><div class="ar">الأسبرين دواء فعال مضاد للالتهابات لأنه يثبط إنتاج <strong>البروستاجلاندينات</strong>، وبالتالي يقلل من الحمى (خافض للحرارة) والألم (مسكن).</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The feeling of pain during inflammation, such as in acute pulpitis, is primarily caused by mediators like <strong>Prostaglandins</strong> and <strong>Bradykinin</strong> stimulating nerve endings.</div><div class="ar">الشعور بالألم أثناء الالتهاب، كما في التهاب لب السن الحاد، ينتج بشكل أساسي عن وسطاء مثل <strong>البروستاجلاندينات</strong> و<strong>البراديكينين</strong> التي تحفز النهايات العصبية.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Morphological Forms of Acute Inflammation</span><span class="ar">الأشكال المورفولوجية للالتهاب الحاد</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Acute inflammation can present in different forms, classified by the composition of the inflammatory exudate.</p>
+<ul>
+<li><strong>Serous:</strong> Characterized by a thin, watery exudate with few cells (e.g., fluid in a skin blister, early pulpitis).</li>
+<li><strong>Fibrinous:</strong> Contains high amounts of fibrin, often seen on the lining of body cavities (e.g., pericarditis).</li>
+<li><strong>Suppurative (Purulent):</strong> Contains yellow-green pus, which is rich in dead neutrophils and tissue debris. This is typical of infections with pyogenic (pus-forming) bacteria (e.g., a dental abscess).</li>
+<li><strong>Pseudomembranous:</strong> Forms a membrane-like layer of fibrin, inflammatory cells, and debris on a mucosal surface (e.g., acute necrotizing ulcerative gingivitis - ANUG).</li>
+<li><strong>Catarrhal:</strong> Involves a watery discharge with high mucus content, common in the nose and GIT (e.g., rhinitis/common cold).</li>
+<li><strong>Hemorrhagic:</strong> Occurs when there is severe vascular injury, leading to an exudate rich in red blood cells (e.g., hemorrhagic pancreatitis).</li>
+</ul>
+</div>
+<div class="ar">
+<p>يمكن أن يظهر الالتهاب الحاد بأشكال مختلفة، مصنفة حسب تكوين النضحة الالتهابية.</p>
+<ul>
+<li><strong>مصلي (Serous):</strong> يتميز بنضحة رقيقة ومائية مع عدد قليل من الخلايا (مثل السائل في بثور الجلد، التهاب لب السن المبكر).</li>
+<li><strong>ليفيني (Fibrinous):</strong> يحتوي على كميات كبيرة من الفبرين، وغالبًا ما يُرى على بطانة تجاويف الجسم (مثل التهاب التامور).</li>
+<li><strong>قيحي (Suppurative/Purulent):</strong> يحتوي على صديد أصفر-أخضر غني بالعدلات الميتة وحطام الأنسجة. هذا نموذجي للعدوى بالبكتيريا المقيحة (المكونة للصديد) (مثل خراج الأسنان).</li>
+<li><strong>الغشائي الكاذب (Pseudomembranous):</strong> يشكل طبقة شبيهة بالغشاء من الفبرين والخلايا الالتهابية والحطام على سطح مخاطي (مثل التهاب اللثة التقرحي الناخر الحاد - ANUG).</li>
+<li><strong>نزلي (Catarrhal):</strong> يتضمن إفرازات مائية مع محتوى عالٍ من المخاط، وهو شائع في الأنف والجهاز الهضمي (مثل التهاب الأنف/الزكام).</li>
+<li><strong>نزفي (Hemorrhagic):</strong> يحدث عند وجود إصابة وعائية شديدة، مما يؤدي إلى نضحة غنية بخلايا الدم الحمراء (مثل التهاب البنكرياس النزفي).</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 13, 15, 16, 17 of 21</span>
+<span class="ar">المصدر: صفحات 13، 15، 16، 17 من 21</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en"><strong>Serous:</strong> Skin blisters from a burn. <br><strong>Suppurative:</strong> A dental abscess. <br><strong>Catarrhal:</strong> A runny nose during a cold.</div><div class="ar"><strong>مصلي:</strong> بثور الجلد من الحروق. <br><strong>قيحي:</strong> خراج الأسنان. <br><strong>نزلي:</strong> سيلان الأنف أثناء الزكام.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">A dental abscess is a classic example of suppurative inflammation. It's a localized collection of pus, which consists mainly of dead neutrophils, bacteria, and necrotic debris.</div><div class="ar">خراج الأسنان هو مثال كلاسيكي للالتهاب القيحي. وهو عبارة عن تجمع موضعي للصديد، الذي يتكون بشكل أساسي من العدلات الميتة والبكتيريا والحطام النخري.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en"><strong>Pus</strong> is a specific type of exudate that is rich in neutrophils. An <strong>abscess</strong> is a confined collection of pus, often walled off by fibrous tissue.</div><div class="ar"><strong>الصديد</strong> هو نوع محدد من النضحة غني بالعدلات. أما <strong>الخراج</strong> فهو تجمع محصور من الصديد، غالبًا ما يكون محاطًا بنسيج ليفي.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Systemic Effects & Lab Findings</span><span class="ar">التأثيرات الجهازية والنتائج المخبرية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Acute inflammation doesn't just affect the local area; it can also have systemic (whole-body) effects.</p>
+<ul>
+<li><strong>Fever:</strong> Caused by pyrogens (fever-producing substances) like <strong>Prostaglandins (PGE2)</strong> and <strong>TNF</strong>, which act on the thermostatic center in the brain.</li>
+<li><strong>Leukocytosis:</strong> An increased number of white blood cells in the blood, as interleukins stimulate the bone marrow to produce more WBCs.</li>
+<li><strong>Anorexia:</strong> Loss of appetite, which is often caused by TNF acting on the appetite center.</li>
+<li><strong>Acute Phase Proteins:</strong> The liver is stimulated by interleukins and TNF to produce proteins like <strong>C-reactive protein (CRP)</strong> and ferritin.</li>
+</ul>
+<p>Key laboratory findings that support a diagnosis of acute inflammation include:</p>
+<ul>
+<li><strong>High WBC count:</strong> Above the normal range of 4,000-11,000/cmm.</li>
+<li><strong>High CRP:</strong> Above the normal level of 1-3 mg/L.</li>
+<li><strong>High ESR (Erythrocyte Sedimentation Rate):</strong> Above the normal 10-15 mm/hr.</li>
+</ul>
+</div>
+<div class="ar">
+<p>لا يؤثر الالتهاب الحاد على المنطقة الموضعية فقط؛ بل يمكن أن يكون له أيضًا تأثيرات جهازية (على الجسم بأكمله).</p>
+<ul>
+<li><strong>الحمى:</strong> تسببها البيروجينات (المواد المسببة للحمى) مثل <strong>البروستاجلاندينات (PGE2)</strong> و<strong>عامل نخر الورم (TNF)</strong>، والتي تؤثر على مركز تنظيم الحرارة في الدماغ.</li>
+<li><strong>زيادة الكريات البيضاء (Leukocytosis):</strong> زيادة عدد خلايا الدم البيضاء في الدم، حيث تحفز الإنترلوكينات نخاع العظم لإنتاج المزيد من خلايا الدم البيضاء.</li>
+<li><strong>فقدان الشهية (Anorexia):</strong> يحدث غالبًا بسبب تأثير عامل نخر الورم (TNF) على مركز الشهية.</li>
+<li><strong>بروتينات المرحلة الحادة:</strong> يتم تحفيز الكبد بواسطة الإنترلوكينات وعامل نخر الورم (TNF) لإنتاج بروتينات مثل <strong>بروتين سي التفاعلي (CRP)</strong> والفيريتين.</li>
+</ul>
+<p>النتائج المخبرية الرئيسية التي تدعم تشخيص الالتهاب الحاد تشمل:</p>
+<ul>
+<li><strong>ارتفاع عدد خلايا الدم البيضاء:</strong> فوق المعدل الطبيعي 4,000-11,000/سم مكعب.</li>
+<li><strong>ارتفاع بروتين سي التفاعلي (CRP):</strong> فوق المستوى الطبيعي 1-3 مجم/لتر.</li>
+<li><strong>ارتفاع سرعة تثفل الكريات الحمر (ESR):</strong> فوق المعدل الطبيعي 10-15 مم/ساعة.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 18 of 21</span>
+<span class="ar">المصدر: صفحة 18 من 21</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en"><strong>Fever</strong> isn't a random symptom; it's a regulated process. Pyrogens like PGE2 and TNF essentially "reset" the body's thermostat in the brain to a higher temperature.</div><div class="ar"><strong>الحمى</strong> ليست عرضًا عشوائيًا؛ إنها عملية منظمة. تقوم البيروجينات مثل PGE2 و TNF بشكل أساسي "بإعادة ضبط" ترموستات الجسم في الدماغ إلى درجة حرارة أعلى.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">When a patient has a suspected infection, doctors often order a blood test to check for high <strong>WBC</strong> count, high <strong>CRP</strong>, and high <strong>ESR</strong>. These are strong indicators of acute inflammation.</div><div class="ar">عندما يشتبه الطبيب في وجود عدوى لدى المريض، فإنه غالبًا ما يطلب فحص دم للتحقق من ارتفاع عدد <strong>خلايا الدم البيضاء (WBC)</strong>، وارتفاع <strong>بروتين سي التفاعلي (CRP)</strong>، وارتفاع <strong>سرعة التثفل (ESR)</strong>. هذه مؤشرات قوية على وجود التهاب حاد.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Systemic effects show that inflammation is not just a local event. The body mounts a coordinated, whole-system response to fight the threat.</div><div class="ar">تُظهر التأثيرات الجهازية أن الالتهاب ليس مجرد حدث محلي. فالجسم يقوم باستجابة منسقة على مستوى النظام بأكمله لمكافحة التهديد.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Summary</span><span class="ar">ملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Acute inflammation</strong> is the body's immediate, protective response to injury or infection. It is characterized by the five cardinal signs: <strong>redness, hotness, swelling, pain, and loss of function</strong>.</p>
+<p>The process is driven by two main events:</p>
+<ol>
+<li><strong>Vascular Changes:</strong> Vasodilation (increased blood flow) and increased vascular permeability (leaky vessels). These cause the redness, heat, and swelling.</li>
+<li><strong>Cellular Events:</strong> Migration of leukocytes, primarily <strong>neutrophils</strong>, from the blood to the site of injury to perform phagocytosis and kill microbes.</li>
+</ol>
+<p>These events are orchestrated by chemical mediators like histamine, prostaglandins, and interleukins. Inflammation has different morphological forms based on the exudate (serous, fibrinous, suppurative, etc.) and causes systemic effects like fever and elevated lab markers (WBC, CRP, ESR). The primary outcomes can be <strong>resolution (healing)</strong>, progression to <strong>chronic inflammation</strong>, or <strong>abscess formation</strong>.</p>
+</div>
+<div class="ar">
+<p><strong>الالتهاب الحاد</strong> هو استجابة الجسم الفورية والوقائية للإصابة أو العدوى. يتميز بالعلامات الأساسية الخمس: <strong>الاحمرار، والحرارة، والتورم، والألم، وفقدان الوظيفة</strong>.</p>
+<p>تتم العملية من خلال حدثين رئيسيين:</p>
+<ol>
+<li><strong>التغيرات الوعائية:</strong> توسع الأوعية (زيادة تدفق الدم) وزيادة نفاذية الأوعية (الأوعية المتسربة). تسبب هذه التغيرات الاحمرار والحرارة والتورم.</li>
+<li><strong>الأحداث الخلوية:</strong> هجرة الكريات البيضاء، وخاصة <strong>العدلات</strong>، من الدم إلى موقع الإصابة للقيام بالبلعمة وقتل الميكروبات.</li>
+</ol>
+<p>يتم تنظيم هذه الأحداث بواسطة وسطاء كيميائيين مثل الهيستامين والبروستاجلاندينات والإنترلوكينات. للالتهاب أشكال مورفولوجية مختلفة بناءً على النضحة (مصلي، ليفيني، قيحي، إلخ) ويسبب تأثيرات جهازية مثل الحمى وارتفاع المؤشرات المخبرية (WBC, CRP, ESR). النتائج الأساسية يمكن أن تكون <strong>الشفاء</strong>، أو التطور إلى <strong>التهاب مزمن</strong>، أو <strong>تكوين خراج</strong>.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 4, 6, 7, 9, 12, 18 of 21</span>
+<span class="ar">المصدر: صفحات 4، 6، 7، 9، 12، 18 من 21</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Acute inflammation can resolve completely, become a long-term chronic issue, or lead to a localized collection of pus known as an abscess.</div><div class="ar">يمكن أن يشفى الالتهاب الحاد تمامًا، أو يتحول إلى مشكلة مزمنة طويلة الأمد، أو يؤدي إلى تجمع موضعي للصديد يُعرف بالخراج.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think of acute inflammation as the body's "first responders." They arrive quickly (vascular events) and the specialized team (neutrophils) gets to work immediately (cellular events).</div><div class="ar">فكر في الالتهاب الحاد على أنه "المستجيبون الأوائل" في الجسم. يصلون بسرعة (الأحداث الوعائية) ويبدأ الفريق المتخصص (العدلات) في العمل على الفور (الأحداث الخلوية).</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding this entire process from signs to mediators to outcomes allows clinicians to diagnose conditions, interpret lab results, and choose appropriate treatments like anti-inflammatory drugs.</div><div class="ar">فهم هذه العملية بأكملها من العلامات إلى الوسطاء إلى النتائج يسمح للأطباء بتشخيص الحالات، وتفسير النتائج المخبرية، واختيار العلاجات المناسبة مثل الأدوية المضادة للالتهابات.</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Inflammation/التهاب</div><div class="content" hidden=""><div class="en">The body's protective local response of blood vessels to injury, aimed at eliminating harmful agents and promoting healing.</div><div class="ar">استجابة الجسم الوقائية الموضعية للأوعية الدموية للإصابة، بهدف القضاء على العوامل الضارة وتعزيز الشفاء.</div></div></div>
+<div class="card"><div class="head">Neutrophil/العدلات</div><div class="content" hidden=""><div class="en">The main type of white blood cell involved in acute inflammation. Its primary role is phagocytosis and killing of microbes.</div><div class="ar">النوع الرئيسي من خلايا الدم البيضاء المشاركة في الالتهاب الحاد. دورها الأساسي هو البلعمة وقتل الميكروبات.</div></div></div>
+<div class="card"><div class="head">Exudate/نضحة</div><div class="content" hidden=""><div class="en">Protein-rich fluid that leaks from blood vessels into tissues during inflammation due to increased vascular permeability.</div><div class="ar">سائل غني بالبروتين يتسرب من الأوعية الدموية إلى الأنسجة أثناء الالتهاب بسبب زيادة نفاذية الأوعية.</div></div></div>
+<div class="card"><div class="head">Pus/صديد</div><div class="content" hidden=""><div class="en">A type of purulent exudate rich in dead neutrophils, cellular debris, and often microbes.</div><div class="ar">نوع من النضحة القيحية غني بالعدلات الميتة والحطام الخلوي، وغالبًا ما يحتوي على ميكروبات.</div></div></div>
+<div class="card"><div class="head">Abscess/خراج</div><div class="content" hidden=""><div class="en">A localized collection of pus, usually contained within a fibrous wall.</div><div class="ar">تجمع موضعي للصديد، عادة ما يكون محاطًا بجدار ليفي.</div></div></div>
+<div class="card"><div class="head">Vasodilation/توسع الأوعية</div><div class="content" hidden=""><div class="en">The widening of blood vessels, which increases blood flow to an area and causes redness and heat.</div><div class="ar">اتساع الأوعية الدموية، مما يزيد من تدفق الدم إلى منطقة معينة ويسبب الاحمرار والحرارة.</div></div></div>
+<div class="card"><div class="head">Chemotaxis/الانجذاب الكيميائي</div><div class="content" hidden=""><div class="en">The directed movement of cells, like leukocytes, towards a chemical stimulus at the site of inflammation.</div><div class="ar">الحركة الموجهة للخلايا، مثل الكريات البيضاء، نحو منبه كيميائي في موقع الالتهاب.</div></div></div>
+<div class="card"><div class="head">Phagocytosis/البلعمة</div><div class="content" hidden=""><div class="en">The process by which a cell, like a neutrophil, engulfs and digests solid particles such as bacteria.</div><div class="ar">العملية التي تقوم بها خلية، مثل العدلات، بابتلاع وهضم الجسيمات الصلبة مثل البكتيريا.</div></div></div>
+<div class="card"><div class="head">CRP/بروتين سي التفاعلي</div><div class="content" hidden=""><div class="en">C-reactive protein. An acute-phase protein produced by the liver whose levels rise in response to inflammation. It is a key lab marker.</div><div class="ar">بروتين سي التفاعلي. وهو بروتين من بروتينات المرحلة الحادة ينتجه الكبد وترتفع مستوياته استجابة للالتهاب. وهو مؤشر مخبري رئيسي.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — What are the 5 cardinal signs of inflammation?</span><span class="ar">١ — ما هي العلامات الأساسية الخمس للالتهاب؟</span></div><div class="content" hidden=""><span class="en">A: Redness, Hotness, Swelling, Pain, and Loss of function.</span><span class="ar">ج: الاحمرار، الحرارة، التورم، الألم، وفقدان الوظيفة.</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — What is the main cell in acute inflammation?</span><span class="ar">٢ — ما هي الخلية الرئيسية في الالتهاب الحاد؟</span></div><div class="content" hidden=""><span class="en">A: The Neutrophil (also called a PMN).</span><span class="ar">ج: العدلات (وتسمى أيضًا PMN).</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — What two mediators are most responsible for pain?</span><span class="ar">٣ — ما هما الوسيطان الرئيسيان المسؤولان عن الألم؟</span></div><div class="content" hidden=""><span class="en">A: Prostaglandins and Bradykinin.</span><span class="ar">ج: البروستاجلاندينات والبراديكينين.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — What is the difference between pus and an abscess?</span><span class="ar">٤ — ما الفرق بين الصديد والخراج؟</span></div><div class="content" hidden=""><span class="en">A: Pus is the fluid itself (dead cells, debris). An abscess is a contained collection of that pus.</span><span class="ar">ج: الصديد هو السائل نفسه (خلايا ميتة، حطام). أما الخراج فهو تجمع محصور من ذلك الصديد.</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — What causes fever during inflammation?</span><span class="ar">٥ — ما الذي يسبب الحمى أثناء الالتهاب؟</span></div><div class="content" hidden=""><span class="en">A: Pyrogens like Prostaglandins (PGE2) and TNF acting on the brain's thermostat.</span><span class="ar">ج: البيروجينات مثل البروستاجلاندينات (PGE2) وعامل نخر الورم (TNF) التي تؤثر على منظم الحرارة في الدماغ.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — What are three key lab findings for acute inflammation?</span><span class="ar">٦ — ما هي ثلاث نتائج مخبرية رئيسية للالتهاب الحاد؟</span></div><div class="content" hidden=""><span class="en">A: High WBC count, high CRP, and high ESR.</span><span class="ar">ج: ارتفاع عدد خلايا الدم البيضاء، وارتفاع بروتين سي التفاعلي، وارتفاع سرعة التثفل.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — What is the first vascular event in acute inflammation?</span><span class="ar">٧ — ما هو أول حدث وعائي في الالتهاب الحاد؟</span></div><div class="content" hidden=""><span class="en">A: Vasodilation, which leads to increased blood flow (hyperemia).</span><span class="ar">ج: توسع الأوعية، مما يؤدي إلى زيادة تدفق الدم (فرط الدم).</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — What type of inflammation is a skin blister?</span><span class="ar">٨ — ما هو نوع الالتهاب الذي يمثله بثور الجلد؟</span></div><div class="content" hidden=""><span class="en">A: Serous inflammation, characterized by a thin, watery exudate.</span><span class="ar">ج: التهاب مصلي، يتميز بنضحة رقيقة ومائية.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What is the primary role of neutrophils?</span><span class="ar">٩ — ما هو الدور الأساسي للعدلات؟</span></div><div class="content" hidden=""><span class="en">A: Phagocytosis and the killing of bacteria and other microbes.</span><span class="ar">ج: البلعمة وقتل البكتيريا والميكروبات الأخرى.</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

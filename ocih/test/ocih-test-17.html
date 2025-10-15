@@ -92,7 +92,7 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
   /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
@@ -127,6 +127,9 @@
   }
   .score .part{color:var(--muted);font-weight:600}
   .score b{color:var(--text)}
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid var(--card-border); padding: 8px; text-align: left; }
+  th { background-color: var(--glass); }
 </style>
 </head>
 <body>
@@ -169,70 +172,433 @@
   </main>
 
 <script>
-// ----------- Data (from slides: Amelogenesis) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q:"Amelogenesis begins shortly after which process?", opts:["Dentinogenesis","Cementogenesis","Eruption","Root resorption"], correct:0, explain:"Begins shortly after dentinogenesis at advanced bell stage." },
-  { q:"At which tooth development stage does amelogenesis start?", opts:["Advanced bell stage","Bud stage","Cap stage","Early bell stage"], correct:0, explain:"Commences at the advanced bell stage." },
-  { q:"Which cells are responsible for amelogenesis?", opts:["Ameloblasts","Odontoblasts","Cementoblasts","Osteoclasts"], correct:0, explain:"Ameloblasts secrete enamel matrix and regulate maturation." },
-  { q:"What happens to the basement membrane between IEE and odontoblasts before amelogenesis?", opts:["Disintegrates","Thickens","Calcifies","Becomes fenestrated"], correct:0, explain:"It disintegrates after dentinogenesis and before amelogenesis." },
-  { q:"Correct order of tooth development is:", opts:["Bud → Cap → Early bell → Advanced bell","Cap → Bud → Advanced bell → Early bell","Bud → Early bell → Cap → Advanced bell","Advanced bell → Early bell → Cap → Bud"], correct:0, explain:"Slides list Bud, Cap, Early Bell, Advanced Bell." },
-  { q:"Major stages of amelogenesis are best described as:", opts:["Enamel matrix secretion then mineralization/maturation","Cementum deposition then mineralization","Dentin deposition then enamel resorption","Mineralization only"], correct:0, explain:"Two stages: matrix deposition and mineralization (maturation)." },
-  { q:"In the morphogenic phase of presecretory stage, which event occurs?", opts:["Crown shape is determined","Tomes' process forms","Rods become rodless","Ameloblast apoptosis peaks"], correct:0, explain:"Morphogenic phase determines crown shape." },
-  { q:"During differentiation phase, nuclei of IEE cells shift toward:", opts:["Stratum intermedium (proximally)","Dentin surface (distally)","Stellate reticulum","Cervical loop"], correct:0, explain:"Nuclei move proximally toward stratum intermedium as cells elongate." },
-  { q:"A hallmark of differentiation phase is increased:", opts:["Protein-synthesizing organelles","Lipid droplets","Lysosomal activity","Microtubule loss"], correct:0, explain:"Golgi, RER and mitochondria increase at distal end." },
-  { q:"The secretory stage begins after formation of:", opts:["First layer of dentin","Reduced enamel epithelium","Hertwig's root sheath","Secondary cementum"], correct:0, explain:"Ameloblasts enter secretory stage after first dentin is formed." },
-  { q:"The initial enamel layer formed against dentin is:", opts:["Rodless/prismless","Highly pigmented","Fluoride-rich striae","Enamel spindle"], correct:0, explain:"Initial layer lacks rods." },
-  { q:"Tomes’ processes develop when ameloblasts:", opts:["Migrate away from dentin surface","Undergo apoptosis","Form reduced enamel epithelium","Begin morphogenesis"], correct:0, explain:"After first enamel layer, ameloblasts move away and develop Tomes’ process." },
-  { q:"Tomes’ process gives forming enamel a characteristic:", opts:["Picket fence appearance","Glass-like smoothness","Checkerboard pattern","Lamellar cracks"], correct:0, explain:"Interdigitation yields picket fence appearance." },
-  { q:"Which statement about rod formation is correct?", opts:["Head is formed by 1 ameloblast; tail by 3","Both head and tail by 2","Tail by 1; head by 3","Each rod made by a single cell entirely"], correct:0, explain:"One ameloblast forms rod head; three contribute to tail (total 4)." },
-  { q:"The last formed surface layers of enamel at end of secretion are:", opts:["Rodless/prismless","Hyperpigmented","Cross-banded","Perikymata only"], correct:0, explain:"When Tomes' process is lost, final layers are rodless." },
-  { q:"During transitional stage, ameloblast height and organelles:", opts:["Decrease with many lysosomes appearing","Increase with new Tomes’ processes","Remain unchanged","Disappear entirely immediately"], correct:0, explain:"Height decreases; protein-synthesizing organelles reduced; many lysosomes noted." },
-  { q:"By the end of transitional stage, ameloblast population is reduced approximately:", opts:["50%","10%","80%","5%"], correct:0, explain:"Slides estimate ~50% reduction due to apoptosis." },
-  { q:"Primary events in maturation stage include:", opts:["Massive influx of Ca2+ and PO4 and selective loss of proteins/water","New dentin formation by ameloblasts","Formation of Tomes’ processes","Thickening of basement membrane"], correct:0, explain:"Maturation adds mineral and removes amelogenin and water." },
-  { q:"Ameloblasts modulate between two phenotypes during maturation:", opts:["Ruffled-ended and smooth-ended","Cuboidal and squamous","Ciliated and non-ciliated","Keratinized and non-keratinized"], correct:0, explain:"They alternate borders during maturation." },
-  { q:"Time spent as ruffled-ended vs smooth-ended ameloblasts is about:", opts:["80% ruffled, 20% smooth","50% each","20% ruffled, 80% smooth","100% ruffled"], correct:0, explain:"Cell spends ~80% ruffled, ~20% smooth." },
-  { q:"Function mainly associated with ruffled-ended ameloblasts:", opts:["Incorporation of inorganic material","Exit of protein fragments","Secretion of dentin matrix","Formation of enamel lamellae"], correct:0, explain:"Ruffled-ended correlate with mineral influx." },
-  { q:"Function mainly associated with smooth-ended ameloblasts:", opts:["Exit of protein fragments and water","Hydroxyapatite crystal growth only","Odontoblast induction","Formation of rod head"], correct:0, explain:"Smooth-ended relate to resorption/transport out." },
-  { q:"After enamel is fully matured, ameloblasts and remnants form:", opts:["Reduced enamel epithelium","Dental follicle","Nasmyth's membrane only","Hertwig’s root sheath"], correct:0, explain:"Protective stage forms reduced enamel epithelium covering enamel until eruption." },
-  { q:"Which component is selectively lost during enamel maturation?", opts:["Amelogenin","Type I collagen","Elastin","Keratin"], correct:0, explain:"Slides note loss of enamel proteins, mainly amelogenin, and water." },
-  { q:"Which sequence best summarizes enamel mineralization increments?", opts:["Initial enamel → calcification → further increments formed","Matrix resorption → rod fusion → prism loss","Cap to bud transition → calcification → eruption","Secondary dentin → enamel spindles → maturation"], correct:0, explain:"Summary figure shows progressive calcification as more increments form." },
-  { q:"Clinical feature most associated with amelogenesis imperfecta (AI):", opts:["Hypomineralized enamel with discoloration","Bulbous dentin and pulp stones","Cementum aplasia","Accessory roots"], correct:0, explain:"AI affects enamel structure/appearance; severe cases hypomineralized and discolored." },
-  { q:"During morphogenic phase, IEE cells are typically:", opts:["Cuboidal/low columnar with central nuclei","Tall columnar with distal nuclei","Flattened squamous","Pyramidal with apical cilia"], correct:0, explain:"They are cuboidal or low columnar with centrally placed nuclei; organelles proximal." },
-  { q:"Which statement about cell division during differentiation phase is true?", opts:["Cells can no longer divide","Cells enter rapid mitosis","Only tail-forming cells divide","Division resumes after maturation"], correct:0, explain:"Ameloblasts lose mitotic ability once differentiated." },
-  { q:"Rods and interrods are formed from:", opts:["Tomes’ processes of ameloblasts","Odontoblastic processes","Hertwig’s root sheath","Reduced enamel epithelium"], correct:0, explain:"Both derive from Tomes’ process secretion." },
-  { q:"The structural unit each ameloblast definitively forms is:", opts:["Rod head","Rod tail","Entire rod","Interrod only"], correct:0, explain:"Head formed by single ameloblast; tail involves contributions of three others." }
+  {
+    q: "What is the primary definition of Amelogenesis?",
+    opts: [
+      "The process of enamel formation.",
+      "The process of dentin formation.",
+      "The process of cementum formation.",
+      "The process of tooth eruption."
+    ],
+    correct: 0,
+    explain: "Amelogenesis is specifically the biological process of forming enamel, the hard outer layer of the tooth crown."
+  },
+  {
+    q: "Amelogenesis begins shortly after which other developmental process?",
+    opts: [
+      "Cementogenesis",
+      "Gingival development",
+      "Dentinogenesis",
+      "Root formation"
+    ],
+    correct: 2,
+    explain: "Amelogenesis starts after the first layer of dentin has been formed by odontoblasts during dentinogenesis."
+  },
+  {
+    q: "Which cells are directly responsible for the process of amelogenesis?",
+    opts: [
+      "Odontoblasts",
+      "Ameloblasts",
+      "Cementoblasts",
+      "Fibroblasts"
+    ],
+    correct: 1,
+    explain: "Ameloblasts are the specialized cells that differentiate from the inner enamel epithelium to secrete enamel matrix."
+  },
+  {
+    q: "What are the two major stages of amelogenesis?",
+    opts: [
+      "Secretion and Maturation",
+      "Bud and Cap stage",
+      "Proliferation and Differentiation",
+      "Matrix deposition and Root formation"
+    ],
+    correct: 0,
+    explain: "The entire process of amelogenesis is divided into the secretory (or formative) stage and the maturation stage."
+  },
+  {
+    q: "How many stages are typically described in the life cycle of an ameloblast?",
+    opts: ["Two", "Three", "Four", "Five"],
+    correct: 3,
+    explain: "The life cycle of an ameloblast is divided into five functional stages: Presecretory, Secretory, Transitional, Maturation, and Protective."
+  },
+  {
+    q: "During which phase of the ameloblast life cycle is the shape of the tooth crown determined?",
+    opts: [
+      "Differentiation Phase",
+      "Secretory Stage",
+      "Morphogenetic Phase",
+      "Maturation Stage"
+    ],
+    correct: 2,
+    explain: "The Morphogenetic phase, part of the presecretory stage, is when the inner enamel epithelium cells define the shape of the crown."
+  },
+  {
+    q: "What is a key event during the differentiation phase of ameloblasts?",
+    opts: [
+      "The cells become cuboidal.",
+      "The cells begin to rapidly divide.",
+      "The cells elongate and their nuclei shift proximally.",
+      "The cells form the final enamel layer."
+    ],
+    correct: 2,
+    explain: "During differentiation, the IEE cells elongate into tall columnar cells, and their nuclei move towards the stratum intermedium (proximally)."
+  },
+  {
+    q: "The secretory stage of amelogenesis begins immediately after what event?",
+    opts: [
+      "The disintegration of the dental lamina.",
+      "The formation of the first layer of dentin.",
+      "The completion of crown formation.",
+      "The start of tooth eruption."
+    ],
+    correct: 1,
+    explain: "Ameloblasts do not begin secreting enamel matrix until the adjacent odontoblasts have laid down the initial layer of dentin."
+  },
+  {
+    q: "What is the Tomes' process?",
+    opts: [
+      "A gene that regulates enamel formation.",
+      "A blood vessel supplying the ameloblasts.",
+      "A conical projection at the distal end of a secretory ameloblast.",
+      "The nucleus of the ameloblast."
+    ],
+    correct: 2,
+    explain: "The Tomes' process is a distinct, shovel-shaped cytoplasmic extension of the secretory ameloblast that forms enamel rods."
+  },
+  {
+    q: "What is the primary function of the Tomes' process?",
+    opts: [
+      "To provide nutrients to the cell.",
+      "To anchor the cell to the stratum intermedium.",
+      "To form both enamel rods and inter-rod enamel.",
+      "To absorb excess water from the matrix."
+    ],
+    correct: 2,
+    explain: "The Tomes' process has two secretory surfaces, one for forming the inter-rod substance and another for forming the enamel rod itself."
+  },
+  {
+    q: "The very first layer of enamel deposited against the dentin is characterized as being:",
+    opts: [
+      "Hypo-mineralized",
+      "Rodless or prismless",
+      "Rich in collagen",
+      "The last layer to mature"
+    ],
+    correct: 1,
+    explain: "The initial layer of enamel is formed before the Tomes' processes are fully developed, resulting in a layer that lacks the typical rod structure."
+  },
+  {
+    q: "How many ameloblasts are involved in the formation of a single keyhole-shaped enamel rod (head and tail)?",
+    opts: ["One", "Two", "Three", "Four"],
+    correct: 3,
+    explain: "One ameloblast forms the head of a rod, while parts of three other ameloblasts contribute to form its tail, meaning four cells contribute in total."
+  },
+  {
+    q: "What major cellular event characterizes the transitional stage of ameloblasts?",
+    opts: [
+      "A significant increase in cell height and volume.",
+      "Development of a ruffled border.",
+      "Programmed cell death (apoptosis) of many ameloblasts.",
+      "A rapid increase in protein synthesis."
+    ],
+    correct: 2,
+    explain: "During the brief transitional stage, the ameloblast population is reduced by up to 50% through apoptosis as they prepare for the maturation stage."
+  },
+  {
+    q: "What occurs during the maturation stage of amelogenesis?",
+    opts: [
+      "Initial matrix deposition.",
+      "Determination of crown shape.",
+      "Selective removal of proteins and water, with a massive influx of minerals.",
+      "Formation of the Tomes' process."
+    ],
+    correct: 2,
+    explain: "The maturation stage is defined by the hardening of the enamel through the removal of organic matrix and water, and the growth of hydroxyapatite crystals."
+  },
+  {
+    q: "What does the term 'modulation' refer to in maturative ameloblasts?",
+    opts: [
+      "The change in enamel rod direction.",
+      "The cyclic change between ruffled-ended and smooth-ended phenotypes.",
+      "The regulation of gene expression.",
+      "The movement of ameloblasts away from the dentin."
+    ],
+    correct: 1,
+    explain: "Modulation is the process where ameloblasts cycle between having a ruffled border and a smooth border at their distal end to perform different functions."
+  },
+  {
+    q: "Ruffled-ended ameloblasts are primarily responsible for:",
+    opts: [
+      "Removing water and protein fragments from the enamel matrix.",
+      "Pumping calcium and phosphate ions into the enamel matrix.",
+      "Secreting the initial prismless enamel layer.",
+      "Forming the reduced enamel epithelium."
+    ],
+    correct: 1,
+    explain: "The ruffled border increases the surface area for pumping large amounts of calcium and phosphate into the matrix, promoting crystal growth."
+  },
+  {
+    q: "What is the primary role of smooth-ended ameloblasts during maturation?",
+    opts: [
+      "To secrete enamel proteins.",
+      "To form inter-rod enamel.",
+      "To allow the exit of protein fragments and water from the matrix.",
+      "To initiate mineralization."
+    ],
+    correct: 2,
+    explain: "The smooth-ended phenotype has 'leaky' distal junctions, which facilitates the removal of degraded proteins and water from the maturing enamel."
+  },
+  {
+    q: "The reduced enamel epithelium is formed during which final stage?",
+    opts: [
+      "Secretory stage",
+      "Transitional stage",
+      "Maturation stage",
+      "Protective stage"
+    ],
+    correct: 3,
+    explain: "In the protective stage, ameloblasts de-differentiate and, along with other enamel organ remnants, form a protective layer over the completed enamel."
+  },
+  {
+    q: "Amelogenesis Imperfecta is a condition that is:",
+    opts: [
+      "Caused by bacterial infection.",
+      "Genomic in origin, affecting enamel structure.",
+      "A result of excessive fluoride intake.",
+      "Related to poor diet during childhood."
+    ],
+    correct: 1,
+    explain: "Amelogenesis Imperfecta refers to a group of inherited genetic disorders that cause defects in the structure and appearance of enamel."
+  },
+  {
+    q: "During the differentiation phase, where do the Golgi complexes primarily shift within the ameloblast?",
+    opts: [
+      "Proximally, towards the stratum intermedium.",
+      "Distally, towards the dental papilla.",
+      "Laterally, between adjacent cells.",
+      "They remain centrally located."
+    ],
+    correct: 1,
+    explain: "The cell becomes polarized, with protein-synthesizing organelles like the Golgi complex moving to the distal end to prepare for secretion towards the future dentin."
+  },
+  {
+    q: "What gives the forming enamel its 'picket fence' appearance under a microscope?",
+    opts: [
+      "The arrangement of enamel rods.",
+      "The interdigitation of Tomes' processes with the enamel surface.",
+      "Incremental lines of von Ebner.",
+      "The scalloped dentinoenamel junction."
+    ],
+    correct: 1,
+    explain: "The cone-shaped Tomes' processes fit into the enamel surface, creating a distinctive picket fence or saw-toothed look."
+  },
+  {
+    q: "The final layers of enamel formed are rodless because:",
+    opts: [
+      "The ameloblasts run out of matrix proteins.",
+      "There is a rapid influx of calcium.",
+      "The Tomes' processes are lost or retracted.",
+      "The cells undergo apoptosis."
+    ],
+    correct: 2,
+    explain: "As the secretory stage ends, ameloblasts lose their Tomes' processes, resulting in a final, smooth layer of prismless enamel on the surface."
+  },
+  {
+    q: "Which specific enamel protein is predominantly removed during the maturation stage?",
+    opts: ["Collagen", "Keratin", "Elastin", "Amelogenin"],
+    correct: 3,
+    explain: "Amelogenin is the main protein in the enamel matrix, and its selective degradation and removal are crucial for proper mineralization and hardening."
+  },
+  {
+    q: "An ameloblast spends approximately 80% of its time during the maturation stage in which form?",
+    opts: [
+      "Smooth-ended",
+      "Cuboidal",
+      "Ruffled-ended",
+      "Transitional"
+    ],
+    correct: 2,
+    explain: "The majority of the maturation cycle is spent in the ruffled-ended phase, which is dedicated to pumping minerals into the enamel matrix."
+  },
+  {
+    q: "The junctional complexes between ruffled-ended ameloblasts are described as:",
+    opts: [
+      "Tight proximally and tight distally.",
+      "Leaky proximally and tight distally.",
+      "Tight proximally and leaky distally.",
+      "Leaky proximally and leaky distally."
+    ],
+    correct: 2,
+    explain: "This arrangement prevents backflow from the enamel matrix while allowing passage of materials from the stratum intermedium."
+  },
+  {
+    q: "What is the clinical consequence of the hypo-mineralization seen in severe Amelogenesis Imperfecta?",
+    opts: [
+      "The enamel is harder than normal.",
+      "The teeth appear whiter.",
+      "The enamel is soft and easily fractures or wears away.",
+      "The teeth are resistant to decay."
+    ],
+    correct: 2,
+    explain: "Hypo-mineralization means the enamel lacks the necessary hardness, making it prone to damage, discoloration, and rapid wear."
+  },
+  {
+    q: "Which developmental stage of the tooth germ is primarily associated with the initiation of amelogenesis?",
+    opts: ["Bud Stage", "Cap Stage", "Early Bell Stage", "Advanced Bell Stage"],
+    correct: 3,
+    explain: "Amelogenesis begins at the advanced bell stage, following the differentiation of odontoblasts and the start of dentinogenesis."
+  },
+  {
+    q: "Before ameloblasts differentiate, they are known as:",
+    opts: [
+      "Outer Enamel Epithelium (OEE) cells.",
+      "Inner Enamel Epithelium (IEE) cells.",
+      "Stellate Reticulum cells.",
+      "Dental Papilla cells."
+    ],
+    correct: 1,
+    explain: "The cells of the Inner Enamel Epithelium (IEE) are the precursors that differentiate into ameloblasts."
+  },
+  {
+    q: "What structure must disintegrate before amelogenesis can begin?",
+    opts: [
+      "The dental lamina.",
+      "The stratum intermedium.",
+      "The basement membrane between IEE and odontoblasts.",
+      "The stellate reticulum."
+    ],
+    correct: 2,
+    explain: "The basement membrane separating the enamel organ from the dental papilla breaks down, allowing direct contact between the newly formed dentin and the pre-ameloblasts."
+  },
+  {
+    q: "The proximal end of the ameloblast is oriented towards the:",
+    opts: [
+      "Dental papilla",
+      "Dentin-enamel junction",
+      "Stratum intermedium",
+      "Oral cavity"
+    ],
+    correct: 2,
+    explain: "The proximal end is the base of the cell, which faces its nutrient source, the stratum intermedium. The distal end faces the forming enamel."
+  }
 ];
 
 const tfs = [
-  { q:"Amelogenesis is the process of enamel formation.", answer:true, explain:"Definition provided on slides." },
-  { q:"The basement membrane between IEE and odontoblasts thickens during amelogenesis.", answer:false, explain:"It disintegrates before amelogenesis begins." },
-  { q:"Initial enamel formed against dentin lacks enamel rods.", answer:true, explain:"First layer is rodless/prismless." },
-  { q:"Tomes’ processes are present throughout maturation stage.", answer:false, explain:"They are characteristic of secretory stage and are lost at its end." },
-  { q:"During transition, many lysosomes and autophagic vacuoles appear.", answer:true, explain:"Slides explicitly note this." },
-  { q:"Ruffled-ended ameloblasts are mainly associated with removal of protein fragments.", answer:false, explain:"That is mainly smooth-ended; ruffled-ended incorporate mineral." },
-  { q:"Reduced enamel epithelium remains on enamel surface until eruption.", answer:true, explain:"Protective stage description." },
-  { q:"Amelogenesis imperfecta primarily affects dentin structure.", answer:false, explain:"AI affects enamel structure and appearance." },
-  { q:"During differentiation, ameloblast nuclei shift proximally toward the stratum intermedium.", answer:true, explain:"Key microscopic feature." }
+  {
+    q: "Amelogenesis begins before dentinogenesis is initiated.",
+    answer: false,
+    explain: "Dentinogenesis must begin first; the presence of the initial dentin layer is the trigger for ameloblasts to start secreting enamel."
+  },
+  {
+    q: "Ameloblasts are derived from the Inner Enamel Epithelium (IEE).",
+    answer: true,
+    explain: "The cells of the IEE differentiate to become pre-ameloblasts and then mature, secretory ameloblasts."
+  },
+  {
+    q: "The first layer of enamel formed is rich in well-defined enamel rods.",
+    answer: false,
+    explain: "The initial layer of enamel is prismless (rodless) because it is secreted before the Tomes' processes are fully formed."
+  },
+  {
+    q: "Tomes' processes are present on the ameloblast throughout the entire secretory stage.",
+    answer: false,
+    explain: "Tomes' processes develop after the initial rodless enamel is formed and are lost just before the final rodless layer is secreted."
+  },
+  {
+    q: "A single ameloblast is solely responsible for forming one complete enamel rod.",
+    answer: false,
+    explain: "While one ameloblast forms the rod head, portions of three other ameloblasts contribute to the tail, making it a collaborative effort of four cells."
+  },
+  {
+    q: "The total population of ameloblasts significantly increases during the transitional stage.",
+    answer: false,
+    explain: "The population decreases by up to 50% through programmed cell death (apoptosis) during the transitional stage."
+  },
+  {
+    q: "Smooth-ended ameloblasts are primarily responsible for pumping minerals into the enamel matrix.",
+    answer: false,
+    explain: "Ruffled-ended ameloblasts pump minerals in, while smooth-ended ameloblasts allow water and protein fragments to exit."
+  },
+  {
+    q: "The reduced enamel epithelium forms a protective covering over the enamel until the tooth erupts.",
+    answer: true,
+    explain: "This layer, formed in the protective stage, shields the fully formed enamel surface prior to and during tooth eruption."
+  },
+  {
+    q: "Amelogenesis Imperfecta is a dental condition caused by poor oral hygiene.",
+    answer: false,
+    explain: "It is a group of genetic conditions that affect the structure and clinical appearance of enamel due to mutations in genes involved in amelogenesis."
+  }
 ];
 
 const saqs = [
-  // 1 Direct answer
-  { q: "Define amelogenesis.", a: "Process of enamel formation by ameloblasts." },
-  // 2 List/enumeration (3 or more)
-  { q: "List the stages of tooth development in order.", a: "1) Bud  2) Cap  3) Early bell  4) Advanced bell" },
-  // 3 Comparison (numbered table)
-  { q: "Compare ruffled-ended vs smooth-ended ameloblasts during maturation.", a: `<table style='width:100%;border-collapse:collapse'>
-      <tr><th style='text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)'>#</th><th style='text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)'>Ruffled-ended</th><th style='text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)'>Smooth-ended</th></tr>
-      <tr><td>1.</td><td>~80% of time</td><td>~20% of time</td></tr>
-      <tr><td>2.</td><td>Incorporate Ca/PO4 (mineral influx)</td><td>Exit protein fragments & water</td></tr>
-      <tr><td>3.</td><td>Ruffled distal border with microvilli</td><td>Straight (even) distal ends</td></tr>
-    </table>` },
-  // 4 Case-based scenario
-  { q: "A child presents with generalized enamel discoloration and easily worn surfaces; radiographs suggest hypo-mineralized enamel. What condition is most likely?", a: "Amelogenesis imperfecta." },
-  // 5 Direct/detail
-  { q: "State what happens to the basement membrane between IEE and odontoblasts before amelogenesis.", a: "It disintegrates after dentinogenesis and before amelogenesis." },
-  // 6 List/enumeration
-  { q: "Enumerate the functional stages of ameloblast life cycle.", a: "1) Presecretory (morphogenic & differentiation)  2) Secretory  3) Transitional  4) Maturation  5) Protective" }
+  {
+    q: "Describe the key cellular changes that Inner Enamel Epithelium (IEE) cells undergo during the differentiation phase to become ameloblasts.",
+    a: "During the differentiation phase, the cuboidal IEE cells elongate to become tall columnar cells. The nucleus shifts proximally (towards the stratum intermedium), and the cell becomes polarized. Protein-synthesizing organelles, such as the Golgi complex and rough endoplasmic reticulum, increase in volume and migrate to the distal end of the cell in preparation for secreting enamel matrix."
+  },
+  {
+    q: "List the five stages in the life cycle of an ameloblast.",
+    a: `
+      <ol>
+        <li>Presecretory stage (containing the Morphogenetic and Differentiation phases)</li>
+        <li>Secretory (Formative) stage</li>
+        <li>Transitional phase</li>
+        <li>Maturation stage</li>
+        <li>Protective stage</li>
+      </ol>
+    `
+  },
+  {
+    q: "Compare and contrast the structure and primary function of ruffled-ended and smooth-ended ameloblasts in a numbered table.",
+    a: `
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Ruffled-ended Ameloblast</th>
+            <th>Smooth-ended Ameloblast</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Structure</b></td>
+            <td>Has numerous microvilli at its distal end, forming a ruffled border. Has tight distal junctions.</td>
+            <td>Has a straight or even distal end with no microvilli. Has leaky distal junctions.</td>
+          </tr>
+          <tr>
+            <td><b>Primary Function</b></td>
+            <td>To pump large quantities of calcium and phosphate ions <b>into</b> the enamel matrix for mineralization.</td>
+            <td>To allow the removal of water and degraded protein fragments <b>out of</b> the enamel matrix.</td>
+          </tr>
+           <tr>
+            <td><b>Prevalence</b></td>
+            <td>Spends ~80% of the maturation cycle in this form.</td>
+            <td>Spends ~20% of the maturation cycle in this form.</td>
+          </tr>
+        </tbody>
+      </table>
+    `
+  },
+  {
+    q: "What is the Tomes' process, and what is its primary function in enamel formation?",
+    a: "The Tomes' process is a specialized conical or shovel-shaped projection that develops at the distal end of an ameloblast during the secretory stage. Its primary function is to secrete the enamel matrix in a structured way, forming both the enamel rods and the surrounding inter-rod enamel. This organized secretion creates the distinct, highly organized prismatic structure of mature enamel."
+  },
+  {
+    q: "A 10-year-old patient presents with teeth that are discolored (yellowish-brown), sensitive, and show signs of rapid wear. The enamel appears thin and chips away easily. Based on the lecture, what is the most likely diagnosis for this genetic condition, and what fundamental process of enamel formation has been disrupted?",
+    a: "The most likely diagnosis is <b>Amelogenesis Imperfecta (AI)</b>. This condition is caused by a genetic defect that disrupts amelogenesis. Specifically, the clinical signs of thin, soft, and easily fractured enamel point to a failure in the <b>maturation stage</b>, resulting in hypo-mineralized enamel that lacks the necessary hardness and structural integrity."
+  },
+  {
+    q: "What are the two main stages of amelogenesis, and briefly, what happens during each?",
+    a: `
+      <ol>
+        <li><b>Secretion (or Formative Stage):</b> Ameloblasts deposit the organic enamel matrix, which is composed primarily of proteins (like amelogenin) and water. This stage establishes the full thickness and morphology of the enamel.</li>
+        <li><b>Maturation:</b> The organic matrix and water are selectively removed, and a massive influx of minerals (calcium and phosphate) occurs. This process hardens the enamel, transforming it from a soft, protein-rich matrix into the hardest substance in the human body.</li>
+      </ol>
+    `
+  }
 ];
 
 // ----------- State -----------
@@ -319,7 +685,7 @@ mcqs.forEach((item, idx)=>{
 
 // ----------- Render True/False -----------
 const tfGrid = document.getElementById('tfGrid');
- tfs.forEach((item, idx)=>{
+tfs.forEach((item, idx)=>{
   const card = document.createElement('article');
   card.className='card qcard';
   card.dataset.type='tf';
@@ -389,13 +755,14 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
   </div>
   <div class="answer" hidden>${item.a}</div>
 `;
+
 
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');

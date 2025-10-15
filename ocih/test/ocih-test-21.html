@@ -92,9 +92,19 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}  
-  .opt-btn.correct{border-left:6px solid var(--ok);outline:none;background:rgba(255,255,255,0.03);}  
-  .opt-btn.wrong{border-left:6px solid var(--bad);outline:none;background:rgba(255,255,255,0.03);}  
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
   .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
@@ -103,6 +113,10 @@
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer ol, .answer ul { padding-left: 20px; margin: 5px 0; }
+  .answer table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .answer th, .answer td { border: 1px solid var(--card-border); padding: 8px; text-align: left; }
+  .answer th { background-color: var(--glass); }
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -159,64 +173,306 @@
   </main>
 
 <script>
-// ----------- Data (from OCIH-20: Practical Session – Dentin) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q: "Which cells produce dentin?", opts:["Ameloblasts","Odontoblasts","Cementoblasts","Fibroblasts"], correct:1, explain:"Dentin is produced by odontoblasts located at the pulp periphery." },
-  { q: "Where are odontoblast cell bodies located?", opts:["Enamel","Pulp","Cementum","Periodontal ligament"], correct:1, explain:"Cell bodies lie in the dental pulp; their processes extend into dentinal tubules." },
-  { q: "Odontoblastic processes extend into which structures?", opts:["Enamel rods","Haversian canals","Dentinal tubules","Cementocyte lacunae"], correct:2, explain:"Processes traverse the dentin inside dentinal tubules." },
-  { q: "Which best describes the contents of dentinal tubules?", opts:["Erythrocytes only","Lymph and osteocytes","Odontoblastic process, dentinal fluid, afferent nerve terminals","Salivary secretions"], correct:2, explain:"Tubules contain the odontoblastic process, fluid and sensory nerve endings." },
-  { q: "Primary vs. secondary dentin: which is TRUE for secondary dentin?", opts:["Laid down before eruption only","Forms after eruption and continues slowly throughout life","More highly mineralized than enamel","Present only in the root"], correct:1, explain:"Secondary dentin forms physiologically after eruption and narrows the pulp with age." },
-  { q: "How does the primary curvature of dentinal tubules change from crown to root?", opts:["Linear to S-shaped","S-shaped to more linear","Helical to zig-zag","Unchanged"], correct:1, explain:"In the crown the course is S‑shaped; it flattens to a more linear path in the root." },
-  { q: "Secondary curvature of dentinal tubules refers to:", opts:["Overall S-shaped path","Minor spiral-like kinks superimposed on the primary curvature","Tubules branching at the DEJ","Curvature due to tooth movement"], correct:1, explain:"Secondary curvatures are small undulations along the primary S-shape." },
-  { q: "Incremental lines of von Ebner are:", opts:["Enamel growth lines","Dentin incremental lines reflecting rhythmic deposition","Cementum reversal lines","Pulpal fibrosis strands"], correct:1, explain:"They are periodic growth lines seen in dentin." },
-  { q: "A \"dead tract\" in dentin represents:", opts:["Cluster of bacteria","Region of empty/air-filled tubules after loss of odontoblastic processes","Carious lesion front","Blood vessel track"], correct:1, explain:"Loss of processes leaves empty tubules that appear as a dark tract in ground sections." },
-  { q: "Interglobular dentin is best described as:", opts:["Hypercalcified enamel","Areas of hypomineralized dentin between calcospherites","Unmineralized predentin","Tertiary dentin"], correct:1, explain:"It forms where globular mineralization fails to fuse completely." },
-  { q: "Tomes' granular layer is found:", opts:["Under the DEJ in the crown","Adjacent to cementum in root dentin (mantle dentin)","At the pulp horns only","Within enamel spindles"], correct:1, explain:"It lies parallel to the external root surface, just beneath cementum." },
-  { q: "Contour lines of Owen indicate:", opts:["Daily dentin deposition","Major metabolic disturbance during dentinogenesis","Neonatal enamel","Cementum apposition"], correct:1, explain:"They reflect pronounced growth disturbances, distinct from von Ebner lines." },
-  { q: "Enamel spindles are:", opts:["Cracks in enamel","Extensions of odontoblastic processes that cross the DEJ into enamel","Sharpey's fibers","Capillaries in enamel"], correct:1, explain:"They are short extensions of odontoblastic processes seen at the DEJ." },
-  { q: "The dentino‑enamel junction (DEJ) is typically:", opts:["Flat","Scalloped, increasing interlocking","Porous to blood cells","A cementum interface"], correct:1, explain:"A scalloped interface enhances mechanical interlocking between enamel and dentin." },
-  { q: "Which dentin around tubules is more highly mineralized?", opts:["Intertubular dentin","Peritubular dentin","Predentin","Mantle dentin"], correct:1, explain:"Peritubular dentin forms a hypermineralized cuff lining tubules." },
-  { q: "Tubule density is greatest:", opts:["Near the DEJ","Near the pulp","In cementum","Uniform throughout dentin"], correct:1, explain:"Tubules are closer and wider near the pulp." },
-  { q: "Overall direction of dentinal tubules in the crown is:", opts:["Cervico‑apical, straight","S‑shaped from pulp toward DEJ","Circular around the pulp","Random"], correct:1, explain:"They course from pulp outward with a characteristic S‑shape in crowns." },
-  { q: "Which preparation best demonstrates peritubular dentin as a bright cuff?", opts:["Decalcified section","Ground section","SEM of etched enamel","Fresh frozen pulp"], correct:1, explain:"Mineralized structures are preserved in ground sections." },
-  { q: "Mantle dentin refers to:", opts:["Outer layer of primary dentin beneath enamel/cementum","Central dentin near pulp","Only tertiary dentin","Unmineralized predentin"], correct:0, explain:"Mantle dentin is the first‑formed outer primary dentin." },
-  { q: "Progressive deposition of secondary dentin causes:", opts:["Enlargement of pulp chamber","No change in pulp size","Gradual reduction of pulp chamber volume","Exposure of pulp"], correct:2, explain:"Physiologic secondary dentin reduces the pulp space with age." },
-  { q: "Tertiary (reparative) dentin forms in response to:", opts:["Normal eruption only","Irritation/injury such as caries or cavity preparation","Orthodontic retention","Salivary flow"], correct:1, explain:"A localized, stimulus‑dependent response beneath the affected area." },
-  { q: "Compared with crown tubules, root tubules are:", opts:["More S‑shaped","More linear","Absent","Arranged in circles"], correct:1, explain:"The S‑shape flattens in root dentin." },
-  { q: "Which set correctly matches a \"digital slide\" observation?", opts:["Scalloped interface = pulp space","Light brown tissue above scallops = dentin","Scalloped interface = DEJ; above it enamel; below it dentin","Empty central space = enamel"], correct:2, explain:"DEJ is scalloped; enamel lies above; dentin below; central void corresponds to pulp." },
-  { q: "Most likely reason a deep cavity in a 56‑year‑old lacked pulp exposure:", opts:["Wide open apices","Tertiary (reparative) dentin beneath lesion","Absence of predentin","Cementum thickening in the crown"], correct:1, explain:"Age + chronic irritation encourages protective tertiary dentin over pulp." },
-  { q: "Which statement about enamel spindles is CORRECT?", opts:["They originate from ameloblasts","They are trapped odontoblastic processes at the DEJ","They are in cementum","They are blood vessels"], correct:1, explain:"Spindles are ends of odontoblastic processes extending a short way into enamel." },
-  { q: "\"Secondary curvature\" is best seen in:", opts:["Demineralized mid‑S region of dentin","Cementum cross‑section","Enamel prisms only","Pulp tissue"], correct:0, explain:"The demineralized mid‑S region shows fine undulations of tubules." },
-  { q: "Interglobular dentin is commonly observed:", opts:["Immediately at the DEJ in enamel","Beneath mantle dentin where globules fail to fuse","Only in roots","Only after bleaching"], correct:1, explain:"It appears where globular mineralization is incomplete, often beneath mantle dentin." },
-  { q: "Tomes' granular layer aligns:", opts:["Parallel to external root surface","Perpendicular to cementum","Only in crowns","Across the DEJ"], correct:0, explain:"It runs parallel to the outer root surface adjacent to cementum." },
-  { q: "Primary curvature of tubules is also called:", opts:["Owen line","S‑shaped pathway","Hunter–Schreger band","Striae of Retzius"], correct:1, explain:"The overall S‑shaped path constitutes the primary curvature." },
-  { q: "Which component is NOT part of dentinal tubule contents?", opts:["Dentinal fluid","Afferent nerve terminals","Erythrocytes","Odontoblastic process"], correct:2, explain:"Blood cells are not present within intact dentinal tubules." }
+    {
+        q: "What is the primary characteristic of cementum as a tissue?",
+        opts: ["Vascular mineralized tissue", "Avascular mineralized connective tissue", "Vascular soft connective tissue", "Avascular non-mineralized tissue"],
+        correct: 1,
+        explain: "Cementum is defined as an avascular mineralized connective tissue covering the anatomic roots of human teeth."
+    },
+    {
+        q: "Where is cementum typically the thinnest?",
+        opts: ["At the root apex", "At the mid-root level", "At the cementoenamel junction (CEJ)", "In the furcation area"],
+        correct: 2,
+        explain: "Cementum thickness is thinnest at the CEJ (20 to 50 μm) and increases towards the apex."
+    },
+    {
+        q: "What is the chemical composition of cementum in fully formed permanent teeth?",
+        opts: ["96% inorganic, 4% organic", "70% inorganic, 30% organic", "45-50% inorganic, 50-55% organic", "20% inorganic, 80% organic"],
+        correct: 2,
+        explain: "Cementum contains 45-50% inorganic substances and 50-55% organic material and water."
+    },
+    {
+        q: "The main inorganic component of cementum is in the form of:",
+        opts: ["Calcium Fluoride", "Hydroxyapatite", "Collagen Type II", "Osteopontin"],
+        correct: 1,
+        explain: "The inorganic portion of cementum is primarily calcium and phosphate in the form of hydroxyapatite."
+    },
+    {
+        q: "Which cells are responsible for synthesizing the organic matrix of cementum?",
+        opts: ["Odontoblasts", "Osteoblasts", "Fibroblasts", "Cementoblasts"],
+        correct: 3,
+        explain: "Cementoblasts synthesize collagen and protein polysaccharides, which make up the organic matrix."
+    },
+    {
+        q: "What are cementocytes?",
+        opts: ["Precursor cells of cementoblasts", "Cementoblasts that have become entrapped in the matrix", "Cells that resorb cementum", "Epithelial cells from HERS"],
+        correct: 1,
+        explain: "Cementocytes are cells (formerly cementoblasts) that have been incorporated into cellular cementum, residing in lacunae."
+    },
+    {
+        q: "The cell processes of a cementocyte, known as canaliculi, are mostly directed towards:",
+        opts: ["The dentin surface", "The pulp", "The periodontal ligament surface", "Adjacent cementocytes only"],
+        correct: 2,
+        explain: "Most processes (canaliculi) are directed toward the periodontal surface of the cementum, which is the source of nutrients."
+    },
+    {
+        q: "What are the collagen fibers produced by PDL fibroblasts that get embedded in cementum called?",
+        opts: ["Intrinsic fibers", "Extrinsic fibers (Sharpey's fibers)", "Reticular fibers", "Elastic fibers"],
+        correct: 1,
+        explain: "Extrinsic fibers, produced by PDL fibroblasts, are embedded into cementum and are known as Sharpey's fibers."
+    },
+    {
+        q: "What is the most common relationship between cementum and enamel at the CEJ?",
+        opts: ["They meet in a sharp line (butt joint)", "There is a gap between them", "Cementum overlaps the enamel", "Enamel overlaps the cementum"],
+        correct: 2,
+        explain: "In 60% of teeth, the cementum overlaps the enamel for a short distance."
+    },
+    {
+        q: "A gap between enamel and cementum at the cervical region, exposing dentin, occurs in what percentage of teeth?",
+        opts: ["10%", "30%", "60%", "5%"],
+        correct: 0,
+        explain: "In 10% of teeth, enamel and cementum do not meet, leaving a gap of exposed dentin."
+    },
+    {
+        q: "Which type of cementum is formed first and is therefore called 'primary cementum'?",
+        opts: ["Cellular intrinsic fiber cementum (CIFC)", "Acellular afibrillar cementum (AAC)", "Acellular extrinsic fiber cementum (AEFC)", "Cellular mixed stratified cementum (CMSC)"],
+        correct: 2,
+        explain: "AEFC is the first to be formed and is known as primary cementum. It provides anchorage."
+    },
+    {
+        q: "The 'functional stage' of cementum development begins when:",
+        opts: ["The root is half-formed", "The tooth is in occlusion", "The crown is fully calcified", "Hertwig's epithelial root sheath fragments"],
+        correct: 1,
+        explain: "The functional stage starts when the tooth comes into occlusion and continues throughout life."
+    },
+    {
+        q: "Which mineralized tissue in the human body has the highest fluoride content?",
+        opts: ["Enamel", "Dentin", "Bone", "Cementum"],
+        correct: 3,
+        explain: "Cementum has the highest fluoride content of all the mineralized tissues."
+    },
+    {
+        q: "What do the incremental lines in cementum represent?",
+        opts: ["Areas of hyper-mineralization", "Rest periods in cementum formation", "Cracks due to trauma", "Channels for blood vessels"],
+        correct: 1,
+        explain: "Incremental lines represent 'rest periods' in cementum formation and are more mineralized than adjacent cementum."
+    },
+    {
+        q: "Acellular afibrillar cementum (AAC) is typically found:",
+        opts: ["At the root apex", "As a thin layer on the enamel at the cervical margin", "Throughout the root surface", "Only in deciduous teeth"],
+        correct: 1,
+        explain: "AAC is seen chiefly as coronal cementum, as a thin layer (1 to 15 µm) on the enamel at the cervical margin."
+    },
+    {
+        q: "What are the primary functions of cellular cementum?",
+        opts: ["Anchorage only", "Adaptation and repair", "Tooth sensitivity regulation", "Formation of the apical foramen"],
+        correct: 1,
+        explain: "The main functions of cellular cementum are adaptation (to occlusal changes) and repair of cementum."
+    },
+    {
+        q: "The cementodentinal junction (CDJ) in permanent teeth is typically:",
+        opts: ["Scalloped", "Smooth", "Interdigitated", "Indistinct"],
+        correct: 1,
+        explain: "The CDJ is smooth in permanent teeth, whereas it can be scalloped in deciduous teeth."
+    },
+    {
+        q: "Which noncollagenous protein in cementum is primarily involved in regulating mineralization?",
+        opts: ["Bone sialoprotein (BSP)", "Osteopontin", "Cementum derived attachment protein (CAP)", "Type I collagen"],
+        correct: 1,
+        explain: "Osteopontin is a noncollagenous protein that helps regulate the process of mineralization in cementum."
+    },
+    {
+        q: "Cellular mixed stratified cementum (CMSC) is primarily found in which locations?",
+        opts: ["Cervical third only", "Middle third of the root", "Apical third and furcation areas", "Covering the entire root surface"],
+        correct: 2,
+        explain: "CMSC appears primarily on the apical third of the root and in furcation areas of multi-rooted teeth."
+    },
+    {
+        q: "What is the term for the unmineralized layer of matrix on the cemental surface?",
+        opts: ["Predentin", "Cementoid", "Intermediate cementum", "Enameloid"],
+        correct: 1,
+        explain: "Cementoid is the thin, unmineralized layer of cementum matrix found on the surface, lined by cementoblasts."
+    },
+    {
+        q: "The deposition rate of cellular cementum is _______ compared to acellular cementum.",
+        opts: ["slower", "faster", "the same", "highly variable but generally slower"],
+        correct: 1,
+        explain: "Cellular cementum has a faster deposition rate, which leads to the entrapment of cementoblasts."
+    },
+    {
+        q: "The main function of Acellular Extrinsic Fiber Cementum (AEFC) is:",
+        opts: ["Repair", "Adaptation", "Anchorage", "Sealing dentinal tubules"],
+        correct: 2,
+        explain: "The main function of AEFC is anchorage, especially in single-rooted teeth, by embedding Sharpey's fibers."
+    },
+    {
+        q: "What might happen to cementocytes located in the deeper layers of thick cellular cementum?",
+        opts: ["They transform back into cementoblasts", "They become hyperactive", "They may not be vital", "They begin to resorb the matrix"],
+        correct: 2,
+        explain: "Nourishment occurs by diffusion, so cementocytes in deeper layers may not be vital due to the distance from the blood supply in the PDL."
+    },
+    {
+        q: "Which type of cementum contains cells but lacks extrinsic (Sharpey's) fibers?",
+        opts: ["AEFC", "CMSC", "AAC", "CIFC"],
+        correct: 3,
+        explain: "Cellular intrinsic fiber cementum (CIFC) contains cementocytes but is composed of intrinsic fibers secreted by cementoblasts, not extrinsic fibers from the PDL."
+    },
+    {
+        q: "Hertwig's epithelial root sheath (HERS) is crucial for root development. From where do the cells that form cementum (cementoblasts) originate after HERS fragments?",
+        opts: ["Odontoblasts from the pulp", "Ectomesenchymal cells of the dental follicle", "Epithelial rests of Malassez", "Osteoblasts from the alveolar bone"],
+        correct: 1,
+        explain: "As HERS fragments, ectomesenchymal cells from the dental follicle migrate to the newly formed dentin and differentiate into cementoblasts."
+    },
+    {
+        q: "How are the incremental lines of cellular cementum typically characterized compared to those in acellular cementum?",
+        opts: ["Regular and closely placed", "Irregular and wide apart", "Absent", "Less mineralized"],
+        correct: 1,
+        explain: "Incremental lines in cellular cementum are irregular and placed wide apart due to its faster and less regular formation."
+    },
+    {
+        q: "What is the physical appearance of cementum compared to enamel?",
+        opts: ["Darker and more lustrous", "Lighter yellow and lacks luster", "Identical in color and luster", "Grayish and translucent"],
+        correct: 1,
+        explain: "Cementum is light yellow in color and is distinguished from enamel by its lack of luster."
+    },
+    {
+        q: "The structure known as 'intermediate cementum' is a poorly defined zone found near the:",
+        opts: ["Cementoenamel junction (CEJ)", "Cementodentinal junction (CDJ)", "Periodontal ligament", "Apical foramen"],
+        correct: 1,
+        explain: "Intermediate cementum is a poorly defined zone near the CDJ, thought to be of dentinal origin."
+    },
+    {
+        q: "Sharpey's fibers within acellular cementum are generally:",
+        opts: ["Partially mineralized", "Unmineralized", "Well mineralized", "Loosely attached"],
+        correct: 2,
+        explain: "In acellular cementum, Sharpey's fibres are well mineralized, contributing to strong anchorage."
+    },
+    {
+        q: "Which type of cementum is most responsible for the increase in root thickness at the apex and furcations throughout life?",
+        opts: ["Acellular afibrillar cementum", "Acellular extrinsic fiber cementum", "Cellular cementum (CIFC and CMSC)", "Intermediate cementum"],
+        correct: 2,
+        explain: "Cellular cementum is deposited throughout life in response to functional demands (adaptation), leading to thickening of the root apex and inter-radicular areas."
+    }
 ];
 
 const tfs = [
-  { q:"Dentin is a calcified tissue with composition different from enamel.", answer:true, explain:"Both are mineralized but differ in composition and structure." },
-  { q:"Odontoblast processes are confined to the pulp and do not enter dentin.", answer:false, explain:"They extend into dentinal tubules throughout dentin." },
-  { q:"Secondary dentin is a physiologic deposition that continues after eruption.", answer:true, explain:"It slowly narrows the pulp chamber over time." },
-  { q:"In the root, dentinal tubules show a more linear course than in the crown.", answer:true, explain:"The S‑shape flattens apically." },
-  { q:"Secondary curvature describes the overall S‑shape of tubules.", answer:false, explain:"It refers to small undulations superimposed on the S‑shape." },
-  { q:"Dead tracts result from loss of odontoblastic processes.", answer:true, explain:"Empty tubules appear as dark tracts in ground sections." },
-  { q:"Tomes' granular layer is a crown feature adjacent to enamel.", answer:false, explain:"It is a root feature adjacent to cementum in mantle dentin." },
-  { q:"Contour lines of Owen indicate major interruptions in dentin deposition.", answer:true, explain:"They reflect metabolic disturbances during odontogenesis." },
-  { q:"Peritubular dentin is less mineralized than intertubular dentin.", answer:false, explain:"Peritubular is more highly mineralized." }
+    {
+        q: "Cementum is a highly vascular tissue, similar to bone.",
+        answer: false,
+        explain: "Cementum is specifically defined as an avascular tissue, meaning it does not have its own blood supply."
+    },
+    {
+        q: "The hardness of cementum is greater than that of dentin.",
+        answer: false,
+        explain: "The hardness of cementum is less than that of dentin."
+    },
+    {
+        q: "The development and deposition of cementum ceases once a tooth erupts and comes into occlusion.",
+        answer: false,
+        explain: "The functional stage of cementum development starts at occlusion and continues throughout life."
+    },
+    {
+        q: "Intrinsic fibers of cementum are produced by periodontal ligament fibroblasts.",
+        answer: false,
+        explain: "Intrinsic fibers are produced by cementoblasts. Extrinsic fibers are produced by PDL fibroblasts."
+    },
+    {
+        q: "Cementum is permeable and can allow the passage of a variety of materials.",
+        answer: true,
+        explain: "The slides state that cementum is permeable to a variety of materials."
+    },
+    {
+        q: "In approximately 30% of teeth, cementum and enamel meet in a sharp line, forming a 'butt joint'.",
+        answer: true,
+        explain: "This is one of the three main configurations of the CEJ, occurring in 30% of cases."
+    },
+    {
+        q: "The cementodentinal junction is typically scalloped in permanent teeth to provide stronger attachment.",
+        answer: false,
+        explain: "The CDJ is smooth in permanent teeth and may be scalloped in deciduous teeth."
+    },
+    {
+        q: "Cellular cementum is also referred to as 'primary cementum' because it contains cells.",
+        answer: false,
+        explain: "Cellular cementum is 'secondary cementum' because it forms after acellular cementum. Acellular (AEFC) is primary."
+    },
+    {
+        q: "Incremental lines are less mineralized than the adjacent cementum, representing periods of matrix formation.",
+        answer: false,
+        explain: "Incremental lines represent 'rest periods' and are more mineralized than the adjacent cementum."
+    }
 ];
 
 const saqs = [
-  // 1. Direct Answer
-  { q: "Define dentin in one sentence.", a: "A mineralized tissue produced by odontoblasts that forms the bulk of the tooth beneath enamel and surrounds the pulp." },
-  // 2. List/Enumeration (3+ items)
-  { q: "List three components commonly found within dentinal tubules.", a: "1) Odontoblastic process\n2) Dentinal fluid\n3) Afferent nerve terminals" },
-  // 3. Comparison (numbered table)
-  { q: "Compare primary and secondary curvature of dentinal tubules in a numbered table.", a: "<table style=\"width:100%;border-collapse:collapse\"><tr><th style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">#</th><th style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Primary curvature</th><th style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Secondary curvature</th></tr><tr><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">1</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Overall S‑shaped path</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Small undulations on the S‑shape</td></tr><tr><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">2</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Pronounced in crown</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Seen along tubules, best in mid‑S region</td></tr><tr><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">3</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Flattens toward root (more linear)</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Fine, spiral‑like kinks</td></tr></table>" },
-  // 4. Case-based Scenario
-  { q: "A 56‑year‑old has a deep carious lesion; after caries removal no pulp exposure occurred. What dentin change most likely prevented exposure?", a: "Formation of localized tertiary (reparative) dentin beneath the lesion." },
-  // Extra SAQs to make 6
-  { q: "State the location of Tomes' granular layer.", a: "In root dentin, parallel to the external surface, immediately adjacent to cementum (mantle dentin)." },
-  { q: "Name the dentin band reflecting major disturbances in dentinogenesis.", a: "Contour lines of Owen." }
+    {
+        q: "Describe the chemical composition of cementum in a fully formed permanent tooth.",
+        a: "Cementum consists of approximately 45-50% inorganic substances and 50-55% organic material and water. The main inorganic component is hydroxyapatite, and the primary organic component is Type I collagen along with noncollagenous proteins."
+    },
+    {
+        q: "List the three main configurations of the Cemento-Enamel Junction (CEJ) and their approximate prevalence.",
+        a: `
+            <ol>
+                <li><b>Cementum overlaps enamel:</b> This is the most common relationship, occurring in about 60% of teeth.</li>
+                <li><b>Butt joint:</b> Cementum meets the enamel in a sharp line. This occurs in about 30% of teeth.</li>
+                <li><b>Gap:</b> Cementum and enamel do not meet, leaving dentin exposed. This occurs in about 10% of teeth.</li>
+            </ol>
+        `
+    },
+    {
+        q: "Present a comparison of at least three key differences between acellular and cellular cementum.",
+        a: `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Acellular Cementum</th>
+                        <th>Cellular Cementum</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>Formation Time</b></td>
+                        <td>First formed (Primary)</td>
+                        <td>Formed later (Secondary)</td>
+                    </tr>
+                    <tr>
+                        <td><b>Deposition Rate</b></td>
+                        <td>Slower</td>
+                        <td>Faster</td>
+                    </tr>
+                    <tr>
+                        <td><b>Cell Presence</b></td>
+                        <td>No embedded cementocytes</td>
+                        <td>Contains embedded cementocytes</td>
+                    </tr>
+                    <tr>
+                        <td><b>Location</b></td>
+                        <td>Mainly cervical third</td>
+                        <td>Mainly apical third and furcations</td>
+                    </tr>
+                </tbody>
+            </table>
+        `
+    },
+    {
+        q: "What are the two main types of cells associated with cementum, and what is the primary role of each?",
+        a: `
+            <ol>
+                <li><b>Cementoblasts:</b> These are the cells that form cementum. They are located on the surface of the cementum and synthesize the organic matrix (collagen and proteins).</li>
+                <li><b>Cementocytes:</b> These are former cementoblasts that have become entrapped within the cementum matrix they secreted. They reside in spaces called lacunae and are involved in maintaining the vitality of the tissue.</li>
+            </ol>
+        `
+    },
+    {
+        q: "A radiograph of an older patient shows a marked increase in the thickness of mineralized tissue at the root apex. What specific type of cementum is likely responsible for this, and what is its primary function in this context?",
+        a: "The tissue is likely <b>Cellular Cementum</b> (specifically Cellular Mixed Stratified Cementum - CMSC). Its primary function in this context is <b>adaptation</b>. It is deposited throughout life to compensate for occlusal wear and maintain the vertical dimension of the tooth, a process often referred to as passive eruption."
+    },
+    {
+        q: "Describe the origin and function of Sharpey's fibers in relation to cementum.",
+        a: "Sharpey's fibers are the terminal portions of the principal collagen fibers of the periodontal ligament (PDL). They are <b>extrinsic fibers</b>, meaning they originate outside the cementum (from PDL fibroblasts). Their function is to embed themselves into the cementum on one side and the alveolar bone on the other, providing the critical <b>anchorage</b> that holds the tooth firmly within its socket."
+    }
 ];
 
 // ----------- State -----------
@@ -275,7 +531,8 @@ mcqs.forEach((item, idx)=>{
     btn.addEventListener('click', ()=>{
       if(card.dataset.locked === 'true') return; // one attempt
       const v = Number(btn.dataset.v);
-      state.mcq[idx] = v;
+      const originalSelectionIndex = visualToOriginal[v];
+      state.mcq[idx] = originalSelectionIndex;
 
       // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
@@ -373,7 +630,7 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
@@ -396,6 +653,7 @@ saqs.forEach((item, idx)=>{
     state.saq[idx] = now;
     toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
     toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    toggleBtn.style.backgroundColor = now ? "rgba(34,197,94,.1)" : "rgba(255,255,255,0.03)";
     recalc();
   });
 
@@ -404,18 +662,14 @@ saqs.forEach((item, idx)=>{
 
 // ----------- Score + Reset -----------
 function recalc(){
-  const mcqScore = state.mcq.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
+  const mcqScore = state.mcq.reduce((s, selectedOriginalIndex, i)=>{
+    if(selectedOriginalIndex === null) return s;
+    return s + (selectedOriginalIndex === mcqs[i].correct ? 1 : 0);
+  }, 0);
   const tfScore = state.tf.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
+    if(v === null) return s;
+    return s + (v === tfs[i].answer ? 1 : 0);
+  }, 0);
   const saqScore = state.saq.filter(Boolean).length;
   const total = mcqScore + tfScore + saqScore;
 
@@ -440,7 +694,11 @@ document.getElementById('resetAll').addEventListener('click', ()=>{
   document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
   document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
   document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
-  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{
+    b.textContent="I was correct";
+    b.style.outline="none";
+    b.style.backgroundColor = "rgba(255,255,255,0.03)";
+  });
 
   state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
   recalc();

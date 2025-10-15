@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Interactive Exam • Salivary Glands (ocih-1)</title>
+<title>Interactive Exam • Glowing Dark Theme</title>
 <meta name="color-scheme" content="dark" />
 <style>
   :root{
@@ -127,6 +127,10 @@
   }
   .score .part{color:var(--muted);font-weight:600}
   .score b{color:var(--text)}
+
+  table{width:100%;border-collapse:collapse;margin-top:10px;}
+  th,td{padding:8px 12px;border:1px solid var(--card-border);text-align:left;}
+  th{background-color:rgba(255,255,255,0.05);}
 </style>
 </head>
 <body>
@@ -169,70 +173,263 @@
   </main>
 
 <script>
-// ----------- Data (from Lecture 1: Salivary glands) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q:"Salivary glands are best classified as which type of glands?", opts:["Endocrine glands","Exocrine glands","Mixed endocrine–exocrine glands","Apocrine skin glands"], correct:1, explain:"They secrete saliva into the oral cavity via ducts → exocrine." },
-  { q:"Which of the following are the three pairs of major salivary glands?", opts:["Parotid, sublingual, submandibular","Parotid, buccal, palatal","Labial, buccal, lingual","Parotid, palatal, sublingual"], correct:0, explain:"Major: parotid, submandibular, sublingual. Others are minor." },
-  { q:"The parotid gland has how many surfaces and borders, respectively?", opts:["3 surfaces and 2 borders","2 surfaces and 3 borders","4 surfaces and 2 borders","3 surfaces and 4 borders"], correct:0, explain:"Surfaces: superficial, anteromedial, posteromedial; Borders: anterior & posterior." },
-  { q:"Which structure does NOT pass inside the parotid gland?", opts:["Facial nerve (CN VII)","External carotid artery","Retromandibular vein","Hypoglossal nerve (CN XII)"], correct:3, explain:"CN XII does not traverse the parotid; CN VII, ECA and retromandibular vein do." },
-  { q:"Within the parotid gland, the external carotid artery divides into which terminal branches?", opts:["Facial and maxillary arteries","Maxillary and superficial temporal arteries","Lingual and superficial temporal arteries","Occipital and maxillary arteries"], correct:1, explain:"ECA → maxillary + superficial temporal within the parotid." },
-  { q:"The retromandibular vein is formed by the union of which veins?", opts:["Facial and lingual veins","Maxillary and superficial temporal veins","Superficial temporal and occipital veins","Lingual and maxillary veins"], correct:1, explain:"It forms inside the parotid from maxillary + superficial temporal." },
-  { q:"Which is the correct list of facial nerve terminal branches in the parotid?", opts:["Temporal, zygomatic, buccal, mandibular, cervical","Temporal, masseteric, buccal, lingual, cervical","Frontal, zygomatic, buccal, marginal, cervical","Temporal, auricular, buccal, mandibular, hypoglossal"], correct:0, explain:"Classically: temporal, zygomatic, buccal, mandibular (marginal), cervical." },
-  { q:"Which structure emerges from the anterior border of the parotid gland?", opts:["Great auricular nerve","Parotid duct (Stensen's)","Auriculotemporal nerve","External jugular vein"], correct:1, explain:"Parotid duct and transverse facial artery, plus zygomatic/buccal/mandibular branches, exit anteriorly." },
-  { q:"Which set correctly matches what leaves the LOWER end of the parotid?", opts:["Auriculotemporal nerve, temporal branch of facial nerve","Superficial temporal artery and vein","External carotid artery and retromandibular vein divisions","Parotid duct and transverse facial artery"], correct:2, explain:"Lower end gives off ECA and retromandibular vein (or its divisions) and the cervical branch of VII." },
-  { q:"The auriculotemporal nerve is MOST closely related to which of the following regarding the parotid?", opts:["Motor supply to facial expression","Secretomotor pathway relay","Sensory to the gland and carrier of postganglionic fibers","Venous drainage"], correct:2, explain:"It provides sensory to the gland and carries postganglionic parasympathetics from otic ganglion." },
-  { q:"Which is the correct sequence for the parasympathetic (secretomotor) pathway to the parotid gland?", opts:["Facial nerve → chorda tympani → submandibular ganglion → lingual nerve → parotid","Glossopharyngeal nerve → tympanic branch → lesser petrosal nerve → otic ganglion → auriculotemporal nerve","Vagus nerve → pharyngeal plexus → pterygopalatine ganglion → auriculotemporal nerve","Trigeminal nerve → lingual nerve → otic ganglion → facial nerve"], correct:1, explain:"CN IX → tympanic plexus → lesser petrosal → otic ganglion; postganglionics via auriculotemporal to parotid." },
-  { q:"Sympathetic fibers to the parotid gland are derived from:", opts:["Plexus around the external carotid artery","Superior cervical ganglion via internal carotid plexus only","Facial nerve within the gland","Hypoglossal nerve"], correct:0, explain:"Vasomotor sympathetics via the plexus around the ECA." },
-  { q:"The parotid duct crosses which muscle before piercing the buccinator?", opts:["Masseter","Medial pterygoid","Temporalis","Mylohyoid"], correct:0, explain:"It runs horizontally over the masseter, then turns medially to pierce structures including buccinator." },
-  { q:"The parotid duct opens into the oral vestibule opposite which tooth?", opts:["Lower first molar","Upper second molar","Upper first premolar","Lower second molar"], correct:1, explain:"Opposite the maxillary (upper) second molar." },
-  { q:"Which statement about the parotid capsules is correct?", opts:["Single capsule from investing layer only","Inner true capsule of CT and an outer false capsule from investing deep cervical fascia","Capsule from pretracheal fascia only","Capsule absent"], correct:1, explain:"Parotid is enclosed by a true (CT) and a false (investing deep cervical) capsule." },
-  { q:"Painful swelling in parotitis is partly due to:", opts:["Loose capsule allowing expansion","Tight outer capsule limiting expansion","Absent lymphatics","Overactive parasympathetic supply"], correct:1, explain:"The tough fascia-derived capsule restricts expansion → pain." },
-  { q:"Which muscle is NOT in the suprahyoid group listed for the submandibular region?", opts:["Digastric","Stylohyoid","Mylohyoid","Hyoglossus"], correct:3, explain:"Hyoglossus is an extrinsic tongue muscle; suprahyoids include digastric, stylohyoid, mylohyoid, geniohyoid." },
-  { q:"The submandibular gland consists of:", opts:["Single lobe superficial to mylohyoid","Superficial part superficial to mylohyoid and deep part deep to mylohyoid","Both parts deep to mylohyoid","Only a deep part between buccinator and masseter"], correct:1, explain:"Superficial part over mylohyoid; deep part between mylohyoid and hyoglossus." },
-  { q:"Which nerve lies superior to the deep part of the submandibular gland?", opts:["Hypoglossal nerve (XII)","Lingual nerve","Auriculotemporal nerve","Glossopharyngeal nerve (IX)"], correct:1, explain:"Lingual nerve and submandibular ganglion are superior to the deep part." },
-  { q:"The submandibular duct (Wharton’s) opens at:", opts:["Opposite upper second molar","Floor of mouth at the sublingual papilla beside the lingual frenulum","Behind the last molar in retromolar trigone","On the hard palate"], correct:1, explain:"It opens beside the frenulum at the sublingual papilla." },
-  { q:"Parasympathetic secretomotor fibers to the submandibular gland reach it via:", opts:["Auriculotemporal nerve from otic ganglion","Chorda tympani joining the lingual nerve","Glossopharyngeal tympanic branch","Hypoglossal nerve"], correct:1, explain:"From superior salivatory nucleus via chorda tympani → lingual nerve → submandibular ganglion → gland." },
-  { q:"Which is TRUE regarding the sublingual gland?", opts:["Largest major salivary gland","Lies above the mylohyoid within the sublingual fold","Has a single long duct only","Opens mainly opposite the upper molars"], correct:1, explain:"Smallest major gland; lies under the mucosa in the sublingual fold; many small ducts." },
-  { q:"The usual number of sublingual ducts is approximately:", opts:["1–2","3–5","8–20","30–40"], correct:2, explain:"Typically 8–20 small ducts opening into the floor of mouth." },
-  { q:"Major salivary glands produce roughly what proportion of total saliva?", opts:["~10%","~30%","~60%","~90%"], correct:3, explain:"Major glands contribute the bulk (~90%)." },
-  { q:"Minor salivary glands are typically:", opts:["Encapsulated and outside oral mucosa","Unencapsulated and scattered in oral mucosa/submucosa","Paired and large","Draining via a single long duct"], correct:1, explain:"They are numerous, small, unencapsulated and scattered with short ducts." },
-  { q:"Which clinical statement is CORRECT?", opts:["Parotid pleomorphic adenoma is rare","Parotidectomy is simple because no major nerves run through the gland","Mumps commonly affects the parotid gland","Wharton’s duct is rarely a site for stones"], correct:2, explain:"Mumps (viral parotitis) commonly targets parotid; parotidectomy is difficult due to facial nerve; Wharton’s stones are common." },
-  { q:"Mucocele is MOST commonly associated with which glands?", opts:["Parotid gland","Submandibular gland","Sublingual gland","Minor salivary glands (e.g., labial)"], correct:3, explain:"Mucoceles often arise from trauma/obstruction of minor glands, especially labial." },
-  { q:"A stone causing meal‑time pain and swelling in the cheek near the maxillary molars most likely obstructs:", opts:["Wharton’s duct","Stensen’s (parotid) duct","Sublingual common duct","Nasolacrimal duct"], correct:1, explain:"Stensen’s duct opens opposite the upper 2nd molar; obstruction causes meal-time swelling." },
-  { q:"Which relation is correct for the PAROTID gland surfaces?", opts:["Superficial surface relates to buccinator","Anteromedial surface relates to mandible and masseter","Posteromedial surface relates to carotid sheath contents and styloid apparatus","Posterior surface relates to mylohyoid"], correct:2, explain:"Posteromedial: styloid process/attachments, mastoid region and carotid sheath contents." },
-  { q:"Which of the following emerges from the UPPER end of the parotid gland?", opts:["External carotid artery","Retromandibular vein divisions","Superficial temporal artery and vein","Parotid duct"], correct:2, explain:"Upper end gives off superficial temporal vessels and auriculotemporal nerve; ECA exits inferiorly." },
+    {
+        q: "Which of the following is considered a major salivary gland?",
+        opts: ["Labial gland", "Parotid gland", "Buccal gland", "Palatal gland"],
+        correct: 1,
+        explain: "The major salivary glands are the Parotid, Submandibular, and Sublingual glands. The others listed are minor salivary glands."
+    },
+    {
+        q: "The parotid gland is located below which structure?",
+        opts: ["Zygomatic arch", "Angle of the mandible", "Hyoid bone", "Thyroid cartilage"],
+        correct: 1,
+        explain: "The parotid gland extends below the angle of the mandible."
+    },
+    {
+        q: "Which nerve passes through the parotid gland and divides into its terminal branches within it?",
+        opts: ["Trigeminal nerve (V)", "Facial nerve (VII)", "Glossopharyngeal nerve (IX)", "Vagus nerve (X)"],
+        correct: 1,
+        explain: "The Facial nerve (cranial nerve VII) is the most superficial structure passing through the parotid gland."
+    },
+    {
+        q: "The parotid duct, also known as Stensen's duct, opens into the oral cavity opposite which tooth?",
+        opts: ["Upper first molar", "Lower second molar", "Upper second molar", "Lower first premolar"],
+        correct: 2,
+        explain: "Stensen's duct opens into the vestibule of the mouth opposite the upper second molar tooth."
+    },
+    {
+        q: "Which artery enters the parotid gland and divides into its two terminal branches, the superficial temporal and maxillary arteries?",
+        opts: ["Internal carotid artery", "Facial artery", "Lingual artery", "External carotid artery"],
+        correct: 3,
+        explain: "The External Carotid Artery (ECA) is a deep structure within the gland that gives off its terminal branches there."
+    },
+    {
+        q: "The retromandibular vein is formed within the parotid gland by the union of which two veins?",
+        opts: ["Facial and lingual veins", "Superficial temporal and maxillary veins", "Posterior auricular and occipital veins", "Internal and external jugular veins"],
+        correct: 1,
+        explain: "The retromandibular vein is formed by the joining of the superficial temporal and maxillary veins within the parotid gland."
+    },
+    {
+        q: "Parasympathetic (secretory) nerve supply to the parotid gland originates from which cranial nerve?",
+        opts: ["Facial nerve (VII)", "Vagus nerve (X)", "Trigeminal nerve (V)", "Glossopharyngeal nerve (IX)"],
+        correct: 3,
+        explain: "The parasympathetic fibers originate from the glossopharyngeal nerve (IX), travel via the lesser petrosal nerve to the otic ganglion, and then to the gland via the auriculotemporal nerve."
+    },
+    {
+        q: "The submandibular gland is located within which triangle of the neck?",
+        opts: ["Carotid triangle", "Muscular triangle", "Submandibular triangle", "Submental triangle"],
+        correct: 2,
+        explain: "The submandibular gland is situated in the submandibular (or digastric) triangle."
+    },
+    {
+        q: "The submandibular duct, also known as Wharton's duct, opens into the floor of the mouth at the:",
+        opts: ["Sublingual fold", "Parotid papilla", "Frenulum of the tongue", "Sublingual papilla"],
+        correct: 3,
+        explain: "Wharton's duct opens at the sublingual papilla, on the side of the frenulum of the tongue."
+    },
+    {
+        q: "Which muscle divides the submandibular gland into a superficial and a deep part?",
+        opts: ["Hyoglossus", "Digastric (anterior belly)", "Mylohyoid", "Stylohyoid"],
+        correct: 2,
+        explain: "The mylohyoid muscle separates the submandibular gland into its superficial and deep lobes."
+    },
+    {
+        q: "The parasympathetic (secretomotor) nerve supply to the submandibular and sublingual glands comes from which nerve?",
+        opts: ["Hypoglossal nerve", "Glossopharyngeal nerve", "Chorda tympani branch of the Facial nerve", "Lingual nerve (sensory only)"],
+        correct: 2,
+        explain: "Secretomotor fibers originate from the facial nerve (VII) and travel via its chorda tympani branch, which then joins the lingual nerve to reach the submandibular ganglion."
+    },
+    {
+        q: "Which of these structures is NOT a content of the carotid sheath, found posteromedial to the parotid gland?",
+        opts: ["Internal carotid artery", "Internal jugular vein", "Vagus nerve", "Facial nerve"],
+        correct: 3,
+        explain: "The carotid sheath contains the internal carotid artery, internal jugular vein, and the lower four cranial nerves (IX, X, XI, XII). The facial nerve (VII) pierces the gland but is not in the sheath at this level."
+    },
+    {
+        q: "What is the smallest of the three main salivary glands?",
+        opts: ["Parotid gland", "Submandibular gland", "Sublingual gland", "Accessory parotid gland"],
+        correct: 2,
+        explain: "The sublingual gland is the smallest of the three major salivary glands."
+    },
+    {
+        q: "The sensory innervation to the capsule of the parotid gland is provided by which nerve?",
+        opts: ["Auriculotemporal nerve", "Great auricular nerve", "Lesser petrosal nerve", "Buccal branch of facial nerve"],
+        correct: 1,
+        explain: "The great auricular nerve provides sensory innervation to the parotid capsule (fascia), while the auriculotemporal nerve supplies sensory fibers to the gland itself."
+    },
+    {
+        q: "Which of the following is NOT one of the five terminal branches of the facial nerve that emerge from the parotid gland?",
+        opts: ["Temporal", "Zygomatic", "Auricular", "Cervical"],
+        correct: 2,
+        explain: "The five terminal branches are Temporal, Zygomatic, Buccal, Mandibular, and Cervical. The posterior auricular nerve is a branch given off before the nerve enters the gland."
+    },
+    {
+        q: "The parotid duct pierces all the following structures EXCEPT:",
+        opts: ["Buccal pad of fat", "Buccopharyngeal fascia", "Masseter muscle", "Buccinator muscle"],
+        correct: 2,
+        explain: "The parotid duct passes across the masseter muscle but pierces the buccal pad of fat, buccopharyngeal fascia, and buccinator muscle to enter the mouth."
+    },
+    {
+        q: "The lingual nerve has a specific relationship with the submandibular duct. What is it?",
+        opts: ["It runs superior to the duct", "It runs inferior to the duct", "It hooks around the duct from lateral to medial", "It pierces the duct"],
+        correct: 2,
+        explain: "The lingual nerve initially runs superior and lateral to the submandibular duct, then loops under it to become medial."
+    },
+    {
+        q: "The deep part of the submandibular gland lies between which two muscles?",
+        opts: ["Mylohyoid and Genioglossus", "Mylohyoid and Hyoglossus", "Hyoglossus and Styloglossus", "Digastric and Stylohyoid"],
+        correct: 1,
+        explain: "The deep part of the submandibular gland is located between the mylohyoid muscle laterally and the hyoglossus muscle medially."
+    },
+    {
+        q: "Minor salivary glands contribute approximately what percentage of the total salivary volume?",
+        opts: ["5%", "10%", "50%", "90%"],
+        correct: 1,
+        explain: "Minor salivary glands are numerous but produce only about 10% of the total saliva."
+    },
+    {
+        q: "A common clinical issue associated with the parotid gland due to its tight capsule is:",
+        opts: ["Facial paralysis", "Severe pain during infection (e.g., mumps)", "Formation of salivary stones (sialolithiasis)", "Development of mucoceles"],
+        correct: 1,
+        explain: "The unyielding nature of the outer (false) capsule of the parotid gland causes significant pain when the gland swells during infections like mumps."
+    },
+    {
+        q: "What is the relationship of the facial nerve to the other major structures within the parotid gland?",
+        opts: ["Deepest structure", "Intermediate structure", "Most superficial structure", "Anterior structure"],
+        correct: 2,
+        explain: "From deep to superficial, the structures are: External Carotid Artery, Retromandibular Vein, and Facial Nerve."
+    },
+    {
+        q: "Which structures emerge from the anterior border of the parotid gland?",
+        opts: ["Superficial temporal artery and vein", "Parotid duct, transverse facial artery, and branches of the facial nerve", "Auriculotemporal nerve", "Cervical branch of the facial nerve"],
+        correct: 1,
+        explain: "The parotid duct, transverse facial artery, and the zygomatic, buccal, and mandibular branches of the facial nerve emerge from the anterior border."
+    },
+    {
+        q: "Sympathetic (vasomotor) nerve supply to the salivary glands comes from the:",
+        opts: ["Vagus nerve", "Plexus around the internal carotid artery", "Plexus around the external carotid and facial arteries", "Trigeminal nerve"],
+        correct: 2,
+        explain: "Sympathetic fibers originate from the superior cervical ganglion and travel along the plexuses of arteries supplying the glands, such as the external carotid and facial arteries."
+    },
+    {
+        q: "The anteromedial surface of the parotid gland is related to which muscles?",
+        opts: ["Masseter and medial pterygoid", "Temporalis and lateral pterygoid", "Sternocleidomastoid and Digastric", "Buccinator and Orbicularis oris"],
+        correct: 0,
+        explain: "The anteromedial surface of the parotid gland is related to the posterior border of the ramus of the mandible, as well as the masseter and medial pterygoid muscles."
+    },
+    {
+        q: "Which minor salivary glands are purely mucous in secretion type?",
+        opts: ["Labial glands", "Buccal glands", "Palatine glands", "Anterior lingual glands"],
+        correct: 2,
+        explain: "The palatine and posterior lingual glands are purely mucous. The labial, buccal, and anterior lingual glands are mixed."
+    },
+    {
+        q: "Injury to which nerve during submandibular gland excision can cause issues with tongue movement and sensation?",
+        opts: ["Facial nerve and Hypoglossal nerve", "Lingual nerve and Hypoglossal nerve", "Glossopharyngeal nerve and Vagus nerve", "Accessory nerve and Phrenic nerve"],
+        correct: 1,
+        explain: "The lingual nerve (for sensation) and hypoglossal nerve (for motor function) are in close relation to the submandibular gland and its duct."
+    },
+    {
+        q: "What structure forms the 'true' inner capsule of the parotid gland?",
+        opts: ["Investing layer of deep cervical fascia", "Buccopharyngeal fascia", "Condensation of fibrous connective tissue", "Perimysium of the masseter muscle"],
+        correct: 2,
+        explain: "The inner (true) capsule is a condensation of the gland's own connective tissue, while the outer (false) capsule is derived from the deep cervical fascia."
+    },
+    {
+        q: "The posteromedial surface of the parotid gland is related to which bony process?",
+        opts: ["Zygomatic process", "Coronoid process", "Mastoid process", "Condylar process"],
+        correct: 2,
+        explain: "The posteromedial surface is related to the mastoid process and the styloid process."
+    },
+    {
+        q: "How many ducts does the sublingual gland typically have?",
+        opts: ["One main duct", "Two ducts", "Three ducts", "Multiple small ducts (8-20)"],
+        correct: 3,
+        explain: "The sublingual gland has numerous small ducts (of Rivinus) that open onto the sublingual fold, with some occasionally joining the submandibular duct."
+    },
+    {
+        q: "Sialolithiasis (salivary stones) is most common in which gland's duct?",
+        opts: ["Parotid (Stensen's duct)", "Submandibular (Wharton's duct)", "Sublingual ducts", "Minor salivary glands"],
+        correct: 1,
+        explain: "Due to the long, upward course of Wharton's duct and the thicker, mucous nature of the submandibular saliva, it is the most common site for salivary stones."
+    }
 ];
 
 const tfs = [
-  { q:"Minor salivary glands are only three pairs in number.", answer:false, explain:"They are numerous (hundreds), not just three pairs." },
-  { q:"The parotid duct pierces the buccinator muscle before opening into the vestibule.", answer:true, explain:"It crosses masseter, turns medially, pierces buccinator, and opens opposite the upper 2nd molar." },
-  { q:"Sympathetic fibers to the parotid are mainly secretomotor.", answer:false, explain:"They are vasomotor; parasympathetics are secretomotor." },
-  { q:"The submandibular gland’s deep part lies between mylohyoid and hyoglossus.", answer:true, explain:"Deep part is wedged between those muscles." },
-  { q:"The facial nerve enters the parotid at its posteromedial surface.", answer:true, explain:"That is the classic entry point before branching." },
-  { q:"Stensen’s duct opens opposite the lower second molar tooth.", answer:false, explain:"It opens opposite the UPPER second molar." },
-  { q:"The capsule around the parotid is loose and compliant, explaining mild pain in parotitis.", answer:false, explain:"Parotid fascia is tight → severe pain with swelling." },
-  { q:"Wharton’s duct stones are a recognized cause of submandibular swelling.", answer:true, explain:"Sialolithiasis commonly affects Wharton’s duct." },
-  { q:"The auriculotemporal nerve provides sensory to the parotid gland and carries postganglionic parasympathetic fibers.", answer:true, explain:"From the otic ganglion to the gland via auriculotemporal." }
+    {
+        q: "The parotid gland is the largest of the major salivary glands.",
+        answer: true,
+        explain: "The parotid is the largest, followed by the submandibular, and then the sublingual."
+    },
+    {
+        q: "The facial nerve is the deepest structure passing through the parotid gland.",
+        answer: false,
+        explain: "The facial nerve is the most superficial. The external carotid artery is the deepest, and the retromandibular vein is intermediate."
+    },
+    {
+        q: "All major salivary glands are classified as exocrine glands.",
+        answer: true,
+        explain: "Salivary glands are exocrine because they secrete saliva into the oral cavity via ducts."
+    },
+    {
+        q: "The submandibular gland produces purely serous saliva.",
+        answer: false,
+        explain: "The submandibular gland produces a mixed serous and mucous secretion. The parotid is purely serous."
+    },
+    {
+        q: "The auriculotemporal nerve provides secretomotor (parasympathetic) fibers to the parotid gland.",
+        answer: true,
+        explain: "The parasympathetic fibers, having synapsed in the otic ganglion, travel with the auriculotemporal nerve to innervate the parotid gland."
+    },
+    {
+        q: "Minor salivary glands are encapsulated.",
+        answer: false,
+        explain: "Minor salivary glands are unencapsulated and are scattered throughout the oral mucosa."
+    },
+    {
+        q: "Wharton's duct is another name for the parotid duct.",
+        answer: false,
+        explain: "Wharton's duct is the name for the submandibular duct. The parotid duct is called Stensen's duct."
+    },
+    {
+        q: "The deep part of the submandibular gland is located superior to the mylohyoid muscle.",
+        answer: true,
+        explain: "The deep part lies deep (superior) to the mylohyoid muscle, while the superficial part is superficial (inferior) to it."
+    },
+    {
+        q: "The sensory innervation to the submandibular gland itself is provided by the hypoglossal nerve.",
+        answer: false,
+        explain: "Sensory innervation to the submandibular and sublingual glands is provided by the lingual nerve (a branch of V3)."
+    }
 ];
 
 const saqs = [
-  // 1. Direct Answer
-  { q: "Briefly define the salivary glands and their function.", a: "Exocrine glands that secrete saliva via ducts to the oral cavity for lubrication, digestion initiation, buffering, and protection." },
-  // 2. List / Enumeration (>=3)
-  { q: "List the five terminal branches of the facial nerve within the parotid.", a: "1) Temporal 2) Zygomatic 3) Buccal 4) Mandibular (marginal) 5) Cervical" },
-  // 3. Comparison (numbered table)
-  { q: "Compare major vs. minor salivary glands in terms of number, capsule, duct system, and saliva contribution.", a: `<table style="width:100%;border-collapse:collapse"><thead><tr><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">#</th><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">Feature</th><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">Major</th><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">Minor</th></tr></thead><tbody>
-      <tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">1</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Number</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">3 pairs</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Hundreds</td></tr>
-      <tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">2</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Capsule</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Encapsulated</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Unencapsulated</td></tr>
-      <tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">3</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Duct system</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Distinct, long duct</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Short ducts open directly</td></tr>
-      <tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">4</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Saliva volume</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">~90%</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">~10%</td></tr>
-    </tbody></table>` },
-  // 4. Case-based Scenario
-  { q: "A 25-year-old presents with painful swelling over the cheek that worsens during meals; the papilla opposite the upper 2nd molar looks erythematous. What is the most likely diagnosis and obstructed structure?", a: "Sialolithiasis of Stensen’s (parotid) duct causing obstructive parotitis." },
-  // 5. Short description
-  { q: "Summarize the course of the parotid duct.", a: "Runs over masseter below zygomatic arch → turns medially → pierces buccal fat pad, buccopharyngeal fascia, buccinator, and buccal mucosa → opens opposite upper 2nd molar." },
-  // 6. Pathway (very short)
-  { q: "Outline the parasympathetic pathway to the parotid gland in one line.", a: "CN IX (tympanic) → lesser petrosal → otic ganglion → auriculotemporal nerve → parotid." }
+    {
+        q: "List the three main structures that pass through the substance of the parotid gland, from deep to superficial.",
+        a: "The three structures passing through the parotid gland are:<br>1. External Carotid Artery (deepest)<br>2. Retromandibular Vein (intermediate)<br>3. Facial Nerve (most superficial)"
+    },
+    {
+        q: "Describe the course of the parotid (Stensen's) duct from the gland to its opening in the oral cavity.",
+        a: "The parotid duct emerges from the anterior border of the gland, passes forward across the masseter muscle, then turns medially to pierce the buccal pad of fat, the buccopharyngeal fascia, and the buccinator muscle. It finally opens into the vestibule of the mouth on the parotid papilla, opposite the crown of the upper second molar tooth."
+    },
+    {
+        q: "Compare the major and minor salivary glands based on three features.",
+        a: "<table><tr><th>Feature</th><th>Major Salivary Glands</th><th>Minor Salivary Glands</th></tr><tr><td>1. Size</td><td>Large</td><td>Small, microscopic</td></tr><tr><td>2. Capsule</td><td>Encapsulated</td><td>Unencapsulated</td></tr><tr><td>3. Ducts</td><td>Long, distinct ducts</td><td>Short, simple ducts opening directly</td></tr><tr><td>4. Number</td><td>3 pairs (6 total)</td><td>Numerous (hundreds)</td></tr></table>"
+    },
+    {
+        q: "A patient presents with painful swelling in the right cheek area that worsens during meals. Blockage of which structure is the most likely cause, and where would you check intraorally for its opening?",
+        a: "The most likely cause is a blockage (sialolithiasis) of the right parotid (Stensen's) duct. You would check for its opening intraorally on the parotid papilla, located on the buccal mucosa opposite the upper right second molar tooth."
+    },
+    {
+        q: "List the five terminal motor branches of the facial nerve that emerge from the parotid gland.",
+        a: "The five terminal branches of the facial nerve are:<br>1. Temporal branch<br>2. Zygomatic branch<br>3. Buccal branch<br>4. Mandibular branch<br>5. Cervical branch"
+    },
+    {
+        q: "During a surgical procedure to remove the submandibular gland, which two major nerves are at risk of injury due to their close proximity to the gland and its duct?",
+        a: "The two nerves most at risk during submandibular gland excision are:<br>1. The Lingual Nerve (which hooks around the submandibular duct and provides sensation to the anterior two-thirds of the tongue).<br>2. The Hypoglossal Nerve (which runs deep to the gland and controls the motor functions of the tongue)."
+    }
 ];
 
 // ----------- State -----------
@@ -389,7 +586,7 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>

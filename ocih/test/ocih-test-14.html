@@ -92,7 +92,7 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
   /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
@@ -107,7 +107,7 @@
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
@@ -127,6 +127,9 @@
   }
   .score .part{color:var(--muted);font-weight:600}
   .score b{color:var(--text)}
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid var(--glass-border); padding: 8px; text-align: left; }
+  th { background-color: var(--glass); }
 </style>
 </head>
 <body>
@@ -169,65 +172,309 @@
   </main>
 
 <script>
-// ----------- Data (from lecture OCIH-14) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q:"The lining mucous membrane of the paranasal sinuses is composed of:", opts:["Stratified squamous epithelium","Respiratory epithelium","Keratinized columnar epithelium","Transitional epithelium"], correct:1, explain:"Sinus lining is respiratory epithelium (pseudostratified ciliated columnar)." },
-  { q:"Normal thickness of maxillary sinus mucosa is about:", opts:["0.2 mm","1 mm","3 mm","5 mm"], correct:1, explain:"Normally ~1 mm; inflammation can increase it >3 mm." },
-  { q:"Mucositis on radiograph most typically appears as:", opts:["Irregular radiolucent band crossing the sinus","Radiopaque band paralleling the bony sinus wall","Multiple radiopaque nodules in center of sinus","Complete opacification of sinus"], correct:1, explain:"Inflamed thick mucosa forms a uniform radiopaque band along the wall." },
-  { q:"Which is NOT a common cause of mucositis?", opts:["Allergic conditions","Periodontal and periapical disease","Viral infections","Genetic enamel defects"], correct:3, explain:"Allergy and dental infections are causes; genetic enamel defects are unrelated." },
-  { q:"Maxillary sinusitis is defined as inflammation of the mucosa of:", opts:["All paranasal sinuses","Frontal sinus only","Maxillary sinus","Ethmoid sinus only"], correct:2, explain:"Maxillary sinusitis involves the mucosa of the maxillary sinus specifically." },
-  { q:"Pansinusitis involves:", opts:["Two contralateral sinuses","Only the largest sinus","All paranasal sinuses simultaneously","Only the ethmoid air cells"], correct:2, explain:"By definition, pansinusitis affects all paranasal sinuses at the same time." },
-  { q:"Acute sinusitis typically lasts:", opts:["1–3 days","Up to 4 weeks","4–12 weeks","Over 12 weeks"], correct:1, explain:"Acute ≤4 weeks; subacute 4–12; chronic >12 weeks." },
-  { q:"A key bacterial etiology for maxillary sinusitis listed in the lecture is:", opts:["Mycobacterium tuberculosis","Haemophilus influenzae","Candida albicans","Staphylococcus saprophyticus"], correct:1, explain:"H. influenzae and S. pneumoniae are common causes." },
-  { q:"Dental sources linked to maxillary sinusitis most commonly include infected:", opts:["Maxillary incisors","Maxillary premolars and first molars","Mandibular molars","Mandibular premolars"], correct:1, explain:"Infected maxillary premolars and first molars can drain into the sinus." },
-  { q:"A patient with acute maxillary sinusitis often reports cheek pain that worsens when:", opts:["Swallowing","Speaking","Bending forward","Chewing soft foods"], correct:2, explain:"Pain and a sense of fullness on bending forward are typical." },
-  { q:"Tenderness on tapping the anterior wall of the antrum suggests:", opts:["Frontal sinusitis","Maxillary sinus involvement","Otitis media","Temporomandibular disorder"], correct:1, explain:"Local tenderness over the anterior wall indicates maxillary sinus disease." },
-  { q:"An air–fluid level in the maxillary sinus is best appreciated on:", opts:["Panoramic view only","Periapical (IOPA) or Water's view","Occlusal view only","Lateral cephalogram"], correct:1, explain:"Air–fluid level shows as horizontal interface on IOPA/Waters radiograph." },
-  { q:"Which statement about the air–fluid level is TRUE?", opts:["Radiolucent fluid with convex border","Radiopaque fluid forming a horizontal upper border","Always forms an oblique border","Only seen in frontal sinus"], correct:1, explain:"Fluid is radiopaque inferiorly; the interface with air is horizontal." },
-  { q:"Subacute maxillary sinusitis is best described as:", opts:["Self-limited within 3 days","Intermediate stage between acute and chronic","Always painless","Always requires surgery"], correct:1, explain:"Subacute spans 4–12 weeks with persistent symptoms like cough and discharge." },
-  { q:"A hallmark symptom of chronic sinusitis in the lecture is:", opts:["Severe continuous pain","Purulent foul-smelling discharge with nasal blockage","Profuse epistaxis","Marked trismus"], correct:1, explain:"Chronic cases often lack pain but have purulent discharge and blockage." },
-  { q:"Which imaging is emphasized for evaluating chronic sinusitis?", opts:["Sialography","Computed tomography (CT)","MRI only","Lateral oblique mandible"], correct:1, explain:"CT is valuable for chronic sinusitis assessment." },
-  { q:"First-line medical management for acute sinusitis includes all EXCEPT:", opts:["Broad-spectrum antibiotics","Topical/systemic decongestants","Analgesics such as paracetamol","Immediate Caldwell–Luc operation"], correct:3, explain:"Surgery like Caldwell–Luc isn't first-line for acute cases." },
-  { q:"Steam inhalation recommended in the lecture includes:", opts:["Steam only","Steam with menthol and tincture","Dry heat only","Iced nebulization"], correct:1, explain:"Steam + menthol + tincture is suggested for symptomatic relief." },
-  { q:"Antral lavage in acute/chronic management involves:", opts:["Creating a bony window in canine fossa","Irrigating the sinus via inferior meatus with a cannula","Endoscopic middle meatal antrostomy","Packing the sinus with gauze"], correct:1, explain:"Cannula through inferior meatus with lukewarm irrigation to drain exudate." },
-  { q:"In chronic sinusitis, a procedure creating an opening in the inferior meatus is called:", opts:["Intranasal antrostomy","Septoplasty","Ethmoidectomy","Turbinate reduction"], correct:0, explain:"Intranasal antrostomy facilitates drainage via inferior meatus." },
-  { q:"Caldwell–Luc operation accesses the maxillary sinus via:", opts:["Frontal bone","Nasal cavity roof","Canine fossa","Zygomatic arch"], correct:2, explain:"Classic approach through canine fossa with antrostomy." },
-  { q:"Complications of maxillary sinusitis listed include all EXCEPT:", opts:["Orbital cellulitis","Osteomyelitis of maxilla","Middle ear infections","Parotid sialadenitis"], correct:3, explain:"Parotid involvement is not listed as a complication." },
-  { q:"Oroantral fistula is:", opts:["A natural ostium between sinuses","Unnatural communication between oral cavity and maxillary sinus","A developmental cyst","A benign neoplasm"], correct:1, explain:"Defined as an abnormal communication between oral cavity and the sinus." },
-  { q:"Most common dental etiology for oroantral fistula:", opts:["Endodontic perforation of mandibular molars","Extraction of an upper tooth","Impaction of mandibular third molar","Trauma to mandible"], correct:1, explain:"Extraction of maxillary posterior teeth can open the sinus." },
-  { q:"Blind instrumentation during extraction may lead to:", opts:["Osteoradionecrosis","Root displacement through the sinus floor","Cervical root resorption","Dry socket only"], correct:1, explain:"Forceful, blind instrumentation can push roots into the sinus." },
-  { q:"A bedside sign of oroantral communication after extraction:", opts:["Crepitus on palpation","Bubbling at socket when patient pinches nose and blows","Lingual nerve paresthesia","Metallic taste"], correct:1, explain:"Valsalva maneuver causes bubbles if there's communication." },
-  { q:"Radiographic sign of a tooth displaced into sinus:", opts:["Uniform radiolucency at apex","Radiopaque mass with enamel–dentin–pulp layers near sinus floor","Widened PDL around incisors","Calcified stylohyoid ligament"], correct:1, explain:"A tooth/fragment appears as a structured radiopaque mass in sinus." },
-  { q:"Surgical options for closing oroantral fistula include:", opts:["Buccal advancement flap and Caldwell–Luc","Apicoectomy only","Marsupialization","Hemiglossectomy"], correct:0, explain:"Buccal flap and, where indicated, Caldwell–Luc are listed options." },
-  { q:"Intrinsic diseases of the maxillary sinus include all EXCEPT:", opts:["Mucositis","Sinusitis","Antroliths and polyps","Periostitis"], correct:3, explain:"Periostitis is listed under extrinsic diseases." },
-  { q:"A benign neoplasm mentioned under intrinsic diseases is:", opts:["Osteoma","Ameloblastoma","Schwannoma","Hemangioma"], correct:0, explain:"Osteomas are cited as benign neoplasms of the sinus." }
+    {
+        q: "What is the normal thickness of the mucous membrane lining the paranasal sinuses?",
+        opts: ["1 mm", "3 mm", "5 mm", "10 mm"],
+        correct: 0,
+        explain: "The lining mucous membrane of the paranasal sinuses is normally about 1 mm thick."
+    },
+    {
+        q: "In mucositis, the mucous membrane can increase in thickness by how much?",
+        opts: ["2 to 5 times", "5 to 10 times", "10 to 15 times", "20 to 25 times"],
+        correct: 2,
+        explain: "When inflamed, the mucous membrane may increase in thickness 10 to 15 times its normal size."
+    },
+    {
+        q: "Which of the following is considered an intrinsic inflammatory disease of the maxillary sinus?",
+        opts: ["Periostitis", "Odontogenic cysts", "Mucositis", "Traumatic injuries"],
+        correct: 2,
+        explain: "Mucositis is listed under intrinsic inflammatory diseases of the maxillary sinus."
+    },
+    {
+        q: "What is the term for inflammation of the mucosa of all sinuses simultaneously?",
+        opts: ["Maxillary sinusitis", "Pansinusitis", "Mucositis", "Antroliths"],
+        correct: 1,
+        explain: "Pansinusitis is the inflammation of the mucosa of all sinuses simultaneously."
+    },
+    {
+        q: "How long does acute maxillary sinusitis typically last?",
+        opts: ["Up to 4 weeks", "4-12 weeks", "Over 12 weeks", "Up to 1 week"],
+        correct: 0,
+        explain: "Acute maxillary sinusitis lasts up to 4 weeks."
+    },
+    {
+        q: "Which bacteria are commonly associated with maxillary sinusitis?",
+        opts: ["Staphylococcus aureus", "Escherichia coli", "Hemophilus influenza & Streptococcus pneumonia", "Pseudomonas aeruginosa"],
+        correct: 2,
+        explain: "Hemophilus influenza and Streptococcus pneumonia are common etiological agents for maxillary sinusitis."
+    },
+    {
+        q: "A key clinical feature of acute sinusitis is pain on the cheek when...",
+        opts: ["Lying down", "Bending forward", "Eating", "Speaking"],
+        correct: 1,
+        explain: "A sense of fullness and pain on the cheek on bending forward is a characteristic symptom of acute sinusitis."
+    },
+    {
+        q: "Which radiographic view is specifically mentioned for diagnosing maxillary sinusitis?",
+        opts: ["Cephalometric view", "Panoramic view", "Periapical view", "Water's (Occipitomental) view"],
+        correct: 3,
+        explain: "Water's (Occipitomental) view is the recommended radiograph for diagnosing sinusitis."
+    },
+    {
+        q: "What does an 'air-fluid level' on a radiograph indicate in the context of sinusitis?",
+        opts: ["A normal, healthy sinus", "Fluid accumulation in the sinus", "A benign tumor", "A fractured sinus wall"],
+        correct: 1,
+        explain: "An air-fluid level indicates that fluid occupies the inferior aspect of the sinus, a common finding in sinusitis."
+    },
+    {
+        q: "Subacute maxillary sinusitis is defined as lasting for what duration?",
+        opts: ["Less than 4 weeks", "4-12 weeks", "Over 12 weeks", "1-2 weeks"],
+        correct: 1,
+        explain: "Subacute sinusitis is an intermediate stage lasting from 4 to 12 weeks."
+    },
+    {
+        q: "Which condition is NOT listed as a cause for impaired drainage leading to chronic sinusitis?",
+        opts: ["Polyps", "Adenoids", "Hypertension", "Tumors"],
+        correct: 2,
+        explain: "Polyps, DNS, Adenoids, Tumors, and Allergy can cause impaired drainage. Hypertension is not mentioned."
+    },
+    {
+        q: "A common symptom of chronic sinusitis that is often absent in acute sinusitis is:",
+        opts: ["Fever and malaise", "Pain on bending forward", "No pain, but purulent foul-smelling discharge", "Severe headache"],
+        correct: 2,
+        explain: "Chronic sinusitis is often characterized by a lack of pain but the presence of a purulent, foul-smelling discharge."
+    },
+    {
+        q: "What is the primary goal of using decongestants in the management of acute sinusitis?",
+        opts: ["To kill bacteria", "To relieve pain", "To promote drainage of the sinus", "To reduce fever"],
+        correct: 2,
+        explain: "Decongestants are used to help with the drainage of the sinus."
+    },
+    {
+        q: "What is 'Antral lavage'?",
+        opts: ["A surgical removal of the sinus", "A type of antibiotic", "Irrigating the sinus with lukewarm water", "A diagnostic imaging technique"],
+        correct: 2,
+        explain: "Antral lavage involves inserting a cannula and irrigating the sinus to drain exudate."
+    },
+    {
+        q: "The Caldwell-Luc operation involves gaining entry into the maxillary sinus through the:",
+        opts: ["Inferior meatus", "Canine fossa", "Nasal septum", "Orbital floor"],
+        correct: 1,
+        explain: "The Caldwell-Luc operation gains entry into the maxillary sinus via the canine fossa."
+    },
+    {
+        q: "Which of the following is a potential complication of maxillary sinusitis?",
+        opts: ["Hearing loss", "Orbital cellulitis", "Tooth decay", "Jaw dislocation"],
+        correct: 1,
+        explain: "Orbital cellulitis, osteomyelitis of the maxilla, and middle ear infections are listed as complications."
+    },
+    {
+        q: "What is an Oroantral Fistula?",
+        opts: ["A natural opening of the sinus", "A blockage in the sinus", "An unnatural communication between the oral cavity and maxillary sinus", "A type of sinus infection"],
+        correct: 2,
+        explain: "An oroantral fistula is an unnatural communication between the oral cavity and the maxillary sinus."
+    },
+    {
+        q: "What is the most common cause of an Oroantral Fistula?",
+        opts: ["Deep fungal infection", "Extraction of an upper tooth", "Malignancy", "Osteomyelitis"],
+        correct: 1,
+        explain: "The extraction of an upper tooth is a primary cause of oroantral fistula."
+    },
+    {
+        q: "What is a sign of an oroantral fistula where liquids may pass from the mouth to the nose?",
+        opts: ["Epistaxis", "Dysphagia", "Regurgitation of liquids", "Anosmia"],
+        correct: 2,
+        explain: "Regurgitation of liquids from the oral cavity into the nasal cavity is a key sign of an oroantral fistula."
+    },
+    {
+        q: "Displacement of a tooth root into the maxillary sinus is most likely to happen with which tooth?",
+        opts: ["Maxillary canine", "Maxillary central incisor", "Maxillary first molar", "Maxillary third molar"],
+        correct: 2,
+        explain: "The slides show an example of a maxillary first molar root accidentally pushed into the sinus."
+    },
+    {
+        q: "What is the radiographic appearance of a tooth root in the sinus?",
+        opts: ["A radiolucent area", "A radiopaque mass with layers of enamel, dentin & pulp", "A cotton-wool appearance", "A sun-ray appearance"],
+        correct: 1,
+        explain: "Radiographically, a displaced tooth appears as a radiopaque mass with the distinct layers of a tooth structure."
+    },
+    {
+        q: "Which is a surgical procedure used to manage an oroantral fistula?",
+        opts: ["Gingivectomy", "Apicoectomy", "Buccal Flap surgery", "Frenectomy"],
+        correct: 2,
+        explain: "Buccal Flap surgery and the Caldwell-Luc procedure are surgical management options for oroantral communications."
+    },
+    {
+        q: "Which of the following is NOT an extrinsic disease of the maxillary sinus?",
+        opts: ["Periostitis", "Osteomas", "Odontogenic tumors", "Traumatic injuries"],
+        correct: 1,
+        explain: "Osteomas are listed under benign neoplasms, which are intrinsic diseases."
+    },
+    {
+        q: "The clinical features of mucositis are typically:",
+        opts: ["Painful and symptomatic", "Asymptomatic", "Associated with fever", "Visible as a swelling on the cheek"],
+        correct: 1,
+        explain: "Mucositis is usually asymptomatic and discovered on routine radiographs."
+    },
+    {
+        q: "In a Waters view radiograph of a patient with sinusitis, the border between the fluid and air is typically:",
+        opts: ["Vertical", "Curved", "Irregular", "Horizontal"],
+        correct: 3,
+        explain: "The border between the radiopaque fluid and the radiolucent antrum is horizontal, known as an air-fluid level."
+    },
+    {
+        q: "What is the purpose of the transillumination test in diagnosing sinusitis?",
+        opts: ["To measure the sinus volume", "To show opacity in the involved sinus", "To culture bacteria", "To assess airflow"],
+        correct: 1,
+        explain: "The transillumination test shows opacity in the involved sinus, indicating it is filled with fluid or thickened mucosa rather than air."
+    },
+    {
+        q: "What does 'unilateral epistaxis' refer to in the context of an oroantral fistula?",
+        opts: ["Bleeding from both nostrils", "Nasal congestion", "Bleeding from the nose on one side", "Loss of smell"],
+        correct: 2,
+        explain: "Unilateral epistaxis means bleeding from the nose on one side, which can occur due to blood in the maxillary sinus."
+    },
+    {
+        q: "Which condition can lead to odontogenic maxillary sinusitis?",
+        opts: ["A healthy maxillary molar", "Overextension of dental material into the sinus", "Bruxism", "Gingivitis"],
+        correct: 1,
+        explain: "Overextension of materials like sealers, cements, or GP cones into the sinus can result in odontogenic maxillary sinusitis."
+    },
+    {
+        q: "A simple clinical test for an oroantral communication after an extraction is:",
+        opts: ["Percussion of adjacent teeth", "Asking the patient to hold their nose and blow gently", "Taking a panoramic radiograph", "Applying pressure to the socket"],
+        correct: 1,
+        explain: "Asking the patient to hold their nose and attempt to breathe out through it can show bubbles in the socket, indicating a communication."
+    },
+    {
+        q: "The Caldwell-Luc operation combines entry via the canine fossa with what other procedure?",
+        opts: ["A buccal flap", "A palatal flap", "A nasal antrostomy", "Extraction of a tooth"],
+        correct: 2,
+        explain: "The procedure involves gaining entry into the maxillary sinus via the canine fossa with a nasal antrostomy to facilitate drainage."
+    }
 ];
 
 const tfs = [
-  { q:"In mucositis, mucosal thickness may increase 10–15 times (>3 mm).", answer:true, explain:"Inflammation can raise thickness from ~1 mm to >3 mm." },
-  { q:"Pansinusitis refers to inflammation of the maxillary sinus only.", answer:false, explain:"Pansinusitis involves all paranasal sinuses simultaneously." },
-  { q:"Pain is a consistent feature of chronic maxillary sinusitis.", answer:false, explain:"Chronic cases are often painless with nonspecific symptoms." },
-  { q:"Water's (occipitomental) view is useful for diagnosing maxillary sinus disease.", answer:true, explain:"Water's view and IOPA aid evaluation." },
-  { q:"CT is emphasized for evaluating chronic sinusitis.", answer:true, explain:"Especially valuable in chronic disease assessment." },
-  { q:"Intranasal antrostomy creates an opening in the middle meatus.", answer:false, explain:"Lecture specifies inferior meatus opening." },
-  { q:"Steam inhalation with menthol was recommended for symptomatic relief.", answer:true, explain:"Part of supportive management." },
-  { q:"Orbital cellulitis is not a complication of maxillary sinusitis.", answer:false, explain:"It is listed as a serious complication." },
-  { q:"Oroantral fistula may lead to regurgitation of liquids through the nose.", answer:true, explain:"Typical symptom after communication is established." }
+    {
+        q: "Mucositis is a benign neoplasm of the maxillary sinus.",
+        answer: false,
+        explain: "Mucositis is an inflammatory disease, not a neoplasm."
+    },
+    {
+        q: "The mucous membrane of the paranasal sinuses is composed of respiratory epithelium.",
+        answer: true,
+        explain: "The lining is indeed composed of respiratory epithelium."
+    },
+    {
+        q: "Acute sinusitis is defined as an infection lasting over 12 weeks.",
+        answer: false,
+        explain: "Acute sinusitis lasts up to 4 weeks. Chronic sinusitis is over 12 weeks."
+    },
+    {
+        q: "A Water's view radiograph is not useful for diagnosing sinusitis.",
+        answer: false,
+        explain: "A Water's (Occipitomental) view is a key diagnostic tool for sinusitis."
+    },
+    {
+        q: "Chronic sinusitis is always associated with severe pain.",
+        answer: false,
+        explain: "Chronic sinusitis often presents with no pain, but with a purulent, foul-smelling discharge."
+    },
+    {
+        q: "Antral lavage is a surgical procedure to remove the entire maxillary sinus.",
+        answer: false,
+        explain: "Antral lavage is the irrigation of the sinus to clear out exudate, not its removal."
+    },
+    {
+        q: "An oroantral fistula is a natural communication between the oral cavity and the sinus.",
+        answer: false,
+        explain: "It is an unnatural communication, often caused by trauma or tooth extraction."
+    },
+    {
+        q: "Regurgitation of liquids into the nose can be a sign of an oroantral fistula.",
+        answer: true,
+        explain: "This is a classic sign, as fluids can pass from the mouth to the sinus and then to the nose."
+    },
+    {
+        q: "The Caldwell-Luc operation provides access to the maxillary sinus through the inferior meatus.",
+        answer: false,
+        explain: "It provides access through the canine fossa, not the inferior meatus."
+    }
 ];
 
 const saqs = [
-  // 1. Direct answer
-  { q: "Define maxillary sinusitis.", a: "Inflammation of the mucosal lining of the maxillary sinus." },
-  // 2. List / Enumeration (use numbered list)
-  { q: "List three common etiologies of maxillary sinusitis mentioned in the lecture.", a: "<ol><li>Allergic or viral insults</li><li>Haemophilus influenzae / Streptococcus pneumoniae</li><li>Odontogenic infection (maxillary premolars/first molars)</li></ol>" },
-  // 3. Comparison (numbered table)
-  { q: "Compare acute, subacute, and chronic sinusitis by duration.", a: "<table style=\"width:100%;border-collapse:collapse\"><thead><tr><th style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">#</th><th style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">Type</th><th style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">Duration</th></tr></thead><tbody><tr><td style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">1</td><td style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">Acute</td><td style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">Up to 4 weeks</td></tr><tr><td style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">2</td><td style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">Subacute</td><td style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">4–12 weeks</td></tr><tr><td style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">3</td><td style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">Chronic</td><td style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">&gt;12 weeks</td></tr></tbody></table>" },
-  // 4. Case-based scenario
-  { q: "A 35-year-old presents with cheek fullness, pain on bending forward, nasal blockage, and tenderness over the anterior antral wall. What is the most likely diagnosis?", a: "Acute maxillary sinusitis." },
-  // 5. Direct answer (radiology)
-  { q: "What classic radiographic sign indicates fluid in the maxillary sinus?", a: "A horizontal air–fluid level (radiopaque inferior fluid with a flat superior border)." },
-  // 6. Direct answer (procedure)
-  { q: "Name the surgical approach that gains entry to the maxillary sinus via the canine fossa.", a: "Caldwell–Luc operation (with nasal antrostomy)." }
+    {
+        q: "Define mucositis and describe its appearance on a radiograph.",
+        a: "Mucositis is the inflammation and thickening of the mucous membrane lining the maxillary sinus. On a radiograph, it appears as a noticeably more radiopaque (brighter) band that parallels the bony wall of the sinus."
+    },
+    {
+        q: "List three distinct causes of an oroantral fistula.",
+        a: `
+            <ol>
+                <li>Extraction of an upper tooth (especially molars and premolars).</li>
+                <li>Trauma to the face or maxilla.</li>
+                <li>Pathological processes such as osteomyelitis, malignancy, or deep fungal infections.</li>
+            </ol>
+        `
+    },
+    {
+        q: "Compare the typical clinical features of acute maxillary sinusitis versus chronic maxillary sinusitis.",
+        a: `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Acute Sinusitis</th>
+                        <th>Chronic Sinusitis</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>Pain</b></td>
+                        <td>Present, especially on bending forward. Tenderness over the cheek.</td>
+                        <td>Often absent or non-specific.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Discharge</b></td>
+                        <td>Nasal discharge is common.</td>
+                        <td>Purulent, foul-smelling discharge is characteristic.</td>
+                    </tr>
+                    <tr>
+                        <td><b>Constitutional Symptoms</b></td>
+                        <td>Fever, malaise, and body ache are common.</td>
+                        <td>Usually absent. Symptoms like insomnia or voice change can occur.</td>
+                    </tr>
+                     <tr>
+                        <td><b>Duration</b></td>
+                        <td>Up to 4 weeks.</td>
+                        <td>Over 12 weeks, lasting for months or years.</td>
+                    </tr>
+                </tbody>
+            </table>
+        `
+    },
+    {
+        q: "Describe the medical management steps for acute maxillary sinusitis.",
+        a: `
+            <ol>
+                <li><b>Antibiotics:</b> Broad-spectrum antibiotics to combat the bacterial infection.</li>
+                <li><b>Decongestants:</b> To reduce mucosal swelling and promote sinus drainage.</li>
+                <li><b>Analgesics:</b> Pain relievers like paracetamol to manage pain and fever.</li>
+                <li><b>Steam Inhalation:</b> Often with menthol, to help soothe membranes and promote drainage.</li>
+                <li><b>Hot Fomentation:</b> Applying a warm compress to the cheek area for soothing relief.</li>
+            </ol>
+        `
+    },
+    {
+        q: "A patient presents to your clinic a day after the extraction of their upper right first molar. They complain that liquids they drink are coming out of their right nostril. What is the most likely diagnosis, and what simple clinical test could you perform to confirm it?",
+        a: "The most likely diagnosis is an oroantral fistula (or communication). This is an opening between the oral cavity and the maxillary sinus created during the extraction. A simple clinical test is to ask the patient to gently pinch their nose closed and try to blow out through it. If a fistula is present, air bubbles will be seen coming from the extraction socket."
+    },
+    {
+        q: "Explain the Caldwell-Luc operation, including its purpose and point of entry.",
+        a: "The Caldwell-Luc operation is a surgical procedure used to gain access to the maxillary sinus, typically for treating chronic sinusitis or removing foreign bodies. The purpose is to create an opening to clear out diseased tissue and establish better drainage. The entry point is made through the canine fossa, which is the depression in the maxillary bone above the canine tooth root."
+    }
 ];
 
 // ----------- State -----------

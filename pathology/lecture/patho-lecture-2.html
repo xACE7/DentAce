@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Two-Column Sections</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+  .sec-body strong { color: #8b5cf6; }
+
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
+</style>
+</head>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 2
+</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِنْ لِسَانِي يَفْقَهُوا قَوْلِي</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Cellular Adaptations</b></span>
+<span class="ar"><b>الموضوع: التكيف الخلوي</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Introduction to Homeostasis & Cellular Responses</span><span class="ar">مقدمة في الاستتباب والاستجابات الخلوية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Homeostasis</strong> is the normal "steady state" where cells exist in equilibrium with their environment to function properly. When this balance is disturbed, it can lead to pathology.</p>
+<p>Cells constantly adjust their structure and function to handle changing demands and stresses. This process can be summarized in a sequence:</p>
+<ul>
+<li>A normal cell is in <strong>homeostasis</strong>.</li>
+<li>When faced with stress, it undergoes <strong>adaptation</strong>.</li>
+<li>If the stress is mild or transient, it might lead to <strong>reversible cell injury</strong>.</li>
+<li>If the stress is severe or progressive, or if the cell cannot adapt, it results in <strong>irreversible cell injury</strong>.</li>
+<li>This ultimately leads to <strong>cell death</strong> (through necrosis or apoptosis), which can cause disease.</li>
+</ul>
+<p><strong>Adaptation</strong> is a set of reversible changes in cell size, number, phenotype, or function that allows the cell to achieve a new steady state and remain viable.</p>
+</div>
+<div class="ar">
+<p><strong>الاستتباب (Homeostasis)</strong> هو "الحالة المستقرة" الطبيعية التي تكون فيها الخلايا في حالة توازن مع بيئتها لتعمل بشكل صحيح. عندما يختل هذا التوازن، يمكن أن يؤدي ذلك إلى حالة مرضية.</p>
+<p>تقوم الخلايا باستمرار بتعديل بنيتها ووظيفتها للتعامل مع المتطلبات والضغوط المتغيرة. يمكن تلخيص هذه العملية في تسلسل:</p>
+<ul>
+<li>الخلية الطبيعية تكون في حالة <strong>استتباب</strong>.</li>
+<li>عندما تواجه ضغطًا، تخضع لعملية <strong>التكيف</strong>.</li>
+<li>إذا كان الضغط خفيفًا أو عابرًا، فقد يؤدي إلى <strong>إصابة خلوية قابلة للعكس</strong>.</li>
+<li>إذا كان الضغط شديدًا أو مستمرًا، أو إذا لم تتمكن الخلية من التكيف، فإنه يؤدي إلى <strong>إصابة خلوية غير قابلة للعكس</strong>.</li>
+<li>يؤدي هذا في النهاية إلى <strong>موت الخلية</strong> (عبر النخر أو الموت المبرمج)، مما قد يسبب المرض.</li>
+</ul>
+<p><strong>التكيف</strong> هو مجموعة من التغيرات القابلة للعكس في حجم الخلية، عددها، نمطها الظاهري، أو وظيفتها، مما يسمح للخلية بالوصول إلى حالة مستقرة جديدة والبقاء على قيد الحياة.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 3-4, 7-9 of 39</span>
+<span class="ar">المصدر: الصفحات 3-4، 7-9 من 39</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Homeostasis is the "steady state" where cells are in equilibrium with their environment for adequate function.</div><div class="ar">الاستتباب هو "الحالة المستقرة" التي تكون فيها الخلايا في توازن مع بيئتها لأداء وظائفها بشكل كافٍ.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">When homeostasis is disturbed, it creates a predisposition for the onset of pathology or disease.</div><div class="ar">عندما يختل الاستتباب، فإنه يهيئ لبداية الأمراض.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">If a cell is unable to adapt to stress, it will lead to cell injury, which can be either reversible or irreversible.</div><div class="ar">إذا لم تتمكن الخلية من التكيف مع الإجهاد، فسيؤدي ذلك إلى إصابة خلوية، والتي يمكن أن تكون قابلة للعكس أو غير قابلة للعكس.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Types of Cellular Adaptation</span><span class="ar">أنواع التكيف الخلوي</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>There are five main types of cellular adaptations, which are reversible changes in response to environmental shifts:</p>
+<ul>
+    <li><strong>Atrophy:</strong> Decrease in cell size and number. Often triggered by reduced growth factors or hormones.</li>
+    <li><strong>Hypertrophy:</strong> Increase in cell size. Typically caused by increased workload.</li>
+    <li><strong>Hyperplasia:</strong> Increase in cell number. Triggered by growth factors or hormones.</li>
+    <li><strong>Metaplasia:</strong> Change from one cell type to another. Usually occurs in response to a harsh environment.</li>
+    <li><strong>Dysplasia:</strong> Disordered cell growth (size, shape, number, and function). Considered pre-cancerous and can be triggered by infections like HPV.</li>
+</ul>
+<p>These adaptations can be categorized as:</p>
+<ul>
+    <li><strong>Physiologic:</strong> Responses to normal stimuli or mechanical stress.</li>
+    <li><strong>Pathologic:</strong> Responses where cells modify themselves to escape injury, but often at the cost of their normal function.</li>
+</ul>
+<p>Importantly, all cellular adaptations are reversible if the stress is removed.</p>
+</div>
+<div class="ar">
+<p>هناك خمسة أنواع رئيسية من التكيفات الخلوية، وهي تغيرات قابلة للعكس استجابةً للتحولات البيئية:</p>
+<ul>
+    <li><strong>الضمور (Atrophy):</strong> نقص في حجم وعدد الخلايا. غالبًا ما يحدث بسبب انخفاض عوامل النمو أو الهرمونات.</li>
+    <li><strong>التضخم (Hypertrophy):</strong> زيادة في حجم الخلية. يحدث عادة بسبب زيادة عبء العمل.</li>
+    <li><strong>فرط التنسج (Hyperplasia):</strong> زيادة في عدد الخلايا. يحدث بسبب عوامل النمو أو الهرمونات.</li>
+    <li><strong>الحؤول (Metaplasia):</strong> تغير من نوع خلية إلى نوع آخر. يحدث عادة استجابة لبيئة قاسية.</li>
+    <li><strong>خلل التنسج (Dysplasia):</strong> نمو خلوي غير منظم (في الحجم والشكل والعدد والوظيفة). يعتبر حالة ما قبل سرطانية ويمكن أن تسببه عدوى مثل فيروس الورم الحليمي البشري.</li>
+</ul>
+<p>يمكن تصنيف هذه التكيفات إلى:</p>
+<ul>
+    <li><strong>فسيولوجية:</strong> استجابات للمحفزات الطبيعية أو الإجهاد الميكانيكي.</li>
+    <li><strong>مرضية:</strong> استجابات تعدل فيها الخلايا نفسها للهروب من الإصابة، ولكن غالبًا ما يكون ذلك على حساب وظيفتها الطبيعية.</li>
+</ul>
+<p>من المهم ملاحظة أن جميع التكيفات الخلوية قابلة للعكس إذا تمت إزالة المسبب.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 8, 10-12 of 39</span>
+<span class="ar">المصدر: الصفحات 8، 10-12 من 39</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Adaptations can be physiologic (a response to normal stimulus) or pathologic (a response to escape injury).</div><div class="ar">يمكن أن تكون التكيفات فسيولوجية (استجابة لمحفز طبيعي) أو مرضية (استجابة للهروب من الإصابة).</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think of the adaptations by their core change: Atrophy (↓ size/number), Hypertrophy (↑ size), Hyperplasia (↑ number), Metaplasia (change type).</div><div class="ar">تذكر التكيفات حسب تغييرها الأساسي: الضمور (↓ الحجم/العدد)، التضخم (↑ الحجم)، فرط التنسج (↑ العدد)، الحؤول (تغيير النوع).</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">A key feature of cellular adaptations is that they are reversible once the underlying stress or stimulus is removed.</div><div class="ar">الميزة الرئيسية للتكيفات الخلوية هي أنها قابلة للعكس بمجرد إزالة الإجهاد أو المحفز الأساسي.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Atrophy (Cell Shrinkage)</span><span class="ar">الضمور (انكماش الخلايا)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Atrophy</strong> is the reduction in the size and/or number of cells in a tissue or organ. This causes the affected part to shrink. Cells become smaller to survive adverse conditions.</p>
+<p><strong>Mechanisms of Atrophy:</strong></p>
+<ul>
+    <li><strong>Decreased Protein Synthesis:</strong> The cell produces fewer proteins, reducing its metabolic activity.</li>
+    <li><strong>Increased Protein Degradation:</strong> The cell breaks down its own components via <strong>autophagy</strong> (self-eating) and <strong>apoptosis</strong> (programmed cell death), especially in aging cells.</li>
+</ul>
+<p><strong>Types of Atrophy:</strong></p>
+<ul>
+    <li><strong>Physiological:</strong> A normal process, such as the atrophy of the brain with aging.</li>
+    <li><strong>Pathological:</strong> Caused by disease or abnormal conditions, including:
+        <ul>
+            <li><strong>Disuse atrophy:</strong> Occurs from lack of use (e.g., muscle in a cast).</li>
+            <li><strong>Ischemic atrophy:</strong> Caused by reduced blood supply.</li>
+            <li><strong>Starvation atrophy:</strong> Results from severe malnutrition.</li>
+        </ul>
+    </li>
+</ul>
+<p>Morphologically, an atrophic organ appears small and shrunken. Microscopically, the individual cells are smaller due to a reduction in their organelles.</p>
+</div>
+<div class="ar">
+<p><strong>الضمور (Atrophy)</strong> هو انخفاض في حجم و/أو عدد الخلايا في نسيج أو عضو. وهذا يؤدي إلى انكماش الجزء المصاب. تصبح الخلايا أصغر حجمًا للبقاء على قيد الحياة في الظروف المعاكسة.</p>
+<p><strong>آليات الضمور:</strong></p>
+<ul>
+    <li><strong>انخفاض تخليق البروتين:</strong> تنتج الخلية كمية أقل من البروتينات، مما يقلل من نشاطها الأيضي.</li>
+    <li><strong>زيادة تحلل البروتين:</strong> تقوم الخلية بتحطيم مكوناتها الخاصة عبر <strong>الالتهام الذاتي (autophagy)</strong> و<strong>موت الخلية المبرمج (apoptosis)</strong>، خاصة في الخلايا المسنة.</li>
+</ul>
+<p><strong>أنواع الضمور:</strong></p>
+<ul>
+    <li><strong>فسيولوجي:</strong> عملية طبيعية، مثل ضمور الدماغ مع التقدم في العمر.</li>
+    <li><strong>مرضي:</strong> ناتج عن أمراض أو حالات غير طبيعية، ويشمل:
+        <ul>
+            <li><strong>ضمور عدم الاستخدام:</strong> يحدث بسبب قلة الاستخدام (مثل العضلات في الجبيرة).</li>
+            <li><strong>الضمور الإقفاري:</strong> يحدث بسبب انخفاض إمداد الدم.</li>
+            <li><strong>ضمور الجوع:</strong> ينتج عن سوء التغذية الشديد.</li>
+        </ul>
+    </li>
+</ul>
+<p>من الناحية الشكلية، يبدو العضو الضامر صغيرًا ومنكمشًا. مجهريًا، تكون الخلايا الفردية أصغر حجمًا بسبب انخفاض عدد عضياتها.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 13-15 of 39</span>
+<span class="ar">المصدر: الصفحات 13-15 من 39</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Atrophy's mechanisms involve both decreased protein synthesis and increased protein degradation through autophagy and apoptosis.</div><div class="ar">تتضمن آليات الضمور كلاً من انخفاض تخليق البروتين وزيادة تحلله من خلال الالتهام الذاتي وموت الخلايا المبرمج.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Atrophic cells are not dead, but they have diminished function. The goal of this adaptation is survival.</div><div class="ar">الخلايا الضامرة ليست ميتة، ولكن وظيفتها منخفضة. الهدف من هذا التكيف هو البقاء على قيد الحياة.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Physiologic atrophy: Brain size decreases with aging. Pathologic atrophy: A muscle weakens and shrinks from disuse.</div><div class="ar">الضمور الفسيولوجي: ينقص حجم الدماغ مع التقدم في العمر. الضمور المرضي: تضعف العضلة وتنكمش بسبب عدم الاستخدام.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Examples of Atrophy</span><span class="ar">أمثلة على الضمور</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Atrophy can be observed in various tissues and organs under different conditions:</p>
+<ul>
+    <li><strong>Brain Atrophy:</strong> A common physiological change in the elderly. The brain decreases in size, resulting in narrowed gyri (folds) and widened sulci (grooves).</li>
+    <li><strong>Disuse Atrophy:</strong> This occurs when a part of the body is immobilized. For example, the muscles of a leg placed in a cast for a fracture will become smaller and weaker due to lack of use.</li>
+    <li><strong>Ischemic Atrophy (Renal Atrophy):</strong> This happens when blood supply to an organ is reduced. An example is renal atrophy, where a kidney shrinks due to insufficient blood flow, often from a narrowed renal artery.</li>
+    <li><strong>Starvation Atrophy:</strong> In cases of severe malnutrition or starvation, the body breaks down its own muscle and fat for energy, leading to widespread atrophy and emaciation.</li>
+</ul>
+</div>
+<div class="ar">
+<p>يمكن ملاحظة الضمور في أنسجة وأعضاء مختلفة تحت ظروف متنوعة:</p>
+<ul>
+    <li><strong>ضمور الدماغ:</strong> تغير فسيولوجي شائع لدى كبار السن. ينقص حجم الدماغ، مما يؤدي إلى تضييق التلافيف (gyri) وتوسيع الأثلام (sulci).</li>
+    <li><strong>ضمور عدم الاستخدام:</strong> يحدث هذا عندما يتم تثبيت جزء من الجسم. على سبيل المثال، تصبح عضلات الساق الموضوعة في جبيرة بسبب كسر أصغر وأضعف بسبب قلة الاستخدام.</li>
+    <li><strong>الضمور الإقفاري (ضمور الكلى):</strong> يحدث هذا عندما ينخفض إمداد الدم إلى عضو ما. مثال على ذلك ضمور الكلى، حيث تنكمش الكلية بسبب عدم كفاية تدفق الدم، غالبًا بسبب تضيق الشريان الكلوي.</li>
+    <li><strong>ضمور الجوع:</strong> في حالات سوء التغذية الشديد أو الجوع، يقوم الجسم بتحطيم عضلاته ودهونه للحصول على الطاقة، مما يؤدي إلى ضمور واسع النطاق وهزال.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 16-19 of 39</span>
+<span class="ar">المصدر: الصفحات 16-19 من 39</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Renal atrophy is a serious condition often caused by reduced blood supply (ischemia). The affected kidney shrinks and loses function.</div><div class="ar">ضمور الكلى حالة خطيرة غالبًا ما تنتج عن نقص إمداد الدم (نقص التروية). تنكمش الكلية المصابة وتفقد وظيفتها.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">A person with a broken leg in a cast will experience disuse atrophy. After the cast is removed, the muscles in that leg will be noticeably smaller than the other leg.</div><div class="ar">الشخص الذي يعاني من كسر في ساقه ويضع جبيرة سيصاب بضمور عدم الاستخدام. بعد إزالة الجبيرة، ستكون عضلات تلك الساق أصغر بشكل ملحوظ من الساق الأخرى.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Identifying the cause of atrophy is crucial for treatment. For example, restoring blood flow can potentially reverse ischemic atrophy if addressed early, while physical therapy is needed for disuse atrophy.</div><div class="ar">يعد تحديد سبب الضمور أمرًا بالغ الأهمية للعلاج. على سبيل المثال، يمكن أن تؤدي استعادة تدفق الدم إلى عكس الضمور الإقفاري إذا تم التعامل معه مبكرًا، بينما يتطلب ضمور عدم الاستخدام علاجًا طبيعيًا.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Hypertrophy (Cell Enlargement)</span><span class="ar">التضخم (تضخم الخلايا)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Hypertrophy</strong> is an increase in the <strong>size of cells</strong>, which leads to an enlargement of the tissue or organ. This adaptation occurs without any new cell division.</p>
+<p>It is most common in cells that cannot divide (<strong>permanent cells</strong>), such as skeletal and cardiac muscle cells.</p>
+<ul>
+    <li>In <strong>non-dividing cells</strong>, only hypertrophy occurs.</li>
+    <li>In <strong>dividing cells</strong>, hypertrophy can occur alongside hyperplasia (increase in cell number).</li>
+</ul>
+<p><strong>Causes and Mechanism:</strong></p>
+<ul>
+    <li><strong>Cause:</strong> The most common triggers are increased functional demand (like weightlifting) or stimulation by hormones and growth factors.</li>
+    <li><strong>Mechanism:</strong> The process is driven by an <strong>increased production of cellular proteins</strong>.</li>
+</ul>
+<p>Hypertrophy can be either physiological or pathological, and these changes usually revert to normal if the cause is removed.</p>
+</div>
+<div class="ar">
+<p><strong>التضخم (Hypertrophy)</strong> هو زيادة في <strong>حجم الخلايا</strong>، مما يؤدي إلى تضخم النسيج أو العضو. يحدث هذا التكيف دون أي انقسام خلوي جديد.</p>
+<p>وهو الأكثر شيوعًا في الخلايا التي لا يمكنها الانقسام (<strong>الخلايا الدائمة</strong>)، مثل خلايا العضلات الهيكلية والقلبية.</p>
+<ul>
+    <li>في <strong>الخلايا غير القادرة على الانقسام</strong>، يحدث التضخم فقط.</li>
+    <li>في <strong>الخلايا القادرة على الانقسام</strong>، يمكن أن يحدث التضخم جنبًا إلى جنب مع فرط التنسج (زيادة في عدد الخلايا).</li>
+</ul>
+<p><strong>الأسباب والآلية:</strong></p>
+<ul>
+    <li><strong>السبب:</strong> أكثر المسببات شيوعًا هي زيادة الطلب الوظيفي (مثل رفع الأثقال) أو التحفيز بواسطة الهرمونات وعوامل النمو.</li>
+    <li><strong>الآلية:</strong> تتم العملية من خلال <strong>زيادة إنتاج البروتينات الخلوية</strong>.</li>
+</ul>
+<p>يمكن أن يكون التضخم فسيولوجيًا أو مرضيًا، وعادة ما تعود هذه التغيرات إلى طبيعتها إذا تمت إزالة السبب.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 20-23 of 39</span>
+<span class="ar">المصدر: الصفحات 20-23 من 39</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Hypertrophy is an increase in cell SIZE, not number. It happens in permanent cells that cannot divide, like heart and skeletal muscle.</div><div class="ar">التضخم هو زيادة في حجم الخلية، وليس عددها. يحدث في الخلايا الدائمة التي لا تستطيع الانقسام، مثل عضلات القلب والهيكل العظمي.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think "Hyper-Trophy" - like getting a big trophy for becoming bigger. It's all about size.</div><div class="ar">تذكر "Hyper-Trophy" - مثل الحصول على كأس كبير لأنك أصبحت أكبر. الأمر كله يتعلق بالحجم.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">In tissues with cells that can divide (stable or labile cells), hypertrophy and hyperplasia often occur together in response to stress.</div><div class="ar">في الأنسجة ذات الخلايا القادرة على الانقسام (الخلايا المستقرة أو المتغيرة)، غالبًا ما يحدث التضخم وفرط التنسج معًا استجابةً للضغط.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Examples of Hypertrophy</span><span class="ar">أمثلة على التضخم</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Hypertrophy can be categorized based on its cause:</p>
+<ul>
+    <li><strong>Physiologic Hypertrophy:</strong>
+        <ul>
+            <li><strong>Skeletal Muscle:</strong> The most common example is the muscle growth seen in bodybuilders due to increased workload from exercise.</li>
+        </ul>
+    </li>
+    <li><strong>Pathologic Hypertrophy:</strong>
+        <ul>
+            <li><strong>Cardiac Muscle:</strong> Left ventricular hypertrophy (LVH) is a common response to chronic high blood pressure (hypertension) or aortic valve disease. The heart muscle thickens to pump against increased resistance.</li>
+            <li><strong>Smooth Muscle:</strong> Can occur in organs like the bladder or intestine if there is an obstruction.</li>
+            <li><strong>Compensatory Hypertrophy:</strong> Occurs when one of a pair of organs is damaged or removed. For example, if one kidney is removed, the remaining kidney will increase in size to handle the entire workload. This often involves both hypertrophy and hyperplasia.</li>
+        </ul>
+    </li>
+</ul>
+</div>
+<div class="ar">
+<p>يمكن تصنيف التضخم بناءً على سببه:</p>
+<ul>
+    <li><strong>التضخم الفسيولوجي:</strong>
+        <ul>
+            <li><strong>العضلات الهيكلية:</strong> المثال الأكثر شيوعًا هو نمو العضلات الذي يلاحظ لدى لاعبي كمال الأجسام بسبب زيادة عبء العمل الناتج عن التمرين.</li>
+        </ul>
+    </li>
+    <li><strong>التضخم المرضي:</strong>
+        <ul>
+            <li><strong>عضلة القلب:</strong> تضخم البطين الأيسر (LVH) هو استجابة شائعة لارتفاع ضغط الدم المزمن (ارتفاع ضغط الدم) أو أمراض الصمام الأبهري. يزداد سمك عضلة القلب للضخ ضد المقاومة المتزايدة.</li>
+            <li><strong>العضلات الملساء:</strong> يمكن أن يحدث في أعضاء مثل المثانة أو الأمعاء إذا كان هناك انسداد.</li>
+            <li><strong>التضخم التعويضي:</strong> يحدث عندما يتضرر أو تتم إزالة أحد أعضاء زوجية. على سبيل المثال، إذا تمت إزالة إحدى الكليتين، فإن الكلية المتبقية ستزيد في الحجم لتتحمل عبء العمل بأكمله. وغالبًا ما يتضمن هذا كلاً من التضخم وفرط التنسج.</li>
+        </ul>
+    </li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 24-27 of 39</span>
+<span class="ar">المصدر: الصفحات 24-27 من 39</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Physiologic: Skeletal muscles in bodybuilders. Pathologic: Thickened left ventricle wall in a patient with long-standing hypertension.</div><div class="ar">فسيولوجي: عضلات الهيكل العظمي لدى لاعبي كمال الأجسام. مرضي: جدار البطين الأيسر السميك لدى مريض يعاني من ارتفاع ضغط الدم لفترة طويلة.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Compensatory hypertrophy happens when one kidney is removed; the other enlarges to take over its function, a process that also involves hyperplasia.</div><div class="ar">يحدث التضخم التعويضي عند إزالة إحدى الكليتين؛ تتضخم الأخرى لتتولى وظيفتها، وهي عملية تتضمن أيضًا فرط التنسج.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">While cardiac hypertrophy is an adaptation, it's a major risk factor for heart failure. The thickened muscle requires more oxygen and can become dysfunctional over time.</div><div class="ar">على الرغم من أن تضخم القلب هو تكيف، إلا أنه عامل خطر رئيسي لفشل القلب. تتطلب العضلة السميكة المزيد من الأكسجين ويمكن أن تصبح غير وظيفية بمرور الوقت.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Hyperplasia (Increased Cell Number)</span><span class="ar">فرط التنسج (زيادة عدد الخلايا)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Hyperplasia</strong> is an increase in the <strong>number of cells</strong> in a tissue or organ. It results from an increased rate of cell division or a failure of apoptosis (programmed cell death). This adaptation can sometimes occur alongside hypertrophy.</p>
+<p>A key feature of hyperplasia is that it is a controlled process that stops once the stimulus is removed, distinguishing it from neoplasia (cancer), which is uncontrolled growth.</p>
+<p><strong>Types of Hyperplasia:</strong></p>
+<ul>
+    <li><strong>Physiologic Hyperplasia:</strong>
+        <ul>
+            <li><strong>Hormonal:</strong> For example, the enlargement of the uterus during pregnancy due to hormonal stimulation.</li>
+        </ul>
+    </li>
+    <li><strong>Pathologic Hyperplasia:</strong>
+        <ul>
+            <li><strong>Chronic Irritation:</strong> Persistent injury can lead to hyperplasia in tissues like the skin or oral mucosa. Examples include the formation of skin warts from viral infections or excess granulation tissue during wound healing.</li>
+        </ul>
+    </li>
+</ul>
+</div>
+<div class="ar">
+<p><strong>فرط التنسج (Hyperplasia)</strong> هو زيادة في <strong>عدد الخلايا</strong> في نسيج أو عضو. ينتج عن زيادة معدل انقسام الخلايا أو فشل الموت المبرمج للخلايا (apoptosis). يمكن أن يحدث هذا التكيف أحيانًا جنبًا إلى جنب مع التضخم.</p>
+<p>الميزة الرئيسية لفرط التنسج هي أنها عملية مسيطر عليها تتوقف بمجرد إزالة المحفز، مما يميزها عن الورم (السرطان)، الذي هو نمو غير منضبط.</p>
+<p><strong>أنواع فرط التنسج:</strong></p>
+<ul>
+    <li><strong>فرط التنسج الفسيولوجي:</strong>
+        <ul>
+            <li><strong>هرموني:</strong> على سبيل المثال، تضخم الرحم أثناء الحمل بسبب التحفيز الهرموني.</li>
+        </ul>
+    </li>
+    <li><strong>فرط التنسج المرضي:</strong>
+        <ul>
+            <li><strong>التهيج المزمن:</strong> يمكن أن تؤدي الإصابة المستمرة إلى فرط التنسج في أنسجة مثل الجلد أو الغشاء المخاطي للفم. تشمل الأمثلة تكوين الثآليل الجلدية من العدوى الفيروسية أو النسيج الحبيبي الزائد أثناء التئام الجروح.</li>
+        </ul>
+    </li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 28-29 of 39</span>
+<span class="ar">المصدر: الصفحات 28-29 من 39</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Hyperplasia is an increase in cell NUMBER. It is different from cancer because it is a controlled process that stops when the stimulus is removed.</div><div class="ar">فرط التنسج هو زيادة في عدد الخلايا. يختلف عن السرطان لأنه عملية مسيطر عليها تتوقف عند إزالة المحفز.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Physiologic: The uterus enlarging during pregnancy. Pathologic: Skin warts caused by a viral infection (HPV).</div><div class="ar">فسيولوجي: تضخم الرحم أثناء الحمل. مرضي: الثآليل الجلدية الناتجة عن عدوى فيروسية (فيروس الورم الحليمي البشري).</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">While hyperplasia itself is not cancer, pathologic hyperplasia can sometimes create a "fertile ground" where cancerous proliferations can arise.</div><div class="ar">في حين أن فرط التنسج ليس سرطانًا بحد ذاته، إلا أن فرط التنسج المرضي يمكن أن يخلق أحيانًا "أرضًا خصبة" يمكن أن تنشأ فيها تكاثرات سرطانية.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Metaplasia (Change in Cell Type)</span><span class="ar">الحؤول (تغير في نوع الخلية)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Metaplasia</strong> is a reversible change where one adult cell type is replaced by another adult cell type. This is an adaptive response to abnormal stimuli, allowing cells to survive in a harsh environment.</p>
+<p>While this adaptation is useful for survival, it often comes at the cost of losing the original cell's specialized function. If the stimulus persists, metaplasia can progress to <strong>dysplasia</strong> and eventually <strong>cancer</strong>.</p>
+<p><strong>Types of Metaplasia:</strong></p>
+<ul>
+    <li><strong>Squamous Metaplasia:</strong> The original epithelium is replaced by stratified squamous epithelium.
+        <ul>
+            <li><strong>Example:</strong> In the bronchi of chronic smokers, the normal pseudostratified ciliated columnar epithelium changes to a more rugged squamous epithelium to withstand the smoke. However, this new epithelium lacks cilia and mucus-secreting cells, impairing clearance and leading to coughing.</li>
+        </ul>
+    </li>
+    <li><strong>Columnar Metaplasia:</strong> The original epithelium is replaced by columnar epithelium.
+        <ul>
+            <li><strong>Example:</strong> In Barrett's esophagus, chronic acid reflux causes the normal squamous cells of the esophagus to be replaced by columnar cells similar to those in the intestine.</li>
+        </ul>
+    </li>
+</ul>
+</div>
+<div class="ar">
+<p><strong>الحؤول (Metaplasia)</strong> هو تغير قابل للعكس حيث يتم استبدال نوع من الخلايا البالغة بنوع آخر من الخلايا البالغة. هذه استجابة تكيفية للمحفزات غير الطبيعية، مما يسمح للخلايا بالبقاء على قيد الحياة في بيئة قاسية.</p>
+<p>على الرغم من أن هذا التكيف مفيد للبقاء، إلا أنه غالبًا ما يأتي على حساب فقدان الوظيفة المتخصصة للخلية الأصلية. إذا استمر المحفز، يمكن أن يتطور الحؤول إلى <strong>خلل التنسج (dysplasia)</strong> وفي النهاية إلى <strong>سرطان</strong>.</p>
+<p><strong>أنواع الحؤول:</strong></p>
+<ul>
+    <li><strong>الحؤول الحرشفي:</strong> يتم استبدال النسيج الطلائي الأصلي بنسيج طلائي حرشفي مطبق.
+        <ul>
+            <li><strong>مثال:</strong> في قصبات المدخنين المزمنين، يتغير النسيج الطلائي العمودي المطبق الكاذب المهدب الطبيعي إلى نسيج طلائي حرشفي أكثر قوة لتحمل الدخان. ومع ذلك، يفتقر هذا النسيج الجديد إلى الأهداب والخلايا المفرزة للمخاط، مما يعيق عملية التنقية ويؤدي إلى السعال.</li>
+        </ul>
+    </li>
+    <li><strong>الحؤول العمودي:</strong> يتم استبدال النسيج الطلائي الأصلي بنسيج طلائي عمودي.
+        <ul>
+            <li><strong>مثال:</strong> في مريء باريت، يسبب الارتجاع الحمضي المزمن استبدال الخلايا الحرشفية الطبيعية للمريء بخلايا عمودية تشبه تلك الموجودة في الأمعاء.</li>
+        </ul>
+    </li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 30-35 of 39</span>
+<span class="ar">المصدر: الصفحات 30-35 من 39</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Metaplasia is a double-edged sword: the new cells are tougher and better able to survive the stress, but they lose the function of the original cells.</div><div class="ar">الحؤول سلاح ذو حدين: الخلايا الجديدة أقوى وأقدر على تحمل الإجهاد، لكنها تفقد وظيفة الخلايا الأصلية.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">In smokers, the delicate ciliated cells in the airways are replaced by tough squamous cells. This leads to a loss of the mucus-clearing function and contributes to "smoker's cough."</div><div class="ar">لدى المدخنين، يتم استبدال الخلايا المهدبة الحساسة في المسالك الهوائية بخلايا حرشفية قوية. يؤدي هذا إلى فقدان وظيفة تنقية المخاط ويساهم في "سعال المدخن".</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">If the abnormal stimulus causing metaplasia persists, it can lead to dysplasia and, ultimately, to malignant transformation (cancer). This is why smoking is a major risk factor for lung cancer.</div><div class="ar">إذا استمر المحفز غير الطبيعي المسبب للحؤول، فقد يؤدي ذلك إلى خلل التنسج، وفي النهاية، إلى تحول خبيث (سرطان). هذا هو سبب كون التدخين عامل خطر رئيسي لسرطان الرئة.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Summary of Cellular Adaptations</span><span class="ar">ملخص التكيفات الخلوية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Cellular adaptations are reversible responses that allow cells to survive and function under stress. When a normal cell in <strong>homeostasis</strong> is subjected to stress or increased demand, it adapts.</p>
+<p>If the cell is unable to adapt, or if the stimulus is injurious, it leads to cell injury and potentially cell death.</p>
+<p>The four main types of adaptation are:</p>
+<ul>
+    <li><strong>Atrophy:</strong> Decrease in cell size and/or number. (e.g., disused muscle).</li>
+    <li><strong>Hypertrophy:</strong> Increase in cell size. (e.g., cardiac muscle in hypertension).</li>
+    <li><strong>Hyperplasia:</strong> Increase in cell number. (e.g., uterus in pregnancy).</li>
+    <li><strong>Metaplasia:</strong> A change from one mature cell type to another. (e.g., bronchial epithelium in smokers).</li>
+</ul>
+<p>Understanding these fundamental responses is key to understanding the pathogenesis of nearly all diseases.</p>
+</div>
+<div class="ar">
+<p>التكيفات الخلوية هي استجابات قابلة للعكس تسمح للخلايا بالبقاء على قيد الحياة والعمل تحت الضغط. عندما تتعرض خلية طبيعية في حالة <strong>استتباب</strong> لضغط أو زيادة في الطلب، فإنها تتكيف.</p>
+<p>إذا كانت الخلية غير قادرة على التكيف، أو إذا كان المحفز ضارًا، فإنه يؤدي إلى إصابة الخلية وربما موتها.</p>
+<p>الأنواع الأربعة الرئيسية للتكيف هي:</p>
+<ul>
+    <li><strong>الضمور:</strong> انخفاض في حجم و/أو عدد الخلايا. (مثال: العضلات غير المستخدمة).</li>
+    <li><strong>التضخم:</strong> زيادة في حجم الخلية. (مثال: عضلة القلب عند ارتفاع ضغط الدم).</li>
+    <li><strong>فرط التنسج:</strong> زيادة في عدد الخلايا. (مثال: الرحم أثناء الحمل).</li>
+    <li><strong>الحؤول:</strong> تغير من نوع خلية ناضجة إلى أخرى. (مثال: النسيج الطلائي القصبي لدى المدخنين).</li>
+</ul>
+<p>فهم هذه الاستجابات الأساسية هو مفتاح فهم آلية تطور جميع الأمراض تقريبًا.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 8, 36-37 of 39</span>
+<span class="ar">المصدر: الصفحات 8، 36-37 من 39</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Atrophy (fewer, smaller cells), Hypertrophy (bigger cells), Hyperplasia (more cells), and Metaplasia (different cell types). Hypertrophy and hyperplasia often occur together.</div><div class="ar">الضمور (خلايا أقل وأصغر)، التضخم (خلايا أكبر)، فرط التنسج (خلايا أكثر)، والحؤول (أنواع خلايا مختلفة). غالبًا ما يحدث التضخم وفرط التنسج معًا.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">For each adaptation, focus on the core change (size, number, or type) and be able to provide one physiologic and one pathologic example.</div><div class="ar">لكل تكيف، ركز على التغيير الأساسي (الحجم، العدد، أو النوع) وكن قادرًا على تقديم مثال فسيولوجي وآخر مرضي.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">These cellular responses are the foundational building blocks for understanding how diseases develop at the microscopic level.</div><div class="ar">هذه الاستجابات الخلوية هي اللبنات الأساسية لفهم كيفية تطور الأمراض على المستوى المجهري.</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Homeostasis / الاستتباب</div><div class="content" hidden=""><div class="en">The steady, stable state in which cells normally exist, maintaining equilibrium with their environment.</div><div class="ar">الحالة المستقرة والثابتة التي توجد فيها الخلايا بشكل طبيعي، مع الحفاظ على التوازن مع بيئتها.</div></div></div>
+<div class="card"><div class="head">Adaptation / التكيف</div><div class="content" hidden=""><div class="en">Reversible changes in the size, number, phenotype, or function of cells in response to environmental changes.</div><div class="ar">تغيرات قابلة للعكس في حجم أو عدد أو نمط أو وظيفة الخلايا استجابة للتغيرات البيئية.</div></div></div>
+<div class="card"><div class="head">Atrophy / الضمور</div><div class="content" hidden=""><div class="en">A decrease in the size and/or number of cells, leading to shrinkage of a tissue or organ.</div><div class="ar">انخفاض في حجم و/أو عدد الخلايا، مما يؤدي إلى انكماش نسيج أو عضو.</div></div></div>
+<div class="card"><div class="head">Hypertrophy / التضخم</div><div class="content" hidden=""><div class="en">An increase in the size of cells, resulting in the enlargement of an organ, without cell division.</div><div class="ar">زيادة في حجم الخلايا، مما يؤدي إلى تضخم عضو ما، دون انقسام الخلايا.</div></div></div>
+<div class="card"><div class="head">Hyperplasia / فرط التنسج</div><div class="content" hidden=""><div class="en">An increase in the number of cells in a tissue or organ, caused by increased cell proliferation.</div><div class="ar">زيادة في عدد الخلايا في نسيج أو عضو، ناتجة عن زيادة تكاثر الخلايا.</div></div></div>
+<div class="card"><div class="head">Metaplasia / الحؤول</div><div class="content" hidden=""><div class="en">A reversible change in which one adult cell type is replaced by another adult cell type.</div><div class="ar">تغير قابل للعكس يتم فيه استبدال نوع من الخلايا البالغة بنوع آخر من الخلايا البالغة.</div></div></div>
+<div class="card"><div class="head">Dysplasia / خلل التنسج</div><div class="content" hidden=""><div class="en">Disordered growth and maturation of cells, often considered a precancerous condition.</div><div class="ar">نمو ونضج غير منظم للخلايا، وغالبًا ما يعتبر حالة ما قبل سرطانية.</div></div></div>
+<div class="card"><div class="head">Apoptosis / موت الخلية المبرمج</div><div class="content" hidden=""><div class="en">A highly regulated process of programmed cell death that occurs as a normal part of development or in response to cell damage.</div><div class="ar">عملية منظمة للغاية لموت الخلايا المبرمج تحدث كجزء طبيعي من التطور أو استجابة لتلف الخلايا.</div></div></div>
+<div class="card"><div class="head">Ischemia / نقص التروية</div><div class="content" hidden=""><div class="en">An inadequate blood supply to an organ or part of the body, especially the heart muscles.</div><div class="ar">عدم كفاية إمداد الدم إلى عضو أو جزء من الجسم، وخاصة عضلات القلب.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — What is the adaptation involving a decrease in cell size?</span><span class="ar">١ — ما هو التكيف الذي يتضمن انخفاضًا في حجم الخلية؟</span></div><div class="content" hidden=""><span class="en">A: Atrophy</span><span class="ar">ج: الضمور</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — What adaptation occurs in a bodybuilder's muscles?</span><span class="ar">٢ — ما هو التكيف الذي يحدث في عضلات لاعب كمال الأجسام؟</span></div><div class="content" hidden=""><span class="en">A: Hypertrophy</span><span class="ar">ج: التضخم</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — An increase in the *number* of cells is called?</span><span class="ar">٣ — ماذا تسمى الزيادة في *عدد* الخلايا؟</span></div><div class="content" hidden=""><span class="en">A: Hyperplasia</span><span class="ar">ج: فرط التنسج</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — What change happens to a smoker's bronchial epithelium?</span><span class="ar">٤ — ما التغيير الذي يحدث في النسيج الطلائي القصبي للمدخن؟</span></div><div class="content" hidden=""><span class="en">A: Squamous metaplasia</span><span class="ar">ج: الحؤول الحرشفي</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — Is cellular adaptation generally reversible?</span><span class="ar">٥ — هل التكيف الخلوي قابل للعكس بشكل عام؟</span></div><div class="content" hidden=""><span class="en">A: Yes, if the stimulus is removed.</span><span class="ar">ج: نعم، إذا تمت إزالة المحفز.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — Which adaptation occurs in non-dividing cells like the heart?</span><span class="ar">٦ — أي تكيف يحدث في الخلايا غير القادرة على الانقسام مثل القلب؟</span></div><div class="content" hidden=""><span class="en">A: Hypertrophy</span><span class="ar">ج: التضخم</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — Give an example of physiologic atrophy.</span><span class="ar">٧ — أعط مثالاً على الضمور الفسيولوجي.</span></div><div class="content" hidden=""><span class="en">A: Brain shrinkage with age.</span><span class="ar">ج: انكماش الدماغ مع تقدم العمر.</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — What is the term for a cell's normal "steady state"?</span><span class="ar">٨ — ما هو المصطلح الذي يطلق على "الحالة المستقرة" الطبيعية للخلية؟</span></div><div class="content" hidden=""><span class="en">A: Homeostasis</span><span class="ar">ج: الاستتباب</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — Which adaptation can progress to cancer if persistent?</span><span class="ar">٩ — أي تكيف يمكن أن يتطور إلى سرطان إذا استمر؟</span></div><div class="content" hidden=""><span class="en">A: Metaplasia (and Dysplasia)</span><span class="ar">ج: الحؤول (وخلل التنسج)</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

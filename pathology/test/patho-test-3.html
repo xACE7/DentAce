@@ -1,0 +1,866 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid var(--card-border); padding: 8px; text-align: left; }
+  th { background-color: var(--glass); }
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 3</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+    {
+        q: "What is the primary definition of pathologic calcification?",
+        opts: [
+            "Deposition of calcium salts in bone and enamel",
+            "Deposition of calcium salts in tissues other than bone or enamel",
+            "Normal calcium metabolism in healthy tissue",
+            "The formation of kidney stones from calcium oxalate"
+        ],
+        correct: 1,
+        explain: "Pathologic or Heterotopic Calcification is specifically the deposition of calcium salts in tissues other than the normal locations of bone or enamel."
+    },
+    {
+        q: "Microscopically, how do calcium salts typically appear with an H&E stain?",
+        opts: [
+            "Eosinophilic (pink) and fibrous",
+            "As clear, empty vacuoles",
+            "Basophilic (blue/purple), amorphous granular deposits",
+            "As bright red, crystalline structures"
+        ],
+        correct: 2,
+        explain: "With a standard H&E stain, calcium salt deposits are basophilic, appearing as amorphous, granular, and sometimes clumped blue/purple areas."
+    },
+    {
+        q: "Dystrophic calcification is characterized by its occurrence in which type of tissue?",
+        opts: [
+            "Normal, healthy tissue with hypercalcemia",
+            "Living tissue with deranged calcium metabolism",
+            "Dead or degenerated (injured) tissue",
+            "Only in endocrine glands"
+        ],
+        correct: 2,
+        explain: "Dystrophic calcification specifically occurs in areas of dead or degenerating tissue, such as sites of necrosis."
+    },
+    {
+        q: "What is the state of serum calcium levels in dystrophic calcification?",
+        opts: [
+            "Always elevated (hypercalcemia)",
+            "Always decreased (hypocalcemia)",
+            "Normal",
+            "Fluctuating unpredictably"
+        ],
+        correct: 2,
+        explain: "A key feature of dystrophic calcification is that it occurs despite normal serum calcium levels and without any systemic derangement in calcium metabolism."
+    },
+    {
+        q: "Which of the following is a common site for dystrophic calcification?",
+        opts: [
+            "Gastric mucosa",
+            "Healthy lung tissue",
+            "Atheromas in advanced atherosclerosis",
+            "The skin in a healthy individual"
+        ],
+        correct: 2,
+        explain: "Calcification is a hallmark of advanced atherosclerosis, where it occurs in the necrotic core of atheromatous plaques."
+    },
+    {
+        q: "Metastatic calcification is primarily caused by:",
+        opts: [
+            "Local tissue injury",
+            "Normal serum calcium levels",
+            "Hypercalcemia",
+            "A high-phosphate diet"
+        ],
+        correct: 2,
+        explain: "Metastatic calcification occurs in normal (living) tissues and is caused by an elevated serum calcium level (hypercalcemia)."
+    },
+    {
+        q: "Which location is a common site for metastatic calcification?",
+        opts: [
+            "Damaged heart valves",
+            "Areas of caseous necrosis (e.g., old tuberculosis)",
+            "The kidneys, lungs, and gastric mucosa",
+            "An abscess wall"
+        ],
+        correct: 2,
+        explain: "Metastatic calcification preferentially affects tissues that lose acid and have an internal alkaline compartment, such as the kidneys, lungs, and gastric mucosa."
+    },
+    {
+        q: "What is another term for fatty change in parenchymal cells?",
+        opts: [
+            "Steatosis",
+            "Necrosis",
+            "Atrophy",
+            "Hyperplasia"
+        ],
+        correct: 0,
+        explain: "Steatosis is the medical term for the abnormal accumulation of triglycerides within cells, commonly referred to as fatty change."
+    },
+    {
+        q: "In which organ is fatty change (steatosis) most often seen?",
+        opts: [
+            "Brain",
+            "Skeletal muscle",
+            "Liver",
+            "Skin"
+        ],
+        correct: 2,
+        explain: "The liver is the central organ for fat metabolism, making it the most common site for fatty change due to its role in processing fats."
+    },
+    {
+        q: "Microscopically, what is the characteristic appearance of hepatic fatty change?",
+        opts: [
+            "Increased number of hepatocytes",
+            "Lipid vacuoles in the cytoplasm pushing the nucleus to the periphery",
+            "Brown pigment accumulation around the nucleus",
+            "Shrunken, eosinophilic hepatocytes"
+        ],
+        correct: 1,
+        explain: "In fatty liver, hepatocytes accumulate lipid vacuoles that displace the nucleus to the cell's edge, creating an 'empty cell' or 'signet ring' appearance."
+    },
+    {
+        q: "Which of the following is an example of an exogenous pigment?",
+        opts: [
+            "Melanin",
+            "Lipofuscin",
+            "Hemosiderin",
+            "Carbon (anthracosis)"
+        ],
+        correct: 3,
+        explain: "Exogenous pigments originate from outside the body. Carbon from air pollution is inhaled and deposited in the lungs, causing anthracosis."
+    },
+    {
+        q: "What is the condition called when carbon pigment accumulates in the lungs?",
+        opts: [
+            "Hemosiderosis",
+            "Steatosis",
+            "Anthracosis",
+            "Melanosis"
+        ],
+        correct: 2,
+        explain: "Anthracosis is the accumulation of carbon pigment in the lungs, typically from inhaling polluted air or smoke."
+    },
+    {
+        q: "Which pigment is known as the 'wear-and-tear' pigment and accumulates with age?",
+        opts: [
+            "Melanin",
+            "Hemosiderin",
+            "Bilirubin",
+            "Lipofuscin"
+        ],
+        correct: 3,
+        explain: "Lipofuscin is a brownish-yellow pigment derived from the peroxidation of lipids and is a hallmark of aging or atrophy, hence the name 'wear-and-tear' pigment."
+    },
+    {
+        q: "Hemosiderin is a pigment derived from the breakdown of what molecule?",
+        opts: [
+            "Lipids",
+            "Glycogen",
+            "Hemoglobin",
+            "Melanin"
+        ],
+        correct: 2,
+        explain: "Hemosiderin is an iron-storage complex derived from hemoglobin when red blood cells are broken down."
+    },
+    {
+        q: "What is the normal function of melanin in the body?",
+        opts: [
+            "To store iron",
+            "To transport oxygen",
+            "To act as a shield against harmful UV radiation",
+            "To aid in fat metabolism"
+        ],
+        correct: 2,
+        explain: "Melanin is produced by melanocytes and serves to protect the skin and underlying tissues from damage caused by ultraviolet (UV) radiation."
+    },
+    {
+        q: "Which of the following conditions would NOT lead to dystrophic calcification?",
+        opts: [
+            "Atherosclerosis",
+            "Damaged heart valves",
+            "Tuberculous lymph node",
+            "Hyperparathyroidism"
+        ],
+        correct: 3,
+        explain: "Hyperparathyroidism causes hypercalcemia, which leads to metastatic calcification in normal tissues, not dystrophic calcification in damaged tissues."
+    },
+    {
+        q: "A patient with chronic renal failure and secondary hyperparathyroidism develops calcium deposits in their lungs. This is an example of:",
+        opts: [
+            "Dystrophic calcification",
+            "Metastatic calcification",
+            "Anthracosis",
+            "Steatosis"
+        ],
+        correct: 1,
+        explain: "Chronic renal failure leads to phosphate retention and hyperparathyroidism, causing hypercalcemia and resulting in metastatic calcification in normal tissues like the lungs."
+    },
+    {
+        q: "Grossly, a liver with fatty change (steatosis) would appear:",
+        opts: [
+            "Small, brown, and firm",
+            "Enlarged, yellow, and greasy",
+            "Normal in size with black spots",
+            "Shrunken, dark red, and hard"
+        ],
+        correct: 1,
+        explain: "The accumulation of fat makes the liver larger, gives it a distinct yellow color, and a greasy texture on gross examination."
+    },
+    {
+        q: "In tattooing, the pigment is taken up by which cells in the dermis, leading to its permanence?",
+        opts: [
+            "Melanocytes",
+            "Keratinocytes",
+            "Fibroblasts",
+            "Macrophages"
+        ],
+        correct: 3,
+        explain: "Tattoo pigments injected into the dermis are phagocytosed by dermal macrophages. Since these cells are long-lived and relatively immobile, the tattoo remains permanent."
+    },
+    {
+        q: "Which of the following is NOT an endogenous pigment?",
+        opts: [
+            "Lipofuscin",
+            "Melanin",
+            "Tattoo ink",
+            "Hemosiderin"
+        ],
+        correct: 2,
+        explain: "Endogenous pigments are synthesized within the body. Tattoo ink is an exogenous pigment introduced from an external source."
+    },
+    {
+        q: "A key difference between dystrophic and metastatic calcification is:",
+        opts: [
+            "The color of the deposits",
+            "The presence of hypercalcemia",
+            "The organ affected",
+            "The age of the patient"
+        ],
+        correct: 1,
+        explain: "Metastatic calcification is defined by the presence of hypercalcemia, while dystrophic calcification occurs with normal serum calcium levels."
+    },
+    {
+        q: "Brown atrophy of the heart is characterized by the accumulation of which pigment in myocardial fibers?",
+        opts: [
+            "Melanin",
+            "Hemosiderin",
+            "Lipofuscin",
+            "Carbon"
+        ],
+        correct: 2,
+        explain: "The 'brown' color in brown atrophy is due to the accumulation of lipofuscin granules around the nucleus of the myocardial cells, which is associated with aging and atrophy."
+    },
+    {
+        q: "What is the fundamental mechanism behind most intracellular accumulations?",
+        opts: [
+            "Increased cellular division",
+            "A substance is produced at a rate that exceeds its removal or metabolism",
+            "The cell membrane becomes impermeable",
+            "The cell nucleus is expelled"
+        ],
+        correct: 1,
+        explain: "Intracellular accumulations occur when a metabolic imbalance exists, where production of a substance outpaces the cell's ability to metabolize or transport it away."
+    },
+    {
+        q: "Which lifestyle factor is the most common cause of hepatic fatty change in developed nations?",
+        opts: [
+            "High protein diet",
+            "Sedentary lifestyle",
+            "Alcoholism",
+            "Smoking"
+        ],
+        correct: 2,
+        explain: "Alcohol abuse is a major cause of liver damage, leading to impaired fat metabolism and the development of steatosis or fatty liver."
+    },
+    {
+        q: "What term describes the deposition of calcium salts in an old abscess wall?",
+        opts: [
+            "Metastatic calcification",
+            "Dystrophic calcification",
+            "Hemosiderosis",
+            "Steatosis"
+        ],
+        correct: 1,
+        explain: "An abscess wall is an area of chronic inflammation and necrosis (damaged tissue), making it a classic site for dystrophic calcification."
+    },
+    {
+        q: "A decrease in melanin, leading to patches of depigmented skin, is known as:",
+        opts: [
+            "Melanoma",
+            "Addison's disease",
+            "Vitiligo",
+            "Nevi"
+        ],
+        correct: 2,
+        explain: "Vitiligo is an autoimmune condition where melanocytes are destroyed, resulting in localized loss of skin pigmentation."
+    },
+    {
+        q: "What type of cellular accumulation is primarily composed of triglycerides?",
+        opts: [
+            "Glycogen storage",
+            "Hemosiderin deposits",
+            "Fatty change (steatosis)",
+            "Lipofuscin accumulation"
+        ],
+        correct: 2,
+        explain: "Fatty change, or steatosis, is specifically the accumulation of triglycerides within the cytoplasm of parenchymal cells."
+    },
+    {
+        q: "Pathologic calcification grossly appears as:",
+        opts: [
+            "Soft, yellow plaques",
+            "Fine, white, gritty deposits",
+            "Red, hemorrhagic areas",
+            "Translucent, gelatinous material"
+        ],
+        correct: 1,
+        explain: "On macroscopic examination, areas of pathologic calcification are often felt as gritty and appear as fine, white granules or clumps."
+    },
+    {
+        q: "Increased breakdown of red blood cells, as seen in hemolytic anemias, leads to the accumulation of:",
+        opts: [
+            "Melanin",
+            "Lipofuscin",
+            "Carbon",
+            "Hemosiderin"
+        ],
+        correct: 3,
+        explain: "Hemolytic anemias cause an excess release of hemoglobin, which is broken down, leading to an over-accumulation of its iron-containing remnant, hemosiderin."
+    },
+    {
+        q: "Which of the following is NOT a primary mechanism of intracellular accumulation?",
+        opts: [
+            "Overproduction of a substance",
+            "Inadequate metabolism",
+            "Lack of enzyme action for removal",
+            "Increased apoptosis"
+        ],
+        correct: 3,
+        explain: "The main mechanisms are related to metabolic imbalances (overproduction, inadequate metabolism, or poor removal), whereas increased apoptosis is a form of programmed cell death, not accumulation."
+    }
+];
+
+const tfs = [
+    {
+        q: "Dystrophic calcification occurs in normal, living tissue.",
+        answer: false,
+        explain: "Dystrophic calcification occurs in dead or degenerated tissues, not normal living tissues."
+    },
+    {
+        q: "Hypercalcemia is a prerequisite for dystrophic calcification.",
+        answer: false,
+        explain: "Dystrophic calcification occurs with normal serum calcium levels. Hypercalcemia is associated with metastatic calcification."
+    },
+    {
+        q: "Metastatic calcification can occur in the gastric mucosa, kidneys, and lungs.",
+        answer: true,
+        explain: "These organs are common sites for metastatic calcification due to their internal alkaline environment."
+    },
+    {
+        q: "Steatosis is the abnormal accumulation of cholesterol within cells.",
+        answer: false,
+        explain: "Steatosis, or fatty change, is the abnormal accumulation of triglycerides, not cholesterol."
+    },
+    {
+        q: "Lipofuscin is also known as the 'wear-and-tear' pigment and increases with age.",
+        answer: true,
+        explain: "Lipofuscin is an indigestible material that accumulates in lysosomes as a function of age or cellular atrophy."
+    },
+    {
+        q: "Anthracosis is caused by the accumulation of an endogenous pigment.",
+        answer: false,
+        explain: "Anthracosis is caused by carbon, an exogenous pigment that is inhaled from outside the body."
+    },
+    {
+        q: "Hemosiderin is a pigment derived from melanin.",
+        answer: false,
+        explain: "Hemosiderin is a golden-brown pigment derived from the breakdown of hemoglobin and serves as a storage form of iron."
+    },
+    {
+        q: "Grossly, a fatty liver appears enlarged, brown, and firm.",
+        answer: false,
+        explain: "A fatty liver typically appears enlarged, yellow, and greasy to the touch."
+    },
+    {
+        q: "Tattoo pigments are stored permanently within melanocytes in the skin.",
+        answer: false,
+        explain: "Tattoo pigments are phagocytosed and stored by dermal macrophages, not melanocytes."
+    }
+];
+
+
+const saqs = [
+    {
+        q: "Define 'pathologic calcification' and describe its macroscopic appearance.",
+        a: "Pathologic calcification is the deposition of calcium salts in tissues other than bone or enamel. Macroscopically (on gross examination), these deposits appear as fine, white granules or clumps and often feel gritty to the touch."
+    },
+    {
+        q: "List three conditions or sites where dystrophic calcification commonly occurs.",
+        a: `
+            <ol>
+                <li><b>Atheromas:</b> In advanced atherosclerosis, calcification is almost always present in the necrotic core of arterial plaques.</li>
+                <li><b>Aging or Damaged Heart Valves:</b> Calcification can stiffen heart valves, impairing their function.</li>
+                <li><b>Areas of Necrosis:</b> For example, a tuberculous lymph node can undergo caseous necrosis and subsequently calcify, sometimes becoming stone-like.</li>
+            </ol>
+        `
+    },
+    {
+        q: "Present a comparison between dystrophic and metastatic calcification based on (1) Site, (2) Serum Calcium Level, and (3) Calcium Metabolism.",
+        a: `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Dystrophic Calcification</th>
+                        <th>Metastatic Calcification</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><b>1. Site</b></td>
+                        <td>Dead or degenerated tissue</td>
+                        <td>Normal (living) tissue</td>
+                    </tr>
+                    <tr>
+                        <td><b>2. Serum Calcium</b></td>
+                        <td>Normal</td>
+                        <td>Elevated (Hypercalcemia)</td>
+                    </tr>
+                    <tr>
+                        <td><b>3. Calcium Metabolism</b></td>
+                        <td>Normal</td>
+                        <td>Deranged</td>
+                    </tr>
+                </tbody>
+            </table>
+        `
+    },
+    {
+        q: "Describe the three main mechanisms that can lead to intracellular accumulations.",
+        a: `
+             <ol>
+                <li><b>Overproduction:</b> A normal or abnormal substance is produced at a rate faster than it can be metabolized or removed.</li>
+                <li><b>Inadequate Metabolism:</b> A normal or abnormal substance accumulates because of defects in metabolism, such as a missing enzyme.</li>
+                <li><b>Poor Removal / Lack of Enzyme Action:</b> An abnormal exogenous substance is deposited and accumulates because the cell lacks the enzymatic machinery to degrade it or the ability to transport it elsewhere.</li>
+            </ol>
+        `
+    },
+    {
+        q: "A 55-year-old man with a long history of heavy alcohol consumption is found to have an enlarged, greasy, yellow liver. What is the pathological diagnosis, and what would you expect to see on a microscopic examination of his liver tissue?",
+        a: "The pathological diagnosis is <b>hepatic steatosis (fatty liver)</b>. On microscopic examination, one would expect to see large, clear lipid vacuoles within the cytoplasm of the hepatocytes. These vacuoles would push the nucleus to the periphery of the cell, giving it a characteristic 'signet ring' or empty cell appearance."
+    },
+    {
+        q: "Explain the difference between endogenous and exogenous pigments, providing one example of each.",
+        a: "<b>Endogenous pigments</b> are synthesized within the body. An example is <b>melanin</b>, the brown-black pigment produced by melanocytes to protect against UV radiation. <br><br> <b>Exogenous pigments</b> originate from outside the body and are introduced into it. An example is <b>carbon</b>, which is inhaled from polluted air and deposited in the lungs, causing anthracosis."
+    }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    toggleBtn.style.borderColor = now ? "var(--ok)" : "rgba(255,255,255,0.18)";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+    let mcqScore = 0;
+    state.mcq.forEach((v, i) => {
+        if (v === null) return;
+        const card = mcqGrid.children[i];
+        const feedback = card.querySelector('.feedback');
+        if (feedback.innerHTML.includes("<b>Correct ✔</b>")) {
+            mcqScore++;
+        }
+    });
+
+    let tfScore = 0;
+    state.tf.forEach((v, i) => {
+        if (v === null) return;
+        const card = tfGrid.children[i];
+        const feedback = card.querySelector('.feedback');
+        if (feedback.innerHTML.includes("<b>Correct ✔</b>")) {
+            tfScore++;
+        }
+    });
+
+    const saqScore = state.saq.filter(Boolean).length;
+    const total = mcqScore + tfScore + saqScore;
+
+    document.getElementById('sMcq').textContent = mcqScore;
+    document.getElementById('sTf').textContent = tfScore;
+    document.getElementById('sSaq').textContent = saqScore;
+    document.getElementById('sTotal').textContent = total;
+    document.getElementById('sMcq2').textContent = mcqScore;
+    document.getElementById('sTf2').textContent = tfScore;
+    document.getElementById('sSaq2').textContent = saqScore;
+    document.getElementById('sTotal2').textContent = total;
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{
+      b.textContent="I was correct";
+      b.style.outline="none";
+      b.style.borderColor = "rgba(255,255,255,0.18)";
+  });
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

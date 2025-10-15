@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>Interactive Exam • Glowing Dark Theme</title>
+<title>Interactive Exam • Dentin Part 3</title>
 <meta name="color-scheme" content="dark" />
 <style>
   :root{
@@ -113,6 +113,9 @@
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer table{width:100%;border-collapse:collapse;margin-top:8px;}
+  .answer th, .answer td{border:1px solid var(--glass-border);padding:8px;text-align:left;}
+  .answer th{background-color:var(--glass);}
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -169,155 +172,59 @@
   </main>
 
 <script>
-// ----------- Data (based on OCIH-19: Dentin Part-3) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q:"Which dentin forms during tooth development before root completion?",
-    opts:["Secondary dentin","Tertiary dentin","Primary dentin","Sclerotic dentin"],
-    correct:2,
-    explain:"Primary dentin forms first (mantle then circumpulpal) before root formation completes."},
-  { q:"Mantle dentin is a subtype of which broader category?",
-    opts:["Secondary dentin","Primary dentin","Tertiary dentin","Predentin"],
-    correct:1,
-    explain:"Mantle dentin is the outermost layer of primary dentin."},
-  { q:"Circumpulpal dentin refers to dentin that:",
-    opts:["Surrounds the DEJ","Lines the pulp chamber internal to mantle dentin","Forms only after trauma","Is atubular"],
-    correct:1,
-    explain:"Circumpulpal dentin forms the bulk of primary dentin around the pulp, internal to mantle dentin."},
-  { q:"Which statement about secondary dentin is TRUE?",
-    opts:["It forms rapidly and irregularly during crown formation","It forms physiologically after root completion","It results from odontoblast death","It increases pulp horn height"],
-    correct:1,
-    explain:"Secondary dentin forms slowly after root completion and is physiologic, reducing pulp cavity size."},
-  { q:"A localized dentin formed in response to mild stimulus with intact odontoblasts is:",
-    opts:["Reparative dentin","Reactionary dentin","Predentin","Circumpulpal dentin"],
-    correct:1,
-    explain:"Reactionary dentin is secreted by surviving, stimulated odontoblasts under mild stimulus."},
-  { q:"Reparative dentin is primarily produced by:",
-    opts:["Original odontoblasts","Ameloblasts","Undifferentiated mesenchymal cells (UMCs) differentiating into odontoblast-like cells","Cementoblasts"],
-    correct:2,
-    explain:"Aggressive stimuli can kill odontoblasts; UMCs then differentiate and lay reparative dentin."},
-  { q:"Which is NOT a possible structure of reparative dentin?",
-    opts:["Osteodentin","Vasodentin","Atubular dentin","Mantle dentin"],
-    correct:3,
-    explain:"Mantle dentin is primary; reparative may be atubular, osteodentin, or vasodentin."},
-  { q:"Predentin is best described as:",
-    opts:["A mineralized band at DEJ","An unmineralized matrix adjacent to pulp","Atubular tertiary dentin","Calcified dead tracts"],
-    correct:1,
-    explain:"Predentin is the unmineralized organic matrix deposited by odontoblasts before mineralization."},
-  { q:"Secondary dentin alters dentinal tubules by making them:",
-    opts:["Straighter and more numerous","Wavy and fewer in number","Branched extensively at DEJ","Atubular"],
-    correct:1,
-    explain:"Secondary dentin shows a more wavy course and fewer tubules."},
-  { q:"Clinically, increased secondary dentin tends to:",
-    opts:["Increase risk of pulp exposure during cavity prep","Decrease risk of pulp exposure during cavity prep","Increase pulp horn prominence","Accelerate caries progression to pulp"],
-    correct:1,
-    explain:"Secondary dentin reduces pulp chamber size and pulp horn height, lowering exposure risk."},
-  { q:"Transparent (sclerotic) dentin results primarily from:",
-    opts:["Deposition of osteodentin","Calcification/obliteration of dentinal tubules","Loss of intertubular dentin","Death of odontoblasts and empty tubules"],
-    correct:1,
-    explain:"Sclerotic dentin forms as peritubular dentin thickens and tubules become occluded, appearing translucent."},
-  { q:"Dead tracts are characterized by:",
-    opts:["Numerous narrow tubules with peritubular thickening","Empty, widened tubules due to destroyed odontoblast processes","Atubular structure with entrapped cells","Increased sensitivity at DEJ"],
-    correct:1,
-    explain:"Severe stimuli cause odontoblast/process loss, leaving empty, wide tubules that appear dark by transmitted light."},
-  { q:"Under dead tracts on the pulpal side, which dentin is typically formed?",
-    opts:["Mantle dentin","Secondary dentin","Reparative dentin","Predentin"],
-    correct:2,
-    explain:"Reparative dentin forms beneath the area to protect the pulp after severe injury."},
-  { q:"Which combination correctly matches stimulus and dentin response?",
-    opts:["Mild stimulus → reparative dentin","Aggressive stimulus → reactionary dentin","Mild stimulus → reactionary dentin","Physiologic aging → tertiary dentin"],
-    correct:2,
-    explain:"Mild: reactionary by original odontoblasts; Aggressive: reparative by newly differentiated cells."},
-  { q:"The most accepted theory for dentin sensitivity is:",
-    opts:["Direct neural stimulation","Odontoblastic transduction","Gate control theory","Fluid (hydrodynamic) theory"],
-    correct:3,
-    explain:"Hydrodynamic theory best explains dentinal pain via fluid movement stimulating pulpal nerves."},
-  { q:"Evidence AGAINST the direct neural stimulation theory includes:",
-    opts:["Gap junctions between odontoblasts","Lack of nerve fibers in outer dentin near DEJ","Profuse branching at DEJ","Presence of free nerve endings in pulp"],
-    correct:1,
-    explain:"Outer dentin (DEJ) is highly sensitive yet lacks direct nerve fibers; intratubular nerves loop back."},
-  { q:"Support FOR the odontoblastic transduction theory includes:",
-    opts:["Synaptic vesicles in odontoblasts","Close association of odontoblasts with nerve endings and gap junctions","Abundance of nerves at DEJ","Anesthetic easily blocks dentin sensitivity from surface"],
-    correct:1,
-    explain:"Observed proximity and gap junctions support coupling, though absence of neurotransmitter vesicles argues against."},
-  { q:"Where is dentin most sensitive?",
-    opts:["Near the pulp only","At the cemento-enamel junction","At the dentino-enamel junction (DEJ)","In root dentin uniformly"],
-    correct:2,
-    explain:"Sensitivity is high at DEJ due to profuse tubule branching and high near pulpal surface; less in root."},
-  { q:"The plexus of Raschkow is located primarily in the:",
-    opts:["Predentin","Subodontoblastic region of the pulp","DEJ","Cementum"],
-    correct:1,
-    explain:"A nerve plexus in the subodontoblastic layer of the pulp contributes to dentin sensitivity."},
-  { q:"Which best explains reduced pulp exposures in older patients during cavity prep?",
-    opts:["Wider apical foramina","Increased mantle dentin thickness","Pulp recession due to secondary dentin","Greater enamel thickness"],
-    correct:2,
-    explain:"Secondary dentin deposition reduces pulp chamber height and obliterates pulp horns (pulp recession)."},
-  { q:"Reactionary dentin typically shows tubules that are:",
-    opts:["Numerous and regular like primary dentin","Fewer and irregular","Completely absent (atubular)","Enlarged and empty"],
-    correct:1,
-    explain:"Tertiary dentin (including reactionary) generally has fewer, irregular tubules compared with primary."},
-  { q:"Which statement about vasodentin is CORRECT?",
-    opts:["It contains entrapped blood vessels","It lacks any cellular inclusions","It is typical of mantle dentin","It forms only at DEJ"],
-    correct:0,
-    explain:"Vasodentin is reparative dentin characterized by entrapped blood vessels."},
-  { q:"Osteodentin differs from other dentins because it:",
-    opts:["Has odontoblast processes in every tubule","Contains entrapped cells within the matrix","Is always translucent","Forms exclusively during development"],
-    correct:1,
-    explain:"Osteodentin includes osteocyte-like entrapped cells; a reparative pattern."},
-  { q:"Which change contributes to the translucent appearance of sclerotic dentin?",
-    opts:["Uniform refractive index due to tubule occlusion","Air in widened tubules","Increased organic content of intertubular dentin","External staining of dentin"],
-    correct:0,
-    explain:"Occluded tubules make refractive index more uniform, appearing translucent by transmitted light."},
-  { q:"Which is LEAST associated with dead tracts?",
-    opts:["Severe stimulation","Empty wide tubules","Reparative dentin beneath","Increased peritubular deposition occluding tubules"],
-    correct:3,
-    explain:"Peritubular thickening/occlusion describes sclerotic dentin, not dead tracts."},
-  { q:"In young patients, cavity preparation carries greater pulp exposure risk mainly because:",
-    opts:["Larger pulp chambers and horns","Thinner enamel rods","Less secondary dentin and shorter roots","More cementum covering dentin"],
-    correct:0,
-    explain:"The large pulp chamber and prominent horns before secondary dentin deposition raise exposure risk."},
-  { q:"Which feature best supports the hydrodynamic theory?",
-    opts:["Surface anesthesia abolishes dentin pain","Tubule fluid movement triggers pulpal free nerve endings","Odontoblasts release transmitters into synapses","Outer dentin richly innervated by axons"],
-    correct:1,
-    explain:"Stimuli cause fluid shifts in tubules, activating nearby pulpal nerves."},
-  { q:"Predentin transitions to mineralized dentin by:",
-    opts:["Loss of collagen","Immediate calcification without delay","Mineral deposition onto organic matrix","Replacement by enamel"],
-    correct:2,
-    explain:"Mineral is deposited on the predentin matrix to form dentin."},
-  { q:"Which sequence best represents response to caries advancing toward pulp?",
-    opts:["Sclerotic dentin → Dead tracts → Reparative dentin","Dead tracts → Sclerotic dentin → Reactionary dentin","Reparative dentin → Sclerotic dentin → Dead tracts","Mantle dentin → Vasodentin → Predentin"],
-    correct:0,
-    explain:"Sclerotic dentin may form around affected tubules; severe injury creates dead tracts; pulp responds with reparative dentin beneath."},
-  { q:"Which statement about innervation of dentin is MOST accurate?",
-    opts:["Axons maintain Schwann sheath into tubules","Nerves pass between odontoblasts and may enter tubules a short distance","Nerve density is greatest in mid-dentin","There are abundant nerves at the DEJ"],
-    correct:1,
-    explain:"Fibers lose Schwann sheath, pass between odontoblasts, and may extend a short way into tubules then loop back; outer dentin lacks nerves."}
+  { q: "Which type of dentin forms the bulk of the tooth structure before root completion?", opts: ["Secondary dentin", "Tertiary dentin", "Primary dentin", "Mantle dentin"], correct: 2, explain: "Primary dentin, which includes mantle and circumpulpal dentin, forms most of the tooth before the root is fully developed." },
+  { q: "The outermost layer of primary dentin, located just beneath the enamel, is known as:", opts: ["Circumpulpal dentin", "Mantle dentin", "Predentin", "Secondary dentin"], correct: 1, explain: "Mantle dentin is the first-formed layer of dentin, situated directly adjacent to the dentino-enamel junction (DEJ)." },
+  { q: "When does the formation of secondary dentin typically begin?", opts: ["During crown formation", "Immediately after tooth eruption", "After root formation is completed", "In response to trauma"], correct: 2, explain: "Secondary dentin is a physiological type of dentin that starts forming at a slow rate only after the tooth's root is fully developed." },
+  { q: "Compared to primary dentin, the tubular structure of secondary dentin is generally:", opts: ["More regular and straight", "Less regular with a wavy course", "Completely atubular", "Wider in diameter"], correct: 1, explain: "Secondary dentin tubules are less regular and show a distinct change in direction from primary dentin tubules." },
+  { q: "The uneven deposition of secondary dentin, particularly on the roof and floor of the pulp chamber, leads to a condition called:", opts: ["Pulp exposure", "Pulp recession", "Dentin sclerosis", "Dead tracts"], correct: 1, explain: "This uneven deposition gradually reduces the size of the pulp space, a process known as pulp recession." },
+  { q: "Tertiary dentin is formed in response to which of the following stimuli?", opts: ["Physiological aging", "Systemic disease", "Dental caries", "Normal mastication"], correct: 2, explain: "Tertiary dentin is a localized, defensive response to stimuli like tooth wear, caries, or restorative procedures." },
+  { q: "Which type of tertiary dentin is formed by surviving odontoblasts in response to a mild stimulus?", opts: ["Reparative dentin", "Reactionary dentin", "Osteodentin", "Atubular dentin"], correct: 1, explain: "Reactionary dentin is produced by the original odontoblasts when the stimulus is not severe enough to destroy them." },
+  { q: "If a stimulus is aggressive and destroys the original odontoblasts, which cells differentiate to form reparative dentin?", opts: ["Fibroblasts", "Cementoblasts", "Ameloblasts", "Undifferentiated mesenchymal cells"], correct: 3, explain: "Undifferentiated mesenchymal cells (UMCs) from the pulp differentiate into new odontoblast-like cells to form reparative dentin." },
+  { q: "Which of the following is NOT a potential structural form of reparative dentin?", opts: ["Osteodentin", "Atubular dentin", "Vasodentin", "Mantle dentin"], correct: 3, explain: "Reparative dentin is highly irregular and can be atubular, contain trapped cells (osteodentin), or blood vessels (vasodentin). Mantle dentin is a type of primary dentin." },
+  { q: "What is sclerotic dentin?", opts: ["Dentin with empty, wide tubules", "Dentin with occluded, mineralized tubules", "Newly formed unmineralized dentin", "The first layer of dentin formed"], correct: 1, explain: "Sclerosis is an age-related change where the dentinal tubules become completely filled with mineral, making the dentin translucent." },
+  { q: "How do 'dead tracts' appear under transmitted light?", opts: ["Translucent or transparent", "White and opaque", "Black", "Yellowish"], correct: 2, explain: "Dead tracts consist of empty dentinal tubules (due to odontoblast death) that fill with air, causing them to appear black under transmitted light." },
+  { q: "What is typically formed on the pulpal surface directly underneath a dead tract area?", opts: ["Secondary dentin", "Sclerotic dentin", "Reparative dentin", "Mantle dentin"], correct: 2, explain: "The formation of reparative dentin is a defense mechanism to seal off the pulpal end of the empty tubules in a dead tract." },
+  { q: "Which theory of dentin sensitivity is the most widely accepted by the scientific community?", opts: ["Direct Neural Stimulation Theory", "Odontoblastic Transduction Theory", "Hydrodynamic Theory", "Thermal Conduction Theory"], correct: 2, explain: "The Hydrodynamic Theory is the most accepted because it best explains the characteristics of dentin pain in response to various stimuli." },
+  { q: "According to the Hydrodynamic Theory, what directly stimulates the pulpal nerve endings?", opts: ["The odontoblast cell body", "Direct contact with a nerve fiber", "Rapid fluid movement within the tubules", "Temperature changes in the dentin matrix"], correct: 2, explain: "This theory posits that stimuli cause fluid to shift within the tubules, and this movement is detected by nerve receptors in the pulp." },
+  { q: "A major argument against the Direct Neural Stimulation theory is:", opts: ["The presence of gap junctions", "The absence of nerve fibers in the outer dentin", "The speed of pain transmission", "The effect of local anesthetics on pulp"], correct: 1, explain: "The outer dentin (near the DEJ) is the most sensitive region, yet nerve fibers are not found there, contradicting this theory." },
+  { q: "What key cellular component is missing in odontoblasts, which argues against the Odontoblastic Transduction Theory?", opts: ["Mitochondria", "Nucleus", "Vesicles containing neurotransmitters", "Gap junctions"], correct: 2, explain: "For odontoblasts to act as receptor cells that transmit a signal to nerves, they would need neurotransmitter vesicles, which have not been observed." },
+  { q: "The profuse branching of dentinal tubules in which region helps explain its heightened sensitivity?", opts: ["The pulp floor", "The cemento-dentinal junction (CDJ)", "The dentino-enamel junction (DEJ)", "The apical foramen"], correct: 2, explain: "The high density and branching of tubules at the DEJ make it a particularly sensitive area, as explained by the Hydrodynamic Theory." },
+  { q: "Which dentin is classified as 'physiological' and forms throughout the life of the tooth after root completion?", opts: ["Primary dentin", "Secondary dentin", "Reparative dentin", "Reactionary dentin"], correct: 1, explain: "Secondary dentin is part of the normal aging process and is not a response to a specific stimulus." },
+  { q: "Why is there a greater risk of pulp exposure during cavity preparation in younger patients?", opts: ["Their dentin is softer", "They have larger pulp chambers and horns", "They lack secondary dentin", "Their enamel is thinner"], correct: 1, explain: "Due to less pulp recession from secondary dentin deposition, the pulp is closer to the surface in younger teeth." },
+  { q: "Sclerotic dentin appears translucent because it has a uniform:", opts: ["Cellular density", "Collagen content", "Refractive index", "Hardness"], correct: 2, explain: "The filling of tubules with mineral makes the refractive index of the tubules the same as the surrounding intertubular dentin, allowing light to pass through uniformly." },
+  { q: "The formation of tertiary dentin in response to caries serves as a:", opts: ["Method of nutrition for the pulp", "Defensive barrier to protect the pulp", "Source of new odontoblasts", "Way to increase tooth sensitivity"], correct: 1, explain: "Tertiary dentin increases the thickness of hard tissue between the stimulus (caries) and the pulp, acting as a protective barrier." },
+  { q: "Which type of dentin is characterized by having the least regular or even atubular structure?", opts: ["Mantle dentin", "Circumpulpal dentin", "Secondary dentin", "Tertiary dentin"], correct: 3, explain: "Tertiary dentin, especially reparative dentin, is formed rapidly and has a very irregular, and sometimes completely atubular, structure." },
+  { q: "The cells that form primary and secondary dentin are called:", opts: ["Ameloblasts", "Odontoblasts", "Cementoblasts", "Fibroblasts"], correct: 1, explain: "Odontoblasts are the cells responsible for forming physiological dentin (primary and secondary)." },
+  { q: "Application of local anesthetics on the surface of exposed dentin does not eliminate sensitivity. This evidence argues against which theory?", opts: ["Hydrodynamic Theory", "Odontoblastic Transduction Theory", "Direct Neural Stimulation Theory", "All of the above"], correct: 2, explain: "If nerves were present at the surface, an anesthetic should block the pain signal, but it doesn't. This is a key piece of evidence against direct neural stimulation." },
+  { q: "What is Predentin?", opts: ["The final, hypermineralized layer of dentin", "A type of tertiary dentin", "The newly formed, unmineralized dentin matrix", "Dentin found only in the root"], correct: 2, explain: "Predentin is the unmineralized organic matrix of dentin located adjacent to the odontoblast layer, which will subsequently mineralize." },
+  { q: "The rate of matrix deposition is slowest for which type of dentin?", opts: ["Mantle dentin", "Circumpulpal dentin", "Secondary dentin", "Reparative dentin"], correct: 2, explain: "Secondary dentin is deposited very slowly throughout life, in contrast to the relatively faster formation of primary dentin." },
+  { q: "What is the primary cause of 'dead tracts' formation?", opts: ["Physiological aging", "Mineral deposition in tubules", "Destruction of odontoblasts or their processes", "Excessive fluoride intake"], correct: 2, explain: "Severe stimulation leads to the death of the odontoblast, leaving its corresponding tubule empty." },
+  { q: "The presence of gap junctions between adjacent odontoblasts is evidence used to support which theory of sensitivity?", opts: ["Direct Neural Stimulation Theory", "Odontoblastic Transduction Theory", "Hydrodynamic Theory", "Cellular Communication Theory"], correct: 1, explain: "Gap junctions allow for electronic coupling, suggesting that odontoblasts could pass a signal between each other and to nerve endings, which is the basis of the transduction theory." },
+  { q: "Which area of the tooth shows the highest dentin sensitivity?", opts: ["Near the pulpal surface", "At the dentino-enamel junction (DEJ)", "In the middle third of the dentin", "At the cemento-dentinal junction (CDJ)"], correct: 1, explain: "While the DEJ has many tubule branches, sensitivity is highest near the pulp where the nerve endings are located and tubule diameter is largest." },
+  { q: "What is the clinical significance of pulp recession?", opts: ["It increases the risk of pulp exposure", "It decreases the risk of pulp exposure", "It makes teeth more sensitive", "It causes discoloration of the crown"], correct: 1, explain: "By reducing the size of the pulp chamber, pulp recession makes it less likely for a dental bur to expose the pulp during cavity preparation in older patients." }
 ];
 
 const tfs = [
-  { q:"Secondary dentin formation is a physiologic process that occurs after root formation is complete.", answer:true, explain:"It is not trauma-induced; it develops slowly after root completion." },
-  { q:"Reactionary dentin is formed by newly differentiated odontoblast-like cells from UMCs.", answer:false, explain:"That describes reparative dentin; reactionary is by existing odontoblasts." },
-  { q:"Dead tracts appear black with transmitted light because their tubules are empty and wide.", answer:true, explain:"Loss of odontoblast processes leaves empty, widened tubules." },
-  { q:"Sclerotic dentin increases dentin permeability.", answer:false, explain:"Occluded tubules decrease permeability; hence translucent appearance." },
-  { q:"The outer dentin near the DEJ is richly innervated with nerve fibers.", answer:false, explain:"DEJ region is highly sensitive but lacks direct nerve fibers; supports hydrodynamic theory." },
-  { q:"Hydrodynamic theory explains sensitivity by fluid movement within dentinal tubules stimulating pulpal nerves.", answer:true, explain:"Fluid shifts activate free nerve endings close to odontoblasts." },
-  { q:"Secondary dentin deposition can lead to pulp horn obliteration.", answer:true, explain:"Contributes to pulp recession and smaller chamber." },
-  { q:"Osteodentin contains entrapped cells within the dentin matrix.", answer:true, explain:"A feature of certain reparative dentin." },
-  { q:"Applying surface local anesthetic to exposed dentin predictably abolishes dentin sensitivity.", answer:false, explain:"Surface anesthetics do not reliably block dentin sensitivity—evidence against direct neural theory." }
+  { q: "Primary dentin formation ceases once the root of the tooth is completely formed.", answer: false, explain: "Primary dentin formation is completed when the root is formed, but secondary dentin formation then begins and continues throughout life." },
+  { q: "Secondary dentin is deposited evenly on all surfaces of the pulp chamber.", answer: false, explain: "Secondary dentin deposition is uneven, occurring more on the roof and floor of the pulp chamber." },
+  { q: "Tertiary dentin is considered a physiological type of dentin, formed as part of the normal aging process.", answer: false, explain: "Tertiary dentin is a response to a stimulus or pathology, not a physiological process. Secondary dentin is the physiological age-related dentin." },
+  { q: "Reparative dentin is formed by the original odontoblasts that have survived an injury.", answer: false, explain: "Reparative dentin is formed by new odontoblast-like cells after the original ones have been destroyed. Reactionary dentin is formed by surviving odontoblasts." },
+  { q: "Sclerotic dentin results from the demineralization of peritubular dentin.", answer: false, explain: "Sclerotic dentin is the opposite; it is hypermineralization where the tubule becomes completely filled with mineral." },
+  { q: "Dead tracts appear translucent under transmitted light due to being filled with fluid.", answer: false, explain: "Dead tracts appear black because the empty tubules are filled with air, not fluid. Sclerotic dentin appears translucent." },
+  { q: "The Hydrodynamic Theory proposes that fluid movement in the dentinal tubules stimulates nerve receptors in the pulp.", answer: true, explain: "This is the core concept of the Hydrodynamic Theory, which is the most accepted explanation for dentin sensitivity." },
+  { q: "The presence of nerve fibers extending to the dentino-enamel junction is well-documented and supports the Direct Neural Stimulation theory.", answer: false, explain: "Nerve fibers have not been found in the outer dentin, which is a major point of evidence against this theory." },
+  { q: "Pulp capping procedures are clinically successful partly due to the tooth's ability to form reparative dentin.", answer: true, explain: "The ability of the pulp to form a reparative dentin bridge to wall off an exposure is the biological basis for pulp capping." }
 ];
 
 const saqs = [
-  // 1. Direct Answer
-  { q: "Define predentin and state its location.", a: "Unmineralized dentin matrix adjacent to the pulp, laid by odontoblasts before mineralization." },
-  // 2. List / Enumeration (3+ items)
-  { q: "List four categories in the classification of dentin according to formation.", a: "1) Primary (mantle, circumpulpal). 2) Secondary. 3) Tertiary (reactionary, reparative). 4) Predentin." },
-  // 3. Comparison (numbered table)
-  { q: "Compare reactionary and reparative dentin in stimulus and cell source.", a: `<table style="width:100%;border-collapse:collapse"><thead><tr><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">#</th><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">Feature</th><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">Reactionary dentin</th><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">Reparative dentin</th></tr></thead><tbody><tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">1</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Stimulus</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Mild</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Aggressive</td></tr><tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">2</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Cell source</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Original odontoblasts</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">UMCs → odontoblast-like cells</td></tr><tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">3</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Tubule pattern</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Fewer, irregular</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Often atubular/heterogeneous</td></tr></tbody></table>` },
-  // 4. Case-based Scenario
-  { q: "A 55-year-old needs a Class I restoration. Why is pulp exposure less likely than in a 15-year-old?", a: "Secondary dentin has reduced pulp chamber height and obliterated horns (pulp recession)." },
-  // 5. Short factual
-  { q: "Name the nerve plexus implicated in dentin sensitivity and its location.", a: "Plexus of Raschkow in the subodontoblastic layer of the pulp." },
-  // 6. Mechanism
-  { q: "State the key rationale against the direct neural theory for dentin pain at the DEJ.", a: "Outer dentin near DEJ lacks direct nerve fibers despite high sensitivity." }
+  { q: "A 60-year-old patient presents with significant, flattened wear on the occlusal surfaces of their molars. What specific type of dentin is likely being formed in response, and what is its primary function in this scenario?", a: "The tooth is forming <strong>tertiary dentin</strong> (specifically, reactionary dentin, as tooth wear is typically a slow, mild stimulus).<br><br>Its primary function is to act as a <strong>defensive barrier</strong>, increasing the thickness of hard tissue over the pulp to protect it from the advancing external surface and thermal stimuli." },
+  { q: "Explain what 'dead tracts' are in dentin. Include their cause, their appearance under transmitted light, and the typical pulpal response to their formation.", a: "<strong>Cause:</strong> Dead tracts are formed when a severe stimulus (like rapid caries or trauma) destroys the odontoblasts and their processes.<br><br><strong>Appearance:</strong> This leaves the dentinal tubules empty. When viewed under transmitted light, these air-filled tubules appear <strong>black</strong>.<br><br><strong>Pulpal Response:</strong> The pulp typically responds by forming <strong>reparative dentin</strong> at the pulpal end of the dead tract to seal it off." },
+  { q: "List the three main theories that have been proposed to explain dentin sensitivity.", a: "1. <strong>Direct Neural Stimulation Theory:</strong> Proposes that nerves extend all the way through the dentin to the DEJ and are directly stimulated.<br><br>2. <strong>Odontoblastic Transduction Theory:</strong> Proposes that the odontoblast acts as a receptor cell, sensing a stimulus and transmitting a signal to an adjacent nerve.<br><br>3. <strong>Hydrodynamic Theory:</strong> Proposes that stimuli cause rapid fluid movement within the dentinal tubules, which in turn stimulates nerve receptors in the pulp." },
+  { q: "A young patient experiences a traumatic fracture of a molar cusp, exposing a small area of dentin. Describe the two stages of dentin response you would expect to see over time, assuming the pulp remains vital.", a: "1. <strong>Immediate response (Dead Tract/Sclerosis):</strong> The odontoblasts under the exposed tubules may be damaged or die, potentially creating a localized 'dead tract'. Surrounding tubules may begin to sclerose as a protective measure.<br><br>2. <strong>Long-term response (Tertiary Dentin):</strong> The pulp will initiate the formation of tertiary dentin on the pulpal wall beneath the fracture. If the original odontoblasts were destroyed, it would be <strong>reparative dentin</strong>. This new dentin acts as a barrier to protect the pulp from bacteria and thermal stimuli." },
+  { q: "Define Sclerotic Dentin and explain why it appears translucent or transparent when viewed with transmitted light.", a: "<strong>Definition:</strong> Sclerotic dentin is a type of dentin where the dentinal tubules have become completely occluded (filled in) with mineral deposits. It is a common age-related change and a response to slow stimuli.<br><br><strong>Appearance:</strong> It appears translucent because the mineral filling the tubule has the same refractive index as the surrounding intertubular dentin. This uniformity allows light to pass through without being scattered, unlike in normal dentin where the difference in refractive indices between the tubule wall and the fluid/space inside causes light scattering." },
+  { q: "Compare and contrast Primary, Secondary, and Tertiary Dentin using a table format. Include the stimulus for formation and the general regularity of the tubular structure.", a: "<table border='1' style='width:100%;'><tr><th>Feature</th><th>Primary Dentin</th><th>Secondary Dentin</th><th>Tertiary Dentin</th></tr><tr><td><strong>Stimulus</strong></td><td>Physiological (part of normal tooth development)</td><td>Physiological (part of normal aging, after root completion)</td><td>Pathological/External (e.g., caries, wear, trauma)</td></tr><tr><td><strong>Tubular Structure</strong></td><td>Regular and organized</td><td>Less regular, shows a change in direction</td><td>Highly irregular, sometimes atubular</td></tr></table>" }
 ];
 
 // ----------- State -----------
@@ -474,7 +381,7 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
@@ -506,17 +413,23 @@ saqs.forEach((item, idx)=>{
 // ----------- Score + Reset -----------
 function recalc(){
   const mcqScore = state.mcq.reduce((s,v,i)=>{
-    if(v===null) return s;
+    if(v === null) return s;
+    const item = mcqs[i];
     const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
+    // Need to find the original correct index based on the shuffled map
+    const map = Array.from(card.querySelectorAll('.opt-btn')).map(btn => {
+        const label = btn.querySelector('.label').textContent;
+        return item.opts.indexOf(label);
+    });
+    const correctVisualIndex = map.indexOf(item.correct);
+    return s + (v === correctVisualIndex ? 1 : 0);
   },0);
+
   const tfScore = state.tf.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
+    if(v === null) return s;
+    return s + (v === tfs[i].answer ? 1 : 0);
   },0);
+
   const saqScore = state.saq.filter(Boolean).length;
   const total = mcqScore + tfScore + saqScore;
 
@@ -531,7 +444,9 @@ function recalc(){
   });
 }
 
+
 document.getElementById('resetAll').addEventListener('click', ()=>{
+  if (!confirm('Are you sure you want to reset all progress?')) return;
   document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
   document.querySelectorAll('.opt-btn').forEach(b=>{
     b.classList.remove('correct','wrong');
@@ -547,7 +462,7 @@ document.getElementById('resetAll').addEventListener('click', ()=>{
   recalc();
 });
 
-recalc();
+recalc(); // Initial calculation
 </script>
 </body>
 </html>

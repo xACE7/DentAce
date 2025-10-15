@@ -1,0 +1,811 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 6</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+  {
+    "q": "What is the primary definition of inflammation?",
+    "opts": [
+      "A disease caused by infection",
+      "A protective local response of blood vessels to injury",
+      "A systemic allergic reaction",
+      "The final stage of tissue repair"
+    ],
+    "correct": 1,
+    "explain": "Slide 4 defines inflammation as a 'protective local response of blood vessels to injury' aimed at eliminating infections and promoting repair."
+  },
+  {
+    "q": "Which of the following is NOT a primary cause of inflammation?",
+    "opts": [
+      "Infections (bacterial, viral)",
+      "Normal physiological cell turnover",
+      "Physical agents (heat, trauma)",
+      "Immune reactions (allergy)"
+    ],
+    "correct": 1,
+    "explain": "Slide 5 lists infections, chemical agents, physical agents, immune reactions, tissue necrosis, and foreign bodies as causes. Normal cell turnover is a physiological process, not an injurious trigger for inflammation."
+  },
+  {
+    "q": "The cardinal signs of redness (rubor) and hotness (calor) are mainly caused by:",
+    "opts": [
+      "Increased vascular permeability",
+      "Leukocyte migration",
+      "Vasodilation and hyperemia",
+      "Production of prostaglandins"
+    ],
+    "correct": 2,
+    "explain": "Slide 7 explains that vasodilation, mediated by nitric oxide, leads to increased local blood flow (hyperemia), which manifests as redness and heat."
+  },
+  {
+    "q": "Swelling (tumor) in acute inflammation is a direct result of:",
+    "opts": [
+      "Increased blood flow to the area",
+      "Exudation of fluid due to increased vascular permeability",
+      "Accumulation of red blood cells",
+      "Muscle contraction caused by bradykinins"
+    ],
+    "correct": 1,
+    "explain": "Slide 7 shows that increased vascular permeability allows fluid (exudate) to leak out into the tissue, causing swelling."
+  },
+  {
+    "q": "Who is credited with adding the fifth cardinal sign of inflammation, 'loss of function' (functio laesa)?",
+    "opts": [
+      "Celsus",
+      "Virchow",
+      "Robbins",
+      "Kumar"
+    ],
+    "correct": 1,
+    "explain": "Slide 6 attributes the first four signs to Celsus and the fifth sign, loss of function, to Virchow."
+  },
+  {
+    "q": "What is the primary cell type that characterizes the initial phase of acute inflammation?",
+    "opts": [
+      "Macrophage",
+      "Lymphocyte",
+      "Neutrophil (PMN)",
+      "Mast cell"
+    ],
+    "correct": 2,
+    "explain": "Slide 9 clearly states that the Neutrophil (Polymorphonuclear leukocyte, PMN) is the main cell in acute inflammation."
+  },
+  {
+    "q": "The process of leukocytes moving from the blood vessel into the tissue is called:",
+    "opts": [
+      "Margination",
+      "Rolling",
+      "Phagocytosis",
+      "Diapedesis"
+    ],
+    "correct": 3,
+    "explain": "Slide 10 defines Diapedesis as the 'passing of WBCs through pores in vessels wall'."
+  },
+  {
+    "q": "Which chemical mediator is primarily responsible for vasodilation and increased vascular permeability in the early stages of inflammation?",
+    "opts": [
+      "Prostaglandins",
+      "Histamine",
+      "Interleukins",
+      "Nitric oxide"
+    ],
+    "correct": 1,
+    "explain": "Slide 11 and Slide 8 indicate that Histamine, released from mast cells, causes vasodilation and increased permeability early in the response."
+  },
+  {
+    "q": "Aspirin is an effective anti-inflammatory drug because it primarily inhibits the synthesis of which mediator?",
+    "opts": [
+      "Bradykinin",
+      "Leukotrienes",
+      "Prostaglandins",
+      "Serotonin"
+    ],
+    "correct": 2,
+    "explain": "Slide 11 explicitly states that aspirin works by inhibiting prostaglandins, which are responsible for fever and pain."
+  },
+  {
+    "q": "What is the term for the directed movement of white blood cells towards an area of injury or infection?",
+    "opts": [
+      "Leukocytosis",
+      "Adhesion",
+      "Opsonization",
+      "Chemotaxis"
+    ],
+    "correct": 3,
+    "explain": "Slide 10 defines Chemotaxis as the 'directed movement of WBCs towards area of inflammation', mediated by substances like C5a and LTB-4."
+  },
+  {
+    "q": "Which of the following is a plasma-derived inflammatory mediator synthesized in the liver?",
+    "opts": [
+      "Histamine",
+      "Prostaglandins",
+      "Bradykinin",
+      "Interleukins"
+    ],
+    "correct": 2,
+    "explain": "Slide 11 categorizes mediators as cell-derived or plasma-derived, listing Bradykinin as a plasma-derived mediator from the liver."
+  },
+  {
+    "q": "A dental abscess is a classic example of which morphological form of acute inflammation?",
+    "opts": [
+      "Serous",
+      "Fibrinous",
+      "Suppurative (Purulent)",
+      "Catarrhal"
+    ],
+    "correct": 2,
+    "explain": "Slides 14, 15, and 17 all use dental abscess as a prime example of purulent/suppurative inflammation, characterized by pus formation."
+  },
+  {
+    "q": "What is the primary component of 'pus'?",
+    "opts": [
+      "Fibrin and plasma proteins",
+      "Clear, watery fluid",
+      "Activated macrophages and lymphocytes",
+      "Dead neutrophils, bacteria, and necrotic debris"
+    ],
+    "correct": 3,
+    "explain": "Slide 13 defines pus as an exudate rich in neutrophils and proteins. Slide 14 further clarifies that the contents of a periapical abscess are dead neutrophils, bacteria, and necrotic debris."
+  },
+  {
+    "q": "Which type of inflammation is characterized by a thin, watery exudate with low cell and protein content, such as in a skin blister?",
+    "opts": [
+      "Hemorrhagic",
+      "Serous",
+      "Pseudomembranous",
+      "Fibrinous"
+    ],
+    "correct": 1,
+    "explain": "Slide 16 describes serous inflammation as having a thin, watery exudate, with skin blisters and herpes simplex as examples."
+  },
+  {
+    "q": "Fever, a systemic effect of inflammation, is caused by pyrogens like PGE2 and TNF acting on which part of the body?",
+    "opts": [
+      "Bone marrow",
+      "Liver",
+      "Appetite center in the brain",
+      "Thermostatic center in the brain"
+    ],
+    "correct": 3,
+    "explain": "Slide 18 explains that fever occurs when pyrogens (prostaglandins, TNF) act on the thermostatic center in the brain."
+  },
+  {
+    "q": "An increase in the white blood cell count in the blood during acute inflammation is known as:",
+    "opts": [
+      "Leukopenia",
+      "Leukocytosis",
+      "Anemia",
+      "Thrombocytopenia"
+    ],
+    "correct": 1,
+    "explain": "Slide 9 and 18 identify Leukocytosis as an increased WBC count, a key laboratory finding in acute inflammation."
+  },
+  {
+    "q": "C-reactive protein (CRP) is a key marker of inflammation. Which organ produces it?",
+    "opts": [
+      "Spleen",
+      "Kidney",
+      "Liver",
+      "Bone Marrow"
+    ],
+    "correct": 2,
+    "explain": "According to Slide 18, acute phase proteins like CRP are produced by the liver in response to interleukins and TNF."
+  },
+  {
+    "q": "In the sequence of cellular events, what happens immediately after margination?",
+    "opts": [
+      "Diapedesis",
+      "Rolling",
+      "Phagocytosis",
+      "Chemotaxis"
+    ],
+    "correct": 1,
+    "explain": "The diagram on Slide 9 and the table on Slide 10 show that rolling of leukocytes along the endothelium follows margination and adhesion."
+  },
+  {
+    "q": "The process of coating a microbe with opsonins (like C3b) to enhance phagocytosis is called:",
+    "opts": [
+      "Chemotaxis",
+      "Margination",
+      "Opsonization",
+      "Diapedesis"
+    ],
+    "correct": 2,
+    "explain": "While not explicitly defined, Slide 10 lists 'Opsonin (C3b)' as the mediator for Phagocytosis, which is the process of coating for engulfment."
+  },
+  {
+    "q": "Which of the following is a potential outcome of acute inflammation?",
+    "opts": [
+      "Only complete resolution",
+      "Only progression to chronic inflammation",
+      "Only abscess formation",
+      "Resolution, progression to chronic, or abscess formation"
+    ],
+    "correct": 3,
+    "explain": "Slide 12 lists the three main outcomes of acute inflammation as resolution/healing, progression to chronic inflammation, or abscess formation."
+  },
+  {
+    "q": "Catarrhal inflammation, seen in the common cold (rhinitis), is characterized by an exudate rich in:",
+    "opts": [
+      "Fibrin",
+      "Red blood cells",
+      "Neutrophils",
+      "Mucin and water"
+    ],
+    "correct": 3,
+    "explain": "Slide 16 defines Catarrhal inflammation as having a watery discharge with mucin, affecting areas like the nose and GIT."
+  },
+  {
+    "q": "In which morphological type of inflammation would you find a high concentration of fibrin, often seen in pericarditis?",
+    "opts": [
+      "Fibrinous",
+      "Serous",
+      "Suppurative",
+      "Hemorrhagic"
+    ],
+    "correct": 0,
+    "explain": "Slide 15 describes Fibrinous inflammation as containing high amounts of fibrin, with pericarditis as a key example."
+  },
+  {
+    "q": "Which of the following mediators is most directly associated with causing pain (dolor)?",
+    "opts": [
+      "Nitric Oxide",
+      "Histamine",
+      "Prostaglandins and Bradykinin",
+      "Interleukins"
+    ],
+    "correct": 2,
+    "explain": "Slide 7 and Slide 11 explicitly mention that Prostaglandins and Bradykinins are major contributors to the sensation of pain in inflammation."
+  },
+  {
+    "q": "The rolling of leukocytes on the endothelium is mediated by which family of adhesion molecules?",
+    "opts": [
+      "Integrins",
+      "Selectins",
+      "Cadherins",
+      "CD31"
+    ],
+    "correct": 1,
+    "explain": "Slide 10 has a mini-quiz and a table indicating that Selectins are responsible for the rolling phase of leukocyte migration."
+  },
+  {
+    "q": "What is the term for inflammation of the oral mucosa?",
+    "opts": [
+      "Gingivitis",
+      "Pulpitis",
+      "Stomatitis",
+      "Keratitis"
+    ],
+    "correct": 2,
+    "explain": "Slide 5 provides a list of inflammation terminology, identifying 'Stomatitis' as inflammation of the oral mucosa."
+  },
+  {
+    "q": "Hemorrhagic inflammation is characterized by an exudate containing a large number of:",
+    "opts": [
+      "Platelets",
+      "White Blood Cells",
+      "Red Blood Cells",
+      "Fibrin"
+    ],
+    "correct": 2,
+    "explain": "Slide 16 defines Hemorrhagic inflammation as resulting from microvascular injury leading to an exudate with increased Red Blood Cells."
+  },
+  {
+    "q": "Which of the following is NOT a systemic effect of acute inflammation?",
+    "opts": [
+      "Fever",
+      "Leukocytosis",
+      "Hypotension (low blood pressure)",
+      "Increased acute phase proteins"
+    ],
+    "correct": 2,
+    "explain": "Slide 18 lists fever, leukocytosis, anorexia, and increased acute phase proteins as systemic effects. Hypotension is not listed as a typical systemic effect."
+  },
+  {
+    "q": "What laboratory finding would strongly support a diagnosis of acute inflammation?",
+    "opts": [
+      "WBC count of 3,000/cmm",
+      "ESR of 5 mm/hr",
+      "Normal CRP level",
+      "WBC count of 17,000/cmm"
+    ],
+    "correct": 3,
+    "explain": "Slide 18 notes that an increased WBC count (normal is 4,000-11,000/cmm) and an elevated ESR/CRP are key lab findings. A WBC of 17,000 is a clear indicator."
+  },
+  {
+    "q": "Which molecule is crucial for the diapedesis step, where leukocytes pass through the vessel wall?",
+    "opts": [
+      "Selectin",
+      "Integrin",
+      "CD31",
+      "C5a"
+    ],
+    "correct": 2,
+    "explain": "The table on Slide 10 specifies that CD31 is the mediator for diapedesis."
+  },
+  {
+    "q": "Pseudomembranous inflammation, as seen in C. difficile colitis, is characterized by:",
+    "opts": [
+      "A clear, watery fluid collection",
+      "A membrane-like material made of fibrin strips and inflammatory cells",
+      "Significant bleeding into the tissue",
+      "Localized collection of pus"
+    ],
+    "correct": 1,
+    "explain": "Slide 15 describes pseudomembranous inflammation as forming a membrane-like material with yellow patches and fibrin strips."
+  }
+];
+
+const tfs = [
+  {
+    "q": "Inflammation is always considered a disease and is never a protective response.",
+    "answer": false,
+    "explain": "Slide 4 states that inflammation is a 'protective local response' and is not a disease, except in cases like autoimmune disorders."
+  },
+  {
+    "q": "The suffix '-itis' is added to the name of an organ to denote inflammation, with no exceptions.",
+    "answer": false,
+    "explain": "Slide 5 notes that while '-itis' is the common suffix, there are exceptions, such as 'Pneumonia' for lung inflammation."
+  },
+  {
+    "q": "Neutrophils are the primary cells involved in chronic inflammation.",
+    "answer": false,
+    "explain": "Slide 9 identifies neutrophils as the main cells in ACUTE inflammation. Chronic inflammation is characterized by lymphocytes and macrophages."
+  },
+  {
+    "q": "Increased vascular permeability is one of the three main events in the acute inflammatory response.",
+    "answer": true,
+    "explain": "Slide 8 lists the three main events as: 1) Change in vascular diameter, 2) Permeability change, and 3) Leukocyte migration."
+  },
+  {
+    "q": "All inflammatory mediators are derived from cells at the site of injury.",
+    "answer": false,
+    "explain": "Slide 11 clarifies that mediators can be either cell-derived (like histamine) or plasma-derived from the liver (like bradykinin and complement)."
+  },
+  {
+    "q": "An abscess is defined as a diffuse, widespread collection of pus in the tissues.",
+    "answer": false,
+    "explain": "Slide 13 defines an abscess as a localized 'collection of pus lined by fibrous wall', not a diffuse spread."
+  },
+  {
+    "q": "Erythrocyte Sedimentation Rate (ESR) is expected to decrease during acute inflammation.",
+    "answer": false,
+    "explain": "Slide 18 lists an increased ESR as a typical laboratory finding in acute inflammation."
+  },
+  {
+    "q": "Monocytes migrate from the bloodstream into tissues to become macrophages.",
+    "answer": true,
+    "explain": "Slide 9 mentions that monocytes go to the tissue to become macrophages, which are also involved in the inflammatory process."
+  },
+  {
+    "q": "Pain in acute inflammation is caused solely by tissue tension from swelling.",
+    "answer": false,
+    "explain": "Slide 7 explains that pain is caused by increased tissue tension, but also by chemical mediators like prostaglandins and bradykinins."
+  }
+];
+
+const saqs = [
+  {
+    "q": "List the five cardinal signs of acute inflammation and their corresponding Latin terms.",
+    "a": "The five cardinal signs of inflammation are:<br>1. <b>Redness</b> (Rubor)<br>2. <b>Hotness</b> (Calor)<br>3. <b>Swelling</b> (Tumor)<br>4. <b>Pain</b> (Dolor)<br>5. <b>Loss of function</b> (Functio laesa)"
+  },
+  {
+    "q": "Describe the three major events that occur in the blood vessels during an acute inflammatory response.",
+    "a": "According to the slides, the three major vascular events are:<br>1. <b>Change in vascular diameter:</b> Vasodilation occurs, increasing local blood flow (hyperemia), which causes redness and heat.<br>2. <b>Increased vascular permeability:</b> The vessel walls become leaky, allowing protein-rich fluid (exudate) to escape into the tissue, causing swelling.<br>3. <b>Leukocyte migration:</b> White blood cells, primarily neutrophils, move from the blood into the affected tissue to fight microbes and clear debris."
+  },
+  {
+    "q": "Compare and contrast Suppurative (Purulent) inflammation with Serous inflammation, providing a clinical example for each.",
+    "a": "<b>Suppurative Inflammation</b> is characterized by the production of pus, a thick exudate containing dead neutrophils, necrotic cells, and microbes. A classic example is a <b>dental abscess</b>.<br><br><b>Serous Inflammation</b> is characterized by a thin, watery, low-protein exudate. It represents a milder form of injury. A common example is the fluid found in a <b>skin blister after a burn</b>."
+  },
+  {
+    "q": "A patient presents with a severe sore throat, fever of 39°C, and a high white blood cell count. Explain the pathophysiological basis for their fever and high WBC count.",
+    "a": "<b>Fever:</b> Inflammatory cells (WBCs) release pyrogens, such as prostaglandins (PGE2) and TNF. These chemical mediators act on the thermostatic center in the brain, raising the body's temperature set-point.<br><br><b>High WBC Count (Leukocytosis):</b> Inflammatory mediators, particularly interleukins, stimulate the bone marrow to accelerate the production and release of white blood cells (especially neutrophils) into the circulation."
+  },
+  {
+    "q": "List the six sequential steps of leukocyte migration from inside the blood vessel to the tissue, as outlined in the lecture.",
+    "a": "The six steps of leukocyte migration are:<br>1. <b>Margination and adhesion:</b> WBCs contact and adhere to the blood vessel wall.<br>2. <b>Rolling:</b> WBCs tumble along the endothelial surface.<br>3. <b>Diapedesis:</b> WBCs pass through the pores in the vessel wall.<br>4. <b>Chemotaxis:</b> Directed movement of WBCs towards the site of inflammation.<br>5. <b>Phagocytosis:</b> Engulfment of antigens/debris by the WBCs.<br>6. <b>Microbial killing:</b> Intracellular destruction of engulfed microbes."
+  },
+  {
+    "q": "A patient with a common cold (rhinitis) experiences a runny nose with a watery, mucus-filled discharge. What morphological type of acute inflammation does this represent, and what are its key characteristics?",
+    "a": "This represents <b>Catarrhal inflammation</b>. Its key characteristics are an increased watery discharge that is rich in mucin. It typically occurs in tissues with mucus-secreting glands, such as the nasal cavity (nose) and the gastrointestinal tract (GIT)."
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

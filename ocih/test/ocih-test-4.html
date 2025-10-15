@@ -113,6 +113,10 @@
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer table {width: 100%; border-collapse: collapse; margin-top: 10px;}
+  .answer th, .answer td { border: 1px solid var(--card-border); padding: 8px; text-align: left; }
+  .answer th { background-color: rgba(255,255,255,0.05); }
+
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -169,64 +173,102 @@
   </main>
 
 <script>
-// ----------- Data (from Lecture 4: Saliva) -----------
+// ----------- Data -----------
 const mcqs = [
-  {q:"Approximate water content of saliva is:", opts:["99–99.5%","90–92%","95–96%","80–85%"], correct:0, explain:"Slides state saliva is 99–99.5% water."},
-  {q:"Approximate solids in saliva constitute:", opts:["0.5–1%","2–3%","5–10%","1.5–2%"], correct:0, explain:"Solids make up 0.5–1% of saliva."},
-  {q:"Primary buffering systems in saliva are:", opts:["Bicarbonate and phosphate","Lactate and citrate","Ammonia and sulfate","Fluoride and chloride"], correct:0, explain:"Buffering is mainly due to bicarbonates and phosphates."},
-  {q:"Which major salivary gland contributes the largest volume of resting saliva?", opts:["Submandibular (≈60%)","Parotid (≈30%)","Sublingual (≈5%)","Minor glands (≈10%)"], correct:0, explain:"Submandibular glands secrete the major amount (≈60%)."},
-  {q:"The human parotid gland produces a hormone known as:", opts:["Parotin","Gastrin","Secretin","Renin"], correct:0, explain:"Slide notes: human parotid gland produces a hormone called Parotin."},
-  {q:"Parotid saliva is best described as:", opts:["Watery, enzyme-rich","Viscous, mucin-rich","Highly immunoglobulin-rich","Predominantly lipid"], correct:0, explain:"Parotid: watery saliva rich in enzymes like amylase."},
-  {q:"Sublingual gland secretions are characteristically:", opts:["Viscous and rich in mucins","Watery with high amylase","Highly buffered with bicarbonate","Protein-only with no mucin"], correct:0, explain:"Sublingual glands produce viscous saliva rich in mucins."},
-  {q:"A key component enabling lubrication by saliva is:", opts:["Mucin with water","Collagen fibers","High lipid micelles","Calcium oxalate"], correct:0, explain:"Lubrication due to water and mucin content."},
-  {q:"Pellicle on tooth surfaces primarily forms from:", opts:["Salivary glycoproteins","Calcium phosphate crystals","Bacterial LPS","Dentin sialophosphoprotein"], correct:0, explain:"Pellicle formation: salivary glycoproteins bind to the surface."},
-  {q:"Which combination best explains saliva's anticaries action?", opts:["Remineralization (Ca, PO4) and fluoride increasing enamel resistance","Increased acidity and protease activity","High sodium and chloride content","Lipase-mediated plaque removal"], correct:0, explain:"Slides: remineralization via Ca/PO4 and increased resistance via fluoride."},
-  {q:"Saliva helps maintain tooth integrity because it is:", opts:["Supersaturated with Ca and PO4","Rich in hemoglobin","Hypertonic","Low in bicarbonate"], correct:0, explain:"Saliva is saturated with Ca and PO4 aiding remineralization."},
-  {q:"Which item is NOT typically a component of whole (mixed) saliva?", opts:["Red blood cells","Leukocytes","Desquamated epithelial cells","Gingival fluid"], correct:0, explain:"Whole saliva includes leukocytes, epithelial cells, gingival fluid; RBCs are not typical unless bleeding."},
-  {q:"Physiologic pH of resting saliva is:", opts:["Near neutral","Strongly acidic (~5.0)","Strongly alkaline (~9.0)","Extremely variable (>10–<3)"], correct:0, explain:"Slide states pH of saliva: Neutral."},
-  {q:"Tonicity of saliva is generally:", opts:["Hypotonic","Hypertonic","Isotonic","Hyperosmotic"], correct:0, explain:"Slide states salivary tonicity: Hypotonic."},
-  {q:"Circadian flow pattern: salivary flow is:", opts:["Peaks mid‑afternoon and is negligible during sleep","Highest at midnight and lowest at noon","Constant throughout the day","Highest only during meals"], correct:0, explain:"Slides: Peak mid‑afternoon; negligible during sleep."},
-  {q:"Which immunoglobulin is produced locally in salivary glands by plasma cells?", opts:["Secretory IgA","IgG","IgM","IgE"], correct:0, explain:"IgA is produced locally in salivary glands by plasma cells."},
-  {q:"Which of the following is a salivary digestive enzyme and its substrate?", opts:["Amylase – starch","Pepsin – proteins","Lactase – lactose","Cellulase – cellulose"], correct:0, explain:"Slides mention amylase acting on starch."},
-  {q:"For taste perception, saliva primarily:", opts:["Dissolves tastants and carries them to taste buds","Blocks tastant access to receptors","Alkalinizes taste pores to enhance sour","Provides mechanical abrasion of papillae"], correct:0, explain:"Saliva dissolves substances to be tasted and carries them to taste buds."},
-  {q:"Which growth factor in saliva contributes to tissue repair?", opts:["Epidermal growth factor (EGF)","Vascular endothelial growth factor (VEGF)","Nerve growth factor (NGF)","Hepatocyte growth factor (HGF)"], correct:0, explain:"Slides cite EGF among salivary growth factors."},
-  {q:"A traditional clinical use of saliva includes:", opts:["Assessing flow rate for hyposalivation","Measuring bone mineral density","Determining hematocrit","Assessing intraocular pressure"], correct:0, explain:"Traditional use: salivary flow rate assessment (hyposalivation screening)."},
-  {q:"Which is an advantage of saliva as a diagnostic fluid?", opts:["Non‑invasive, easy collection","Requires venipuncture","Needs complex sterile surgery","Unstable and hard to collect"], correct:0, explain:"Slides: Advantages include non‑invasive, easy collection."},
-  {q:"Salivary biomarkers are being explored to detect:", opts:["Systemic diseases like diabetes and infections (HIV/HCV)","Acute bone fractures","Retinal detachment","Pneumothorax"], correct:0, explain:"Slides list systemic diseases incl. diabetes, autoimmune, HIV/HCV."},
-  {q:"Caries risk assessment using saliva may include:", opts:["Buffering capacity, IgA levels, and specific bacterial counts","Serum troponin I","CSF glucose","Platelet count"], correct:0, explain:"Slides list these caries‑related measures."},
-  {q:"Mucin in saliva is best described as:", opts:["Carbohydrate‑rich glycoprotein","Neutral lipid micelle","Simple polysaccharide","Proteoglycan with chondroitin‑sulfate"], correct:0, explain:"Slide: Mucin is a carbohydrate‑rich glycoprotein."},
-  {q:"Which enzyme is LEAST likely to be a normal salivary enzyme?", opts:["Trypsin","Lysozyme","Peroxidase","Amylase"], correct:0, explain:"Slides list amylase, lysozyme, peroxidase, etc.; trypsin is pancreatic."},
-  {q:"Another name for whole saliva is:", opts:["Oral fluid or mixed saliva","Interdental fluid","Crevicular serum","Lacrimal fluid"], correct:0, explain:"Slides: It is called oral fluid or mixed/whole saliva."},
-  {q:"Which major gland contributes roughly 30% of saliva?", opts:["Parotid","Submandibular","Sublingual","Minor glands"], correct:0, explain:"Slides: Parotid ~30%."},
-  {q:"Which gland’s secretion is richest in mucins among the majors?", opts:["Sublingual","Parotid","Submandibular","None – all equal"], correct:0, explain:"Slides: Sublingual saliva is viscous and rich in mucins."},
-  {q:"Which of the following is NOT a typical inorganic ion of saliva?", opts:["Corticosteroids","Bicarbonate","Calcium","Phosphate"], correct:0, explain:"Corticosteroids are organic molecules; listed inorganic ions include Ca, phosphate, bicarbonate, etc."},
-  {q:"A protective function of saliva that flushes away non‑adherent debris is termed:", opts:["Mechanical washing action","Osmotic siphoning","Proteolytic cleansing","Chelation sweep"], correct:0, explain:"Slides: Mechanical washing action cleanses surfaces."}
+    { q: "What is the approximate percentage of water in saliva?", opts: ["90-92%", "95-96%", "99-99.5%", "97-98%"], correct: 2, explain: "Saliva is predominantly water, making up 99 to 99.5% of its volume." },
+    { q: "The solid components make up what percentage of saliva?", opts: ["5-6%", "2-3%", "0.5-1%", "3-4%"], correct: 2, explain: "The remaining 0.5 to 1% of saliva consists of solids, including electrolytes, enzymes, and other organic molecules." },
+    { q: "Which of the following is an essential inorganic ion found in saliva responsible for remineralization?", opts: ["Iron", "Copper", "Calcium", "Zinc"], correct: 2, explain: "Calcium (Ca+), along with phosphate, is crucial for the remineralization of enamel." },
+    { q: "Which enzyme present in saliva initiates the digestion of starch?", opts: ["Lipase", "Protease", "Amylase", "Pepsin"], correct: 2, explain: "Salivary amylase begins the breakdown of complex carbohydrates (starches) into simpler sugars." },
+    { q: "What is the primary function of the enzyme lysozyme in saliva?", opts: ["Binds to iron", "Breaks down bacterial cell walls", "Digests fats", "Neutralizes acids"], correct: 1, explain: "Lysozyme has antimicrobial properties and causes bacterial lysis by degrading their cell walls." },
+    { q: "Which salivary protein deprives bacteria of essential iron, thus inhibiting their growth?", opts: ["Mucin", "Statherin", "Lactoferrin", "Proline-rich proteins"], correct: 2, explain: "Lactoferrin binds to free iron, making it unavailable for bacteria that require it for metabolism." },
+    { q: "What is the most abundant immunoglobulin found in saliva, playing a critical role in mucosal immunity?", opts: ["IgG", "IgM", "IgE", "IgA"], correct: 3, explain: "Secretory Immunoglobulin A (sIgA) is the primary antibody in saliva, preventing microbial adhesion to oral surfaces." },
+    { q: "Where is the secretory IgA (sIgA) found in saliva primarily produced?", opts: ["Liver", "Blood plasma", "Locally by plasma cells in salivary glands", "Bone marrow"], correct: 2, explain: "sIgA is synthesized by plasma cells located within the salivary glands and then transported into the saliva." },
+    { q: "Which of the following is NOT typically considered a component of 'whole saliva'?", opts: ["Desquamated epithelial cells", "Leukocytes", "Red blood cells", "Food remnants"], correct: 2, explain: "Whole saliva contains secretions from all glands plus microorganisms, food debris, epithelial cells, and leukocytes. Red blood cells are not a normal component." },
+    { q: "What is the normal pH range of resting saliva?", opts: ["5.5-6.0", "6.7-7.4", "8.0-8.5", "4.5-5.2"], correct: 1, explain: "The pH of saliva is typically near neutral, ranging from 6.7 to 7.4, which is optimal for buffering acids." },
+    { q: "Compared to blood plasma, saliva is considered:", opts: ["Isotonic", "Hypertonic", "Hypotonic", "Equitonic"], correct: 2, explain: "Saliva is hypotonic, meaning it has a lower solute concentration than blood plasma, due to the reabsorption of sodium and chloride ions in the salivary ducts." },
+    { q: "What is the average daily volume of saliva secreted by a healthy adult?", opts: ["100-200 ml", "2000-2500 ml", "600-1000 ml", "50-100 ml"], correct: 2, explain: "A healthy individual typically produces between 600 and 1000 milliliters (0.6-1 liter) of saliva per day." },
+    { q: "What is the typical flow rate of stimulated saliva?", opts: ["0.1 ml/min", "0.5 ml/min", "1.0 ml/min", "2-5 ml/min"], correct: 3, explain: "During stimulation (e.g., eating), the salivary flow rate increases significantly to 2-5 ml/min." },
+    { q: "The resting, unstimulated flow rate of saliva is approximately:", opts: ["1.0-1.5 ml/min", "0.2-0.4 ml/min", "2.0-3.0 ml/min", "Less than 0.1 ml/min"], correct: 1, explain: "In a resting state, saliva is produced at a much lower rate of about 0.2-0.4 ml/min." },
+    { q: "Which major salivary gland is the largest contributor to the total volume of saliva?", opts: ["Parotid gland", "Submandibular gland", "Sublingual gland", "Minor salivary glands"], correct: 1, explain: "The submandibular gland produces the majority of saliva, accounting for about 60% of the total volume." },
+    { q: "The parotid gland primarily secretes which type of saliva?", opts: ["Viscous, mucin-rich saliva", "Watery (serous), enzyme-rich saliva", "A mix of serous and mucous", "Hormone-rich saliva"], correct: 1, explain: "The parotid gland is a pure serous gland, producing a thin, watery saliva rich in enzymes like amylase." },
+    { q: "Which major salivary gland produces a predominantly viscous, mucin-rich saliva?", opts: ["Parotid gland", "Submandibular gland", "Sublingual gland", "Von Ebner's glands"], correct: 2, explain: "The sublingual gland is a predominantly mucous gland, secreting a thick, viscous saliva rich in mucins for lubrication." },
+    { q: "According to the circadian rhythm of salivary flow, when does the rate typically peak?", opts: ["Early morning", "Late evening", "During sleep", "Mid-afternoon"], correct: 3, explain: "Salivary flow follows a circadian rhythm, with the highest rate occurring in the mid-afternoon." },
+    { q: "When is the salivary flow rate at its lowest or negligible?", opts: ["While eating", "During exercise", "During sleep", "In the morning"], correct: 2, explain: "The flow of saliva decreases dramatically and becomes negligible during sleep." },
+    { q: "What is the mechanical washing action of saliva primarily responsible for?", opts: ["Remineralizing enamel", "Flushing away non-adherent bacteria and debris", "Digesting proteins", "Forming the pellicle"], correct: 1, explain: "The fluid nature of saliva allows it to physically wash away food particles and microorganisms that have not attached to oral surfaces." },
+    { q: "The salivary pellicle, a protective membrane on the tooth surface, is primarily formed from:", opts: ["Bacteria", "Salivary glycoproteins", "Phosphate ions", "Epithelial cells"], correct: 1, explain: "Salivary glycoproteins adsorb to the tooth surface to form the acquired pellicle, which protects the enamel." },
+    { q: "Which two inorganic ions in saliva are critical for the remineralization of incipient carious lesions?", opts: ["Sodium and Chloride", "Potassium and Bicarbonate", "Calcium and Phosphate", "Fluoride and Magnesium"], correct: 2, explain: "Saliva is supersaturated with calcium and phosphate ions, which drive the remineralization process to repair early enamel lesions." },
+    { q: "The primary buffering action of saliva, which protects enamel from acid dissolution, is mainly due to:", opts: ["Amylase and lipase", "Mucins and glycoproteins", "Bicarbonates and phosphates", "Sodium and potassium"], correct: 2, explain: "Bicarbonate and phosphate ions in saliva act as powerful buffers, neutralizing acids produced by plaque bacteria." },
+    { q: "Besides amylase for starch digestion, saliva also contains which enzyme that aids in fat digestion?", opts: ["Trypsin", "Pepsin", "Lipase", "Lactase"], correct: 2, explain: "Saliva contains lingual lipase, which begins the digestion of fats (lipids)." },
+    { q: "Which growth factor found in saliva contributes to tissue repair?", opts: ["Nerve Growth Factor (NGF)", "Epidermal Growth Factor (EGF)", "Fibroblast Growth Factor (FGF)", "Insulin-like Growth Factor (IGF)"], correct: 1, explain: "Epidermal Growth Factor (EGF) is present in saliva and helps accelerate the healing of oral mucosal wounds." },
+    { q: "How does saliva facilitate the sense of taste?", opts: ["By stimulating taste buds directly", "By dissolving substances so they can contact taste buds", "By cooling the tongue", "By producing a bitter taste"], correct: 1, explain: "For a substance to be tasted, it must first be dissolved. Saliva acts as a solvent, carrying taste molecules to the taste receptors in the taste buds." },
+    { q: "In a caries risk assessment, which salivary parameter is most relevant?", opts: ["Volume of secretion", "Glucose concentration", "Buffering capacity and IgA levels", "Urea concentration"], correct: 2, explain: "Measuring the buffering capacity, specific bacterial counts, and protective IgA levels in saliva are key components of a caries risk assessment." },
+    { q: "The submandibular glands are responsible for producing approximately what percentage of total saliva volume?", opts: ["30%", "60%", "5%", "90%"], correct: 1, explain: "The submandibular glands are the workhorses of saliva production, contributing about 60% of the total volume." },
+    { q: "What percentage of saliva is typically produced by the parotid glands?", opts: ["60%", "5%", "30%", "10%"], correct: 2, explain: "The parotid glands contribute about 30% of the total salivary volume, primarily when stimulated." },
+    { q: "The sublingual glands contribute the smallest amount from the major glands. What is their approximate percentage contribution?", opts: ["25%", "15%", "5%", "40%"], correct: 2, explain: "The sublingual glands are the smallest of the major glands and contribute about 5% of the total saliva." }
 ];
 
 const tfs = [
-  {q:"Saliva is generally hypotonic.", answer:true, explain:"Slides: Tonicity of saliva – Hypotonic."},
-  {q:"Peak salivary flow typically occurs around midnight.", answer:false, explain:"It peaks in the mid‑afternoon; negligible during sleep."},
-  {q:"Submandibular glands contribute about 60% of total saliva.", answer:true, explain:"Slides: Submandibular ≈60%."},
-  {q:"Parotid saliva is viscous and rich in mucins.", answer:false, explain:"Parotid saliva is watery and enzyme‑rich."},
-  {q:"Bicarbonate and phosphate account for most buffering capacity of saliva.", answer:true, explain:"Direct from slides."},
-  {q:"Whole saliva typically contains red blood cells in healthy individuals.", answer:false, explain:"Whole saliva contains leukocytes, epithelial cells, gingival fluid; RBCs are not typical."},
-  {q:"Secretory IgA is produced locally by plasma cells within salivary glands.", answer:true, explain:"Slides state IgA is produced locally."},
-  {q:"Saliva has no role in taste perception.", answer:false, explain:"It dissolves substances and carries them to taste buds."},
-  {q:"Saliva can be used for detecting disease biomarkers, including for oral cancer screening.", answer:true, explain:"Slides mention biomarkers and oral cancer screening applications."}
+    { q: "Salivary glands are classified as endocrine glands.", answer: false, explain: "Salivary glands are exocrine glands because they secrete saliva into the oral cavity via ducts, not directly into the bloodstream." },
+    { q: "The parotid gland is a pure mucous gland, secreting a thick, viscous fluid.", answer: false, explain: "The parotid gland is a pure serous gland, producing a thin, watery saliva rich in enzymes." },
+    { q: "The sublingual gland secretes a saliva that is predominantly mucous in nature.", answer: true, explain: "The sublingual gland is considered a mixed gland but is predominantly mucous, resulting in a viscous secretion." },
+    { q: "IgG is the most important and abundant antibody found in saliva.", answer: false, explain: "Secretory IgA (sIgA) is the primary immunoglobulin in saliva, providing mucosal immunity." },
+    { q: "Due to its composition, saliva is typically acidic with a pH below 6.0.", answer: false, explain: "The normal pH of saliva is near neutral (6.7-7.4), which is essential for its buffering capacity." },
+    { q: "Salivary flow rate is highest during sleep to protect the oral cavity at night.", answer: false, explain: "Salivary flow rate is at its lowest, almost negligible, during sleep." },
+    { q: "Lactoferrin, a component of saliva, helps bacteria acquire the iron they need for growth.", answer: false, explain: "Lactoferrin is an antimicrobial protein that binds to iron, making it unavailable to bacteria and thus inhibiting their growth." },
+    { q: "The lubricating properties of saliva are essential for the formation of a food bolus to facilitate swallowing.", answer: true, explain: "Saliva moistens and lubricates chewed food, allowing it to be formed into a bolus that can be easily swallowed." },
+    { q: "Saliva can be used as a non-invasive diagnostic tool to monitor therapeutic drug levels in the body.", answer: true, explain: "Saliva testing is an emerging application for monitoring the levels of various therapeutic drugs, offering a non-invasive alternative to blood tests." }
 ];
 
 const saqs = [
-  { q: "Define whole saliva.", a: "Secretions from all salivary glands plus microorganisms/products, food remnants, leukocytes, desquamated epithelial cells, and gingival fluid (oral/mixed saliva)." },
-  { q: "List five inorganic constituents commonly found in saliva.", a: "1) Calcium 2) Phosphate 3) Bicarbonate 4) Sodium/Potassium 5) Chloride (± Magnesium, Fluoride)." },
-  { q: "Compare the three major salivary glands by contribution and secretion nature.", a: `<table style='width:100%;border-collapse:collapse'>
-      <tr><th style='border:1px solid rgba(255,255,255,0.2);padding:6px'>#</th><th style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Gland</th><th style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Approx. share</th><th style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Key nature/components</th></tr>
-      <tr><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>1</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Parotid</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>~30%</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Watery; enzyme‑rich (amylase); PRPs; Parotin</td></tr>
-      <tr><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>2</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Submandibular</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>~60%</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Mixed; significant mucins</td></tr>
-      <tr><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>3</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Sublingual</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>~5%</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Viscous; rich in mucins</td></tr>
-    </table>` },
-  { q: "A patient presents with difficulty speaking and swallowing, recurrent mucosal infections, and rampant caries. What underlying problem best explains these findings?", a: "Hyposalivation/xerostomia (lack of saliva) leading to reduced cleansing, buffering, and antimicrobial protection." },
-  { q: "Name two major buffering systems in saliva.", a: "Bicarbonate and phosphate." },
-  { q: "Identify one salivary growth factor involved in tissue repair.", a: "Epidermal growth factor (EGF)." },
+    {
+        q: "Describe the two main functions of mucin in saliva.",
+        a: "Mucin, a glycoprotein, has two primary functions in saliva: 1. **Lubrication:** It coats the oral mucosa and teeth, protecting them from mechanical stress, irritants, and desiccation. It also lubricates the food bolus for easier swallowing. 2. **Antimicrobial Action:** Mucin molecules can aggregate microorganisms, which helps in their rapid clearance from the oral cavity and prevents them from adhering to oral tissues."
+    },
+    {
+        q: "List three distinct antimicrobial components of saliva and briefly explain their mechanism of action.",
+        a: "1. **Lysozyme:** This enzyme attacks the cell walls of certain bacteria (specifically targeting peptidoglycan), leading to cell lysis and death.<br>2. **Lactoferrin:** This protein binds to free iron in the saliva. Since many bacteria require iron for growth and metabolism, lactoferrin deprives them of this essential element, acting as a bacteriostatic agent.<br>3. **Secretory IgA (sIgA):** This antibody binds to microorganisms, causing them to clump together (agglutination). This prevents them from attaching to oral surfaces and facilitates their removal by swallowing."
+    },
+    {
+        q: "Compare the secretions of the parotid and sublingual glands.",
+        a: `<table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Parotid Gland</th>
+                        <th>Sublingual Gland</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1. Secretion Type</td>
+                        <td>Purely serous (thin and watery)</td>
+                        <td>Predominantly mucous (thick and viscous)</td>
+                    </tr>
+                    <tr>
+                        <td>2. Key Components</td>
+                        <td>Rich in enzymes like amylase, and proline-rich proteins</td>
+                        <td>Rich in mucins for lubrication</td>
+                    </tr>
+                    <tr>
+                        <td>3. Contribution</td>
+                        <td>~30% of total saliva, mainly during stimulation</td>
+                        <td>~5% of total saliva, mainly contributing to resting saliva</td>
+                    </tr>
+                </tbody>
+            </table>`
+    },
+    {
+        q: "Explain how saliva helps maintain tooth integrity through buffering and remineralization.",
+        a: "Saliva maintains tooth integrity in two key ways: <br><b>1. Buffering:</b> Saliva contains bicarbonate and phosphate systems that neutralize acids produced by plaque bacteria after sugar consumption. This action raises the pH in the oral cavity, preventing the dissolution (demineralization) of tooth enamel.<br><b>2. Remineralization:</b> Saliva is supersaturated with calcium and phosphate ions. When the pH is neutral, these ions can be deposited back into the tooth structure, repairing early carious lesions where minerals have been lost. This process is enhanced by the presence of fluoride."
+    },
+    {
+        q: "What are the five components of 'whole saliva' that are not directly secreted by the salivary glands?",
+        a: "Whole saliva, also called oral fluid, contains more than just glandular secretions. The five additional components are:<br>1. Microorganisms and their products<br>2. Food remnants<br>3. Leukocytes (white blood cells)<br>4. Desquamated oral epithelial cells<br>5. Gingival crevicular fluid"
+    },
+    {
+        q: "A patient presents with persistent dry mouth (xerostomia), complains of difficulty swallowing food, and has noticed a recent increase in cavities. Based on the functions of saliva, explain the likely cause for each of these three symptoms.",
+        a: "The patient's symptoms are directly related to the loss of key salivary functions: <br><b>1. Difficulty Swallowing:</b> Saliva's water and mucin content are essential for lubricating chewed food to form a cohesive bolus. Without adequate saliva, the food is dry and abrasive, making deglutition (swallowing) difficult and uncomfortable.<br><b>2. Increase in Cavities:</b> This is due to the loss of multiple protective functions. There is reduced mechanical washing to clear food debris, a loss of the buffering capacity to neutralize acids from bacteria, and insufficient calcium and phosphate ions for remineralization of early lesions.<br><b>3. Dry Mouth Sensation:</b> The fundamental role of saliva is to keep the oral tissues moist and protected. The lack of this fluid film leads to the sensation of dryness and can cause tissue desiccation and irritation."
+    }
 ];
 
 // ----------- State -----------
@@ -383,7 +425,7 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
@@ -414,31 +456,38 @@ saqs.forEach((item, idx)=>{
 
 // ----------- Score + Reset -----------
 function recalc(){
-  const mcqScore = state.mcq.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const tfScore = state.tf.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const saqScore = state.saq.filter(Boolean).length;
-  const total = mcqScore + tfScore + saqScore;
+    const mcqScore = mcqs.reduce((score, mcq, i) => {
+        if (state.mcq[i] === null) return score;
+        const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+        const originalToVisual = Array(4);
+        const buttons = card.querySelectorAll('.opt-btn');
+        const visualToOriginal = Array.from(buttons).map(btn => {
+            const label = btn.querySelector('.label').textContent;
+            return mcq.opts.indexOf(label);
+        });
+        visualToOriginal.forEach((orig, v) => { originalToVisual[orig] = v; });
+        const correctVisualIndex = originalToVisual[mcq.correct];
+        return score + (state.mcq[i] === correctVisualIndex ? 1 : 0);
+    }, 0);
 
-  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
-  ids.forEach(id=>{
-    const el = document.getElementById(id);
-    if(!el) return;
-    if(id.includes('Mcq')) el.textContent = mcqScore;
-    if(id.includes('Tf')) el.textContent = tfScore;
-    if(id.includes('Saq')) el.textContent = saqScore;
-    if(id.includes('Total')) el.textContent = total;
-  });
+    const tfScore = tfs.reduce((score, tf, i) => {
+        if (state.tf[i] === null) return score;
+        return score + (state.tf[i] === tf.answer ? 1 : 0);
+    }, 0);
+
+    const saqScore = state.saq.filter(Boolean).length;
+    const total = mcqScore + tfScore + saqScore;
+
+    document.getElementById('sMcq').textContent = mcqScore;
+    document.getElementById('sTf').textContent = tfScore;
+    document.getElementById('sSaq').textContent = saqScore;
+    document.getElementById('sTotal').textContent = total;
+    document.getElementById('sMcq2').textContent = mcqScore;
+    document.getElementById('sTf2').textContent = tfScore;
+    document.getElementById('sSaq2').textContent = saqScore;
+    document.getElementById('sTotal2').textContent = total;
 }
+
 
 document.getElementById('resetAll').addEventListener('click', ()=>{
   document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});

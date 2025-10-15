@@ -127,6 +127,9 @@
   }
   .score .part{color:var(--muted);font-weight:600}
   .score b{color:var(--text)}
+  .answer table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .answer th, .answer td { border: 1px solid var(--card-border); padding: 8px; text-align: left; }
+  .answer th { background-color: var(--glass); }
 </style>
 </head>
 <body>
@@ -169,65 +172,282 @@
   </main>
 
 <script>
-// ----------- Data (built from Lecture 12 slides) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q: "The TMJ provides hinging and gliding movements, so it is technically classified as a:", opts:["Synchondrosis joint","Ball-and-socket joint","Ginglymo-diarthrodial joint","Fibrous syndesmosis"], correct:2, explain:"TMJ combines ginglymoid (hinge) and arthrodial (glide) actions → ginglymo-diarthrodial." },
-  { q: "The Temporomandibular joint is a _____ joint:", opts:["Synovial","Fibrous","Primary cartilaginous","Gomphosis"], correct:0, explain:"Slides state: TMJ is a synovial joint." },
-  { q: "Hinging (rotation) primarily occurs in which TMJ compartment?", opts:["Meniscotemporal (upper) compartment","Meniscomandibular (lower) compartment","Glenoid fossa only","Articular eminence only"], correct:1, explain:"Rotation is between the disc and mandibular head — the lower/meniscomandibular compartment." },
-  { q: "Gliding (translation) primarily occurs in which TMJ compartment?", opts:["Upper meniscotemporal compartment","Lower meniscomandibular compartment","Within the condylar head","Within the articular tubercle only"], correct:0, explain:"Translation is between the articular disc and the temporal bone — upper compartment." },
-  { q: "During opening, rotational movement occurs first and typically covers approximately:", opts:["5–10 mm","20–25 mm","30–35 mm",">45 mm"], correct:1, explain:"Slides: initial 20–25 mm is rotational before translation begins." },
-  { q: "At the end of wide mouth opening, the condylar head comes to lie:", opts:["Behind the articular tubercle","Under the articular tubercle","In the mandibular foramen","Directly on the tympanic plate"], correct:1, explain:"Hinge then glide; at maximal opening, the head is under the articular tubercle (eminence)." },
-  { q: "Primary muscle responsible for protrusion of the mandible:", opts:["Medial pterygoid","Lateral pterygoid","Temporalis (posterior fibers)","Masseter (deep)"], correct:1, explain:"Lateral pterygoid is the main protrusive muscle." },
-  { q: "Which muscle is a prime elevator of the mandible?", opts:["Digastric","Geniohyoid","Masseter","Mylohyoid"], correct:2, explain:"Masseter is a powerful elevator aiding in closure/chewing." },
-  { q: "A key action of the posterior fibers of temporalis is:", opts:["Protrusion","Retraction","Depression","Lateral deviation to opposite side"], correct:1, explain:"Slides: posterior temporalis fibers retract the mandible." },
-  { q: "Action pairing for the lateral pterygoid heads is MOST accurate:", opts:["Upper—depression; Lower—elevation","Upper—elevation; Lower—depression (opening)","Both heads—pure retrusion","Both heads—pure elevation"], correct:1, explain:"Slides indicate upper head assists elevation; lower head assists depression (opening)." },
-  { q: "Which of the following is NOT listed as an accessory depressor of the mandible?", opts:["Digastric","Mylohyoid","Geniohyoid","Medial pterygoid"], correct:3, explain:"Accessory depressors: digastric, mylohyoid, geniohyoid." },
-  { q: "Lateral mandibular movement (chewing) is produced mainly by:", opts:["Ipsilateral pterygoids","Contralateral pterygoids","Suprahyoids only","Posterior belly of digastric"], correct:1, explain:"Slides: lateral movement is mainly by CONTRALATERAL pterygoids (lateral + medial)." },
-  { q: "Control (modulation) of lateral movement is by:", opts:["Contralateral temporalis & masseter","Ipsilateral temporalis & masseter","Suprahyoids bilaterally","Infrahyoids"], correct:1, explain:"Slides: controlled by IPSILATERAL temporalis and masseter." },
-  { q: "Which is NOT a listed function of the TMJ?", opts:["Mastication","Respiration & rest posture","Venous drainage of pterygoid plexus","Speech"], correct:2, explain:"Functions listed: mastication, speech, swallowing, respiration/rest posture, shock absorption, coordination." },
-  { q: "Shock absorption during heavy biting is mainly aided by:", opts:["Articular disc and synovial fluid","Stylomandibular ligament only","Auriculotemporal nerve","Buccinator muscle"], correct:0, explain:"Slides: disc + synovial fluid help absorb stress." },
-  { q: "For coordinated occlusion and balanced function, how do the TMJs operate?", opts:["Independently","Alternately, never together","Simultaneously","Only the working-side joint moves"], correct:2, explain:"Slides: both right and left TMJs work simultaneously." },
-  { q: "On inspection of the TMJ region you would primarily look for:", opts:["Pupil reflex","Asymmetry/clicking/swelling","Tongue coating","Carotid pulse"], correct:1, explain:"Inspection: swelling, symmetry, clicking sound." },
-  { q: "Palpation for the TMJ commonly includes:", opts:["Pre-auricular and intra-auricular sites","Submental triangle only","Intraoral over the palatine tonsil","Supraclavicular fossa"], correct:0, explain:"Slides: pre-auricular and intra-auricular palpation." },
-  { q: "Auscultation of the TMJ most commonly evaluates for:", opts:["Lymphadenopathy","Clicking sounds","Salivary flow","Carotid bruits"], correct:1, explain:"Slides: Auscultation—clicking." },
-  { q: "The range of TMJ movements routinely recorded includes:", opts:["Vertical and protrusive only","Vertical and lateral (right/left)","Retrusive only","Circumduction only"], correct:1, explain:"Slides: Range—vertical and lateral (R/L)." },
-  { q: "Interincisal distance during opening is best measured with:", opts:["Dental mirror","Metal ruler or Vernier calipers","Tongue depressor","Probe UNC-15"], correct:1, explain:"Slides: metal ruler / Vernier calipers." },
-  { q: "Condylar hyperplasia typically presents with the chin deviated to the _____ and posterior open bite on the _____:", opts:["Affected side; unaffected side","Unaffected side; affected side","Unaffected side; unaffected side","Affected side; affected side"], correct:1, explain:"Slides: chin deviates to UNAFFECTED side; posterior open bite on AFFECTED side." },
-  { q: "Radiographically, condylar hyperplasia may show a condylar neck that is:", opts:["Short and thinned","Elongated, thickened, sometimes laterally bent—‘inverted L’ shape","Absent","Medially displaced into the fossa"], correct:1, explain:"Slides mention elongated, thickened neck; may bend laterally; inverted ‘L’ appearance." },
-  { q: "Condylar hypoplasia is characterized by:", opts:["Enlarged condyle","Diminished condylar size with proportionally small mandibular fossa","Normal size condyle with enlarged fossa","Bifid condyle with notch"], correct:1, explain:"Slides: failure to attain normal size; fossa also proportionally small." },
-  { q: "In hypoplasia, the posterior border of the ramus/condylar neck often shows:", opts:["Anterior inclination","No inclination change","Dorsal (posterior) inclination","Lateral bowing only"], correct:2, explain:"Slides: dorsal (posterior) inclination." },
-  { q: "A bifid condyle typically shows which clinical pattern?", opts:["Painful swelling and trismus","Incidental, often asymptomatic finding","Severe malocclusion always","Neuralgia"], correct:1, explain:"Slides: incidental finding, asymptomatic." },
-  { q: "Radiographically, a bifid condyle on anteroposterior view may resemble a:", opts:["Triangle","Heart shape due to superior notch","Square","Circular opacity"], correct:1, explain:"Slides: notch creates a heart-shaped appearance." },
-  { q: "Which movement returns the mandible from protrusion?", opts:["Retrusion (retraction)","Depression","Elevation","Circumduction"], correct:0, explain:"Reversal of protrusion is retraction (retrusion)." },
-  { q: "During chewing, when the right condyle translates forward and the left condyle rotates in place, the chin shifts to:", opts:["Right side","Left side","Midline remains fixed","Posteriorly"], correct:1, explain:"Slides: chin shifts toward the non-translating side — here left." },
-  { q: "During initial opening, the head of the mandible moves relative to the disc like a:", opts:["Ball-and-socket","Pivot within the glenoid fossa only","Hinge","Fixed synchondrosis"], correct:2, explain:"Slides: initial hinge-like rotation between head and disc." },
+  {
+    q: "The Temporomandibular Joint (TMJ) is technically classified as which type of joint?",
+    opts: ["Ginglymodiarthroidal", "Synchondrosis", "Symphysis", "Gomphosis"],
+    correct: 0,
+    explain: "The TMJ provides both hinging (ginglymoid) and gliding (arthroidal) movements, making it a ginglymodiarthroidal joint."
+  },
+  {
+    q: "Which movement occurs in the lower compartment (meniscomandibular) of the TMJ?",
+    opts: ["Rotation (Hinge)", "Translation (Gliding)", "Protrusion only", "Retraction only"],
+    correct: 0,
+    explain: "The rotational or hinge movement occurs between the head of the mandible and the articular disc in the lower compartment."
+  },
+  {
+    q: "What is the primary muscle responsible for the protrusion of the mandible?",
+    opts: ["Lateral pterygoid", "Medial pterygoid", "Temporalis", "Masseter"],
+    correct: 0,
+    explain: "The lateral pterygoid muscle is the main muscle that pulls the mandible forward (protrusion)."
+  },
+  {
+    q: "Which muscle is primarily responsible for elevating the mandible (closing the mouth)?",
+    opts: ["Masseter", "Lateral pterygoid", "Digastric", "Geniohyoid"],
+    correct: 0,
+    explain: "The Masseter, along with the Temporalis and Medial Pterygoid, is a powerful elevator of the mandible."
+  },
+  {
+    q: "The gliding movement (translation) of the TMJ primarily occurs in which compartment?",
+    opts: ["Upper (Meniscotemporal)", "Lower (Meniscomandibular)", "Both compartments equally", "Within the articular disc itself"],
+    correct: 0,
+    explain: "Translation or gliding occurs between the articular disc and the temporal bone in the upper compartment of the TMJ."
+  },
+  {
+    q: "Which fibers of the temporalis muscle are responsible for the retraction of the mandible?",
+    opts: ["Posterior fibers", "Anterior fibers", "Superior fibers", "Medial fibers"],
+    correct: 0,
+    explain: "The posterior fibers of the temporalis muscle are oriented in a way that allows them to pull the mandible backward (retraction)."
+  },
+  {
+    q: "Which group of muscles is primarily responsible for the depression (opening) of the mandible?",
+    opts: ["Digastric, Mylohyoid, Geniohyoid", "Temporalis, Masseter, Medial pterygoid", "Lateral pterygoid only", "Masseter and Temporalis"],
+    correct: 0,
+    explain: "The suprahyoid muscles (Digastric, Mylohyoid, Geniohyoid), along with gravity and the lower head of the lateral pterygoid, are responsible for depressing the mandible."
+  },
+  {
+    q: "During wide mouth opening, what is the sequence of movements in the TMJ?",
+    opts: ["Rotation followed by translation", "Translation followed by rotation", "Only rotation occurs", "Only translation occurs"],
+    correct: 0,
+    explain: "Initial opening (first 20-25mm) is rotational. Wider opening involves the translational (gliding) movement of the condyle and disc forward."
+  },
+  {
+    q: "Which of the following is considered a primary muscle of mastication?",
+    opts: ["Medial pterygoid", "Digastric", "Geniohyoid", "Mylohyoid"],
+    correct: 0,
+    explain: "The four primary muscles of mastication are the Masseter, Temporalis, Medial pterygoid, and Lateral pterygoid."
+  },
+  {
+    q: "A patient with condylar hyperplasia on the left side would likely exhibit which clinical sign?",
+    opts: ["Chin deviation to the right (unaffected) side", "Chin deviation to the left (affected) side", "Anterior open bite", "Symmetrical jaw growth"],
+    correct: 0,
+    explain: "Overgrowth of the left condyle (hyperplasia) pushes the mandible to the opposite, unaffected side, resulting in chin deviation to the right."
+  },
+  {
+    q: "The term for a condyle that has a vertical depression or cleft on its head is:",
+    opts: ["Bifid condyle", "Condylar hypoplasia", "Condylar hyperplasia", "Ankylosis"],
+    correct: 0,
+    explain: "A bifid condyle is characterized by a split or cleft in the condylar head, often discovered as an incidental radiographic finding."
+  },
+  {
+    q: "Which muscle originates from the temporal fossa and inserts on the coronoid process of the mandible?",
+    opts: ["Temporalis", "Masseter", "Medial pterygoid", "Lateral pterygoid"],
+    correct: 0,
+    explain: "The Temporalis muscle has a broad origin from the temporal fossa and inserts on the coronoid process and anterior border of the ramus."
+  },
+  {
+    q: "What is the typical maximum interincisal opening for a healthy adult?",
+    opts: ["40-55 mm", "20-30 mm", "60-70 mm", "Less than 20 mm"],
+    correct: 0,
+    explain: "The normal range of motion for maximum mouth opening is between 40 and 55 millimeters."
+  },
+  {
+    q: "The chewing motion involves alternating side-to-side movements. This is primarily achieved by the action of which muscles?",
+    opts: ["Contralateral pterygoids", "Ipsilateral pterygoids", "Bilateral temporalis contraction", "Bilateral masseter contraction"],
+    correct: 0,
+    explain: "Lateral movement is produced by the contralateral (opposite side) medial and lateral pterygoid muscles contracting, pulling the jaw to one side."
+  },
+  {
+    q: "Which of these is NOT a primary function of the TMJ?",
+    opts: ["Hormone secretion", "Mastication (Chewing)", "Speech (Phonation)", "Swallowing (Deglutition)"],
+    correct: 0,
+    explain: "The TMJ is involved in mechanical functions like chewing, speech, and swallowing, but not in endocrine functions like hormone secretion."
+  },
+  {
+    q: "Condylar hypoplasia is defined as:",
+    opts: ["Failure of the condyle to attain normal size", "Overgrowth of the condyle", "Fusion of the joint", "A split in the condylar head"],
+    correct: 1,
+    explain: "Hypoplasia refers to the underdevelopment or failure of an organ or tissue to reach its normal size, so condylar hypoplasia is a smaller-than-normal condyle."
+  },
+  {
+    q: "The Masseter muscle originates from the:",
+    opts: ["Zygomatic arch", "Temporal fossa", "Sphenoid bone", "Maxillary tuberosity"],
+    correct: 0,
+    explain: "The powerful masseter muscle originates from the zygomatic arch and inserts on the angle of the mandible."
+  },
+  {
+    q: "Which muscle has two heads, with one originating from the infratemporal surface of the sphenoid bone and the other from the lateral pterygoid plate?",
+    opts: ["Lateral pterygoid", "Medial pterygoid", "Temporalis", "Digastric"],
+    correct: 0,
+    explain: "The Lateral Pterygoid muscle is described as having an upper (smaller) head and a lower (larger) head with these distinct origins."
+  },
+  {
+    q: "What is the role of the articular disc in the TMJ?",
+    opts: ["To absorb stress and allow complex movements", "To produce synovial fluid", "To limit mouth opening", "To retract the mandible"],
+    correct: 0,
+    explain: "The articular disc acts as a shock absorber and separates the joint into two compartments, facilitating the complex rotational and translational movements."
+  },
+  {
+    q: "On a radiograph, a bifid condyle often presents with a characteristic shape. What is it?",
+    opts: ["Heart shape", "Club shape", "Inverted 'L' shape", "Flat shape"],
+    correct: 0,
+    explain: "The depression on the superior surface gives the bifid condyle a heart-like appearance in an anteroposterior view."
+  },
+  {
+    q: "Which of the following is an accessory muscle of mastication that aids in depression?",
+    opts: ["Mylohyoid", "Temporalis", "Masseter", "Medial pterygoid"],
+    correct: 0,
+    explain: "The Mylohyoid is one of the suprahyoid muscles, which are considered accessory muscles of mastication and help in depressing the mandible."
+  },
+  {
+    q: "The joint sound characterized by a grating or grinding noise is called:",
+    opts: ["Crepitus", "Clicking", "Popping", "Thudding"],
+    correct: 0,
+    explain: "Crepitus refers to the grating, sand-paper like sound that can occur in joints, often associated with degenerative changes."
+  },
+  {
+    q: "The superficial head of the medial pterygoid muscle originates from the:",
+    opts: ["Maxillary tuberosity", "Medial surface of the lateral pterygoid plate", "Temporal fossa", "Zygomatic arch"],
+    correct: 0,
+    explain: "The medial pterygoid has two heads; the smaller, superficial head originates from the maxillary tuberosity."
+  },
+  {
+    q: "During palpation, the TMJ can be examined using which two methods?",
+    opts: ["Pre-auricular and intra-auricular", "Submandibular and sublingual", "Intraoral and extraoral only", "Anterior and posterior"],
+    correct: 0,
+    explain: "The lecture describes examining the joint by palpating in front of the ear (pre-auricular) and by placing a finger inside the ear canal (intra-auricular)."
+  },
+  {
+    q: "Which movement primarily involves the articular disc and the head of the mandible gliding forward together?",
+    opts: ["Protrusion", "Elevation", "Rotation", "Retraction"],
+    correct: 0,
+    explain: "During protrusion, the articular disc and the condylar head glide forward and downward along the articular eminence."
+  },
+  {
+    q: "The insertion of the medial pterygoid muscle is on the:",
+    opts: ["Medial surface of the angle of the mandible", "Coronoid process", "Neck of the mandible", "Lateral surface of the ramus"],
+    correct: 0,
+    explain: "The fibers of the medial pterygoid run downwards and laterally to insert on the medial surface of the mandibular angle."
+  },
+  {
+    q: "What structure articulates with the mandibular condyle to form the TMJ?",
+    opts: ["Mandibular fossa of the temporal bone", "Zygomatic process", "Styloid process", "Mastoid process"],
+    correct: 0,
+    explain: "The TMJ is the articulation between the condyle of the mandible and the mandibular fossa (or glenoid fossa) of the temporal bone."
+  },
+  {
+    q: "Which clinical condition might show an elongated and thickened condylar neck, sometimes bent laterally?",
+    opts: ["Condylar hyperplasia", "Condylar hypoplasia", "Bifid condyle", "TMJ ankylosis"],
+    correct: 0,
+    explain: "Condylar hyperplasia, or overgrowth, can lead to radiographic features like an elongated and thickened condylar neck."
+  },
+  {
+    q: "A posterior open bite on the affected side is a clinical feature of:",
+    opts: ["Condylar hyperplasia", "Condylar hypoplasia", "A normal occlusion", "Bifid condyle"],
+    correct: 0,
+    explain: "In condylar hyperplasia, the overgrowth on one side can cause the posterior teeth on that same side to not meet, resulting in a posterior open bite."
+  },
+  {
+    q: "The term 'arthroidal' refers to which type of movement?",
+    opts: ["Gliding", "Hinging", "Pivoting", "Flexing"],
+    correct: 0,
+    explain: "An arthroidal joint is a type of synovial joint that allows for gliding or sliding movements."
+  }
 ];
 
 const tfs = [
-  { q: "TMJ provides only hinging movement with no gliding component.", answer:false, explain:"It provides both hinging and gliding." },
-  { q: "Rotational movement begins only after ~30 mm of opening.", answer:false, explain:"Rotation occurs first, for about 20–25 mm." },
-  { q: "The TMJ is among the most complex joints in the body.", answer:true, explain:"Stated explicitly in the slides." },
-  { q: "Lateral movement is restricted by ligaments and joint surfaces.", answer:true, explain:"Slides: restrictions prevent over-movement." },
-  { q: "Posterior fibers of temporalis are primary protruders of the mandible.", answer:false, explain:"They retract the mandible." },
-  { q: "The lateral pterygoid is the main protrusive muscle of the mandible.", answer:true, explain:"Listed as the main protrusive muscle." },
-  { q: "TMJ clicking can be detected only by visual inspection.", answer:false, explain:"Auscultation is used to detect clicking; inspection notes signs." },
-  { q: "Condylar hypoplasia presents with an enlarged condylar head.", answer:false, explain:"Hypoplasia = diminished size; hyperplasia = enlarged." },
-  { q: "Both right and left TMJs work simultaneously to maintain occlusion.", answer:true, explain:"Slides list coordination of movements as a function." }
+  {
+    q: "The TMJ is classified as a synovial joint.",
+    answer: true,
+    explain: "The TMJ is a synovial joint, characterized by a fibrous capsule, articular disc, and synovial fluid."
+  },
+  {
+    q: "The temporalis muscle is the primary muscle for protruding the jaw.",
+    answer: false,
+    explain: "The primary muscle for protrusion is the lateral pterygoid. The temporalis is mainly for elevation and retraction."
+  },
+  {
+    q: "The first 20-25mm of mouth opening consists purely of translational movement.",
+    answer: false,
+    explain: "The initial phase of mouth opening is rotational (hinge) movement. Translation occurs during wider opening."
+  },
+  {
+    q: "Condylar hypoplasia results in an enlargement of the condylar head.",
+    answer: false,
+    explain: "Hypoplasia is the failure to attain normal size (underdevelopment), while hyperplasia is an enlargement or overgrowth."
+  },
+  {
+    q: "Both right and left TMJs must work simultaneously and in coordination for balanced jaw function.",
+    answer: true,
+    explain: "The two TMJs are linked by the solid mandible, requiring coordinated movements for proper function."
+  },
+  {
+    q: "The masseter muscle assists in depressing the mandible (opening the mouth).",
+    answer: false,
+    explain: "The masseter is a powerful elevator of the mandible, responsible for closing the mouth."
+  },
+  {
+    q: "A bifid condyle is always symptomatic and requires immediate treatment.",
+    answer: false,
+    explain: "A bifid condyle is often an asymptomatic, incidental finding on radiographs and usually does not require treatment."
+  },
+  {
+    q: "Chewing movements are achieved by combining protrusion, retraction, elevation, and depression.",
+    answer: true,
+    explain: "Mastication is a complex process involving a combination of all the basic jaw movements in a cyclical pattern."
+  },
+  {
+    q: "The Digastric muscle is considered one of the primary muscles of mastication.",
+    answer: false,
+    explain: "The Digastric muscle is a secondary or accessory muscle of mastication; it primarily helps in depressing the mandible."
+  }
 ];
 
 const saqs = [
-  // 1. Direct Answer
-  { q: "Define the term ‘ginglymo-diarthrodial’ as applied to the TMJ.", a: "A joint combining hinge (ginglymus) and gliding (arthrodial) movements." },
-  // 2. List / Enumeration (>=3)
-  { q: "List three functions of the TMJ relevant to oral function.", a: "1) Mastication (crushing/grinding) 2) Speech (phonation) 3) Swallowing; also rest posture/airway and shock absorption." },
-  // 3. Comparison (numbered table)
-  { q: "Contrast rotational vs translational movements during mouth opening.", a: `<table style="width:100%;border-collapse:collapse" border="1"><tr><th>#</th><th>Rotational</th><th>Translational</th></tr><tr><td>1</td><td>Occurs first (~20–25 mm)</td><td>Follows for wider opening</td></tr><tr><td>2</td><td>In lower (meniscomandibular) compartment</td><td>In upper (meniscotemporal) compartment</td></tr><tr><td>3</td><td>Hinge movement of head under disc</td><td>Disc + head glide toward articular tubercle</td></tr></table>` },
-  // 4. Case-based Scenario
-  { q: "A 19‑year‑old presents with facial asymmetry: chin deviated to the left and posterior open bite on the right. Which developmental abnormality is most likely?", a: "Condylar hyperplasia of the right condyle (chin to unaffected side; open bite on affected side)." },
-  // 5. Direct Answer
-  { q: "Name the two functional compartments of the TMJ and what they are between.", a: "Upper meniscotemporal (disc–temporal bone) and lower meniscomandibular (disc–mandibular head)." },
-  // 6. List / Exam routine
-  { q: "State three key clinical steps when examining the TMJ.", a: "1) Inspection (swelling, symmetry, clicking) 2) Palpation (pre-/intra-auricular, tenderness/crepitus) 3) Auscultation (clicking) + record ranges." }
+  {
+    q: "List the four primary muscles of mastication.",
+    a: "The four primary muscles of mastication are: <br> 1. Masseter <br> 2. Temporalis <br> 3. Medial pterygoid <br> 4. Lateral pterygoid"
+  },
+  {
+    q: "Describe the two distinct types of movement that occur in the temporomandibular joint during mouth opening.",
+    a: "1. <strong>Rotation (Hinge Movement):</strong> Occurs in the lower joint compartment (meniscomandibular) during the initial 20-25mm of opening. The condylar head rotates on the undersurface of the articular disc. <br> 2. <strong>Translation (Gliding Movement):</strong> Occurs in the upper joint compartment (meniscotemporal) during wider opening. The condyle and the disc glide forward and downward onto the articular eminence."
+  },
+  {
+    q: "A 22-year-old patient presents with significant facial asymmetry. Their chin is deviated to the left side, and they have a posterior open bite on the right side. What developmental abnormality of the TMJ is the most likely diagnosis?",
+    a: "The most likely diagnosis is <strong>Right Condylar Hyperplasia</strong>. The overgrowth of the right condyle pushes the mandible down and across to the opposite (unaffected) side, causing chin deviation to the left and an open bite on the affected (right) side."
+  },
+  {
+    q: "Compare the primary actions of the Temporalis muscle and the Lateral Pterygoid muscle.",
+    a: `
+      <table>
+        <thead>
+          <tr>
+            <th>Muscle</th>
+            <th>Primary Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Temporalis</strong></td>
+            <td>1. Elevates the mandible (closes mouth).<br>2. Retracts the mandible (posterior fibers).</td>
+          </tr>
+          <tr>
+            <td><strong>Lateral Pterygoid</strong></td>
+            <td>1. Protrudes the mandible (main function).<br>2. Assists in depressing the mandible (opening).<br>3. Produces side-to-side movements.</td>
+          </tr>
+        </tbody>
+      </table>
+    `
+  },
+  {
+    q: "What are the two main compartments of the TMJ, and what structure divides them?",
+    a: "The two compartments are: <br> 1. <strong>Upper (Meniscotemporal) Compartment:</strong> Located between the articular fossa/eminence and the articular disc. <br> 2. <strong>Lower (Meniscomandibular) Compartment:</strong> Located between the articular disc and the head of the mandible. <br><br> They are divided by the <strong>articular disc</strong>."
+  },
+  {
+    q: "List three functions of the TMJ besides mastication (chewing).",
+    a: "Three functions of the TMJ besides mastication are: <br> 1. <strong>Speech (Phonation):</strong> Allows for the fine movements of the jaw required to form different sounds. <br> 2. <strong>Swallowing (Deglutition):</strong> The mandible is stabilized during swallowing. <br> 3. <strong>Respiration:</strong> Helps maintain a patent airway by controlling the mandibular rest posture."
+  }
 ];
 
 // ----------- State -----------

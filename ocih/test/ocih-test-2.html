@@ -92,7 +92,7 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
   /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
@@ -107,12 +107,15 @@
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  table{width:100%;border-collapse:collapse;margin-top:10px;}
+  th,td{border:1px solid var(--card-border);padding:8px 10px;text-align:left;}
+  th{background:var(--glass);}
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -169,229 +172,94 @@
   </main>
 
 <script>
-// ----------- Data (SALIVARY GLANDS from Lecture 2) -----------
+// ----------- Data -----------
 const mcqs = [
-  // 1
-  { q: "A gland is best defined as:",
-    opts:[
-      "An organ of secretion made of specialized secretory cells derived from surface epithelium",
-      "Any organ that stores hormones temporarily",
-      "A cluster of connective tissue cells around a duct",
-      "A neural crest–derived sac that absorbs metabolites"
-    ], correct:0,
-    explain:"Slides: 'Gland is an organ of secretion made up of specialized secretory cells derived from the surface epithelium on which it opens.'"
-  },
-  // 2
-  { q: "The embryologic origin of glands is primarily:",
-    opts:["Epithelial","Mesenchymal","Neural crest","Endothelial"], correct:0,
-    explain:"General features list glands as epithelial in origin."
-  },
-  // 3
-  { q: "Secretory cells are organized into functional units called:",
-    opts:["Secretory end pieces (acini or tubules)","Islets","Follicles only","Reticular cords"], correct:0,
-    explain:"Slides: 'Secretory cells form functional units called secretory end pieces which may be flask (Acinus) or cylindrical (Tubular).'"
-  },
-  // 4
-  { q: "Which pairing about end-piece shape is correct?",
-    opts:["Acinus—flask shaped; Tubular—cylindrical",
-          "Acinus—cylindrical; Tubular—flask shaped",
-          "Both acinus and tubular are spherical",
-          "Acinus is discoid; tubular is stellate"], correct:0,
-    explain:"Acini are flask-shaped; tubules are cylindrical."
-  },
-  // 5
-  { q: "The secreted fluid of salivary glands may include all EXCEPT:",
-    opts:["Bile pigments","Enzymes","Hormones","Mucus"], correct:0,
-    explain:"Slides list enzymes, hormones, mucus; bile pigments are not listed for salivary glands."
-  },
-  // 6
-  { q: "Secretion in salivary glands is modulated by:",
-    opts:["Nervous and hormonal influences","Only endocrine feedback","Only local paracrine signals","Passive diffusion without regulation"], correct:0,
-    explain:"Slides: 'Secretion is modulated by nervous and hormonal influences.'"
-  },
-  // 7
-  { q: "Myoepithelial cells are located:",
-    opts:["Between secretory cells and the basement membrane","Inside the lumen of ducts","Embedded within adipocytes","Only around intercalated ducts"], correct:0,
-    explain:"Slides specify position between secretory cells and basement membrane."
-  },
-  // 8
-  { q: "Which statement about myoepithelial cells is TRUE?",
-    opts:["They are star-shaped, contractile cells that help expel acinar secretions",
-          "They are macrophages that clear debris",
-          "They synthesize enamel matrix",
-          "They form the basement membrane"], correct:0,
-    explain:"Slides: star-shaped, contractile; function to contract & expel secretory products."
-  },
-  // 9
-  { q: "During development, the proximal part of the epithelial bud forms the:",
-    opts:["Excretory duct that opens on the surface","Secretory end piece (acinus)","Capsule","Striated duct only"], correct:0,
-    explain:"Slides: proximal part → excretory duct → opens on surface epithelium."
-  },
-  // 10
-  { q: "The distal part of the epithelial invagination gives rise to:",
-    opts:["Glandular/secretory end piece","Connective tissue septa","Adipocytes","Main excretory duct only"], correct:0,
-    explain:"Slides: distal part forms glandular or secretory end piece."
-  },
-  // 11
-  { q: "Sequence of early development is illustrated at approximately:",
-    opts:["4, 6 and 8 weeks","2, 5 and 9 weeks","8, 12 and 16 weeks","10, 14 and 18 weeks"], correct:0,
-    explain:"Timeline shown on the slide labels 4, 6, and 8 weeks."
-  },
-  // 12
-  { q: "Which is NOT listed as a basic histologic component of salivary glands?",
-    opts:["Osteons","Acini","Ducts","Basement membrane with myoepithelial cells"], correct:0,
-    explain:"Core components include acini, ducts, basement membrane, myoepithelial cells; osteons are bone."
-  },
-  // 13
-  { q: "Serous acini typically exhibit which staining with H&E?",
-    opts:["Deeply stained","Lightly stained","Unstained","Only PAS positive"], correct:0,
-    explain:"Slides: serous acini are deeply stained with H&E."
-  },
-  // 14
-  { q: "Mucous acini nuclei are usually:",
-    opts:["Flat and peripheral","Round and central","Binucleate and central","Pyknotic and luminal"], correct:0,
-    explain:"Slides: mucous acini have flat, peripheral nuclei."
-  },
-  // 15
-  { q: "Compared with mucous acini, serous acini have a lumen that is:",
-    opts:["Smaller","Larger","Equal","Absent"], correct:0,
-    explain:"Slides: serous lumen small; mucous lumen large."
-  },
-  // 16
-  { q: "Consistency of serous versus mucous secretion is respectively:",
-    opts:["Thin/watery vs thick/viscous","Thick/viscous vs thin/watery","Gel-like vs crystalline","Lipid-rich vs protein-free"], correct:0,
-    explain:"Slides table: serous thin, mucous thick."
-  },
-  // 17
-  { q: "An example of a purely serous major salivary gland is:",
-    opts:["Parotid","Sublingual","Minor palatine glands","Von Ebner + mucous blend"], correct:0,
-    explain:"Slides example column lists Parotid for serous."
-  },
-  // 18
-  { q: "An example predominantly mucous among major glands is:",
-    opts:["Sublingual","Parotid","Lacrimal","Pancreas"], correct:0,
-    explain:"Slides example column lists Sublingual for mucous."
-  },
-  // 19
-  { q: "Zymogen granules are characteristic of:",
-    opts:["Serous acinar cells","Mucous acinar cells","Myoepithelial cells","Intercalated duct cells"], correct:0,
-    explain:"Slides diagram lists zymogen granules in serous acinus."
-  },
-  // 20
-  { q: "Mucigen droplets are found predominantly in:",
-    opts:["Mucous acinar cells","Serous acinar cells","Adipocytes","Striated duct cells"], correct:0,
-    explain:"Slides: mucous acinus shows mucigen droplets."
-  },
-  // 21
-  { q: "Which feature helps identify the parotid gland histologically?",
-    opts:["Many ducts and infiltration of adipocytes",
-          "Abundance of mucous acini and few ducts",
-          "Long serous demilunes dominating the field",
-          "Lack of intercalated ducts"], correct:0,
-    explain:"Slides: Parotid—serous acini, large number of ducts, infiltration of adipocytes."
-  },
-  // 22
-  { q: "Submandibular gland is characterized by:",
-    opts:["Many serous and few mucous acini, many striated ducts, serous demilunes",
-          "Only mucous acini and no striated ducts",
-          "Only serous acini and no intercalated ducts",
-          "Predominant adipocytes with rare ducts"], correct:0,
-    explain:"Slides bullet points for Submandibular."
-  },
-  // 23
-  { q: "Sublingual gland typically shows:",
-    opts:["Many mucous acini and few striated ducts",
-          "Many serous acini and abundant adipocytes",
-          "Only interlobular ducts and no acini",
-          "Predominantly serous demilunes"], correct:0,
-    explain:"Slides bullet points for Sublingual."
-  },
-  // 24
-  { q: "Serous demilunes are:",
-    opts:["Crescent caps of serous cells on mucous tubules",
-          "Basal lamina thickenings",
-          "Adipocyte clusters around ducts",
-          "Contractile segments of intercalated ducts"], correct:0,
-    explain:"Classic definition; also listed under Submandibular features."
-  },
-  // 25
-  { q: "Which duct segment is classically associated with basal striations?",
-    opts:["Striated duct","Intercalated duct","Excretory duct","Terminal ductule"], correct:0,
-    explain:"By definition, striated ducts show basal infoldings and mitochondria (implied by name)."
-  },
-  // 26
-  { q: "Myoepithelial contraction primarily assists in:",
-    opts:["Expelling secretions from acini into ducts","Increasing blood flow via vasodilation","Synthesizing digestive enzymes","Forming enamel rods"], correct:0,
-    explain:"Slides explicitly state function to contract and expel secretory products."
-  },
-  // 27
-  { q: "Which pairing of gland and predominant acini is CORRECT?",
-    opts:["Parotid—serous; Submandibular—mixed; Sublingual—mucous",
-          "Parotid—mucous; Submandibular—serous; Sublingual—serous",
-          "Parotid—mixed; Submandibular—mucous; Sublingual—serous",
-          "All three are purely serous"], correct:0,
-    explain:"Matches slide bullets and captions."
-  },
-  // 28
-  { q: "Which statement about lumen size is accurate?",
-    opts:["Mucous acini have a larger lumen than serous acini",
-          "Serous acini have a larger lumen than mucous acini",
-          "Both have identical lumen size",
-          "Neither has a true lumen"], correct:0,
-    explain:"From comparison table on slides."
-  },
-  // 29
-  { q: "Basal lamina is present around:",
-    opts:["Both serous and mucous acini",
-          "Only mucous acini",
-          "Only serous acini",
-          "Neither, replaced by reticular fibers"], correct:0,
-    explain:"Diagrams label basal lamina in both types."
-  },
-  // 30
-  { q: "Which feature helps distinguish mucous from serous acini in H&E sections?",
-    opts:["Mucous cells stain lighter and have peripheral, flattened nuclei",
-          "Mucous cells stain darker with central round nuclei",
-          "Serous cells lack zymogen granules",
-          "Mucous cells lack mucigen droplets"], correct:0,
-    explain:"Slides: mucous—light staining, flat peripheral nuclei; serous—deep staining with zymogen granules."
-  }
+    { q: "What is the primary function of myoepithelial cells in salivary glands?", opts: ["To produce mucous secretion", "To contract and expel secretory products", "To form the basement membrane", "To modify the primary saliva"], correct: 1, explain: "Myoepithelial (basket) cells contain actin and myosin, allowing them to contract and squeeze secretions from the acini into the duct system." },
+    { q: "Which major salivary gland is characterized by being purely serous?", opts: ["Sublingual Gland", "Submandibular Gland", "Parotid Gland", "Minor Salivary Glands"], correct: 2, explain: "The Parotid gland is composed entirely of serous acini, which produce a thin, watery secretion rich in enzymes." },
+    { q: "During embryonic development, which part of the epithelial invagination forms the excretory duct?", opts: ["The distal part", "The central part", "The proximal part", "The ectomesenchyme"], correct: 2, explain: "The proximal part of the invagination remains connected to the surface epithelium and develops into the duct system." },
+    { q: "What is the characteristic shape of the nucleus in a mucous acinar cell?", opts: ["Round and centrally located", "Oval and apical", "Spindle-shaped", "Flattened and basal in position"], correct: 3, explain: "Mucous cells are filled with mucigen droplets which push the nucleus, causing it to be flattened against the basal membrane of the cell." },
+    { q: "A 'serous demilune' is a structure where:", opts: ["Serous and mucous cells mix randomly", "A mucous acinus is capped by serous cells", "A serous acinus is capped by mucous cells", "A tubular gland terminates in a flask shape"], correct: 1, explain: "A serous demilune (or 'half-moon') consists of serous cells forming a cap over a mucous acinus, with their secretions reaching the lumen via intercellular canaliculi." },
+    { q: "Which type of duct is lined with simple cubical epithelium and is located immediately after the acinus?", opts: ["Striated duct", "Interlobular duct", "Intercalated duct", "Main excretory duct"], correct: 2, explain: "Intercalated ducts are the smallest ducts, leading directly from the acini, and are lined by simple cubical epithelium." },
+    { q: "The parotid gland begins its development during which week of gestation?", opts: ["6th week", "8th week", "4th week", "10th week"], correct: 2, explain: "The parotid is the first major salivary gland to develop, initiating at the 4th week of embryonic life." },
+    { q: "Which of the following best describes the secretion from a serous acinus?", opts: ["Thick, viscous, and rich in carbohydrates", "Thin, watery, and rich in proteins/enzymes", "A balanced mix of mucous and serous fluid", "Hormonal in nature"], correct: 1, explain: "Serous acini secrete a thin, watery fluid containing proteins like amylase. Mucous acini produce a thick, viscous secretion." },
+    { q: "Striated ducts are named for their appearance, which is caused by:", opts: ["Abundant secretory granules", "Numerous cilia on the apical surface", "Basal infoldings of the cell membrane with aligned mitochondria", "A thick layer of myoepithelial cells"], correct: 2, explain: "The 'striations' are due to extensive basal membrane infoldings and numerous elongated mitochondria, which are involved in ion transport to modify saliva." },
+    { q: "The sublingual gland is histologically distinct because it predominantly contains:", opts: ["Serous acini", "Mucous acini and serous demilunes", "A perfect 50/50 mix of serous and mucous acini", "Only striated ducts"], correct: 1, explain: "The sublingual gland is a mixed gland, but it is dominated by mucous acini, with some having serous demilunes. It contains no purely serous acini." },
+    { q: "What is the correct developmental sequence for the major salivary glands?", opts: ["Sublingual, Submandibular, Parotid", "Parotid, Submandibular, Sublingual", "Submandibular, Parotid, Sublingual", "Parotid, Sublingual, Submandibular"], correct: 1, explain: "Development starts with the Parotid (4th week), followed by the Submandibular (6th week), and finally the Sublingual (8th week)." },
+    { q: "The functional unit of a salivary gland, responsible for secretion, is called the:", opts: ["Lobule", "Stroma", "Secretory end piece (Acinus)", "Trabeculae"], correct: 2, explain: "The secretory end piece, also known as the acinus or tubule, is the group of specialized cells that produce the primary saliva." },
+    { q: "What happens to the central cells of the epithelial cord during gland development to form the ductal system?", opts: ["They differentiate into myoepithelial cells", "They proliferate rapidly to lengthen the cord", "They undergo degeneration to form a lumen", "They migrate to form the surrounding connective tissue"], correct: 2, explain: "After the epithelial cord branches, the central cells degenerate through apoptosis to hollow out the cord and form the lumen of the ducts." },
+    { q: "In a Hematoxylin and Eosin (H&E) stain, how do mucous acini typically appear?", opts: ["Deeply basophilic (purple) with round nuclei", "Strongly eosinophilic (pink) and granular", "Pale and lightly stained with flattened basal nuclei", "Dark purple with prominent striations"], correct: 2, explain: "The mucin in mucous acini does not stain well with H&E, causing the cytoplasm to appear clear or pale. The nucleus is flattened at the base." },
+    { q: "The main excretory duct of a salivary gland has what type of epithelium near its opening into the oral cavity?", opts: ["Simple cuboidal", "Pseudostratified columnar", "Simple squamous", "Stratified squamous"], correct: 3, explain: "The epithelium transitions as it approaches the oral cavity, ultimately becoming stratified squamous to blend with the oral mucosa." },
+    { q: "Which structure is NOT considered part of the intralobular duct system?", opts: ["Acinus", "Intercalated duct", "Striated duct", "Interlobular (excretory) duct"], correct: 3, explain: "Interlobular ducts are located in the connective tissue septa between lobules, not within them. Intercalated and striated ducts are intralobular." },
+    { q: "What is the origin of the secretory cells that form a gland?", opts: ["Connective tissue", "Nervous tissue", "Surface epithelium", "Muscle tissue"], correct: 2, explain: "Glands are formed by the invagination of surface epithelium into the underlying connective tissue." },
+    { q: "The submandibular gland in humans is best classified as a:", opts: ["Purely serous gland", "Purely mucous gland", "Seromucous gland (predominantly serous)", "Seromucous gland (predominantly mucous)"], correct: 2, explain: "It's a mixed seromucous gland, but in humans, about 90% of the acini are serous, making it predominantly serous." },
+    { q: "Intercellular canaliculi are features found between cells of which acini type?", opts: ["They are not found in acini", "Mucous acini", "Serous acini", "Both serous and mucous acini"], correct: 2, explain: "Serous acinar cells have small channels called intercellular canaliculi between them to facilitate the flow of secretions into the central lumen." },
+    { q: "A histological slide of a salivary gland shows numerous adipocytes (fat cells), a well-developed capsule, and only serous acini. Which gland is it?", opts: ["Sublingual", "Submandibular", "Parotid", "Von Ebner's gland"], correct: 2, explain: "These three features—abundant fat, a thick capsule, and purely serous acini—are classic identifying characteristics of the parotid gland." },
+    { q: "The term 'acinus' refers to a secretory end piece with what shape?", opts: ["Cylindrical or tubular", "Flat and sheet-like", "Flask or berry-shaped", "Star-shaped"], correct: 2, explain: "An acinus is a flask-shaped or berry-shaped cluster of secretory cells, whereas a tubular gland has a cylindrical shape." },
+    { q: "The secretion of salivary glands is modulated by:", opts: ["Blood pressure only", "Nervous and hormonal influences", "Temperature of ingested food", "Mechanical pressure from chewing only"], correct: 1, explain: "The autonomic nervous system (sympathetic and parasympathetic) and, to a lesser extent, hormones regulate both the volume and composition of saliva." },
+    { q: "Which duct forms the largest portion of the duct system by volume?", opts: ["Intercalated ducts", "Striated ducts", "Excretory ducts", "Main duct"], correct: 1, explain: "Striated ducts are a major component of the intralobular duct system and are responsible for significant modification of saliva." },
+    { q: "What is the primary component of the secretory granules found in serous cells?", opts: ["Mucinogen", "Zymogen (inactive enzymes)", "Glycogen", "Lipids"], correct: 1, explain: "Serous cells produce proteins, which are stored as zymogen granules (e.g., precursors to amylase) in the apical cytoplasm before secretion." },
+    { q: "The connective tissue component of the gland, including the capsule and septa, is referred to as the:", opts: ["Parenchyma", "Stroma", "Acinus", "Duct system"], correct: 1, explain: "The stroma is the supportive framework of an organ, consisting of connective tissue, while the parenchyma is the functional tissue (acini and ducts)." },
+    { q: "Which duct type transitions from columnar to pseudostratified columnar epithelium?", opts: ["Striated to Interlobular", "Intercalated to Striated", "Interlobular to Interlobar", "Acinus to Intercalated"], correct: 2, explain: "As ducts merge and get larger, the epithelium becomes more complex. Interlobular ducts (columnar) merge to form interlobar ducts (pseudostratified columnar)." },
+    { q: "Myoepithelial cells are located between the secretory cells and the:", opts: ["Lumen", "Connective tissue", "Basement membrane", "Striated duct"], correct: 2, explain: "Their strategic position between the secretory acinar cells and the basement membrane allows them to effectively squeeze the acinus upon contraction." },
+    { q: "Which gland has the smallest and least developed duct system, with few striated ducts?", opts: ["Parotid", "Submandibular", "Sublingual", "Pancreas"], correct: 2, explain: "The sublingual gland's duct system is less extensive than the other major glands, and its intercalated and striated ducts are short and difficult to identify." },
+    { q: "The formation of a lumen in the developing salivary gland is an example of what cellular process?", opts: ["Hyperplasia", "Metaplasia", "Apoptosis", "Hypertrophy"], correct: 2, explain: "The central cells of the epithelial cord undergo programmed cell death, or apoptosis, to create a hollow tube that becomes the duct lumen." },
+    { q: "What are the three main histological components of a salivary gland?", opts: ["Serous acini, Mucous acini, and Mixed acini", "Capsule, Lobules, and Septa", "Acini, Duct System, and Myoepithelial cells", "Intralobular, Interlobular, and Excretory ducts"], correct: 2, explain: "The gland is fundamentally composed of the secretory units (acini), the transport system (ducts), and the contractile cells that aid secretion (myoepithelial cells)." }
 ];
 
 const tfs = [
-  { q:"Salivary glands develop as invaginations of surface epithelium into underlying vascular connective tissue.", answer:true, explain:"Stated directly on development slide." },
-  { q:"The proximal part of the epithelial bud forms the secretory end piece.", answer:false, explain:"Proximal → excretory duct; distal → secretory end piece." },
-  { q:"Myoepithelial cells are non-contractile support cells only.", answer:false, explain:"They are contractile and expel secretions." },
-  { q:"Serous acini typically have small lumina compared with mucous acini.", answer:true, explain:"From comparison table." },
-  { q:"Parotid gland commonly shows adipocyte infiltration histologically.", answer:true, explain:"Listed under Parotid features." },
-  { q:"Sublingual gland has many striated ducts and few mucous acini.", answer:false, explain:"Opposite: many mucous acini, few striated ducts." },
-  { q:"Secretion is influenced by both nervous and hormonal controls.", answer:true, explain:"General features slide." },
-  { q:"Zymogen granules are a hallmark of mucous cells.", answer:false, explain:"Zymogen → serous; mucous cells contain mucigen droplets." },
-  { q:"Submandibular gland is a mixed gland with serous demilunes.", answer:true, explain:"Bulleted features include serous demilunes." }
+    { q: "The distal part of the developing epithelial cord differentiates into the secretory cells of the acinus.", answer: true, explain: "The distal, or deepest, part of the invagination forms the functional secretory end piece, while the proximal part forms the duct." },
+    { q: "Myoepithelial cells are derived from connective tissue and are also called 'basket cells'.", answer: false, explain: "While they are called 'basket cells,' myoepithelial cells are epithelial in origin, not derived from connective tissue." },
+    { q: "The submandibular gland begins its development before the parotid gland.", answer: false, explain: "The parotid gland is the first to develop at 4 weeks, followed by the submandibular gland at 6 weeks." },
+    { q: "Serous acini have a larger diameter and wider lumen compared to mucous acini.", answer: false, explain: "Mucous acini are generally larger and have a wider, more prominent lumen than the smaller, more compact serous acini." },
+    { q: "Both intercalated and striated ducts are classified as intralobular ducts.", answer: true, explain: "These ducts are located within the gland's lobules. Interlobular ducts are found in the connective tissue septa between lobules." },
+    { q: "The sublingual gland contains a significant number of purely serous acini.", answer: false, explain: "A key feature of the sublingual gland is the complete absence of purely serous acini; it is predominantly mucous and mucoserous." },
+    { q: "Striated ducts are so named because of their function in secreting zymogen granules.", answer: false, explain: "The striations are due to basal membrane infoldings and mitochondria related to ion transport, not secretion of zymogen granules." },
+    { q: "A serous demilune's secretion passes through canaliculi between mucous cells to reach the lumen.", answer: true, explain: "The serous cells of the demilune are offset from the main lumen and require small channels (canaliculi) to deliver their secretion." },
+    { q: "The main excretory duct of a salivary gland is lined with simple cuboidal epithelium throughout its length.", answer: false, explain: "The epithelium of the duct system becomes more complex as it approaches the oral cavity, transitioning from columnar to stratified squamous." }
 ];
 
 const saqs = [
-  // 1 Direct Answer
-  { q: "Define a gland in histologic terms.",
-    a: "Organ of secretion composed of specialized secretory cells derived from surface epithelium." },
-  // 2 List / Enumeration (3+)
-  { q: "List three general features of salivary glands.",
-    a: "1) Epithelial in origin. 2) Secretory end pieces (acini/tubules). 3) Secretion modulated by nervous & hormonal influences." },
-  // 3 Comparison (numbered table)
-  { q: "Compare serous and mucous acini briefly.",
-    a: `<table style="width:100%;border-collapse:collapse"><tbody>
-          <tr><td style='border:1px solid #444;padding:6px'>1</td><td style='border:1px solid #444;padding:6px'><b>Serous</b>: thin watery; small lumen; dark H&E; round central nucleus.</td></tr>
-          <tr><td style='border:1px solid #444;padding:6px'>2</td><td style='border:1px solid #444;padding:6px'><b>Mucous</b>: thick viscous; large lumen; light H&E; flat peripheral nucleus.</td></tr>
-        </tbody></table>` },
-  // 4 Case-based Scenario
-  { q: "A biopsy from a major salivary gland shows abundant serous acini, many ducts, and scattered adipocytes. Which gland is most likely? Give one identifying feature.",
-    a: "Parotid gland; characteristic adipocyte infiltration with numerous ducts." },
-  // 5 Direct short fact
-  { q: "State the function of myoepithelial cells.",
-    a: "Contract to expel acinar secretions toward ducts." },
-  // 6 Developmental pathway
-  { q: "During development, indicate which parts of the epithelial bud form the duct and the end piece.",
-    a: "Proximal part → excretory duct (opens on surface); distal part → secretory end piece." }
+    { q: "Define what a gland is based on its embryological origin and cellular composition.", a: "A gland is an organ of secretion made up of specialized secretory cells. These cells are derived from the surface epithelium, which invaginates into the underlying connective tissue. The gland maintains a connection to this surface via a duct." },
+    { q: "List the five types of ducts in the salivary gland duct system, in order from the acinus to the oral cavity.", a: `
+        <ol>
+            <li><b>Intercalated duct:</b> Leads directly from the acinus.</li>
+            <li><b>Striated (Intralobular) duct:</b> Follows the intercalated duct.</li>
+            <li><b>Interlobular (Excretory) duct:</b> Located in the septa between lobules.</li>
+            <li><b>Interlobar duct:</b> Formed by the joining of interlobular ducts.</li>
+            <li><b>Main duct:</b> The final duct that opens into the oral cavity.</li>
+        </ol>
+    `},
+    { q: "Present a comparison of three key histological features between serous acini and mucous acini.", a: `
+        <table>
+            <thead>
+                <tr>
+                    <th>Feature</th>
+                    <th>Serous Acinus</th>
+                    <th>Mucous Acinus</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><b>Nucleus Shape & Position</b></td>
+                    <td>Round, located near the center</td>
+                    <td>Flat, pressed against the basal membrane</td>
+                </tr>
+                <tr>
+                    <td><b>Secretion Consistency</b></td>
+                    <td>Thin and watery (protein-rich)</td>
+                    <td>Thick and viscous (carbohydrate-rich)</td>
+                </tr>
+                <tr>
+                    <td><b>Staining with H&E</b></td>
+                    <td>Deeply stained (basophilic cytoplasm)</td>
+                    <td>Lightly stained (pale or clear cytoplasm)</td>
+                </tr>
+            </tbody>
+        </table>
+    `},
+    { q: "Describe the location and function of myoepithelial cells within a salivary gland.", a: "Myoepithelial cells, also known as basket cells, are star-shaped contractile cells. They are located between the basement membrane and the secretory cells of the acini (and parts of the intercalated ducts). They contain contractile filaments (actin and myosin), and their primary function is to contract and squeeze the acinus, helping to expel the saliva into the duct system." },
+    { q: "A biopsy from a major salivary gland reveals that it is a mixed gland, but roughly 90% of the acini are serous, with the remaining 10% being mucous or mucoserous. Based on this histology, which major salivary gland is the most likely source of the sample?", a: "This is most likely the <b>Submandibular Gland</b>. While it is a mixed seromucous gland, in humans it is characterized by having a large predominance of serous acini (around 90%) compared to mucous acini." },
+    { q: "Explain the process of salivary gland development, starting from the oral epithelium and mentioning the fate of the proximal and distal parts.", a: "Salivary glands develop as a solid cord of epithelial cells that invaginates (grows down) from the oral epithelium into the underlying ectomesenchyme. This cord then branches repeatedly. The <b>distal parts</b> of these branches differentiate into the secretory end pieces (acini). The <b>proximal parts</b> of the cord form the duct system. Later, the central cells of this solid cord undergo apoptosis (programmed cell death) to form a hollow lumen, creating the functional ducts." }
 ];
 
 // ----------- State -----------
@@ -450,7 +318,8 @@ mcqs.forEach((item, idx)=>{
     btn.addEventListener('click', ()=>{
       if(card.dataset.locked === 'true') return; // one attempt
       const v = Number(btn.dataset.v);
-      state.mcq[idx] = v;
+      const originalSelection = visualToOriginal[v];
+      state.mcq[idx] = originalSelection;
 
       // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
@@ -556,6 +425,7 @@ saqs.forEach((item, idx)=>{
   <div class="answer" hidden>${item.a}</div>
 `;
 
+
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');
   const answer = card.querySelector('.answer');
@@ -578,18 +448,16 @@ saqs.forEach((item, idx)=>{
 
 // ----------- Score + Reset -----------
 function recalc(){
-  const mcqScore = state.mcq.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const tfScore = state.tf.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
+  const mcqScore = state.mcq.reduce((s, v, i) => {
+    if (v === null) return s;
+    return s + (mcqs[i].correct === v ? 1 : 0);
+  }, 0);
+
+  const tfScore = state.tf.reduce((s, v, i) => {
+    if (v === null) return s;
+    return s + (tfs[i].answer === v ? 1 : 0);
+  }, 0);
+
   const saqScore = state.saq.filter(Boolean).length;
   const total = mcqScore + tfScore + saqScore;
 

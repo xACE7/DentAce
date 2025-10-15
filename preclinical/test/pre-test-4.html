@@ -67,7 +67,6 @@
     .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
   }
 
-  /* Cards (no accent on the card itself) */
   .card{
     background:var(--card);
     border:1px solid var(--card-border);
@@ -94,7 +93,6 @@
   }
   .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
-  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
     border-left:6px solid var(--ok);
     outline:none;
@@ -113,6 +111,10 @@
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer table {width: 100%; border-collapse: collapse;}
+  .answer th, .answer td {border: 1px solid var(--card-border); padding: 8px; text-align: left;}
+  .answer th {background-color: var(--glass);}
+
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -169,65 +171,300 @@
   </main>
 
 <script>
-// ----------- Data (from Lecture 4: Fundamental Principles of Tooth Preparation in Operative Dentistry) -----------
+// ----------- Data -----------
 const mcqs = [
-  {q:"According to Sturdevant, the FIRST step in tooth preparation is:", opts:["Primary retention form","Outline form & initial depth","Convenience form","Primary resistance form"], correct:1, explain:"Initial tooth preparation begins with establishing the outline form and initial depth."},
-  {q:"Which of the following is NOT an objective of tooth preparation?", opts:["Remove all defects","Increase cuspal height","Protect the pulp","Form a preparation that resists fracture"], correct:1, explain:"Objectives include defect removal, pulp protection, and resistance to fracture—not increasing cuspal height."},
-  {q:"Placing preparation margins where they will be in the final preparation describes:", opts:["Convenience form","Outline form","Secondary retention","Finishing external walls"], correct:1, explain:"Outline form places margins in their final positions except for finishing."},
-  {q:"All are principles of outline form EXCEPT:", opts:["Remove weakened enamel","Include all caries","Place margins for good finishing","Always extend into dentin by 1 mm"], correct:3, explain:"There is no rule to always extend 1 mm into dentin; extension depends on disease and support."},
-  {q:"Preservation of marginal ridge strength for premolars requires at least:", opts:["0.5 mm","1.0 mm","1.6 mm","2.5 mm"], correct:2, explain:"Remaining marginal ridge should be >1.6 mm for premolars (≈2.0 mm for molars)."},
-  {q:"The recommended remaining marginal ridge for molars is:", opts:["1.0 mm","2.0 mm","3.0 mm","1.6 mm"], correct:1, explain:"Molar marginal ridge should be ~2 mm to prevent fracture from undermining."},
-  {q:"To minimize weakening of cusps, the buccolingual width of a Class I preparation should NOT exceed:", opts:["1/8 of intercuspal distance","1/4 of intercuspal distance","1/3 of intercuspal distance","1/2 of intercuspal distance"], correct:1, explain:"Keep buccolingual width ≤ 1/4 of the intercuspal distance."},
-  {q:"For pit and fissure caries, the maximum recommended extension into dentin is approximately:", opts:["0.1 mm","0.2 mm","0.5 mm","1.0 mm"], correct:1, explain:"Restrict dentin extension to ~0.2 mm; overall depth ≈2 mm."},
-  {q:"Primary resistance form BEST described:", opts:["Shape that prevents dislodgement by tipping/lifting","Shape that allows access for instrumentation","Shape that lets tooth/restoration resist masticatory forces","Finishing of external walls"], correct:2, explain:"Resistance form enables tooth and restoration to withstand masticatory forces without fracture."},
-  {q:"Which feature contributes to primary resistance form?", opts:["Sharp internal line angles","Relatively flat floors","Narrow occlusal convergence only","Beveling all margins"], correct:1, explain:"Flat floors help resist occlusal forces; internal line angles should be rounded, not sharp."},
-  {q:"Rounded internal line angles are emphasized mainly to:", opts:["Increase retention only","Reduce stress concentration and improve resistance","Create dovetails","Facilitate beveling"], correct:1, explain:"Rounded line angles decrease stress concentration, enhancing resistance form."},
-  {q:"Minimum depth for amalgam in Class I to achieve strength is generally:", opts:["0.5–1.0 mm","1.0–1.2 mm","1.5–2.0 mm",">2.5 mm"], correct:2, explain:"Amalgam requires ~1.5–2.0 mm to resist fracture."},
-  {q:"Composite restorations are primarily retained by:", opts:["Macromechanical undercuts only","Pins","Micromechanical bond to etched/primed tooth","Amalgam bonding agent only"], correct:2, explain:"Etching and priming produce a micromechanical bond that retains composite."},
-  {q:"Which is a primary retention feature for an amalgam Class I preparation?", opts:["Bevelled margins","Occlusal convergence of walls","Slot preparation","Skirt"], correct:1, explain:"Occlusal convergence and dovetails are classic primary retention features for amalgam."},
-  {q:"Dovetail in an occlusal preparation mainly provides:", opts:["Resistance to compressive forces","Convenience form","Retention against proximal displacement","Pulp protection"], correct:2, explain:"Dovetail helps retain the restoration by resisting displacement."},
-  {q:"Convenience form is primarily aimed at:", opts:["Enhancing esthetics","Improving observation, accessibility, and ease of operation","Increasing retention only","Increasing cusp height"], correct:1, explain:"Convenience form ensures the operator can see and access the area and place matrices, etc."},
-  {q:"Which extension may be justified to achieve convenience form?", opts:["Extend into pulp chamber","Extend proximal walls to gain clearance with adjacent tooth","Bevel all enamel walls","Add pins in all small Class I"], correct:1, explain:"Proximal extension to obtain clearance can facilitate finishing and matrix placement."},
-  {q:"During final tooth preparation, Step 5 includes:", opts:["Beveling margins","Removal of any remaining infected dentin and/or old restorative material","Placing matrix band","Etching enamel"], correct:1, explain:"After initial depth, inspect and remove any remaining infected dentin or old materials."},
-  {q:"Which statement about infected versus affected dentin is CORRECT?", opts:["Infected dentin is remineralizable","Affected dentin is insensitive","Affected dentin does not stain with caries detecting dye","Infected dentin should be left to remineralize"], correct:2, explain:"Affected dentin can be sensitive and does not stain; it may be left to remineralize."},
-  {q:"Large areas of soft (infected) dentin are BEST removed with:", opts:["Enamel hatchet","Spoon excavator","High-speed diamond bur","Chisel"], correct:1, explain:"Hand instruments like spoon excavators are recommended for large soft caries areas."},
-  {q:"Soft caries can also be removed using:", opts:["Round steel bur at very low speed","Inverted cone at high speed","Fissure bur at high speed without coolant","End-cutting bur only"], correct:0, explain:"Low-speed round steel burs are appropriate for soft caries removal."},
-  {q:"Pulp protection is generally NOT required when remaining dentin thickness (RDT) is:", opts:["<0.5 mm","≈1.0 mm","≈2.0 mm or more","Between 0.5–1.0 mm"], correct:2, explain:"If RDT is ~2 mm, pulp protection is typically unnecessary."},
-  {q:"Reasons for pulp protection when RDT < 2 mm include all EXCEPT:", opts:["Heat from rotary instruments","Noxious ingredients from materials","Thermal changes through restorations","Improved color stability of composite"], correct:3, explain:"Protection aims at pulpal safety from heat, chemicals, thermal changes, and bacterial ingress, not color stability."},
-  {q:"Common materials/approaches for deeper cavities as pulp protection include:", opts:["Liners and bases","Pins only","Amalgam varnish only","Orthodontic bands"], correct:0, explain:"Liners and bases are placed for deeper cavities requiring protection."},
-  {q:"Secondary resistance and retention features may include ALL EXCEPT:", opts:["Retention locks and grooves","Pins","Skirts","Beveling of all margins for amalgam"], correct:3, explain:"Secondary features include locks, grooves, skirts, slots, pins—not universal beveling for amalgam."},
-  {q:"A slot preparation is BEST categorized as a:", opts:["Primary retention feature","Secondary mechanical retention feature","Convenience form feature","Finishing step"], correct:1, explain:"Slots are added as secondary mechanical features in compound/complex preparations."},
-  {q:"Beveling enamel margins in composite preparations is PRIMARILY indicated for:", opts:["Small preventive resin restorations only","Large restorations needing increased retention and esthetics","All amalgam restorations","All Class I composites regardless of size"], correct:1, explain:"Bevels are mainly for larger composite restorations with increased retention needs."},
-  {q:"Final procedures prior to restoration placement include all of the following EXCEPT:", opts:["Debris removal","Moisture elimination","Disinfection","Increasing occlusal convergence"], correct:3, explain:"Final procedures involve cleaning, drying, and disinfecting—not altering preparation geometry."},
-  {q:"Which method is acceptable for cleaning and drying the preparation?", opts:["Air/water jets and dry cotton pellets","Alcohol flame inside the cavity","Warm air only without suction","Irrigate with etchant for cleaning"], correct:0, explain:"Air/water jets and dry cotton pellets are listed; disinfection may also be used."},
-  {q:"The overall typical depth for a pit-and-fissure Class I preparation is approximately:", opts:["1.0 mm","2.0 mm","3.0 mm","4.0 mm"], correct:1, explain:"The slide notes an overall depth around 2 mm for pit & fissure lesions."}
+    {
+        q: "Which of the following is NOT an objective of tooth preparation according to G.V. Black?",
+        opts: ["Remove all defects and caries.", "Provide necessary protection to the pulp.", "Ensure the tooth can be easily extracted later.", "Form the preparation to withstand masticatory forces."],
+        correct: 2,
+        explain: "The objectives focus on restoration and preservation, not extraction."
+    },
+    {
+        q: "The initial tooth preparation stage includes all of the following steps EXCEPT:",
+        opts: ["Outline form & initial depth", "Primary Resistance form", "Pulp protection", "Convenience form"],
+        correct: 2,
+        explain: "Pulp protection is part of the final tooth preparation stage, only performed if needed."
+    },
+    {
+        q: "What does 'Outline form' primarily define?",
+        opts: ["The final depth of the cavity.", "The placement of preparation margins in their final position.", "The shape that resists fracture.", "The features that prevent the restoration from being dislodged."],
+        correct: 1,
+        explain: "Outline form is establishing the preparation margins where they will be in the final preparation."
+    },
+    {
+        q: "To preserve marginal ridge strength in a premolar, the remaining ridge should be greater than:",
+        opts: ["1.6 mm", "2.0 mm", "0.5 mm", "1.0 mm"],
+        correct: 0,
+        explain: "The minimum marginal ridge thickness for premolars is 1.6 mm. For molars, it is 2.0 mm."
+    },
+    {
+        q: "What is the recommended maximum buccolingual width for a conservative preparation?",
+        opts: ["1/2 of the intercuspal distance", "1/3 of the intercuspal distance", "1/4 of the intercuspal distance", "The full intercuspal distance"],
+        correct: 2,
+        explain: "Minimizing the buccolingual width to 1/4 of the intercuspal distance helps preserve cuspal strength."
+    },
+    {
+        q: "The procedure of reshaping the enamel surface with rotary instruments is termed:",
+        opts: ["Enameloplasty", "Odontotomy", "Amelogenesis", "Dentinoplasty"],
+        correct: 0,
+        explain: "Enameloplasty is the term for reshaping the enamel surface to remove shallow fissures or defects."
+    },
+    {
+        q: "For pit and fissure caries, the initial depth of the preparation into dentin should be restricted to a maximum of:",
+        opts: ["0.2 mm", "0.5 mm", "1.0 mm", "1.5 mm"],
+        correct: 0,
+        explain: "Restricting the initial pulpal depth to 0.2 mm into dentin (overall depth of ~2 mm) is a principle of outline form."
+    },
+    {
+        q: "'Primary Resistance Form' is the shape that enables the tooth and restoration to withstand:",
+        opts: ["Tipping or lifting forces", "Masticatory forces without fracture", "Chemical erosion", "Thermal sensitivity"],
+        correct: 1,
+        explain: "Resistance form is about preventing fracture of the tooth or restoration under chewing forces."
+    },
+    {
+        q: "Which feature is crucial for achieving Primary Resistance Form in a preparation?",
+        opts: ["Convergent walls", "Sharp internal line angles", "A rounded pulpal floor", "A relatively flat pulpal floor"],
+        correct: 3,
+        explain: "A flat floor provides a stable base and resists occlusal forces, preventing a wedging effect."
+    },
+    {
+        q: "For an amalgam restoration, what is the minimum recommended cavity preparation depth to ensure adequate material thickness?",
+        opts: ["0.5 - 1.0 mm", "1.0 - 1.2 mm", "1.5 - 2.0 mm", "2.5 - 3.0 mm"],
+        correct: 2,
+        explain: "A depth of 1.5-2.0 mm is required for amalgam to have sufficient bulk to resist fracture."
+    },
+    {
+        q: "Which feature provides primary retention for a Class I amalgam restoration?",
+        opts: ["Micromechanical bonding", "Occlusal convergence of facial and lingual walls", "Divergent walls", "The use of a liner and base"],
+        correct: 1,
+        explain: "Occlusal convergence creates an undercut that mechanically locks the amalgam restoration in place."
+    },
+    {
+        q: "How are composite restorations primarily retained in a tooth?",
+        opts: ["Dovetails and locks", "Occlusal convergence", "A micromechanical bond", "The thickness of the material"],
+        correct: 2,
+        explain: "Composite retention relies on the bond created by etching and priming the tooth structure."
+    },
+    {
+        q: "What is the main purpose of 'Convenience Form'?",
+        opts: ["To make the restoration look aesthetically pleasing.", "To provide adequate observation, accessibility, and ease of operation.", "To ensure the tooth is comfortable for the patient.", "To reduce the amount of tooth structure removed."],
+        correct: 1,
+        explain: "Convenience form is about making the preparation and restoration procedure easier for the operator."
+    },
+    {
+        q: "Which of the following describes 'infected dentin'?",
+        opts: ["Remineralizable and sensitive", "Deeper caries layer that does not stain", "Superficial, unremineralizable, and lacking sensation", "Should be left in the cavity to protect the pulp"],
+        correct: 2,
+        explain: "Infected dentin is the outer, soft layer of carious dentin that is full of bacteria and must be removed."
+    },
+    {
+        q: "What is the correct treatment for 'affected dentin'?",
+        opts: ["It should always be excavated with a spoon excavator.", "It should be left to allow for remineralization.", "It must be removed with a high-speed bur.", "It requires placement of a pin for retention."],
+        correct: 1,
+        explain: "Affected dentin is demineralized but not yet invaded by bacteria; it is capable of remineralizing and should be preserved."
+    },
+    {
+        q: "A caries-detecting dye will stain which type of dentin?",
+        opts: ["Affected dentin", "Infected dentin", "Healthy dentin", "Sclerotic dentin"],
+        correct: 1,
+        explain: "Caries-detecting dyes selectively stain the porous, bacteria-laden infected dentin."
+    },
+    {
+        q: "Which instrument is best suited for removing large areas of soft, infected dentin?",
+        opts: ["A high-speed diamond bur", "A spoon excavator", "An ultrasonic scaler", "A finishing strip"],
+        correct: 1,
+        explain: "A spoon excavator allows for tactile control and effective removal of soft caries with minimal risk to the pulp."
+    },
+    {
+        q: "Pulp protection is considered mandatory when the remaining dentin thickness (RDT) is less than:",
+        opts: ["3.0 mm", "2.5 mm", "2.0 mm", "0.5 mm"],
+        correct: 2,
+        explain: "If the RDT is less than 2 mm, a liner or base is needed to protect the pulp from thermal and chemical insults."
+    },
+    {
+        q: "Which of the following is a mechanical feature for *secondary* retention?",
+        opts: ["Occlusal convergence", "Dovetail", "Micromechanical bonding", "Retentive locks and grooves"],
+        correct: 3,
+        explain: "Locks, grooves, slots, and pins are all examples of secondary retentive features added when primary retention is insufficient."
+    },
+    {
+        q: "What is the final step in tooth preparation, according to the 9-step sequence?",
+        opts: ["Pulp protection", "Finishing external walls", "Cleaning, inspecting, and sealing", "Placing secondary retention"],
+        correct: 2,
+        explain: "The final step involves cleaning all debris from the preparation before placing the restorative material."
+    },
+    {
+        q: "Connecting two separate caries lesions that are less than ____ apart is generally recommended.",
+        opts: ["1.5 mm", "1.0 mm", "0.5 mm", "0.2 mm"],
+        correct: 2,
+        explain: "If two preparations are less than 0.5 mm apart, the thin wall of tooth structure between them is weak and should be removed, connecting them into one outline."
+    },
+    {
+        q: "Which of these is NOT a primary goal of finishing the external walls?",
+        opts: ["Creating the best marginal seal", "Providing a smooth junction", "Maximizing strength of the tooth and restoration at the margin", "Deepening the pulpal floor"],
+        correct: 3,
+        explain: "Finishing external walls deals with the margins of the preparation, not the depth of the pulpal floor."
+    },
+    {
+        q: "Which principle dictates that preparation margins should be placed to allow for good finishing of the restoration?",
+        opts: ["Convenience Form", "Resistance Form", "Retention Form", "Outline Form"],
+        correct: 3,
+        explain: "A key principle of Outline Form is placing margins in accessible areas for proper finishing."
+    },
+    {
+        q: "A 'dovetail' feature primarily aids in:",
+        opts: ["Primary Resistance", "Primary Retention", "Convenience Form", "Pulp Protection"],
+        correct: 1,
+        explain: "The dovetail provides a mechanical lock that prevents the restoration from being dislodged, which is a key aspect of retention form."
+    },
+    {
+        q: "If a preparation extends more than 2/3 of the way from a central groove to a cusp tip, what should be considered?",
+        opts: ["Using enameloplasty", "Cusp capping (covering the cusp)", "Using only a liner", "Making the pulpal floor rounded"],
+        correct: 1,
+        explain: "Extensive preparation width significantly weakens the cusp, making cusp capping necessary to prevent fracture."
+    },
+    {
+        q: "What is the primary reason for rounding internal line angles in a preparation?",
+        opts: ["To improve retention", "To reduce stress concentration in the tooth", "To make it easier to clean", "To allow for better bonding"],
+        correct: 1,
+        explain: "Rounded internal line angles distribute masticatory forces over a wider area, reducing stress and the risk of tooth fracture."
+    },
+    {
+        q: "Which step is performed immediately before pulp protection in the final stage?",
+        opts: ["Convenience form", "Removal of remaining infected dentin", "Finishing external walls", "Secondary retention form"],
+        correct: 1,
+        explain: "After establishing the initial form, the operator must remove any remaining caries before deciding if pulp protection is needed."
+    },
+    {
+        q: "All of the following are methods for cleaning a prepared cavity EXCEPT:",
+        opts: ["Air/water jets", "Dry cotton pellets", "Applying acid etch", "Using a dental explorer to scrape debris"],
+        correct: 2,
+        explain: "Acid etch is a step for bonding composite, not a method for general cleaning and debris removal."
+    },
+    {
+        q: "Which form prevents displacement of the restoration by tipping or lifting forces?",
+        opts: ["Resistance Form", "Outline Form", "Convenience Form", "Retention Form"],
+        correct: 3,
+        explain: "This is the definition of Retention Form, which is designed to resist dislodgement."
+    },
+    {
+        q: "The two main stages of tooth preparation are:",
+        opts: ["Initial and Final", "Occlusal and Proximal", "Amalgam and Composite", "Primary and Secondary"],
+        correct: 0,
+        explain: "The 9 steps are divided into the Initial Tooth Preparation Stage (Steps 1-4) and the Final Tooth Preparation Stage (Steps 5-9)."
+    }
 ];
 
 const tfs = [
-  {q:"All weakened enamel should be removed during outline form.", answer:true, explain:"One of the three outline form principles is to remove weakened enamel."},
-  {q:"For premolars, a remaining marginal ridge of 1.0 mm is considered ideal.", answer:false, explain:"Premolars should have >1.6 mm remaining marginal ridge."},
-  {q:"Rounded internal line angles help reduce stress concentrations.", answer:true, explain:"Rounded angles support resistance form."},
-  {q:"Composite restorations rely primarily on macromechanical undercuts for retention.", answer:false, explain:"Composites are retained by micromechanical bond to etched/primed tooth."},
-  {q:"Convenience form focuses on esthetic enhancement of the restoration.", answer:false, explain:"It focuses on access, visibility, and ease of operation."},
-  {q:"Affected dentin is remineralizable and often sensitive.", answer:true, explain:"Affected dentin can remineralize and may be sensitive; it does not stain with dye."},
-  {q:"If RDT is about 2 mm, pulp protection is generally not required.", answer:true, explain:"Protection becomes necessary as RDT decreases below ~2 mm."},
-  {q:"Beveling enamel margins is universally required for amalgam restorations.", answer:false, explain:"Beveling is not indicated for amalgam margins; it is more relevant for certain composites."},
-  {q:"Secondary retention can include pins, grooves, and slots in complex preparations.", answer:true, explain:"These are classic secondary mechanical features."}
+    {
+        q: "Infected dentin is remineralizable and should be left in the preparation.",
+        answer: false,
+        explain: "Infected dentin is unremineralizable and must be removed. Affected dentin is remineralizable."
+    },
+    {
+        q: "A flat pulpal floor contributes to the primary resistance form of a cavity preparation.",
+        answer: true,
+        explain: "A flat floor helps the tooth and restoration resist masticatory forces without fracture."
+    },
+    {
+        q: "Primary retention for composite restorations is achieved through occlusal convergence.",
+        answer: false,
+        explain: "Composite retention is primarily from micromechanical bonding. Occlusal convergence is for amalgam."
+    },
+    {
+        q: "The final step of tooth preparation is applying pulp protection.",
+        answer: false,
+        explain: "The final step is cleaning, inspecting, and sealing the preparation."
+    },
+    {
+        q: "To preserve a marginal ridge on a molar, it must be at least 2.0 mm thick.",
+        answer: true,
+        explain: "The minimum thickness for a molar marginal ridge is 2.0 mm; for a premolar, it is 1.6 mm."
+    },
+    {
+        q: "Convenience form is primarily for the patient's comfort during the procedure.",
+        answer: false,
+        explain: "Convenience form is for the operator's ease of access, visibility, and instrumentation."
+    },
+    {
+        q: "Caries-detecting dye stains both infected and affected dentin.",
+        answer: false,
+        explain: "Caries-detecting dye only stains the porous, bacteria-filled infected dentin."
+    },
+    {
+        q: "Rounded internal line angles help to reduce stress concentration within the tooth.",
+        answer: true,
+        explain: "Sharp angles concentrate stress, increasing fracture risk. Rounded angles distribute forces more evenly."
+    },
+    {
+        q: "Pins and slots are considered features of primary retention form.",
+        answer: false,
+        explain: "Pins, slots, locks, and grooves are features of secondary retention, used when primary retention is insufficient."
+    }
 ];
 
 const saqs = [
-  // 1. Direct Answer (very short)
-  { q: "Define primary resistance form.", a: "Shape/placement enabling tooth and restoration to withstand masticatory forces without fracture." },
-  // 2. List/Enumeration (3+ answers, numbered)
-  { q: "List any four features that contribute to primary resistance form.", a: "1) Relatively flat floors. 2) Box-shaped form. 3) Inclusion of weakened tooth structure. 4) Preserve cusps/marginal ridges. 5) Rounded internal line angles. 6) Adequate material thickness." },
-  // 3. Comparison (numbered table)
-  { q: "Compare infected and affected dentin in caries.", a: "<table style='width:100%;border-collapse:collapse'><thead><tr><th style='border:1px solid rgba(255,255,255,0.2);padding:6px'>#</th><th style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Infected dentin</th><th style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Affected dentin</th></tr></thead><tbody><tr><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>1</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Superficial, soft, unremineralizable</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Deeper, firm, remineralizable</td></tr><tr><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>2</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Lacks sensation, stains with dye</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Often sensitive, does not stain</td></tr><tr><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>3</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Should be excavated</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Should be preserved</td></tr></tbody></table>" },
-  // 4. Case-based Scenario
-  { q: "A Class I occlusal caries on a molar requires an amalgam restoration. After outline form, you measure a pulpal depth of 1.2 mm. What should you do before restoring?", a: "Extend to ~1.5–2.0 mm for amalgam resistance; ensure resistance/retention features are adequate." },
-  // 5. Direct (very short)
-  { q: "State the typical maximum buccolingual width for an occlusal preparation relative to intercuspal distance.", a: "Not more than 1/4 of intercuspal distance." },
-  // 6. Enumeration (very short)
-  { q: "Name three secondary retention features used in complex preparations.", a: "1) Retention grooves/locks. 2) Slots. 3) Pins. (Also: skirts, coves)" }
+    {
+        q: "A dentist prepares a Class I cavity on a mandibular premolar, leaving a marginal ridge that measures 1.4 mm in thickness. Is this preparation acceptable? Explain your reasoning.",
+        a: "This preparation is not acceptable. The minimum required marginal ridge thickness for a premolar is 1.6 mm to prevent fracture under occlusal load. A 1.4 mm ridge is too thin and undermines the strength of the tooth."
+    },
+    {
+        q: "Define 'Primary Resistance Form' and list three features that help achieve it.",
+        a: "Primary Resistance Form is the shape and placement of the preparation that best enables both the restoration and the tooth to withstand masticatory forces without fracturing. <br><br>Three features include: <br>1. A relatively flat pulpal floor. <br>2. Rounded internal line angles. <br>3. Adequate thickness of the restorative material (e.g., 1.5-2mm for amalgam)."
+    },
+    {
+        q: "In a numbered table, compare and contrast 'Infected Dentin' and 'Affected Dentin' based on at least four characteristics.",
+        a: `
+            <table>
+              <thead>
+                <tr>
+                  <th>Characteristic</th>
+                  <th>Infected Dentin</th>
+                  <th>Affected Dentin</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>1. Location</td>
+                  <td>Superficial (outer) layer</td>
+                  <td>Deeper layer</td>
+                </tr>
+                <tr>
+                  <td>2. Remineralization</td>
+                  <td>Unremineralizable</td>
+                  <td>Remineralizable</td>
+                </tr>
+                <tr>
+                  <td>3. Sensation</td>
+                  <td>Lacking sensation</td>
+                  <td>Sensitive</td>
+                </tr>
+                <tr>
+                  <td>4. Clinical Action</td>
+                  <td>Must be excavated</td>
+                  <td>Should be preserved</td>
+                </tr>
+                 <tr>
+                  <td>5. Staining</td>
+                  <td>Stained by caries dye</td>
+                  <td>Does not stain</td>
+                </tr>
+              </tbody>
+            </table>
+        `
+    },
+    {
+        q: "List the four steps that comprise the 'Initial Tooth Preparation Stage'.",
+        a: "The four steps of the initial stage are: <br>1. Outline form and initial depth <br>2. Primary Resistance form <br>3. Primary Retention form <br>4. Convenience form"
+    },
+    {
+        q: "What is the primary purpose of 'Convenience Form' during tooth preparation?",
+        a: "The primary purpose of Convenience Form is to provide adequate observation, accessibility, and ease of operation for the dentist while preparing and restoring the tooth. It ensures clear visibility of the entire preparation and allows instruments to be used effectively."
+    },
+    {
+        q: "List three mechanical features that can be used to provide 'Secondary Retention' in a tooth preparation.",
+        a: "Three mechanical features for secondary retention are: <br>1. Retentive locks and grooves <br>2. Retentive coves or pins <br>3. Skirts or slot preparations"
+    }
 ];
 
 // ----------- State -----------
@@ -284,19 +521,16 @@ mcqs.forEach((item, idx)=>{
 
   buttons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      if(card.dataset.locked === 'true') return; // one attempt
+      if(card.dataset.locked === 'true') return;
       const v = Number(btn.dataset.v);
       state.mcq[idx] = v;
 
-      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
-      // Always mark the correct option (green)
       const correctBtn = buttons[correctVisualIndex];
       correctBtn.classList.add('correct');
 
       if(v !== correctVisualIndex){
-        // Mark chosen wrong option (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
@@ -344,20 +578,17 @@ tfs.forEach((item, idx)=>{
 
   buttons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      if(card.dataset.locked === 'true') return; // one attempt
+      if(card.dataset.locked === 'true') return;
       const val = btn.dataset.v === "true";
       state.tf[idx] = val;
 
-      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
-      // Always mark the correct button (green)
       const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
       correctBtn.classList.add('correct');
 
       const isCorrect = (val === item.answer);
       if(!isCorrect){
-        // mark chosen wrong (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
@@ -384,14 +615,13 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
   </div>
   <div class="answer" hidden>${item.a}</div>
 `;
-
 
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');
@@ -415,18 +645,30 @@ saqs.forEach((item, idx)=>{
 
 // ----------- Score + Reset -----------
 function recalc(){
-  const mcqScore = state.mcq.reduce((s,v,i)=>{
-    if(v===null) return s;
+  const mcqScore = state.mcq.reduce((s, v, i) => {
+    if (v === null) return s;
+    const item = mcqs[i];
     const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
+    const buttons = card.querySelectorAll('.opt-btn');
+
+    // Find the original index of the selected option
+    const selectedVisualIndex = v;
+    let originalIndexOfSelected = -1;
+    for (let j = 0; j < 4; j++) {
+        if (Number(buttons[j].dataset.v) === selectedVisualIndex) {
+            const label = buttons[j].querySelector('.label').textContent;
+            originalIndexOfSelected = item.opts.indexOf(label);
+            break;
+        }
+    }
+    return s + (originalIndexOfSelected === item.correct ? 1 : 0);
+  }, 0);
+
   const tfScore = state.tf.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
+    if(v === null) return s;
+    return s + (v === tfs[i].answer ? 1 : 0);
   },0);
+
   const saqScore = state.saq.filter(Boolean).length;
   const total = mcqScore + tfScore + saqScore;
 

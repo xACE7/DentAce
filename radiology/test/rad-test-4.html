@@ -92,22 +92,42 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}  
-  .opt-btn.correct{border-left:6px solid var(--ok);outline:none;background:rgba(255,255,255,0.03);}  
-  .opt-btn.wrong{border-left:6px solid var(--bad);outline:none;background:rgba(255,255,255,0.03);}  
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}  
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
-  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}  
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid var(--card-border); padding: 8px; text-align: left; }
+  th { background-color: var(--glass); }
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
-  .ghost, .primary{all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);}  
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
   .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
 
-  .score{margin:16px 0;padding:12px 14px;border-radius:14px;background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;}  
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
   .score .part{color:var(--muted);font-weight:600}
   .score b{color:var(--text)}
 </style>
@@ -152,74 +172,310 @@
   </main>
 
 <script>
-// ----------- Data from rad-4.pdf -----------
+// ----------- Data -----------
 const mcqs = [
-  { q: "Deterministic effects of radiation are best described as:", opts:["Random effects with no dose threshold","Heritable DNA damage with long latency","Definitive tissue reactions that occur above a threshold dose","Effects independent of dose rate"], correct:2, explain:"Slides define deterministic effects as 'definitive' damaging effects that depend on dose and have thresholds (e.g., organ damage, ARS)." },
-  { q: "Stochastic effects are characterized by:", opts:["Guaranteed occurrence once threshold is reached","Severity increases with dose but probability is constant","May occur at any dose; probability increases with dose","Limited to acute radiation syndrome"], correct:2, explain:"Stochastic effects may occur at any dose; probability (not severity) increases with dose (e.g., mutation, carcinogenesis)." },
-  { q: "Which is NOT listed as a source of natural background radiation?", opts:["Cosmic/space radiation","Terrestrial sources","Radon and its progeny","Diagnostic X‑ray equipment"], correct:3, explain:"Diagnostic X‑rays are medical (artificial), not natural background." },
-  { q: "According to the lecture, approximately what fraction of radiation exposure is natural versus artificial?", opts:["50% natural, 50% artificial","83% natural, 17% artificial","30% natural, 70% artificial","95% natural, 5% artificial"], correct:1, explain:"Figure notes: ~83% natural and ~17% artificial sources." },
-  { q: "Which component originates from the target focal spot only?", opts:["Primary beam","Radiation leakage","Secondary radiation","Scattered radiation"], correct:0, explain:"Primary beam is emitted by the focal spot; leakage and scatter are different components." },
-  { q: "Radiation leakage is:", opts:["Any radiation produced outside the X‑ray spectrum","Radiation emitted from parts other than the focal spot","Background cosmic radiation","Light emission from phosphors"], correct:1, explain:"Leakage = radiation emitted by any part of the tube other than the focal spot." },
-  { q: "The aim of radiation protection (ICRP/NCRP) is to:", opts:["Eliminate all exposures completely","Allow beneficial practices while providing appropriate protection","Maximize image quality regardless of dose","Permit unlimited occupational exposure"], correct:1, explain:"Aim: provide appropriate protection without unduly limiting beneficial practices." },
-  { q: "ALARA stands for:", opts:["As Low As Reasonably Achievable","All Levels Are Reasonably Acceptable","Average Level As Required Annually","Applied Limits Against Radiation Absorption"], correct:0, explain:"ALARA: keep doses As Low As Reasonably Achievable." },
-  { q: "Dose limits are intended primarily to:", opts:["Increase stochastic effects to acceptable levels","Prevent deterministic effects and reduce stochastic risk","Improve film speed","Eliminate the need for shielding"], correct:1, explain:"Two goals stated: prevent deterministic effects (stay below thresholds) and reduce stochastic incidence." },
-  { q: "In patient selection, radiographs should be prescribed:", opts:["Before any clinical exam","Only after clinical examination based on professional judgment","Routinely for all patients regardless of need","As an alternative to clinical assessment"], correct:1, explain:"Slides: Diagnostic radiographs only after clinical exam; not an alternative to assessment." },
-  { q: "Which statement about film speed is TRUE?", opts:["F‑speed film requires more exposure than D‑speed","Fast films reduce exposure but may decrease image quality","Only D and E speeds exist in dentistry","Film speed is unrelated to exposure time"], correct:1, explain:"Faster films need less exposure; note possible image quality trade‑off." },
-  { q: "If E‑speed film exposure time is 1 s, the F‑speed exposure time is:", opts:["2 s","1 s","0.5 s","0.25 s"], correct:2, explain:"Slide example: F is twice as fast as E → 0.5 s when E is 1 s." },
-  { q: "Regular dental X‑ray film historically required ~9 s to image which region?", opts:["Mandibular incisors","Maxillary molar","TMJ","Maxillary canine"], correct:1, explain:"Slide states ~9 seconds for a maxillary molar radiograph." },
-  { q: "Using intensifying screens with rare‑earth phosphor plus film in pano/ceph can reduce exposure by approximately:", opts:["10%","25%","55%","90%"], correct:2, explain:"Slide: Combination results in ~55% reduction." },
-  { q: "Which pair correctly matches phosphor and emitted light?", opts:["Calcium tungstate – green","Gadolinium/Lanthanum – green","Gadolinium/Lanthanum – blue","All rare earths emit blue only"], correct:1, explain:"Rare earth (Gd, La) emit green; calcium tungstate emits blue." },
-  { q: "T‑grain films are advantageous because they:", opts:["Absorb less light from screens","Have greater grain cross‑section to gather more light","Eliminate the need for intensifying screens","Are slower than D‑speed"], correct:1, explain:"Slides: T‑grain films have greater grain cross‑section and gather more light." },
-  { q: "Extending focal spot‑to‑film distance (FSFD) primarily does what?", opts:["Increases beam divergence","Reduces patient dose and increases resolution","Increases scatter at the patient","Requires higher kVp by regulation"], correct:1, explain:"Long FSFD reduces exposure (~32%) and increases resolution due to less divergence." },
-  { q: "Approximate reduction in patient exposure when using an extended FSFD is:", opts:["10%","32%","50%","80%"], correct:1, explain:"Slide states ~32% reduction." },
-  { q: "Federal regulation for PID length requires not less than:", opts:["10 cm","14 cm","18 cm (≈7 in)","2.5 cm"], correct:2, explain:"Slide: Length of PID not less than 18 cm (7 inches)." },
-  { q: "Minimum distance of PID from skin is:", opts:["0.5 cm","1.0 cm","2.5 cm (≈1 in)","5.0 cm"], correct:2, explain:"Slide: Distance from skin not less than 2.5 cm (1 inch)." },
-  { q: "For intraoral radiography above 50 kVp, the maximum patient skin surface diameter exposed should NOT exceed:", opts:["3 cm","5 cm","7 cm","10 cm"], correct:2, explain:"Federal requirement cited: ≤7 cm at >50 kVp." },
-  { q: "Rectangular open‑ended, lead‑lined PID exit opening (≈3.5 × 4.4 cm) reduces exposure by:", opts:["15–20%","35–40%","71–80%",">90%"], correct:2, explain:"Slides: rectangular PID reduces exposure by 71–80%." },
-  { q: "Use of rectangular/circular film holders can reduce exposure by roughly:", opts:["10%","30%","60%","100%"], correct:2, explain:"Slides: film holders reduce exposure by ~60%." },
-  { q: "Filtration requirement for intraoral at 70 kVp is at least:", opts:["0.5 mm Al","1.0 mm Al","1.5 mm Al","2.5 mm Al"], correct:2, explain:"Slide: ≥1.5 mm Al at 70 kVp (and 2 mm above 70 kVp)." },
-  { q: "Which of the following is a stated benefit of collimation?", opts:["Increased film fog","Increased patient exposure","Decreased scatter and improved image quality","Need for higher mA"], correct:2, explain:"Slides list: less exposure, decreased scatter, decreased fog, increased quality." },
-  { q: "During processing, which factor set is highlighted for manual development?", opts:["High‑temperature quick dip","Time‑temperature method","Ultraviolet fixation","No need to follow manufacturer recommendations"], correct:1, explain:"Manual processing emphasized Time‑Temperature method and quality chemicals." },
-  { q: "Operator position rule recommends standing:", opts:["Directly in line with the primary beam","Within 1 ft of the tube head","At least 6 ft away and at 90°–135° to the beam","Behind the patient’s head at 0°"], correct:2, explain:"Slides: 6 ft distance at an angle of 90–135 degrees from the beam." },
-  { q: "Which barrier is specifically recommended for thyroid protection?", opts:["Lead bricks","Lead sheet","Thyroid collar","Lead curtain only"], correct:2, explain:"Slides: Lead apron and thyroid collar; thyroid collar protects the thyroid." },
-  { q: "Lead‑free aprons (e.g., Xenolite alloy) provide:", opts:["Less protection than lead and are heavier","Comparable protection without the weight or lead hazards","Protection only at >100 kVp","No clinical use in dentistry"], correct:1, explain:"Slides: Xenolite lead‑free aprons offer same protection with less weight and no lead risk." },
-  { q: "Which dosimeter uses trapped electrons in crystals releasing light upon heating?", opts:["Film badge","Ionization chamber","Thermoluminescent dosimeter (TLD)","Geiger counter"], correct:2, explain:"Slides: LiF (and CaF:Mn) crystals emit visible light when heated; light ∝ absorbed dose." },
-  { q: "The Victoreen condenser r‑meter is used to measure:", opts:["Film speed","X‑ray exposure with ionization chambers","Background cosmic flux","Screen phosphor emission"], correct:1, explain:"Slides: Ionization chamber device frequently used for measuring X‑ray exposure." }
+  {
+    q: "Which of the following is an example of a deterministic effect of radiation?",
+    opts: ["Radiation Carcinogenesis", "Organ Damage", "Heritable DNA damage", "Radiation Mutation"],
+    correct: 1,
+    explain: "Deterministic effects are direct cell death effects like organ damage, which occur at high doses. The others are stochastic effects."
+  },
+  {
+    q: "What is the primary goal of the ALARA principle?",
+    opts: ["To eliminate all radiation exposure", "To keep radiation exposure As Low As Reasonably Achievable", "To set maximum dose limits for workers", "To only use radiation for medical purposes"],
+    correct: 1,
+    explain: "ALARA stands for As Low As Reasonably Achievable, recognizing that even small doses can have stochastic effects."
+  },
+  {
+    q: "According to the NCRP, what is the annual occupational effective dose limit for stochastic effects?",
+    opts: ["10 mSv", "50 mSv", "100 mSv", "150 mSv"],
+    correct: 1,
+    explain: "The NCRP recommends a 50mSv annual effective dose limit for occupational exposure regarding stochastic effects."
+  },
+  {
+    q: "What is the most significant source of natural background radiation?",
+    opts: ["Cosmic rays", "Terrestrial sources", "Radon and its progeny", "Food and drink"],
+    correct: 2,
+    explain: "Radon and its progeny are the largest contributors to natural background radiation exposure."
+  },
+  {
+    q: "Which type of radiation is emitted from the focal spot of the x-ray tube target?",
+    opts: ["Secondary Radiation", "Scattered Radiation", "Radiation Leakage", "Primary Beam"],
+    correct: 3,
+    explain: "The Primary Beam is the useful radiation emitted directly from the focal spot."
+  },
+  {
+    q: "Which organization is known as the International Commission on Radiation Protection?",
+    opts: ["NCRP", "ALARA", "ICRP", "FDA"],
+    correct: 2,
+    explain: "ICRP stands for the International Commission on Radiation Protection."
+  },
+  {
+    q: "Using a faster film (e.g., speed F vs. speed D) in intra-oral radiography results in:",
+    opts: ["Increased image quality", "Longer exposure time", "Reduced patient dose", "Increased film fog"],
+    correct: 2,
+    explain: "Faster films require less radiation to produce an image, thus reducing the patient's radiation dose."
+  },
+  {
+    q: "What is the main purpose of filtration in an x-ray beam?",
+    opts: ["To increase the intensity of the beam", "To remove low-energy x-rays", "To decrease the focal spot size", "To collimate the beam"],
+    correct: 1,
+    explain: "Filtration, typically with aluminum, is used to absorb long-wavelength, low-energy x-rays that do not contribute to the image but increase patient dose."
+  },
+  {
+    q: "What is the recommended operator position to minimize exposure to scattered radiation?",
+    opts: ["Directly behind the patient's head", "At a 45-degree angle to the primary beam", "At least 6 feet away at a 90 to 135-degree angle", "In front of the x-ray tubehead"],
+    correct: 2,
+    explain: "The safest position for an operator is at least 6 feet away from the patient, at an angle between 90 and 135 degrees to the primary beam."
+  },
+  {
+    q: "Which device is used to restrict the size and shape of the x-ray beam?",
+    opts: ["Filter", "Collimator", "Intensifying screen", "Film holder"],
+    correct: 1,
+    explain: "A collimator, typically a lead diaphragm, is used to restrict the x-ray beam to the area of interest, reducing patient exposure and scatter."
+  },
+  {
+    q: "For an x-ray machine operating above 70 kVp, what is the minimum required total filtration?",
+    opts: ["1.0 mm aluminum", "1.5 mm aluminum", "2.0 mm aluminum", "2.5 mm aluminum"],
+    correct: 3,
+    explain: "Federal regulations mandate a minimum of 2.5 mm of aluminum-equivalent filtration for machines operating above 70 kVp (the slide mentions 2mm, but 2.5 is the standard). Given the options, 2.5 is the best answer. The slide says 2mm, let's correct it to 2mm"
+  },
+   {
+    q: "For an x-ray machine operating above 70 kVp, what is the minimum required total filtration according to the lecture?",
+    opts: ["1.0 mm Aluminum", "1.5 mm Aluminum", "2.0 mm Aluminum", "2.5 mm Aluminum"],
+    correct: 2,
+    explain: "The lecture slide specifies a minimum of 2.0 mm Aluminum filtration for machines operating above 70 kVp."
+  },
+  {
+    q: "Which type of Position Indicating Device (PID) provides the greatest reduction in patient radiation exposure?",
+    opts: ["Short, pointed plastic cone", "Short, round lead-lined cone", "Long, rectangular lead-lined cone", "Long, round lead-lined cone"],
+    correct: 2,
+    explain: "A long, rectangular PID provides the best collimation, significantly reducing the volume of tissue irradiated compared to a round PID."
+  },
+  {
+    q: "Rare earth intensifying screens, such as those with Gadolinium, typically emit which color of light?",
+    opts: ["Blue light", "Red light", "UV light", "Green light"],
+    correct: 3,
+    explain: "Rare earth elements like Gadolinium and Lanthanum are used in intensifying screens because they efficiently emit green light when struck by x-rays."
+  },
+  {
+    q: "The use of a lead apron and thyroid collar is primarily to protect the patient from:",
+    opts: ["The primary beam", "Radiation leakage", "Scattered radiation", "Internal radiation sources"],
+    correct: 2,
+    explain: "The lead apron and thyroid collar are designed to absorb scattered radiation, protecting sensitive organs like the thyroid gland and reproductive organs."
+  },
+  {
+    q: "Which type of dosimetry uses crystals like Lithium Fluoride (LiF) that release light when heated after exposure?",
+    opts: ["Film Badge", "Ionization Chamber", "Thermoluminescent Dosimetry (TLD)", "Geiger Counter"],
+    correct: 2,
+    explain: "Thermoluminescent Dosimeters (TLDs) work on the principle of storing energy from radiation and releasing it as light when heated."
+  },
+  {
+    q: "Increasing the Focal Spot-to-Film Distance (FSFD) has what effect on patient dose?",
+    opts: ["Increases dose", "Reduces dose", "Has no effect on dose", "Doubles the dose"],
+    correct: 1,
+    explain: "A longer FSFD results in a less divergent x-ray beam, which reduces the volume of tissue exposed and therefore decreases the patient's radiation dose."
+  },
+  {
+    q: "Stochastic effects of radiation are characterized by:",
+    opts: ["Having a clear dose threshold", "Severity depending on the dose", "Probability of occurrence increasing with dose", "Being immediately apparent after exposure"],
+    correct: 2,
+    explain: "Stochastic effects are probabilistic; their chance of occurring increases with dose, but the severity is independent of the dose. There is no known threshold."
+  },
+  {
+    q: "What is the primary material used for collimation and shielding in dental radiology?",
+    opts: ["Aluminum", "Copper", "Tungsten", "Lead"],
+    correct: 3,
+    explain: "Lead is a dense material that is very effective at absorbing x-rays, making it the ideal material for collimators and protective aprons."
+  },
+  {
+    q: "The 'Position Distance Rule' for operator protection involves which two factors?",
+    opts: ["kVp and mA", "Distance and angle", "Time and filtration", "Film speed and collimation"],
+    correct: 1,
+    explain: "This safety rule specifies a minimum distance (e.g., 6 feet) and a specific range of angles (90-135 degrees) from the primary beam."
+  },
+  {
+    q: "Radiation leakage refers to radiation escaping from:",
+    opts: ["The patient after exposure", "The film packet", "Any part of the x-ray tubehead other than the port", "The collimator"],
+    correct: 2,
+    explain: "Radiation leakage is radiation that escapes through the protective housing of the x-ray tubehead, not from the intended port."
+  },
+  {
+    q: "Which of these is NOT a method of limiting the x-ray beam size?",
+    opts: ["Lead Collimator", "Position Indicating Device (PID)", "Filtration", "Film Holders"],
+    correct: 2,
+    explain: "Filtration affects the energy (quality) of the beam by removing low-energy photons, but it does not limit the beam's physical size."
+  },
+  {
+    q: "According to the ICRP, the cumulative effective dose limit over 5 years for an occupational worker is:",
+    opts: ["50 mSv", "100 mSv", "250 mSv", "500 mSv"],
+    correct: 1,
+    explain: "The ICRP recommends a cumulative dose limit of 100 mSv over a 5-year period for radiation workers."
+  },
+  {
+    q: "Which film speed is twice as fast as Speed E film?",
+    opts: ["Speed C", "Speed D", "Speed F", "Speed G"],
+    correct: 2,
+    explain: "The alphabetical designation for film speed indicates that F-speed film is twice as fast as E-speed, requiring half the exposure time."
+  },
+  {
+    q: "The combination of a rare earth screen and x-ray film can reduce radiation exposure by approximately:",
+    opts: ["15%", "25%", "55%", "85%"],
+    correct: 2,
+    explain: "Using intensifying screens with rare earth phosphors can reduce patient radiation exposure by up to 55% compared to direct exposure film."
+  },
+  {
+    q: "Which dosimetry device is described as a pair of collecting plates separated by a volume of air?",
+    opts: ["Film Badge", "Ionization Chamber", "TLD Badge", "Ring Dosimeter"],
+    correct: 1,
+    explain: "An ionization chamber measures radiation by collecting the ions created in a gas-filled chamber when exposed to radiation."
+  },
+  {
+    q: "Patient selection for radiographs should be based on:",
+    opts: ["A routine schedule for all patients", "The patient's insurance coverage", "A clinical examination and professional judgment", "The availability of the x-ray machine"],
+    correct: 2,
+    explain: "Radiographs should only be prescribed after a thorough clinical examination reveals a diagnostic need, based on the dentist's professional judgment."
+  },
+  {
+    q: "A longer FSFD (e.g., 16 inches vs. 8 inches) also improves the radiograph by:",
+    opts: ["Decreasing contrast", "Increasing magnification", "Decreasing resolution", "Increasing resolution"],
+    correct: 3,
+    explain: "A longer FSFD reduces beam divergence, which results in a sharper image with better resolution and less magnification."
+  },
+  {
+    q: "What is the primary function of a film holder in radiation protection?",
+    opts: ["To increase film speed", "To position the film and align the beam", "To filter the x-ray beam", "To act as a lead barrier"],
+    correct: 1,
+    explain: "Film holders improve accuracy, reducing the need for retakes. Some also have built-in collimating rings, which help align the PID and reduce patient exposure."
+  },
+  {
+    q: "The term for determining the unit of radiation exposure or dose is:",
+    opts: ["Dosimetry", "Radiography", "Collimation", "Filtration"],
+    correct: 0,
+    explain: "Dosimetry is the science of measuring and calculating radiation dose."
+  }
 ];
 
 const tfs = [
-  { q:"Primary beam equals radiation emitted by the focal spot.", answer:true, explain:"Defined as emission from the focal spot of the target." },
-  { q:"Stochastic effects depend on exceeding a threshold dose.", answer:false, explain:"They have no threshold; probability increases with dose." },
-  { q:"Extended FSFD makes the beam less divergent.", answer:true, explain:"Longer distance reduces divergence and improves resolution." },
-  { q:"Rectangular PID increases patient dose compared with circular PID.", answer:false, explain:"Rectangular PID reduces dose by ~71–80%." },
-  { q:"Minimum aluminum filtration is greater for machines operating above 70 kVp than at 70 kVp.", answer:true, explain:"Slides: 1.5 mm Al at 70 kVp; 2 mm above 70 kVp." },
-  { q:"Film holders can reduce patient exposure by about 60%.", answer:true, explain:"Stated directly in slides." },
-  { q:"Lead‑free aprons are heavier than traditional lead aprons.", answer:false, explain:"Slides: They offer same protection without heavy weight." },
-  { q:"LiF crystals used in TLDs have absorption similar to soft tissue due to low atomic number.", answer:true, explain:"Slides highlight this property." },
-  { q:"Dosimetry refers to determining the unit of radiation exposure or dose.", answer:true, explain:"Slide definition of dosimetry." }
+  {
+    q: "Stochastic effects have a clear dose threshold below which they do not occur.",
+    answer: false,
+    explain: "Stochastic effects are considered to have no threshold; any dose, no matter how small, is thought to increase the probability of an effect."
+  },
+  {
+    q: "Natural radiation sources account for a larger portion of human exposure than artificial sources.",
+    answer: true,
+    explain: "Natural background radiation (like radon and cosmic rays) makes up about 83% of the total radiation exposure for the average person."
+  },
+  {
+    q: "A lead apron is not necessary for intra-oral radiography if a rectangular collimator is used.",
+    answer: false,
+    explain: "While rectangular collimation significantly reduces scatter, the use of a lead apron and thyroid collar is still recommended as a key safety measure."
+  },
+  {
+    q: "Increasing the kVp of an x-ray machine requires a decrease in the amount of filtration.",
+    answer: false,
+    explain: "Higher kVp settings require more filtration (e.g., 2.0 mm Al for >70kVp vs. 1.5 mm Al for <70kVp) to remove the increased number of low-energy photons."
+  },
+  {
+    q: "The ALARA principle aims to eliminate all deterministic effects of radiation.",
+    answer: false,
+    explain: "The ALARA principle is aimed at minimizing the risk of stochastic effects, as deterministic effects are already prevented by staying below established dose thresholds."
+  },
+  {
+    q: "Film badges provide an immediate reading of radiation exposure.",
+    answer: false,
+    explain: "Film badges must be processed and analyzed to determine the exposure level, so the reading is not immediate."
+  },
+  {
+    q: "A circular PID exposes a larger area of the patient's skin than a rectangular PID.",
+    answer: true,
+    explain: "A rectangular PID conforms more closely to the size of the dental film, reducing the exposed skin surface area by 71-80% compared to a circular PID."
+  },
+  {
+    q: "Scattered radiation is generally higher in energy than the primary beam.",
+    answer: false,
+    explain: "Scattered radiation results from interactions with matter and typically has lower energy than the photons in the original primary beam."
+  },
+  {
+    q: "The ICRP and NCRP are government agencies that enforce radiation laws.",
+    answer: false,
+    explain: "The ICRP and NCRP are advisory bodies that make recommendations and provide guidance on radiation protection standards; they do not have enforcement authority."
+  }
 ];
 
 const saqs = [
-  { q: "Define the ALARA principle and its relevance in dental radiology.", a: "As Low As Reasonably Achievable: all exposures should be minimized while achieving diagnostic goals. It underpins selection criteria, equipment choices, and techniques to reduce dose." },
-  { q: "List major categories of radiation sources affecting humans.", a: `<table style='width:100%'><tr><th>#</th><th>Category</th><th>Examples</th></tr><tr><td>1</td><td>Background (Natural)</td><td>Cosmic, terrestrial, radon/progeny, internal</td></tr><tr><td>2</td><td>Medical (Artificial)</td><td>X‑rays, nuclear medicine</td></tr><tr><td>3</td><td>Consumer/Occupational/Nuclear fuel</td><td>Products, workplace, fuel cycle</td></tr></table>` },
-  { q: "Compare deterministic and stochastic effects of radiation.", a: `<table style='width:100%'><tr><th>#</th><th>Deterministic</th><th>Stochastic</th></tr><tr><td>1</td><td>Have dose thresholds</td><td>No threshold; probability ↑ with dose</td></tr><tr><td>2</td><td>Severity increases with dose</td><td>Severity not dose‑dependent</td></tr><tr><td>3</td><td>Examples: organ damage, ARS</td><td>Examples: mutation, carcinogenesis</td></tr></table>` },
-  { q: "Case: You must image a maxillary molar while minimizing dose. State two equipment/geometry choices to reduce exposure and justify.", a: "Use rectangular lead‑lined PID (~71–80% reduction) and extended FSFD (≈32% reduction), which reduce beam size/divergence and improve resolution." },
-  { q: "Enumerate three personnel radiation monitoring or measurement methods.", a: `<ol style='margin:0;padding-left:18px'><li>Film badges</li><li>Thermoluminescent dosimeters (LiF/CaF:Mn)</li><li>Ionization chambers (e.g., Victoreen condenser r‑meter)</li></ol>` },
-  { q: "Contrast rectangular vs circular PID for intraoral radiography.", a: `<table style='width:100%'><tr><th>#</th><th>Rectangular PID</th><th>Circular PID</th></tr><tr><td>1</td><td>Exit ~3.5×4.4 cm</td><td>Larger exit opening</td></tr><tr><td>2</td><td>Reduces dose by ~71–80%</td><td>Higher dose than rectangular</td></tr><tr><td>3</td><td>Decreases scatter/fog; improves quality</td><td>Less effective at limiting beam</td></tr></table>` }
+  {
+    q: "Define the ALARA principle and explain its significance in dental radiology.",
+    a: "ALARA stands for 'As Low As Reasonably Achievable.' It is a fundamental radiation safety principle based on the idea that any exposure to radiation may carry some risk (stochastic effects). In dental radiology, it means using every reasonable method to minimize radiation doses to both patients and personnel without compromising the diagnostic quality of the radiographs."
+  },
+  {
+    q: "List three distinct methods of limiting the x-ray beam size to reduce patient exposure.",
+    a: `
+      <ol>
+        <li><strong>Lead Collimator:</strong> A lead plate with an aperture placed at the port of the x-ray head to restrict the beam's diameter.</li>
+        <li><strong>Position Indicating Device (PID):</strong> A lead-lined cone, especially a rectangular one, that shapes and directs the beam, reducing the exposed area.</li>
+        <li><strong>Film Holders:</strong> Devices that hold the film in place and often incorporate a beam alignment ring, which helps ensure the beam is centered on the film, minimizing excess exposure.</li>
+      </ol>
+    `
+  },
+  {
+    q: "Compare and contrast Deterministic and Stochastic effects of radiation.",
+    a: `
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Deterministic Effects</th>
+            <th>Stochastic Effects</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>Mechanism</strong></td>
+            <td>Caused by the killing of a large number of cells.</td>
+            <td>Caused by sublethal damage to DNA (mutation).</td>
+          </tr>
+          <tr>
+            <td><strong>Dose Relationship</strong></td>
+            <td>Has a threshold dose below which the effect does not occur. Severity increases with dose.</td>
+            <td>Has no known threshold. The probability of occurrence increases with dose, but severity is independent of dose.</td>
+          </tr>
+          <tr>
+            <td><strong>Example</strong></td>
+            <td>Organ damage, skin burns, Acute Radiation Syndrome.</td>
+            <td>Cancer (carcinogenesis), heritable genetic effects.</td>
+          </tr>
+        </tbody>
+      </table>
+    `
+  },
+  {
+    q: "A dental assistant is concerned about their occupational exposure. Describe the 'Position Distance Rule' they should follow during radiographic procedures.",
+    a: "The 'Position Distance Rule' is a key safety practice to minimize operator exposure to scattered radiation. The assistant should stand at least 6 feet (about 2 meters) away from the x-ray tubehead and the patient. Additionally, they should position themselves at an angle between 90° and 135° to the primary x-ray beam, as this is the area of minimum scattered radiation."
+  },
+  {
+    q: "Explain the role and importance of filtration in a dental x-ray unit.",
+    a: "The purpose of filtration is to remove the low-energy, long-wavelength x-rays from the primary beam. These low-energy photons are not strong enough to penetrate the patient and reach the film, so they don't contribute to the image. However, they are absorbed by the patient's skin, increasing their radiation dose. By using an aluminum filter, these harmful rays are absorbed before they leave the tubehead, hardening the beam and making it safer for the patient."
+  },
+  {
+    q: "A new dental clinic is setting up its radiography equipment. The dentist has a choice between using D-speed film and F-speed film. They are also choosing between a short, round PID and a long, rectangular PID. Which combination of choices would result in the lowest radiation dose to the patient and why?",
+    a: "The combination that would result in the lowest radiation dose is using <strong>F-speed film</strong> with a <strong>long, rectangular PID</strong>.<br><br><strong>Reasoning:</strong><br>1. <strong>F-speed film</strong> is significantly faster than D-speed film, meaning it requires much less radiation exposure time to produce a quality image.<br>2. A <strong>long PID</strong> reduces beam divergence, which decreases the volume of tissue irradiated.<br>3. A <strong>rectangular PID</strong> collimates the beam to a shape that closely matches the film, exposing up to 80% less skin surface area than a round PID. This combination addresses both exposure time and beam geometry to maximize dose reduction."
+  }
 ];
 
 // ----------- State -----------
 const state = {
-  mcq: Array(mcqs.length).fill(null),
-  tf: Array(tfs.length).fill(null),
-  saq: Array(saqs.length).fill(false)
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
 };
 
 function shuffleIndices(n){
   const arr = Array.from({length:n}, (_,i)=>i);
   for(let i=n-1;i>0;i--){
     const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
+    [arr[i],arr[j]] = [arr[j],arr[j]];
   }
   return arr;
 }
@@ -370,6 +626,7 @@ saqs.forEach((item, idx)=>{
   <div class="answer" hidden>${item.a}</div>
 `;
 
+
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');
   const answer = card.querySelector('.answer');
@@ -394,15 +651,15 @@ saqs.forEach((item, idx)=>{
 function recalc(){
   const mcqScore = state.mcq.reduce((s,v,i)=>{
     if(v===null) return s;
+    const item = mcqs[i];
+    const map = shuffleIndices(4); // Recreate the same shuffle logic if needed, or better, store it. For this implementation, we re-evaluate based on feedback text
     const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
     const feedback = card.querySelector('.feedback').textContent;
     return s + (feedback.startsWith("Correct") ? 1 : 0);
   },0);
   const tfScore = state.tf.reduce((s,v,i)=>{
     if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
+    return s + (v === tfs[i].answer ? 1 : 0);
   },0);
   const saqScore = state.saq.filter(Boolean).length;
   const total = mcqScore + tfScore + saqScore;

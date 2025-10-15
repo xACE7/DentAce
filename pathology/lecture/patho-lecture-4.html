@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Two-Column Sections</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
+  strong { color: #8b5cf6; }
+
+</style>
+</head>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 4</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">رَبِّ زِدْنِي عِلْمًا</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Cell Injury</b></span>
+<span class="ar"><b>الموضوع: إصابة الخلية</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Definition and Causes of Cell Injury</span><span class="ar">تعريف وأسباب إصابة الخلية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Cell injury</strong> is defined as the functional and morphological effects that occur when a cell is exposed to various stresses or etiological agents. These stresses cause changes in the cell's internal and external environment.</p>
+<p>The main causes of cell injury are:</p>
+<ul>
+    <li><strong>Hypoxia:</strong> A primary cause of cell injury resulting from decreased oxygen supply. This can be caused by:
+        <ul>
+            <li><strong>Ischemia:</strong> Reduced blood flow, for example, due to arterial occlusion or atherosclerosis.</li>
+            <li><strong>Inadequate Oxygenation:</strong> Such as in pulmonary diseases.</li>
+            <li><strong>Decreased Oxygen Carrying Capacity:</strong> For instance, in cases of anemia.</li>
+        </ul>
+    </li>
+    <li><strong>Infectious Agents:</strong> Including viruses, bacteria, fungi, and parasites.</li>
+    <li><strong>Physical Agents:</strong> Such as heat, irradiation, and electric shock.</li>
+    <li><strong>Chemical Agents & Drugs:</strong> This category includes acids, alkalis, and poisons.</li>
+    <li><strong>Immunological Reactions:</strong> For example, autoimmune diseases where the body attacks its own cells.</li>
+    <li><strong>Nutritional Disturbances:</strong> Deficiencies or excesses in nutrition.</li>
+    <li><strong>Genetic & Enzymatic Disorders:</strong> Inherited defects or enzyme abnormalities.</li>
+</ul>
+</div>
+<div class="ar">
+<p>تُعرّف <strong>إصابة الخلية</strong> بأنها التأثيرات الوظيفية والشكلية التي تحدث عندما تتعرض الخلية لضغوط مختلفة أو عوامل مسببة للأمراض. هذه الضغوط تسبب تغيرات في بيئة الخلية الداخلية والخارجية.</p>
+<p>الأسباب الرئيسية لإصابة الخلية هي:</p>
+<ul>
+    <li><strong>نقص الأكسجة (Hypoxia):</strong> سبب رئيسي لإصابة الخلية ناتج عن انخفاض إمداد الأكسجين. يمكن أن يحدث هذا بسبب:
+        <ul>
+            <li><strong>الإقفار (Ischemia):</strong> انخفاض تدفق الدم، على سبيل المثال، بسبب انسداد الشرايين أو تصلب الشرايين.</li>
+            <li><strong>عدم كفاية الأكسجة:</strong> كما في أمراض الرئة.</li>
+            <li><strong>انخفاض قدرة الدم على حمل الأكسجين:</strong> على سبيل المثال، في حالات فقر الدم.</li>
+        </ul>
+    </li>
+    <li><strong>العوامل المعدية:</strong> تشمل الفيروسات والبكتيريا والفطريات والطفيليات.</li>
+    <li><strong>العوامل الفيزيائية:</strong> مثل الحرارة والإشعاع والصدمات الكهربائية.</li>
+    <li><strong>العوامل الكيميائية والأدوية:</strong> تشمل هذه الفئة الأحماض والقلويات والسموم.</li>
+    <li><strong>التفاعلات المناعية:</strong> على سبيل المثال، أمراض المناعة الذاتية حيث يهاجم الجسم خلاياه.</li>
+    <li><strong>الاضطرابات الغذائية:</strong> نقص أو زيادة في التغذية.</li>
+    <li><strong>الاضطرابات الوراثية والإنزيمية:</strong> عيوب موروثة أو تشوهات في الإنزيمات.</li>
+</ul>
+</div>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Hypoxia, or lack of oxygen, is one of the most common and important causes of cell injury.</div><div class="ar">نقص الأكسجة (Hypoxia) هو أحد أكثر أسباب إصابة الخلية شيوعًا وأهمية.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Atherosclerosis (hardening of the arteries) can cause ischemia by narrowing blood vessels, which reduces blood flow and oxygen supply to tissues.</div><div class="ar">تصلب الشرايين يمكن أن يسبب الإقفار عن طريق تضييق الأوعية الدموية، مما يقلل من تدفق الدم وإمداد الأكسجين إلى الأنسجة.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Anemia, a condition with a low red blood cell count, reduces the blood's oxygen-carrying capacity and can lead to widespread cellular injury due to hypoxia.</div><div class="ar">فقر الدم، وهي حالة تتميز بانخفاض عدد خلايا الدم الحمراء، تقلل من قدرة الدم على حمل الأكسجين ويمكن أن تؤدي إلى إصابة خلوية واسعة النطاق بسبب نقص الأكسجة.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Mechanisms of Cell Injury</span><span class="ar">آليات إصابة الخلية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>The damage to a cell occurs through several interconnected mechanisms:</p>
+<ul>
+    <li><strong>ATP Depletion:</strong> Reduced ATP levels are a central event in hypoxic injury. This leads to the failure of energy-dependent functions like the $Na^+$-$K^+$ pump, causing cellular swelling. It also forces the cell into anaerobic glycolysis, producing lactic acid and lowering intracellular pH.</li>
+    <li><strong>Mitochondrial Damage:</strong> Injury can damage mitochondria, leading to a further decrease in ATP production and the leakage of pro-apoptotic proteins that can trigger cell death.</li>
+    <li><strong>Influx of Calcium:</strong> Ischemia and toxins can increase cytosolic $Ca^{2+}$ concentration. This excess calcium activates a number of enzymes that cause damage, such as phospholipases (damage membranes), proteases (break down proteins), and endonucleases (fragment DNA).</li>
+    <li><strong>Membrane Damage:</strong> Damage to the plasma and lysosomal membranes is a critical step towards irreversible injury. This can be caused by ATP depletion, calcium-activated phospholipases, and free radicals. Damaged lysosomal membranes release digestive enzymes into the cytoplasm, leading to enzymatic digestion of cellular components.</li>
+    <li><strong>Accumulation of Free Radicals (Oxidative Stress):</strong> Free radicals, or reactive oxygen species (ROS), can damage lipids, proteins, and DNA, leading to widespread cellular damage.</li>
+</ul>
+</div>
+<div class="ar">
+<p>يحدث الضرر للخلية من خلال عدة آليات مترابطة:</p>
+<ul>
+    <li><strong>استنفاد ATP:</strong> يعد انخفاض مستويات ATP حدثًا مركزيًا في الإصابة بنقص الأكسجة. يؤدي هذا إلى فشل الوظائف المعتمدة على الطاقة مثل مضخة $Na^+$-$K^+$، مما يسبب تورمًا خلويًا. كما أنه يجبر الخلية على اللجوء إلى التحلل السكري اللاهوائي، مما ينتج حمض اللاكتيك ويخفض درجة الحموضة داخل الخلية.</li>
+    <li><strong>تلف الميتوكوندريا:</strong> يمكن أن تؤدي الإصابة إلى تلف الميتوكوندريا، مما يؤدي إلى انخفاض إضافي في إنتاج ATP وتسرب البروتينات المحفزة لموت الخلية المبرمج (apoptosis).</li>
+    <li><strong>تدفق الكالسيوم:</strong> يمكن أن يؤدي الإقفار والسموم إلى زيادة تركيز $Ca^{2+}$ في السيتوبلازم. هذا الكالسيوم الزائد ينشط عددًا من الإنزيمات التي تسبب الضرر، مثل الفوسفوليباز (يدمر الأغشية)، والبروتياز (يكسر البروتينات)، والإندونيوكلياز (يفتت الحمض النووي).</li>
+    <li><strong>تلف الغشاء:</strong> يعد تلف أغشية البلازما والجسيمات الحالة خطوة حاسمة نحو الإصابة غير القابلة للعكس. يمكن أن يحدث هذا بسبب استنفاد ATP، والفوسفوليبازات المنشطة بالكالسيوم، والجذور الحرة. يؤدي تلف أغشية الجسيمات الحالة إلى إطلاق إنزيمات هاضمة في السيتوبلازم، مما يؤدي إلى هضم مكونات الخلية إنزيميًا.</li>
+    <li><strong>تراكم الجذور الحرة (الإجهاد التأكسدي):</strong> يمكن للجذور الحرة، أو أنواع الأكسجين التفاعلية (ROS)، أن تلحق الضرر بالدهون والبروتينات والحمض النووي، مما يؤدي إلى ضرر خلوي واسع النطاق.</li>
+</ul>
+</div>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding these mechanisms is fundamental to pathology. They explain how diverse causes of injury, from hypoxia to toxins, ultimately lead to cellular damage and disease.</div><div class="ar">فهم هذه الآليات أساسي في علم الأمراض. فهي تشرح كيف تؤدي أسباب الإصابة المتنوعة، من نقص الأكسجة إلى السموم، في النهاية إلى تلف الخلايا والأمراض.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember the 5 key mechanisms: <strong>A</strong>TP loss, <strong>M</strong>itochondrial damage, <strong>C</strong>alcium influx, <strong>M</strong>embrane damage, and <strong>F</strong>ree radicals (ROS). (<strong>A</strong>ll <strong>M</strong>y <strong>C</strong>ats <strong>M</strong>eow <strong>F</strong>iercely).</div><div class="ar">تذكر الآليات الخمس الرئيسية: فقدان <strong>ATP</strong>، تلف <strong>الميتوكوندريا</strong>، تدفق <strong>الكالسيوم</strong>، تلف <strong>الغشاء</strong>، و<strong>الجذور الحرة</strong> (ROS).</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Increased intracellular calcium is a major trigger for irreversible damage. It acts as a "final common pathway" by activating multiple destructive enzymes that dismantle the cell.</div><div class="ar">زيادة الكالسيوم داخل الخلية هو محفز رئيسي للضرر غير القابل للعكس. إنه بمثابة "مسار مشترك نهائي" عن طريق تنشيط العديد من الإنزيمات المدمرة التي تفكك الخلية.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Types of Cell Injury</span><span class="ar">أنواع إصابة الخلية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Cell injury can be classified into two main types, depending on the nature of the injurious stimulus. The final effect of the injury depends on its <strong>severity</strong> and <strong>duration</strong>.</p>
+<ol>
+    <li><strong>Reversible Cell Injury:</strong> This occurs with mild or transient injury. The functional and structural changes are correctable if the damaging stimulus is removed, allowing the cell to return to its normal homeostatic state.
+        <ul>
+            <li>Forms include: Cloudy swelling, Hydropic swelling, and Fatty change.</li>
+        </ul>
+    </li>
+    <li><strong>Irreversible Cell Injury (Cell Death):</strong> This occurs with severe or progressive injury. The damage is too great for the cell to recover, leading to cell death.
+        <ul>
+            <li>Forms include: Necrosis and Apoptosis.</li>
+        </ul>
+    </li>
+</ol>
+</div>
+<div class="ar">
+<p>يمكن تصنيف إصابة الخلية إلى نوعين رئيسيين، اعتمادًا على طبيعة الحافز الضار. التأثير النهائي للإصابة يعتمد على <strong>شدتها</strong> و<strong>مدتها</strong>.</p>
+<ol>
+    <li><strong>إصابة الخلية القابلة للعكس (Reversible):</strong> تحدث هذه الإصابة مع الإصابات الخفيفة أو العابرة. تكون التغيرات الوظيفية والهيكلية قابلة للتصحيح إذا تمت إزالة الحافز الضار، مما يسمح للخلية بالعودة إلى حالتها الطبيعية المتوازنة.
+        <ul>
+            <li>تشمل أشكالها: التورم الغيمومي (Cloudy swelling)، التورم المائي (Hydropic swelling)، والتغير الدهني (Fatty change).</li>
+        </ul>
+    </li>
+    <li><strong>إصابة الخلية غير القابلة للعكس (موت الخلية):</strong> تحدث هذه الإصابة مع الإصابات الشديدة أو المترقية. يكون الضرر أكبر من أن تتعافى الخلية، مما يؤدي إلى موتها.
+        <ul>
+            <li>تشمل أشكالها: النخر (Necrosis) والموت المبرمج (Apoptosis).</li>
+        </ul>
+    </li>
+</ol>
+</div>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The ability of a cell to recover (reversibility) is the key distinction. Once the "point of no return" is crossed, injury becomes irreversible, and cell death is inevitable.</div><div class="ar">القدرة على التعافي (القابلية للعكس) هي الفارق الرئيسي. بمجرد تجاوز "نقطة اللاعودة"، تصبح الإصابة غير قابلة للعكس، ويكون موت الخلية حتميًا.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think of it as a path: Normal Cell → Reversible Injury → (Stimulus removed) → Normal Cell. OR Normal Cell → Reversible Injury → (Stimulus continues) → Irreversible Injury → Cell Death.</div><div class="ar">فكر فيها كمسار: خلية طبيعية ← إصابة قابلة للعكس ← (إزالة الحافز) ← خلية طبيعية. أو خلية طبيعية ← إصابة قابلة للعكس ← (استمرار الحافز) ← إصابة غير قابلة للعكس ← موت الخلية.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Draw the flowchart from page 6 of the PDF to visualize the progression from a normal cell under homeostasis to reversible injury, and finally to irreversible injury and cell death (necrosis/apoptosis).</div><div class="ar">ارسم المخطط الانسيابي من الصفحة 6 من الملف لتصور التقدم من خلية طبيعية في حالة توازن إلى إصابة قابلة للعكس، وأخيرًا إلى إصابة غير قابلة للعكس وموت الخلية (نخر/موت مبرمج).</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Reversible Injury: Cloudy Swelling</span><span class="ar">الإصابة القابلة للعكس: التورم الغيمومي</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Definition:</strong> Cloudy swelling is a form of reversible cell injury characterized by cell swelling and a granular appearance of the cytoplasm due to water accumulation.</p>
+<p><strong>Pathogenesis:</strong></p>
+<p>Hypoxia leads to less ATP production by mitochondria. This causes two main problems:</p>
+<ol>
+    <li><strong>Failure of the Na-K pump:</strong> Sodium ($Na^+$) enters the cell, and potassium ($K^+$) diffuses out. The accumulation of sodium inside increases the intracellular osmotic pressure, causing water to enter and the cell to swell.</li>
+    <li><strong>Anaerobic Glycolysis:</strong> The cell tries to make ATP without oxygen, which leads to the accumulation of catabolites like lactic acid. This also increases osmotic pressure, drawing more water into the cell.</li>
+</ol>
+<p><strong>Pathological Features:</strong></p>
+<ul>
+    <li><strong>Gross Appearance:</strong> The affected organ is enlarged, swollen, pale (due to capillary compression), soft, and heavy.</li>
+    <li><strong>Microscopic Appearance:</strong> The cells are swollen with fine, red, granular cytoplasm, but the nucleus remains normal.</li>
+</ul>
+</div>
+<div class="ar">
+<p><strong>التعريف:</strong> التورم الغيمومي هو شكل من أشكال إصابة الخلية القابلة للعكس يتميز بتورم الخلية ومظهر محبب للسيتوبلازم بسبب تراكم الماء.</p>
+<p><strong>آلية الحدوث:</strong></p>
+<p>يؤدي نقص الأكسجة إلى انخفاض إنتاج ATP بواسطة الميتوكوندريا. يسبب هذا مشكلتين رئيسيتين:</p>
+<ol>
+    <li><strong>فشل مضخة الصوديوم والبوتاسيوم (Na-K pump):</strong> يدخل الصوديوم ($Na^+$) إلى الخلية، وينتشر البوتاسيوم ($K^+$) خارجها. يؤدي تراكم الصوديوم في الداخل إلى زيادة الضغط الأسموزي داخل الخلية، مما يسبب دخول الماء وتورم الخلية.</li>
+    <li><strong>التحلل السكري اللاهوائي:</strong> تحاول الخلية إنتاج ATP بدون أكسجين، مما يؤدي إلى تراكم نواتج الأيض مثل حمض اللاكتيك. هذا يزيد أيضًا من الضغط الأسموزي، مما يسحب المزيد من الماء إلى الخلية.</li>
+</ol>
+<p><strong>المظاهر المرضية:</strong></p>
+<ul>
+    <li><strong>المظهر العياني (Gross):</strong> يكون العضو المصاب متضخمًا، متورمًا، شاحبًا (بسبب ضغط الشعيرات الدموية)، طريًا، وثقيل الوزن.</li>
+    <li><strong>المظهر المجهري (Microscopic):</strong> تكون الخلايا متورمة مع سيتوبلازم محبب ناعم وأحمر، لكن النواة تبقى طبيعية.</li>
+</ul>
+</div>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Cloudy swelling is one of the earliest, most common, and most fundamental expressions of reversible cell injury.</div><div class="ar">التورم الغيمومي هو أحد أبكر وأكثر مظاهر إصابة الخلية القابلة للعكس شيوعًا وأساسية.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">In a clinical context, an organ like the kidney might appear enlarged and pale on examination, suggesting widespread cloudy swelling due to a hypoxic event.</div><div class="ar">في السياق السريري، قد يبدو عضو مثل الكلية متضخمًا وشاحبًا عند الفحص، مما يشير إلى تورم غيمومي واسع النطاق بسبب حدث نقص الأكسجة.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The granularity seen under the microscope is due to the swelling of intracellular organelles, particularly mitochondria, as water accumulates.</div><div class="ar">المظهر المحبب الذي يُرى تحت المجهر ناتج عن تورم العضيات داخل الخلية، وخاصة الميتوكوندريا، مع تراكم الماء.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Reversible Injury: Hydropic Swelling</span><span class="ar">الإصابة القابلة للعكس: التورم المائي</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Definition:</strong> Hydropic swelling, or vacuolar degeneration, is a more advanced stage of reversible cell injury than cloudy swelling. It is characterized by the appearance of vacuoles in the cytoplasm due to excess water accumulation.</p>
+<p><strong>Fate of Cloudy Swelling:</strong></p>
+<ul>
+    <li>If the injurious stimulus <strong>stops</strong>, the cell can pump out the excess water and ions, and it will return to normal.</li>
+    <li>If the injurious stimulus <strong>continues</strong>, cloudy swelling progresses to hydropic swelling.</li>
+</ul>
+<p><strong>Pathological Features:</strong></p>
+<ul>
+    <li><strong>Gross Appearance:</strong> Similar to cloudy swelling (enlarged, pale, soft organ).</li>
+    <li><strong>Microscopic Appearance:</strong> The cells are swollen and contain multiple clear vacuoles in the cytoplasm. The nucleus remains normal.</li>
+</ul>
+</div>
+<div class="ar">
+<p><strong>التعريف:</strong> التورم المائي، أو التنكس الفجوي، هو مرحلة أكثر تقدمًا من إصابة الخلية القابلة للعكس مقارنة بالتورم الغيمومي. يتميز بظهور فجوات في السيتوبلازم بسبب تراكم الماء الزائد.</p>
+<p><strong>مصير التورم الغيمومي:</strong></p>
+<ul>
+    <li>إذا <strong>توقف</strong> الحافز الضار، يمكن للخلية ضخ الماء والأيونات الزائدة خارجًا، وستعود إلى طبيعتها.</li>
+    <li>إذا <strong>استمر</strong> الحافز الضار، يتطور التورم الغيمومي إلى تورم مائي.</li>
+</ul>
+<p><strong>المظاهر المرضية:</strong></p>
+<ul>
+    <li><strong>المظهر العياني (Gross):</strong> مشابه للتورم الغيمومي (عضو متضخم، شاحب، طري).</li>
+    <li><strong>المظهر المجهري (Microscopic):</strong> تكون الخلايا متورمة وتحتوي على فجوات متعددة وواضحة في السيتوبلازم. تبقى النواة طبيعية.</li>
+</ul>
+</div>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Hydropic swelling is considered a more severe form of reversible injury than cloudy swelling. It represents a progression along the path toward irreversible damage.</div><div class="ar">يعتبر التورم المائي شكلاً أكثر شدة من الإصابة القابلة للعكس مقارنة بالتورم الغيمومي. وهو يمثل تقدمًا على المسار نحو الضرر غير القابل للعكس.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">The clear vacuoles seen in hydropic change are often distended and pinched-off segments of the endoplasmic reticulum that have filled with water.</div><div class="ar">الفجوات الواضحة التي تُرى في التغير المائي غالبًا ما تكون أجزاء متوسعة ومنفصلة من الشبكة الإندوبلازمية التي امتلأت بالماء.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">"Hydro" means water. Hydropic swelling is cellular swelling so severe that water collects into visible vacuoles. It's the next step after the "cloudy" stage if the injury persists.</div><div class="ar">"Hydro" تعني الماء. التورم المائي هو تورم خلوي شديد لدرجة أن الماء يتجمع في فجوات مرئية. إنها الخطوة التالية بعد مرحلة "التورم الغيمومي" إذا استمرت الإصابة.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Reversible Injury: Fatty Change (Steatosis)</span><span class="ar">الإصابة القابلة للعكس: التغير الدهني (التنكس الدهني)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Definition:</strong> Fatty change, or steatosis, is the pathological accumulation of excess neutral fat (triglycerides) within cells.</p>
+<p><strong>Site:</strong></p>
+<ul>
+    <li>The <strong>liver</strong> is the most common site because it is the major organ involved in fat metabolism.</li>
+    <li>Other sites include the heart, muscle, and kidney.</li>
+</ul>
+<p><strong>Pathogenesis:</strong> Injured cells are unable to properly metabolize fat due to diminished enzyme activity. As a result, fat accumulates in the cytoplasm.</p>
+<p><strong>Common Causes:</strong></p>
+<ul>
+    <li>Alcohol abuse</li>
+    <li>Obesity</li>
+    <li>Protein malnutrition</li>
+    <li>Diabetes mellitus</li>
+    <li>Toxins</li>
+</ul>
+</div>
+<div class="ar">
+<p><strong>التعريف:</strong> التغير الدهني، أو التنكس الدهني، هو التراكم المرضي للدهون المتعادلة الزائدة (الدهون الثلاثية) داخل الخلايا.</p>
+<p><strong>الموقع:</strong></p>
+<ul>
+    <li><strong>الكبد</strong> هو الموقع الأكثر شيوعًا لأنه العضو الرئيسي المسؤول عن استقلاب الدهون.</li>
+    <li>تشمل المواقع الأخرى القلب والعضلات والكلى.</li>
+</ul>
+<p><strong>آلية الحدوث:</strong> الخلايا المصابة غير قادرة على استقلاب الدهون بشكل صحيح بسبب انخفاض نشاط الإنزيمات. نتيجة لذلك، تتراكم الدهون في السيتوبلازم.</p>
+<p><strong>الأسباب الشائعة:</strong></p>
+<ul>
+    <li>تعاطي الكحول</li>
+    <li>السمنة</li>
+    <li>سوء التغذية البروتيني</li>
+    <li>داء السكري</li>
+    <li>السموم</li>
+</ul>
+</div>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Fatty liver disease is extremely common, especially in individuals with obesity, diabetes, and high alcohol consumption. While reversible initially, it can progress to more severe liver damage like cirrhosis.</div><div class="ar">مرض الكبد الدهني شائع للغاية، خاصة لدى الأفراد الذين يعانون من السمنة والسكري والاستهلاك المرتفع للكحول. على الرغم من أنه قابل للعكس في البداية، إلا أنه يمكن أن يتطور إلى تلف كبدي أكثر خطورة مثل تليف الكبد.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Alcoholic liver disease often begins with fatty change. Continued alcohol abuse prevents the liver cells from recovering, leading to inflammation (steatohepatitis) and eventually irreversible scarring (cirrhosis).</div><div class="ar">مرض الكبد الكحولي غالبًا ما يبدأ بالتغير الدهني. استمرار تعاطي الكحول يمنع خلايا الكبد من التعافي، مما يؤدي إلى التهاب (التهاب الكبد الدهني) وفي النهاية تندب غير قابل للعكس (تليف الكبد).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Unlike hydropic swelling where vacuoles contain water, the vacuoles in fatty change contain lipids (triglycerides).</div><div class="ar">على عكس التورم المائي حيث تحتوي الفجوات على ماء، فإن الفجوات في التغير الدهني تحتوي على دهون (دهون ثلاثية).</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Pathological Features of Fatty Change</span><span class="ar">المظاهر المرضية للتغير الدهني</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>The accumulation of fat causes distinct changes in the appearance of the affected organ, particularly the liver.</p>
+<p><strong>Gross Picture (Macroscopic):</strong></p>
+<ul>
+    <li><strong>Size:</strong> The liver is enlarged with a tense capsule.</li>
+    <li><strong>Weight:</strong> It becomes heavy.</li>
+    <li><strong>Color:</strong> The color changes to a pale yellow.</li>
+    <li><strong>Consistency:</strong> The organ feels soft and has a greasy texture.</li>
+</ul>
+<p><strong>Microscopic Picture:</strong></p>
+<ul>
+    <li><strong>Cells:</strong> The cells (hepatocytes) are swollen.</li>
+    <li><strong>Cytoplasm:</strong> It contains fat vacuoles. As more fat accumulates, these vacuoles merge and push the nucleus to the periphery. This creates the characteristic <strong>signet ring appearance</strong>.</li>
+</ul>
+</div>
+<div class="ar">
+<p>يسبب تراكم الدهون تغيرات واضحة في مظهر العضو المصاب، وخاصة الكبد.</p>
+<p><strong>الصورة العيانية (Macroscopic):</strong></p>
+<ul>
+    <li><strong>الحجم:</strong> يكون الكبد متضخمًا مع محفظة مشدودة.</li>
+    <li><strong>الوزن:</strong> يصبح ثقيلًا.</li>
+    <li><strong>اللون:</strong> يتغير اللون إلى أصفر شاحب.</li>
+    <li><strong>القوام:</strong> يكون العضو طريًا وذا ملمس دهني.</li>
+</ul>
+<p><strong>الصورة المجهرية (Microscopic):</strong></p>
+<ul>
+    <li><strong>الخلايا:</strong> تكون الخلايا (الخلايا الكبدية) متورمة.</li>
+    <li><strong>السيتوبلازم:</strong> يحتوي على فجوات دهنية. مع تراكم المزيد من الدهون، تندمج هذه الفجوات وتدفع النواة إلى المحيط. هذا يخلق المظهر المميز المعروف باسم <strong>مظهر خاتم التوقيع (signet ring)</strong>.</li>
+</ul>
+</div>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">The "signet ring" appearance is the classic, unforgettable microscopic feature of advanced fatty change. The large fat vacuole is the "jewel" and the flattened nucleus is the "ring".</div><div class="ar">مظهر "خاتم التوقيع" هو السمة المجهرية الكلاسيكية التي لا تُنسى للتغير الدهني المتقدم. الفجوة الدهنية الكبيرة هي "الجوهرة" والنواة المسطحة هي "الخاتم".</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">On a pathology slide, a liver with steatosis will show large, clear, circular spaces within the hepatocytes, with the small, dark nucleus squished to one side. This is the signet ring cell.</div><div class="ar">في شريحة مرضية، سيُظهر الكبد المصاب بالتنكس الدهني مساحات دائرية كبيرة وواضحة داخل الخلايا الكبدية، مع نواة صغيرة داكنة مضغوطة إلى جانب واحد. هذه هي خلية خاتم التوقيع.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Compare the gross images of a healthy liver (dark red-brown, sharp edges) with a fatty liver (pale yellow, enlarged, rounded edges) to solidify your understanding of the macroscopic changes.</div><div class="ar">قارن الصور العيانية للكبد السليم (بني محمر داكن، حواف حادة) بالكبد الدهني (أصفر شاحب، متضخم، حواف مستديرة) لترسيخ فهمك للتغيرات العيانية.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Summary of Key Concepts</span><span class="ar">ملخص المفاهيم الرئيسية</span></h2>
+<div class="sec-body">
+<div class="en">
+<ul>
+    <li><strong>Cell Injury Definition:</strong> It represents the functional and morphological changes in a cell when it encounters stress beyond its ability to adapt.</li>
+    <li><strong>Major Causes:</strong> The most significant causes include hypoxia (especially ischemia), infectious agents, chemical toxins, and immunological reactions.</li>
+    <li><strong>Core Mechanisms:</strong> Injury pathways converge on a few key mechanisms: ATP depletion, mitochondrial damage, influx of calcium, membrane damage, and the formation of free radicals (ROS).</li>
+    <li><strong>Reversible vs. Irreversible:</strong> The outcome depends on the injury's severity and duration. Reversible injury allows the cell to recover, while irreversible injury leads to cell death (necrosis or apoptosis).</li>
+    <li><strong>Features of Reversible Injury:</strong> The earliest signs are cellular swelling (cloudy and hydropic) due to ATP depletion and failure of the Na-K pump.</li>
+    <li><strong>Fatty Change (Steatosis):</strong> This is another form of reversible injury involving the accumulation of triglycerides, most commonly in the liver, leading to a "signet ring" appearance microscopically.</li>
+</ul>
+</div>
+<div class="ar">
+<ul>
+    <li><strong>تعريف إصابة الخلية:</strong> تمثل التغيرات الوظيفية والشكلية في الخلية عندما تواجه ضغطًا يفوق قدرتها على التكيف.</li>
+    <li><strong>الأسباب الرئيسية:</strong> تشمل أهم الأسباب نقص الأكسجة (خاصة الإقفار)، العوامل المعدية، السموم الكيميائية، والتفاعلات المناعية.</li>
+    <li><strong>الآليات الأساسية:</strong> تتلاقى مسارات الإصابة في بضع آليات رئيسية: استنفاد ATP، تلف الميتوكوندريا، تدفق الكالسيوم، تلف الغشاء، وتكوين الجذور الحرة (ROS).</li>
+    <li><strong>القابلة للعكس مقابل غير القابلة للعكس:</strong> تعتمد النتيجة على شدة الإصابة ومدتها. الإصابة القابلة للعكس تسمح للخلية بالتعافي، بينما تؤدي الإصابة غير القابلة للعكس إلى موت الخلية (النخر أو الموت المبرمج).</li>
+    <li><strong>سمات الإصابة القابلة للعكس:</strong> العلامات المبكرة هي التورم الخلوي (الغيمومي والمائي) بسبب استنفاد ATP وفشل مضخة الصوديوم والبوتاسيوم.</li>
+    <li><strong>التغير الدهني (التنكس الدهني):</strong> هو شكل آخر من أشكال الإصابة القابلة للعكس يتضمن تراكم الدهون الثلاثية، وهو الأكثر شيوعًا في الكبد، مما يؤدي إلى مظهر "خاتم التوقيع" مجهريًا.</li>
+</ul>
+</div>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Focus on understanding the chain of events: Cause (e.g., Ischemia) → Mechanism (e.g., ATP depletion) → Cellular Change (e.g., Swelling) → Pathological Appearance (e.g., Pale, enlarged organ). This helps connect all the concepts.</div><div class="ar">ركز على فهم تسلسل الأحداث: السبب (مثل الإقفار) ← الآلية (مثل استنفاد ATP) ← التغير الخلوي (مثل التورم) ← المظهر المرضي (مثل عضو شاحب ومتضخم). هذا يساعد على ربط جميع المفاهيم.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Cell injury is the foundation of all pathology. Understanding how a single cell gets sick is the first step to understanding how tissues, organs, and entire organisms are affected by disease.</div><div class="ar">إصابة الخلية هي أساس كل علم الأمراض. فهم كيفية مرض خلية واحدة هو الخطوة الأولى لفهم كيفية تأثر الأنسجة والأعضاء والكائنات الحية بأكملها بالمرض.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Key visual cues: Cloudy Swelling = granular cytoplasm. Hydropic Swelling = clear vacuoles (water). Fatty Change = clear vacuoles (fat) + signet ring nucleus.</div><div class="ar">إشارات بصرية رئيسية: التورم الغيمومي = سيتوبلازم محبب. التورم المائي = فجوات واضحة (ماء). التغير الدهني = فجوات واضحة (دهون) + نواة خاتم التوقيع.</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Cell Injury / إصابة الخلية</div><div class="content" hidden=""><div class="en">The functional and morphological effects of stress on a cell, causing it to deviate from its normal state.</div><div class="ar">التأثيرات الوظيفية والشكلية للضغط على الخلية، مما يؤدي إلى انحرافها عن حالتها الطبيعية.</div></div></div>
+<div class="card"><div class="head">Homeostasis / الاستتباب</div><div class="content" hidden=""><div class="en">The state of steady internal, physical, and chemical conditions maintained by living systems.</div><div class="ar">حالة الظروف الداخلية والفيزيائية والكيميائية الثابتة التي تحافظ عليها الأنظمة الحية.</div></div></div>
+<div class="card"><div class="head">Hypoxia / نقص الأكسجة</div><div class="content" hidden=""><div class="en">A condition in which the body or a region of the body is deprived of adequate oxygen supply at the tissue level.</div><div class="ar">حالة يُحرم فيها الجسم أو منطقة من الجسم من إمدادات الأكسجين الكافية على مستوى الأنسجة.</div></div></div>
+<div class="card"><div class="head">Ischemia / الإقفار</div><div class="content" hidden=""><div class="en">An inadequate blood supply to an organ or part of the body, especially the heart muscles.</div><div class="ar">إمداد دموي غير كافٍ لعضو أو جزء من الجسم، وخاصة عضلات القلب.</div></div></div>
+<div class="card"><div class="head">ATP (Adenosine Triphosphate)</div><div class="content" hidden=""><div class="en">The principal molecule for storing and transferring energy in cells. Depletion is a key factor in cell injury.</div><div class="ar">الجزيء الرئيسي لتخزين ونقل الطاقة في الخلايا. استنفاده هو عامل رئيسي في إصابة الخلية.</div></div></div>
+<div class="card"><div class="head">Reversible Injury / إصابة قابلة للعكس</div><div class="content" hidden=""><div class="en">A stage of cell injury where functional and morphological changes can be reversed if the damaging stimulus is removed.</div><div class="ar">مرحلة من إصابة الخلية حيث يمكن عكس التغيرات الوظيفية والشكلية إذا تمت إزالة الحافز الضار.</div></div></div>
+<div class="card"><div class="head">Irreversible Injury / إصابة غير قابلة للعكس</div><div class="content" hidden=""><div class="en">A stage of cell injury where the damage is too severe to be repaired, leading inevitably to cell death.</div><div class="ar">مرحلة من إصابة الخلية يكون فيها الضرر شديدًا جدًا بحيث لا يمكن إصلاحه، مما يؤدي حتمًا إلى موت الخلية.</div></div></div>
+<div class="card"><div class="head">Cloudy Swelling / التورم الغيمومي</div><div class="content" hidden=""><div class="en">An early form of reversible injury characterized by a granular cytoplasm due to water accumulation.</div><div class="ar">شكل مبكر من الإصابة القابلة للعكس يتميز بسيتوبلازم محبب بسبب تراكم الماء.</div></div></div>
+<div class="card"><div class="head">Fatty Change (Steatosis) / التغير الدهني</div><div class="content" hidden=""><div class="en">The abnormal accumulation of triglycerides within cells, a form of reversible injury.</div><div class="ar">التراكم غير الطبيعي للدهون الثلاثية داخل الخلايا، وهو شكل من أشكال الإصابة القابلة للعكس.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — What is the most common cause of cell injury?</span><span class="ar">١ — ما هو السبب الأكثر شيوعًا لإصابة الخلية؟</span></div><div class="content" hidden=""><span class="en">A: Hypoxia (decreased oxygen supply).</span><span class="ar">ج: نقص الأكسجة (انخفاض إمداد الأكسجين).</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — Name two types of reversible cell injury.</span><span class="ar">٢ — اذكر نوعين من إصابة الخلية القابلة للعكس.</span></div><div class="content" hidden=""><span class="en">A: Cloudy swelling, hydropic swelling, and fatty change.</span><span class="ar">ج: التورم الغيمومي، التورم المائي، والتغير الدهني.</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — What happens to intracellular calcium during cell injury?</span><span class="ar">٣ — ماذا يحدث للكالسيوم داخل الخلية أثناء الإصابة؟</span></div><div class="content" hidden=""><span class="en">A: It increases, which activates multiple harmful enzymes that damage the cell.</span><span class="ar">ج: يزداد، مما ينشط العديد من الإنزيمات الضارة التي تدمر الخلية.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — What is the main consequence of ATP depletion in hypoxic injury?</span><span class="ar">٤ — ما هي النتيجة الرئيسية لاستنفاد ATP في الإصابة بنقص الأكسجة؟</span></div><div class="content" hidden=""><span class="en">A: Failure of the Na-K pump, leading to an influx of Na and water, causing cellular swelling.</span><span class="ar">ج: فشل مضخة الصوديوم والبوتاسيوم، مما يؤدي إلى تدفق الصوديوم والماء، مسبباً تورم الخلية.</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — What is the characteristic microscopic appearance of fatty change in the liver called?</span><span class="ar">٥ — ماذا يطلق على المظهر المجهري المميز للتغير الدهني في الكبد؟</span></div><div class="content" hidden=""><span class="en">A: The "signet ring" appearance.</span><span class="ar">ج: مظهر "خاتم التوقيع".</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — What two factors determine if cell injury is reversible or irreversible?</span><span class="ar">٦ — ما هما العاملان اللذان يحددان ما إذا كانت إصابة الخلية قابلة للعكس أم لا؟</span></div><div class="content" hidden=""><span class="en">A: The severity and the duration of the injurious agent.</span><span class="ar">ج: شدة ومدة العامل المسبب للإصابة.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — List three causes of hypoxia.</span><span class="ar">٧ — اذكر ثلاثة أسباب لنقص الأكسجة.</span></div><div class="content" hidden=""><span class="en">A: Ischemia (low blood flow), inadequate oxygenation (e.g., lung disease), and decreased oxygen-carrying capacity of blood (e.g., anemia).</span><span class="ar">ج: الإقفار (انخفاض تدفق الدم)، عدم كفاية الأكسجة (مثل أمراض الرئة)، وانخفاض قدرة الدم على حمل الأكسجين (مثل فقر الدم).</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — What is ischemia?</span><span class="ar">٨ — ما هو الإقفار؟</span></div><div class="content" hidden=""><span class="en">A: It is reduced blood flow to a tissue, which causes a shortage of oxygen and nutrients.</span><span class="ar">ج: هو انخفاض تدفق الدم إلى نسيج ما، مما يسبب نقصًا في الأكسجين والمواد المغذية.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What is the fate of cloudy swelling if the injury continues?</span><span class="ar">٩ — ما هو مصير التورم الغيمومي إذا استمرت الإصابة؟</span></div><div class="content" hidden=""><span class="en">A: It progresses to a more severe form of reversible injury called hydropic swelling (vacuolar degeneration).</span><span class="ar">ج: يتطور إلى شكل أكثر شدة من الإصابة القابلة للعكس يسمى التورم المائي (التنكس الفجوي).</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

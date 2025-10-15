@@ -1,0 +1,667 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 8</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+    {
+        q: "What is the defining histological feature of a granuloma?",
+        opts: ["A collection of plasma cells", "A collection of modified macrophages called epithelioid cells", "An area of liquefactive necrosis", "A dense infiltration of neutrophils"],
+        correct: 1,
+        explain: "A granuloma is fundamentally a collection of epithelioid cells, which are modified macrophages, often rimmed by lymphocytes."
+    },
+    {
+        q: "Which of the following is characteristic of caseous necrosis, typically seen in tuberculosis?",
+        opts: ["Liquid, pus-like consistency", "Preservation of tissue architecture", "Amorphous, granular, eosinophilic debris", "Fat saponification and calcification"],
+        correct: 2,
+        explain: "Caseous necrosis is characterized by 'cheesy', amorphous, granular debris, resulting from the destruction of tissue by mycobacteria."
+    },
+    {
+        q: "The primary causative agent of human tuberculosis is:",
+        opts: ["Mycobacterium bovis", "Mycobacterium leprae", "Actinomyces israelii", "Mycobacterium tuberculosis"],
+        correct: 3,
+        explain: "Mycobacterium tuberculosis is the primary pathogen responsible for most cases of tuberculosis in humans."
+    },
+    {
+        q: "How is Mycobacterium tuberculosis primarily transmitted?",
+        opts: ["Contaminated water", "Blood-borne pathogens", "Inhalation of airborne droplets", "Fecal-oral route"],
+        correct: 2,
+        explain: "The most common mode of transmission for M. tuberculosis is through the inhalation of respiratory droplets from an infected person's cough or sneeze."
+    },
+    {
+        q: "What is the term for the combination of a peripheral lung lesion and involved hilar lymph nodes in primary tuberculosis?",
+        opts: ["Ranke complex", "Miliary focus", "Apical cavity", "Ghon's complex"],
+        correct: 3,
+        explain: "The Ghon's complex consists of the primary lung lesion (Ghon's focus) and the draining hilar lymph nodes."
+    },
+    {
+        q: "In the pathogenesis of primary tuberculosis (after 3 weeks), which cytokine is crucial for activating macrophages to kill mycobacteria?",
+        opts: ["Interleukin-1 (IL-1)", "Tumor Necrosis Factor (TNF)", "Interferon-gamma (IFN-γ)", "Interleukin-12 (IL-12)"],
+        correct: 2,
+        explain: "IFN-γ, produced by TH1 cells, is the principal cytokine responsible for activating macrophages and enhancing their bactericidal activity."
+    },
+    {
+        q: "Secondary tuberculosis typically manifests in which part of the lung?",
+        opts: ["The base of the lower lobe", "The subpleural region of any lobe", "The apex of the upper lobe", "The hilar region"],
+        correct: 2,
+        explain: "Secondary TB characteristically affects the lung apices due to the high oxygen tension, which is favorable for the growth of the aerobic M. tuberculosis."
+    },
+    {
+        q: "What is the term for the widespread hematogenous dissemination of tubercle bacilli, resulting in tiny lesions in multiple organs?",
+        opts: ["Progressive primary tuberculosis", "Cavitary tuberculosis", "Secondary tuberculosis", "Miliary tuberculosis"],
+        correct: 3,
+        explain: "Miliary tuberculosis occurs when the infection spreads through the bloodstream, leading to numerous small, millet seed-sized lesions in various organs."
+    },
+    {
+        q: "The Mantoux test involves an intradermal injection of what substance?",
+        opts: ["Live attenuated mycobacteria", "Heat-killed mycobacteria", "Purified protein derivative (PPD)", "Mycobacterial antigens"],
+        correct: 2,
+        explain: "The Mantoux test uses a purified protein derivative (PPD) from M. tuberculosis to detect a delayed-type hypersensitivity reaction."
+    },
+    {
+        q: "A positive Mantoux test is typically defined by an induration of what size?",
+        opts: ["Less than 5mm", "5-9mm", "10mm or greater", "Any visible redness"],
+        correct: 2,
+        explain: "An induration of 10mm or more is generally considered a positive result, indicating exposure to M. tuberculosis."
+    },
+    {
+        q: "Which of the following is NOT a typical clinical feature of active (secondary) tuberculosis?",
+        opts: ["Productive cough with hemoptysis", "Sudden high-grade fever", "Night sweats", "Weight loss"],
+        correct: 1,
+        explain: "Active TB typically presents with a low-grade, intermittent fever, night sweats, and weight loss. A sudden high-grade fever is less characteristic."
+    },
+    {
+        q: "What is the 'gold standard' for the definitive diagnosis of tuberculosis?",
+        opts: ["Positive Mantoux test", "Chest X-ray showing cavitation", "PCR amplification", "Culture of the organism"],
+        correct: 3,
+        explain: "While other tests are suggestive, culturing M. tuberculosis from sputum or tissue is the definitive 'gold standard' because it confirms the presence of viable organisms and allows for drug susceptibility testing."
+    },
+    {
+        q: "Actinomycosis is caused by what type of microorganism?",
+        opts: ["A gram-negative aerobic rod", "A fungus", "A gram-positive anaerobic filamentous bacterium", "An acid-fast bacillus"],
+        correct: 2,
+        explain: "Actinomycosis is caused by Actinomyces israelii, a gram-positive, filamentous, branching, anaerobic bacterium that is a commensal of the oral cavity."
+    },
+    {
+        q: "What is the most common form of actinomycosis?",
+        opts: ["Thoracic", "Cervicofacial", "Abdominal", "Pelvic"],
+        correct: 1,
+        explain: "Cervicofacial actinomycosis, often presenting as 'lumpy jaw,' is the most common form, accounting for about 60% of cases."
+    },
+    {
+        q: "What are the characteristic macroscopic structures found in the pus discharged from actinomycotic lesions?",
+        opts: ["Caseous material", "Sulphur granules", "Calcified nodules", "Necrotic tissue fragments"],
+        correct: 1,
+        explain: "The pus from actinomycosis contains visible, tiny yellow 'sulphur granules,' which are colonies of the bacteria."
+    },
+    {
+        q: "How is Actinomyces israelii infection typically acquired?",
+        opts: ["Inhalation from an infected person", "Contamination of a wound with soil", "Endogenous spread from its commensal location", "Ingestion of contaminated food"],
+        correct: 2,
+        explain: "Actinomycosis is an endogenous infection, meaning it arises from the organism already present in the body (e.g., in the oral cavity) when there is a break in the mucosal barrier."
+    },
+    {
+        q: "What is the typical microscopic appearance of an actinomycotic 'sulphur granule'?",
+        opts: ["A central mass of neutrophils surrounded by lymphocytes", "A core of amorphous debris", "A collection of epithelioid cells and giant cells", "A central bacterial colony with radiating filaments"],
+        correct: 3,
+        explain: "Microscopically, a sulphur granule consists of a central, gram-positive bacterial colony characterized by radiating, club-shaped filaments, surrounded by a zone of suppuration."
+    },
+    {
+        q: "In the initial phase of primary tuberculosis (<3 weeks), how does M. tuberculosis survive within macrophages?",
+        opts: ["By rapidly lysing the macrophage", "By secreting a protective capsule", "By blocking the fusion of the phagosome and lysosome", "By neutralizing lysosomal enzymes"],
+        correct: 2,
+        explain: "The bacterium survives and replicates by arresting the maturation of the phagosome, preventing it from fusing with the acidic lysosome."
+    },
+    {
+        q: "Langhans giant cells, often seen in tuberculous granulomas, are formed by the fusion of:",
+        opts: ["Lymphocytes", "Plasma cells", "Epithelioid cells (macrophages)", "Fibroblasts"],
+        correct: 2,
+        explain: "Langhans giant cells are multinucleated cells formed by the fusion of multiple epithelioid macrophages."
+    },
+    {
+        q: "The Ghon's focus is typically located in which part of the lung?",
+        opts: ["Apex of the lung", "Hilar region", "Subpleural area", "Mainstem bronchus"],
+        correct: 2,
+        explain: "The primary lesion, or Ghon's focus, is usually a small area of consolidation in the subpleural region of the upper part of the lower lobe or the lower part of the upper lobe."
+    },
+    {
+        q: "Which factor is LEAST likely to contribute to the reactivation of dormant tuberculosis?",
+        opts: ["Immunosuppression (e.g., AIDS)", "Malnutrition", "A single course of antibiotics for an unrelated infection", "Uncontrolled diabetes"],
+        correct: 2,
+        explain: "Immunocompromised states, malnutrition, and chronic debilitating conditions are major risk factors for reactivation. A standard antibiotic course is not a direct cause."
+    },
+    {
+        q: "What is the radiological term for a calcified Ghon's complex?",
+        opts: ["Miliary pattern", "Ranke complex", "Cavitary lesion", "Consolidation"],
+        correct: 1,
+        explain: "A Ranke complex is the term used for a Ghon's complex that has undergone fibrosis and calcification, making it visible on a radiograph."
+    },
+    {
+        q: "Which clinical sign is specifically associated with cervicofacial actinomycosis?",
+        opts: ["Hemoptysis", "Night sweats", "Lumpy jaw", "Abdominal pain"],
+        correct: 2,
+        explain: "'Lumpy jaw' refers to the firm, hard, and often tender swelling that develops in the mandible region, which is characteristic of cervicofacial actinomycosis."
+    },
+    {
+        q: "What is the primary role of Tumor Necrosis Factor (TNF) in the immune response to tuberculosis?",
+        opts: ["To directly kill mycobacteria", "To recruit monocytes to the site of infection", "To stimulate B-cell antibody production", "To cause caseous necrosis"],
+        correct: 1,
+        explain: "TNF plays a critical role in recruiting monocytes, which then differentiate into macrophages, to form and maintain the granuloma."
+    },
+    {
+        q: "Primary tuberculosis is most often:",
+        opts: ["Symptomatic with high fever", "Asymptomatic", "Rapidly progressive to cavitary disease", "Associated with miliary spread"],
+        correct: 1,
+        explain: "In most individuals with a healthy immune system, the initial primary infection is contained and remains asymptomatic."
+    },
+    {
+        q: "Which statement best describes the infectivity of primary vs. secondary tuberculosis?",
+        opts: ["Primary TB is highly infectious; secondary TB is not", "Both are equally infectious", "Secondary TB is the most common source of transmission to others", "Neither form is infectious"],
+        correct: 2,
+        explain: "Secondary (or active) TB, often associated with coughing and cavitation, is the stage where the individual is most infectious to others."
+    },
+    {
+        q: "What is the main advantage of PCR testing for tuberculosis diagnosis?",
+        opts: ["It is the cheapest available test", "It can determine drug susceptibility", "It is very fast compared to culture", "It has higher specificity than culture"],
+        correct: 2,
+        explain: "PCR amplification is significantly faster than conventional culture, providing a result in hours rather than weeks, which is crucial for timely diagnosis."
+    },
+    {
+        q: "Thoracic actinomycosis typically results from:",
+        opts: ["Spread from a dental infection", "Aspiration of the organism from the oral cavity", "Direct inoculation from chest trauma", "Hematogenous spread from the abdomen"],
+        correct: 1,
+        explain: "Thoracic actinomycosis occurs when the organism is aspirated from the mouth into the lungs."
+    },
+    {
+        q: "Microscopically, the periphery of a tuberculous granuloma is primarily composed of:",
+        opts: ["Neutrophils", "Fibroblasts", "Lymphoid cells", "Red blood cells"],
+        correct: 2,
+        explain: "The core of epithelioid cells in a tuberculous granuloma is typically rimmed at the periphery by a collar of lymphocytes."
+    },
+    {
+        q: "Oropharyngeal and intestinal tuberculosis are more commonly associated with which organism?",
+        opts: ["Mycobacterium tuberculosis", "Actinomyces israelii", "Mycobacterium leprae", "Mycobacterium bovis"],
+        correct: 3,
+        explain: "Mycobacterium bovis, traditionally transmitted through unpasteurized milk, is more commonly associated with tuberculosis of the oropharynx and intestines."
+    }
+];
+
+const tfs = [
+    {
+        q: "Tuberculosis is classified as an example of acute inflammation.",
+        answer: false,
+        explain: "Tuberculosis is the classical example of chronic granulomatous inflammation."
+    },
+    {
+        q: "Mycobacterium tuberculosis is an anaerobic organism.",
+        answer: false,
+        explain: "M. tuberculosis is a strict aerobe, which is why it preferentially infects the highly oxygenated apex of the lung."
+    },
+    {
+        q: "The initial infection in primary tuberculosis (<3 weeks) leads to unchecked bacillary proliferation inside macrophages.",
+        answer: true,
+        explain: "In the early stages, before an effective cell-mediated immune response is mounted, the bacilli replicate freely within macrophages."
+    },
+    {
+        q: "Secondary tuberculosis is the infection of an individual who has never been previously infected or immunized.",
+        answer: false,
+        explain: "This describes primary tuberculosis. Secondary TB is a reactivation of a dormant infection or a reinfection in a previously sensitized individual."
+    },
+    {
+        q: "Actinomycosis is a highly contagious disease transmitted from person-to-person.",
+        answer: false,
+        explain: "Actinomycosis is an endogenous infection caused by commensal bacteria and is not transmitted between people."
+    },
+    {
+        q: "The 'sulphur granules' in actinomycosis are actual particles of sulphur.",
+        answer: false,
+        explain: "They are named for their yellow, granular appearance but are in fact macroscopic colonies of the Actinomyces bacteria."
+    },
+    {
+        q: "In the Mantoux test, the result is read by measuring the diameter of the redness (erythema).",
+        answer: false,
+        explain: "The result is based on the diameter of the palpable, raised, hardened area of induration, not the surrounding redness."
+    },
+    {
+        q: "Cervicofacial actinomycosis has the best prognosis among the different types.",
+        answer: true,
+        explain: "The slides note that the cervicofacial form is the most common (60%) and carries the best prognosis."
+    },
+    {
+        q: "Miliary tuberculosis involves the containment of the infection within a single Ghon's complex.",
+        answer: false,
+        explain: "Miliary TB is the opposite; it's characterized by the widespread dissemination of bacteria throughout the body via the bloodstream."
+    }
+];
+
+const saqs = [
+    {
+        q: "Define the term 'Ghon's complex' and list its two main components.",
+        a: "The Ghon's complex is the characteristic lesion of primary pulmonary tuberculosis. <br> Its two components are: <br>1. The <b>Ghon's focus</b>: A small, subpleural lesion in the lung parenchyma where the initial infection occurs. <br>2. The involved <b>hilar lymph nodes</b> and intervening lymphatics, which drain the primary focus."
+    },
+    {
+        q: "A 45-year-old man with a history of poor dental hygiene undergoes a tooth extraction. Two weeks later, he develops a hard, non-tender, slowly growing lump on his jaw. What is the most likely diagnosis, and what characteristic feature might be found if the lesion drains pus?",
+        a: "The most likely diagnosis is <b>Cervicofacial Actinomycosis</b> (Lumpy Jaw). If the lesion develops sinuses and drains pus, the characteristic feature would be the presence of tiny, yellow <b>sulphur granules</b>, which are colonies of the Actinomyces bacteria."
+    },
+    {
+        q: "List three host factors that increase the risk of tuberculosis infection progressing to active disease.",
+        a: "1. Immunocompromised states (e.g., AIDS) <br>2. Malnutrition <br>3. Chronic debilitating conditions (e.g., uncontrolled diabetes, alcoholism)"
+    },
+    {
+        q: "Compare and contrast Primary and Secondary Tuberculosis in terms of typical patient, lung location, and clinical outcome.",
+        a: "<table style='width:100%; border-collapse: collapse;' border='1'><tr><th style='padding:8px; text-align:left;'>Feature</th><th style='padding:8px; text-align:left;'>Primary TB</th><th style='padding:8px; text-align:left;'>Secondary TB</th></tr><tr><td style='padding:8px;'>Typical Patient</td><td style='padding:8px;'>Previously unexposed individual, often a child</td><td style='padding:8px;'>Previously sensitized individual (reactivation/reinfection)</td></tr><tr><td style='padding:8px;'>Lung Location</td><td style='padding:8px;'>Subpleural, mid-zone (Ghon's focus)</td><td style='padding:8px;'>Apex of the lung</td></tr><tr><td style='padding:8px;'>Outcome</td><td style='padding:8px;'>Usually contained, asymptomatic, forms Ghon's complex</td><td style='padding:8px;'>Often symptomatic, progressive, with cavitation; source of infectivity</td></tr></table>"
+    },
+    {
+        q: "Describe the key microscopic features of a typical tuberculous granuloma.",
+        a: "A tuberculous granuloma is a necrotizing granuloma characterized by: <br>1. <b>Central Caseous Necrosis:</b> Amorphous, eosinophilic, granular debris. <br>2. <b>Epithelioid Cells:</b> Modified macrophages with abundant pink cytoplasm surrounding the necrosis. <br>3. <b>Langhans Giant Cells:</b> Large multinucleated cells formed by the fusion of macrophages. <br>4. <b>Lymphocytic Rim:</b> A collar of lymphocytes surrounding the epithelioid cells."
+    },
+    {
+        q: "A patient's sputum sample is sent to the lab for tuberculosis diagnosis. List three different laboratory methods that can be used to confirm the presence of Mycobacterium tuberculosis.",
+        a: "1. <b>Acid-Fast Staining (Ziehl-Neelsen stain):</b> Direct microscopic examination of the sputum smear to identify acid-fast bacilli. <br>2. <b>Culture:</b> Inoculating the sputum onto special media (e.g., Löwenstein–Jensen) to grow the organism. This is the gold standard. <br>3. <b>PCR (Polymerase Chain Reaction):</b> A molecular test to amplify and detect mycobacterial DNA, providing a rapid result."
+    }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s, v, i) => {
+      if (v === null) return s;
+      const item = mcqs[i];
+      const card = mcqGrid.children[i];
+      // Re-map visual index to original index to check correctness
+      const map = Array.from(card.querySelectorAll('.opt-btn')).map(btn => {
+          const label = btn.querySelector('.label').textContent;
+          return item.opts.indexOf(label);
+      });
+      const originalSelectedIndex = map[v];
+      return s + (originalSelectedIndex === item.correct ? 1 : 0);
+  }, 0);
+
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    return s + ((v === tfs[i].answer) ? 1 : 0);
+  },0);
+
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

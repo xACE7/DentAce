@@ -92,7 +92,7 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
   /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
@@ -107,12 +107,19 @@
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer table { width: 100%; border-collapse: collapse; }
+  .answer th, .answer td { padding: 8px 12px; text-align: left; border-bottom: 1px solid var(--card-border); }
+  .answer th { font-weight: 700; color: var(--text); }
+  .answer td { color: var(--muted); }
+  .answer ol, .answer ul { padding-left: 20px; }
+
+
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -169,67 +176,264 @@
   </main>
 
 <script>
-// ----------- Data (built from pharma-1.pdf) -----------
+// ----------- Data -----------
 const mcqs = [
-  {q:"Pharmacology is best defined as:",opts:["The study of diseases and their causes","The study of drugs and their actions on the body","The process of drug manufacturing","Measurement of drug concentrations in the lab"],correct:1,explain:"Pharmacology studies drugs and their actions on the body."},
-  {q:"Which statement correctly contrasts pharmacokinetics and pharmacodynamics?",opts:["Pharmacokinetics is what the drug does to the body; pharmacodynamics is what the body does to the drug","Both terms describe the same processes","Pharmacokinetics is what the body does to the drug; pharmacodynamics is what the drug does to the body","Pharmacokinetics only concerns drug toxicity"],correct:2,explain:"Pharmacokinetics: body → drug. Pharmacodynamics: drug → body."},
-  {q:"Drugs are chemicals used to:",opts:["Only treat disease","Only diagnose disease","Diagnose, treat, and prevent disease","Only prevent disease"],correct:2,explain:"Slides define drugs as chemicals used to diagnose, treat, and prevent disease."},
-  {q:"Which is an ENTERAL route?",opts:["Intramuscular","Sublingual","Inhalation","Topical"],correct:1,explain:"Enteral routes pass via the GI tract; sublingual is enteral."},
-  {q:"Which is a PARENTERAL route?",opts:["Rectal","Oral","Intravenous","Buccal"],correct:2,explain:"Parenteral routes are non‑GI; IV is parenteral."},
-  {q:"Preferred route in emergencies is:",opts:["Intramuscular","Subcutaneous","Intravenous","Oral"],correct:2,explain:"IV is preferred in emergencies for rapid effect."},
-  {q:"Which route shows very rapid absorption via the lungs?",opts:["Topical","Inhalation","Subcutaneous","Buccal"],correct:1,explain:"Inhalation provides very rapid absorption through pulmonary vasculature."},
-  {q:"Which statement about sublingual administration is TRUE?",opts:["It suffers from extensive first‑pass metabolism","It bypasses problems of gastric acidity","It is slower than rectal absorption","It requires swallowing for effect"],correct:1,explain:"Sublingual absorption is excellent and avoids gastric acidity (and first pass)."},
-  {q:"Rectal (PR) administration is particularly reserved for:",opts:["Patients with hypertension","Unconscious or vomiting patients","Patients needing slow onset","Children only"],correct:1,explain:"Indicated when oral route is not possible, e.g., unconscious/vomiting."},
-  {q:"Which statement about IM and SC routes is MOST accurate?",opts:["IM is slower than SC","SC is faster than IV","IM absorption is slower than IV","All three have identical onset"],correct:2,explain:"IM < IV for speed; SC is generally slower than IM."},
-  {q:"Emergency medications are commonly given IV to avoid:",opts:["Renal excretion","Gastric irritation","Drug degradation in the liver (first pass)","Allergic reactions"],correct:2,explain:"IV avoids first‑pass hepatic metabolism."},
-  {q:"Arrange the core pharmacokinetic processes in a typical sequence for a drug taken orally:",opts:["Distribution → Absorption → Excretion → Metabolism","Absorption → Distribution → Metabolism → Excretion","Metabolism → Excretion → Absorption → Distribution","Excretion → Metabolism → Distribution → Absorption"],correct:1,explain:"ADME sequence after administration."},
-  {q:"Absorption is defined as:",opts:["Movement of drug from blood to tissues","Chemical transformation of the drug","Process of drug movement from the administration site to systemic circulation","Elimination via kidney or bile"],correct:2,explain:"Absorption moves drug from site of administration into blood."},
-  {q:"Which factor does NOT directly determine the amount and rate of absorption?",opts:["Dosage form's physical nature","Presence or absence of food","Concurrent administration with other drugs","Patient's eye color"],correct:3,explain:"Eye color is irrelevant; others are listed determinants."},
-  {q:"A migraine attack slows gastric motility. What is the likely effect on oral analgesia?",opts:["Faster onset","No change","Delayed response","Complete lack of effect"],correct:2,explain:"Reduced gastric emptying delays absorption and response."},
-  {q:"Which agent can be used to lessen delayed response by increasing gastric emptying in migraine?",opts:["Loperamide","Metoclopramide","Omeprazole","Atropine"],correct:1,explain:"Metoclopramide increases gastric emptying, improving onset."},
-  {q:"Bioavailability is best described as the proportion of the administered dose that:",opts:["Is excreted unchanged","Reaches the systemic circulation","Is bound to plasma proteins","Crosses the blood–brain barrier"],correct:1,explain:"Definition: fraction reaching systemic circulation."},
-  {q:"Which route yields ~100% bioavailability by definition?",opts:["Oral","Intramuscular","Sublingual","Intravenous"],correct:3,explain:"IV administration delivers drug directly into blood (100% bioavailable)."},
-  {q:"Oral bioavailability of a drug is directly related to:",opts:["Its color","Its taste","Its solubility in body fluids","Brand name"],correct:2,explain:"Poor solubility → low bioavailability."},
-  {q:"Two oral tablets with the same active ingredient from different manufacturers may differ clinically because of:",opts:["Tablet color differences","Degree of compression and excipients affecting disintegration/dissolution","Packaging material","Country of origin"],correct:1,explain:"Formulation factors can alter bioavailability."},
-  {q:"Which drugs have their bioavailability affected by presence of food (per slides)?",opts:["Paracetamol and ibuprofen","Penicillins, erythromycin, rifampicin, thyroxine","Diazepam and warfarin","Insulin and heparin"],correct:1,explain:"These examples are listed as food‑affected."},
-  {q:"Which statement about sildenafil is TRUE?",opts:["Food increases its absorption rate","Fatty food slows its absorption","It must be taken with milk for effect","Food has no influence"],correct:1,explain:"Fatty meals slow sildenafil absorption."},
-  {q:"To reduce gastric irritation, metformin and levodopa are:",opts:["Best taken on an empty stomach","Best given with food","Only given IV","Given sublingually"],correct:1,explain:"Slides advise giving with food to limit irritation."},
-  {q:"First‑pass effect refers to:",opts:["Renal filtration of unmetabolized drug","Initial drug loss in the lungs","Hepatic metabolism after GI absorption before reaching systemic circulation","Binding to plasma proteins on first exposure"],correct:2,explain:"GI‑absorbed drugs pass via portal vein to liver; only fraction reaches systemic blood."},
-  {q:"Which drug is almost completely broken down by first pass and therefore given sublingually?",opts:["Propranolol","Glyceryl trinitrate (GTN)","Verapamil","Salbutamol (oral)"],correct:1,explain:"GTN undergoes extensive first‑pass; sublingual avoids this."},
-  {q:"A major clinical reason oral and injectable doses of the same drug differ is:",opts:["Patient age","Extent of first‑pass metabolism","Pill size","Drug color"],correct:1,explain:"Oral dose must account for first‑pass loss (e.g., propranolol)."},
-  {q:"Which statement about plasma protein binding is CORRECT?",opts:["Bound drug is more potent at receptors","Only unbound drug can cross membranes to exert effects","Binding increases distribution into tissues","Albumin binding makes drugs radioactive"],correct:1,explain:"Drug–protein complex cannot cross membranes; unbound fraction is active."},
-  {q:"Which condition is likely to affect drug distribution through changes in plasma proteins or blood flow?",opts:["Color blindness","Diabetes, heart/circulatory problems","Myopia","Tinea pedis"],correct:1,explain:"Slides note low albumin and problems with heart/circulation/diabetes affecting distribution."},
-  {q:"Besides plasma protein binding, which factor also influences distribution?",opts:["Regional blood flow and cardiac output","Hair length","Ambient temperature","Tablet shape"],correct:0,explain:"Cardiac output and regional blood flow affect distribution."},
-  {q:"Topical administration primarily delivers drugs to:",opts:["The lungs","The skin (local effect)","The liver","The kidneys"],correct:1,explain:"Topical delivers directly to the skin for local effect."}
+    {
+        q: "Which term describes what the body does to a drug?",
+        opts: ["Pharmacodynamics", "Pharmacokinetics", "Pharmacogenomics", "Toxicology"],
+        correct: 1,
+        explain: "Pharmacokinetics is the study of how the body absorbs, distributes, metabolizes, and excretes a drug."
+    },
+    {
+        q: "Which of the following is an example of an enteral route of administration?",
+        opts: ["Intravenous (IV)", "Intramuscular (IM)", "Sublingual (SL)", "Inhalation"],
+        correct: 2,
+        explain: "The enteral route involves the gastrointestinal tract. Sublingual (under the tongue) is a method of enteral administration."
+    },
+    {
+        q: "What is a primary advantage of the intravenous (IV) route in emergencies?",
+        opts: ["Slower absorption rate", "Avoidance of the first-pass effect", "Good for self-administering", "Localized effect"],
+        correct: 1,
+        explain: "IV administration delivers the drug directly into the systemic circulation, bypassing the liver and avoiding the first-pass effect, which allows for rapid action."
+    },
+    {
+        q: "The term 'bioavailability' refers to the:",
+        opts: ["Proportion of the administered dose that reaches the systemic circulation", "Time it takes for a drug to be completely eliminated", "Binding affinity of a drug to plasma proteins", "Process of drug movement from blood to tissues"],
+        correct: 0,
+        explain: "Bioavailability is the fraction of an administered drug that reaches the systemic circulation unchanged."
+    },
+    {
+        q: "What is the 'First Pass Effect'?",
+        opts: ["The initial feeling a patient gets after taking a drug", "The circulation of a drug to the liver via the hepatic portal vein before systemic circulation", "The binding of a drug to plasma proteins", "The process of a drug crossing the blood-brain barrier"],
+        correct: 1,
+        explain: "Drugs absorbed from the GI tract are first circulated to the liver, where they may be metabolized. This is known as the first-pass effect."
+    },
+    {
+        q: "Which of the following routes of administration has 100% bioavailability by definition?",
+        opts: ["Oral (PO)", "Subcutaneous (SC)", "Intravenous (IV)", "Rectal (PR)"],
+        correct: 2,
+        explain: "Intravenous (IV) administration delivers the drug directly into the bloodstream, resulting in 100% bioavailability."
+    },
+    {
+        q: "The presence of food in the stomach generally does what to the absorption of drugs like penicillin?",
+        opts: ["Increases absorption", "Decreases or delays absorption", "Has no effect on absorption", "Enhances bioavailability"],
+        correct: 1,
+        explain: "Food, especially fatty food, can delay gastric emptying and affect the absorption of certain drugs, such as penicillin."
+    },
+    {
+        q: "A drug that is highly bound to plasma proteins is generally:",
+        opts: ["Pharmacologically active", "Pharmacologically inactive", "Rapidly excreted", "Easily distributed to tissues"],
+        correct: 1,
+        explain: "Only the unbound (free) fraction of a drug is pharmacologically active, as the drug-protein complex is too large to cross cell membranes."
+    },
+    {
+        q: "Which parenteral route has a slower absorption rate than Intramuscular (IM)?",
+        opts: ["Intravenous (IV)", "Intraosseous (IO)", "Endotracheal (ET)", "Subcutaneous (SC)"],
+        correct: 3,
+        explain: "Subcutaneous (SC) injection provides a slower and more sustained absorption compared to the IM route."
+    },
+    {
+        q: "Glyceryl trinitrate is not effective when taken orally because:",
+        opts: ["It is poorly soluble", "It causes severe gastric irritation", "It undergoes complete first-pass metabolism", "It cannot be absorbed from the GI tract"],
+        correct: 2,
+        explain: "Glyceryl trinitrate is almost completely metabolized by the liver during the first pass, which is why it is administered sublingually."
+    },
+    {
+        q: "Which factor is NOT listed as affecting drug absorption?",
+        opts: ["Mesenteric blood flow", "Patient's age", "Composition of GI contents", "Concurrent administration with other drugs"],
+        correct: 1,
+        explain: "While age can influence pharmacokinetics, it was not explicitly listed on the slide as a primary factor affecting absorption."
+    },
+    {
+        q: "Pharmacodynamics is defined as:",
+        opts: ["What the body does to the drug", "The study of drug distribution", "What the drug does to the body", "The rate of drug elimination"],
+        correct: 2,
+        explain: "Pharmacodynamics concerns the effects of the drug on the body and its mechanisms of action."
+    },
+    {
+        q: "The rectal (PR) route is often reserved for which type of patient?",
+        opts: ["Pediatric patients", "Geriatric patients", "Unconscious or vomiting patients", "Patients with liver disease"],
+        correct: 2,
+        explain: "Rectal administration is a useful alternative when oral administration is not possible, such as in patients who are unconscious or vomiting."
+    },
+    {
+        q: "Low levels of which plasma protein can significantly affect drug distribution?",
+        opts: ["Globulin", "Fibrinogen", "Albumin", "Hemoglobin"],
+        correct: 2,
+        explain: "Albumin is the primary plasma protein that binds to drugs. Low albumin levels can lead to a higher concentration of free, active drug."
+    },
+    {
+        q: "Which process is NOT a part of pharmacokinetics?",
+        opts: ["Absorption", "Distribution", "Molecular mechanism of action", "Metabolism"],
+        correct: 2,
+        explain: "The molecular mechanism of action is a key aspect of pharmacodynamics, not pharmacokinetics."
+    },
+    {
+        q: "Which drug's absorption is slowed down by fatty food?",
+        opts: ["Metformin", "Levodopa", "Sildenafil", "Penicillin"],
+        correct: 2,
+        explain: "The slides mention that sildenafil's absorption is slowed by fatty food."
+    },
+    {
+        q: "Which of these is a parenteral route of administration?",
+        opts: ["Oral", "Buccal", "Topical", "Rectal"],
+        correct: 2,
+        explain: "Parenteral routes are those other than the GI tract. Topical application is a parenteral route."
+    },
+    {
+        q: "A delayed response to oral analgesia in a migraine patient can be lessened by a drug that:",
+        opts: ["Increases gastric emptying", "Decreases gastric motility", "Reduces mesenteric blood flow", "Increases gastric pH"],
+        correct: 0,
+        explain: "The slides state that metoclopramide can lessen the delay by increasing gastric emptying."
+    },
+    {
+        q: "The 'Area under the curve' (AUC) on a drug concentration-time graph represents:",
+        opts: ["Peak height concentration", "Time of peak concentration", "Total amount of drug absorbed", "Rate of drug elimination"],
+        correct: 2,
+        explain: "The AUC represents the total exposure to a drug that the body receives and is proportional to the total amount of drug absorbed."
+    },
+    {
+        q: "What is the main reason emergency medications are often given intravenously?",
+        opts: ["To increase bioavailability", "To avoid drug degradation in the liver", "To ensure slower absorption", "Because it's the easiest route"],
+        correct: 1,
+        explain: "IV administration bypasses the first-pass metabolism in the liver, ensuring the full dose reaches systemic circulation quickly."
+    },
+    {
+        q: "The sublingual (SL) route offers excellent absorption without the problems of:",
+        opts: ["Hepatic metabolism", "Gastric acidity", "Plasma protein binding", "Systemic circulation"],
+        correct: 1,
+        explain: "The SL route bypasses the stomach, avoiding issues with gastric acidity and enzymatic degradation."
+    },
+    {
+        q: "Poor solubility of an orally administered drug typically results in:",
+        opts: ["High bioavailability", "Low bioavailability", "Rapid absorption", "Complete first-pass effect"],
+        correct: 1,
+        explain: "A drug must dissolve to be absorbed. Poor solubility leads to less drug being absorbed and thus, low bioavailability."
+    },
+    {
+        q: "Which factor can affect drug distribution by altering blood flow?",
+        opts: ["Gastric pH", "Cardiac output", "Dosage form", "Presence of food"],
+        correct: 1,
+        explain: "Cardiac output and regional blood flow are key factors that determine how quickly and to what extent a drug is distributed to various tissues."
+    },
+    {
+        q: "The process of drug movement from the administration site to systemic circulation is called:",
+        opts: ["Distribution", "Metabolism", "Excretion", "Absorption"],
+        correct: 3,
+        explain: "Absorption is the first step in pharmacokinetics, defining the movement of the drug into the bloodstream."
+    },
+    {
+        q: "Intraosseous (IO) administration is an alternative emergency route most commonly used in:",
+        opts: ["Newborns", "Adults", "Pediatrics", "Geriatrics"],
+        correct: 2,
+        explain: "The slides specify that the IO route is mostly used in pediatrics as an alternative emergency access route."
+    },
+    {
+        q: "Which of the following drugs is mentioned as undergoing substantial first-pass metabolism?",
+        opts: ["Metformin", "Penicillin", "Propranolol", "Thyroxine"],
+        correct: 2,
+        explain: "Propranolol is listed as an example of a drug that undergoes significant first-pass metabolism, requiring different oral and injectable doses."
+    },
+    {
+        q: "The 'buccal' route of administration involves placing the drug:",
+        opts: ["Under the tongue", "On the skin", "Between the cheek and gum", "In the rectum"],
+        correct: 2,
+        explain: "Buccal administration involves absorption through the mucous membranes of the cheek."
+    },
+    {
+        q: "Why are drugs like metformin and levodopa better given with food?",
+        opts: ["To increase their bioavailability", "To speed up their absorption", "To reduce gastric irritation", "To avoid first-pass effect"],
+        correct: 2,
+        explain: "These drugs can cause gastric irritation when taken on an empty stomach, so administering them with food can mitigate this side effect."
+    },
+    {
+        q: "A drug-protein complex is unable to cross cell membranes because:",
+        opts: ["It is pharmacologically active", "It is too large", "It is electrically charged", "It is rapidly metabolized"],
+        correct: 1,
+        explain: "The complex of a drug bound to a plasma protein (like albumin) is too large to pass through capillaries and reach the site of action."
+    },
+    {
+        q: "The study of drugs and their actions on the body is known as:",
+        opts: ["Pharmacokinetics", "Pharmacology", "Pharmacodynamics", "Therapeutics"],
+        correct: 1,
+        explain: "Pharmacology is the broad science that deals with the study of drugs and their effects on living systems."
+    }
 ];
 
 const tfs = [
-  {q:"Sublingual administration typically avoids first‑pass hepatic metabolism.",answer:true,explain:"Absorption from oral mucosa drains to systemic circulation, bypassing portal vein."},
-  {q:"Intramuscular absorption is faster than intravenous.",answer:false,explain:"IV is the fastest; IM is slower than IV."},
-  {q:"Bioavailability is unrelated to drug solubility in body fluids.",answer:false,explain:"Poor solubility → low oral bioavailability."},
-  {q:"Food can alter the bioavailability of erythromycin and rifampicin.",answer:true,explain:"Slides list these as food‑affected."},
-  {q:"First‑pass effect occurs primarily in the kidneys before reaching the liver.",answer:false,explain:"First pass describes hepatic metabolism after GI absorption via portal vein."},
-  {q:"Metoclopramide may speed gastric emptying during migraine and improve onset of oral analgesics.",answer:true,explain:"Example provided in slides."},
-  {q:"All routes of administration produce the same bioavailability if the dose is the same.",answer:false,explain:"IV is 100%; oral varies; others differ."},
-  {q:"Drug–protein binding renders drugs pharmacologically inactive while bound.",answer:true,explain:"Bound complex cannot cross membranes to act."},
-  {q:"Topical dosing is intended to deliver drugs systemically through the lungs.",answer:false,explain:"Topical delivers to the skin, usually for local effect."}
+    {
+        q: "Pharmacokinetics is what the drug does to the body.",
+        answer: false,
+        explain: "This is the definition of Pharmacodynamics. Pharmacokinetics is what the body does to the drug."
+    },
+    {
+        q: "The enteral route of administration delivers medications via routes other than the GI tract.",
+        answer: false,
+        explain: "The enteral route involves the GI tract (oral, sublingual, rectal). The parenteral route bypasses the GI tract."
+    },
+    {
+        q: "Drugs administered by the IV route are 100% bioavailable.",
+        answer: true,
+        explain: "IV administration delivers the drug directly into the systemic circulation, ensuring complete bioavailability."
+    },
+    {
+        q: "The presence of food in the stomach always increases drug absorption.",
+        answer: false,
+        explain: "Food can delay or decrease the absorption of many drugs, such as penicillin."
+    },
+    {
+        q: "Only the unbound, free form of a drug is pharmacologically active.",
+        answer: true,
+        explain: "Drugs bound to plasma proteins are too large to cross cell membranes and are considered inactive."
+    },
+    {
+        q: "The first-pass effect increases the concentration of a drug in systemic circulation.",
+        answer: false,
+        explain: "The first-pass effect involves metabolism in the liver before the drug reaches systemic circulation, which reduces its concentration."
+    },
+    {
+        q: "Inhalation is a very slow method of drug absorption.",
+        answer: false,
+        explain: "Inhalation provides very rapid absorption via the large surface area of the lungs."
+    },
+    {
+        q: "Low albumin levels in the blood can lead to a lower concentration of free drug.",
+        answer: false,
+        explain: "Low albumin means less protein for the drug to bind to, resulting in a higher concentration of free, active drug."
+    },
+    {
+        q: "All orally administered drugs are affected by the first-pass effect to the same extent.",
+        answer: false,
+        explain: "The extent of first-pass metabolism varies significantly between drugs, from negligible to complete breakdown."
+    }
 ];
 
 const saqs = [
-  // 1. Direct Answer
-  { q: "Define pharmacokinetics in one sentence.", a: "What the body does to a drug (absorption, distribution, metabolism, excretion)." },
-  // 2. List / Enumeration (3+)
-  { q: "List four factors that determine the rate/extent of drug absorption.", a: "1) Dosage form\n2) Presence/absence of food\n3) GI pH & contents\n4) Mesenteric blood flow / interacting drugs" },
-  // 3. Comparison (numbered table)
-  { q: "Compare IV vs. oral routes in terms of bioavailability and first‑pass effect.", a: `<table style="width:100%;border-collapse:collapse"><tr><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,.2)">#</th><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,.2)">Aspect</th><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,.2)">IV</th><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,.2)">Oral</th></tr><tr><td>1</td><td>Bioavailability</td><td>~100%</td><td>Variable, often <100%</td></tr><tr><td>2</td><td>First‑pass</td><td>Bypassed</td><td>Present (hepatic portal)</td></tr></table>` },
-  // 4. Case‑based Scenario
-  { q: "A 65‑year‑old with heart failure and hypoalbuminemia starts a highly protein‑bound drug. What happens to the unbound fraction?", a: "It increases, potentially enhancing effect/toxicity; monitor dose." },
-  // 5. Direct short explanation
-  { q: "Why is glyceryl trinitrate given sublingually rather than orally?", a: "It undergoes near‑complete first‑pass metabolism; sublingual avoids this." },
-  // 6. Enumeration
-  { q: "Name four enteral routes mentioned in the lecture.", a: "1) Oral (PO)\n2) Nasogastric/orogastric\n3) Sublingual\n4) Buccal / Rectal" }
+    {
+        q: "Define Pharmacokinetics and Pharmacodynamics.",
+        a: "<b>Pharmacokinetics:</b> What the body does to the drug. This includes the processes of absorption, distribution, metabolism, and excretion.<br><br><b>Pharmacodynamics:</b> What the drug does to the body. This includes the molecular mechanisms by which the drug produces its pharmacological effect."
+    },
+    {
+        q: "List three factors that can determine the amount and rate of drug absorption from the GI tract.",
+        a: "<ol><li>Physical nature of the dosage form</li><li>Presence or absence of food in the stomach</li><li>Gastric or intestinal pH</li><li>Mesenteric blood flow</li><li>Concurrent administration with other drugs</li></ol> (Any three are correct)"
+    },
+    {
+        q: "Compare the Enteral and Parenteral routes of administration.",
+        a: "<table><thead><tr><th>Feature</th><th>Enteral Route</th><th>Parenteral Route</th></tr></thead><tbody><tr><td><b>Definition</b></td><td>Delivers medication via the gastrointestinal (GI) tract.</td><td>Delivers medication via routes other than the GI tract.</td></tr><tr><td><b>Examples</b></td><td>Oral, Sublingual, Rectal</td><td>Intravenous, Intramuscular, Subcutaneous, Inhalation</td></tr><tr><td><b>First-Pass Effect</b></td><td>Subject to first-pass metabolism (e.g., oral)</td><td>Bypasses the first-pass effect.</td></tr><tr><td><b>Absorption</b></td><td>Variable and can be slower.</td><td>Often more rapid and predictable.</td></tr></tbody></table>"
+    },
+    {
+        q: "A patient with severe liver disease is given a standard oral dose of a drug that is highly metabolized by the liver. What is a likely consequence regarding the drug's bioavailability and potential for toxicity?",
+        a: "In a patient with severe liver disease, the liver's ability to metabolize drugs is impaired. This would significantly reduce the first-pass effect. As a result, a much larger proportion of the oral dose will reach the systemic circulation, leading to unexpectedly high bioavailability. This increased concentration can lead to a higher risk of drug toxicity and adverse effects."
+    },
+    {
+        q: "Explain why a drug that is highly bound to plasma proteins is considered 'pharmacologically inactive'.",
+        a: "When a drug binds to a plasma protein, such as albumin, it forms a large drug-protein complex. This complex is too large to pass from the bloodstream across cell membranes to reach its site of action. Only the unbound or 'free' fraction of the drug is small enough to be distributed to tissues and exert a pharmacological effect. Therefore, the bound portion acts as a reservoir and is considered inactive."
+    },
+    {
+        q: "List three examples of enteral routes and three examples of parenteral routes of drug administration.",
+        a: "<b>Enteral Routes:</b><ol><li>Oral (PO)</li><li>Sublingual (SL)</li><li>Rectal (PR)</li></ol><b>Parenteral Routes:</b><ol><li>Intravenous (IV)</li><li>Intramuscular (IM)</li><li>Subcutaneous (SC)</li></ol>"
+    }
 ];
-
 // ----------- State -----------
 const state = {
   mcq: Array(mcqs.length).fill(null), // null | selectedIndex
@@ -384,7 +588,7 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>

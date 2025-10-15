@@ -92,7 +92,7 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
   /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
@@ -107,12 +107,16 @@
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer table{width:100%; border-collapse: collapse;}
+  .answer th, .answer td{border:1px solid var(--glass-border); padding:8px; text-align:left;}
+  .answer th{font-weight:bold;}
+
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -169,66 +173,438 @@
   </main>
 
 <script>
-// ----------- Data (from OCIH Lecture 10: Root formation / HERS) -----------
+// ----------- Data -----------
 const mcqs = [
-  {q:"Root development starts when:", opts:["The dental lamina invaginates","Enamel and dentin reach the future CEJ","Cervical loop first forms the REE","Tooth erupts into oral cavity"], correct:1, explain:"Initiation occurs once crown tissues reach the future cemento‑enamel junction."},
-  {q:"The cervical loop is composed of:", opts:["Inner and outer enamel epithelium","Ameloblasts and odontoblasts","Stellate reticulum only","Reduced enamel epithelium"], correct:0, explain:"IEE + OEE meet at the cervical loop; they proliferate to form HERS."},
-  {q:"Hertwig epithelial root sheath (HERS) is formed by proliferation of:", opts:["IEE and OEE from the cervical loop","Stellate reticulum and stratum intermedium","Dental follicle cells","Reduced enamel epithelium"], correct:0, explain:"HERS is a double epithelial membrane from IEE and OEE."},
-  {q:"Primary role of HERS in early root formation:", opts:["Deposit primary cementum","Shape the root and induce root dentin","Form periodontal ligament","Resorb primary dentin"], correct:1, explain:"HERS determines root shape and induces odontoblast differentiation for root dentin."},
-  {q:"The epithelial diaphragm is:", opts:["A fold of REE sealing the tooth","A bend of HERS at the future CEJ narrowing the apical foramen","Fusion of interradicular septa","Attachment of gingival epithelium"], correct:1, explain:"HERS bends at the CEJ forming the diaphragm causing primary apical narrowing."},
-  {q:"First hard tissue laid down during root formation:", opts:["Cellular cementum","Interradicular bone","Root dentin","Enamel pearls"], correct:2, explain:"Odontoblasts (induced by HERS) form the first layer of root dentin."},
-  {q:"Source of odontoblasts that form root dentin:", opts:["Dental papilla ectomesenchyme","Dental follicle","Outer enamel epithelium","HERS cells"], correct:0, explain:"IEE of HERS induces undifferentiated cells of the dental papilla to become odontoblasts."},
-  {q:"After HERS disintegrates, its remnants in the PDL are called:", opts:["Rests of Serres","Rests of Malassez","Rests of Nasmyth","Retzius rests"], correct:1, explain:"Fragmented HERS persists as epithelial rests of Malassez in the PDL."},
-  {q:"Cementoblasts differentiate from:", opts:["Dental papilla cells","Dental follicle/periodontal sac cells","HERS cells directly","Reduced enamel epithelium"], correct:1, explain:"Contact of root dentin with dental follicle induces follicle cells to become cementoblasts."},
-  {q:"Reduced enamel epithelium (REE) forms when:", opts:["HERS fragments","Enamel formation completes and enamel organ layers flatten and fuse","Crown erupts fully","PDL differentiates"], correct:1, explain:"Ameloblasts, SI, SR and OEE collapse/fuse into a thin REE after enamel completion."},
-  {q:"Function of REE before eruption:", opts:["Induce dentin formation","Protect enamel from resorption and CT invasion","Lay down acellular cementum","Form junctional epithelium"], correct:1, explain:"REE protects enamel surface prior to eruption."},
-  {q:"Accessory root canals may form when:", opts:["Cervical loop overgrows","Large blood vessel interrupts HERS continuity or HERS breaks before dentin forms","Cementum resorbs during eruption","REE calcifies"], correct:1, explain:"Loss of HERS continuity or vascular interruption before odontoblast/dentin formation creates accessory canals."},
-  {q:"In multirooted teeth, interradicular processes arise from:", opts:["Dental sac extensions","Tongue‑like processes of the epithelial diaphragm","Odontoblastic spurs","Epithelial pearls"], correct:1, explain:"Epithelial diaphragm sends tongue‑like processes that grow and fuse to partition the root trunk."},
-  {q:"Sequence in single‑rooted tooth formation (best order):", opts:["Cementum → dentin → HERS disintegration","HERS forms → odontoblasts differentiate → root dentin → HERS disintegrates → cementoblasts","Odontoblasts differentiate before HERS","PDL forms then HERS"], correct:1, explain:"Classic sequence from HERS induction to dentin, then HERS breaks, then cementum forms."},
-  {q:"Which statement about the apical foramen is TRUE?", opts:["Epithelial diaphragm widens it primarily","Epithelial diaphragm causes a primary narrowing early in root formation","It is absent in primary teeth","It is formed by REE fusion"], correct:1, explain:"The diaphragm’s bend creates the initial narrowing of the future apical foramen."},
-  {q:"HERS remains intact only at:", opts:["The cervical loop after eruption","The advancing root edge during active root elongation","The furcation area permanently","The CEJ after crown completion"], correct:1, explain:"As root forms, HERS fragments except at the growing tip where induction continues."},
-  {q:"A clinical consequence of HERS displacement after partial root mineralization is:", opts:["Enamel hypoplasia","Dilaceration of the root","Ankylosis","Hypercementosis of crown"], correct:1, explain:"Dislocation of HERS after partial mineralization can bend/twist the remaining root (dilaceration)."},
-  {q:"Enamel pearls most commonly occur:", opts:["On incisal edges","At CEJ or molar furcation","On apical cementum","Within alveolar bone"], correct:1, explain:"If HERS adheres to dentin and inner cells differentiate to ameloblasts, enamel islands can form near CEJ/furcations."},
-  {q:"Which BEST explains why cementum can form only after HERS disintegrates?", opts:["HERS secretes cementoid that inhibits itself","Dental follicle cells require access to dentin to become cementoblasts","Odontoblasts block blood supply","REE blocks follicle migration"], correct:1, explain:"Follicle cells must contact exposed root dentin to differentiate into cementoblasts."},
-  {q:"The periodontal location of rests of Malassez is:", opts:["Within pulp","Within PDL space throughout life","Inside alveolar bone marrow","Within gingival epithelium"], correct:1, explain:"Epithelial rests persist in the periodontal ligament."},
-  {q:"Which slide item is NOT a function of HERS?", opts:["Shaping the root","Inducing root dentin formation","Forming cementum directly","Maintaining epithelial diaphragm at growing tip"], correct:2, explain:"Cementum is produced by cementoblasts derived from dental follicle, not by HERS cells."},
-  {q:"Failure of fusion of the epithelial diaphragm’s processes in molars would MOST likely cause:", opts:["Taurodontism","Accessory roots or altered furcation","Amelogenesis imperfecta","Dentinogenesis imperfecta"], correct:1, explain:"Processes must grow/fuse to subdivide the root trunk into multiple roots."},
-  {q:"Immediate precursor of acellular cementum deposition is:", opts:["Predentin at root surface","Enamel spindle formation","REE fusion","Alveolar bone apposition"], correct:0, explain:"Root predentin (then dentin) contacting dental follicle triggers cementoblast differentiation and cementum."},
-  {q:"Which tissue combination forms the REE?", opts:["Ameloblasts + SI + SR + OEE","IEE + OEE only","Ameloblasts + odontoblasts","Basal lamina + SI"], correct:0, explain:"After enamel completion, these enamel organ layers collapse and fuse as REE."},
-  {q:"What induces odontoblast differentiation in root area?", opts:["Signals from IEE of HERS","Signals from REE","Signals from junctional epithelium","Signals from alveolar bone"], correct:0, explain:"IEE of HERS instructs dental papilla cells to become odontoblasts."},
-  {q:"The first event in formation of multirooted teeth after root trunk formation:", opts:["Deposition of interradicular bone","Epithelial diaphragm sends tongue‑like projections","Fusion of REE to furcation","Cementoblast migration"], correct:1, explain:"Tongue‑like epithelial projections grow toward each other to subdivide the trunk."},
-  {q:"Which statement about accessory canals is FALSE?", opts:["May result from early break in HERS continuity","Can occur where large blood vessels traverse the root sheath","Always form after cementum deposition","Represent channels connecting pulp with PDL"], correct:2, explain:"They arise before dentin formation when HERS is discontinuous; not always after cementum."},
-  {q:"During root formation, which structure degenerates leaving discrete epithelial clusters?", opts:["REE","HERS","Dental papilla","Stratum intermedium"], correct:1, explain:"HERS fragments → epithelial rests of Malassez."},
-  {q:"The clinical risk associated with proliferation of rests of Malassez during chronic inflammation:", opts:["External enamel resorption","Cyst or tumor formation","Ankylosis of tooth","Perikymata formation"], correct:1, explain:"Rests can proliferate → cysts/tumors in the PDL."},
-  {q:"Which best defines dilaceration?", opts:["Complete root bifurcation defect","Bent or twisted root due to disturbance during development","Enamel pearl at CEJ","Accessory canal in apex"], correct:1, explain:"Dilaceration = bending/twisting of the root following developmental displacement."}
+  {
+    q: "When does the process of root development officially begin?",
+    opts: [
+      "Once the enamel and dentin reach the future Cemento-Enamel Junction (CEJ)",
+      "After the crown of the tooth has fully erupted into the oral cavity",
+      "Simultaneously with the formation of the enamel organ's cap stage",
+      "Following the complete formation and mineralization of the coronal pulp"
+    ],
+    correct: 0,
+    explain: "Root formation starts precisely when crown formation (enamel and dentin) has advanced to the cervical area, which will become the CEJ."
+  },
+  {
+    q: "Hertwig's Epithelial Root Sheath (HERS) is formed by the proliferation of cells from which structure?",
+    opts: [
+      "The cervical loop",
+      "The dental papilla",
+      "The stratum intermedium",
+      "The dental follicle"
+    ],
+    correct: 0,
+    explain: "HERS is a double-layered membrane formed by the proliferation of the inner and outer enamel epithelium at the cervical loop of the enamel organ."
+  },
+  {
+    q: "Which of the following is a primary function of HERS?",
+    opts: [
+      "Inducing the differentiation of odontoblasts for root dentin formation",
+      "Depositing the first layer of cementum on the root surface",
+      "Forming the periodontal ligament fibers",
+      "Secretes enamel onto the root surface"
+    ],
+    correct: 0,
+    explain: "The inner layer of HERS induces adjacent ectomesenchymal cells of the dental papilla to differentiate into odontoblasts, which then form root dentin."
+  },
+  {
+    q: "The remnants of HERS found in the periodontal ligament of a fully formed tooth are known as:",
+    opts: [
+      "Epithelial rests of Malassez",
+      "Dental lamina remnants",
+      "Enamel pearls",
+      "Cementicles"
+    ],
+    correct: 0,
+    explain: "After HERS disintegrates, it leaves behind clusters of epithelial cells in the PDL called the epithelial cell rests of Malassez."
+  },
+  {
+    q: "What is the direct trigger for the differentiation of cementoblasts?",
+    opts: [
+      "Contact of the newly formed root dentin with the dental follicle",
+      "The disintegration of the epithelial rests of Malassez",
+      "Signals from the odontoblasts in the root pulp",
+      "The arrival of blood vessels into the developing root area"
+    ],
+    correct: 0,
+    explain: "Once HERS breaks down, the undifferentiated mesenchymal cells of the dental follicle come into contact with the root dentin, which induces them to become cementoblasts."
+  },
+  {
+    q: "How are multi-rooted teeth, like molars, formed?",
+    opts: [
+      "The epithelial diaphragm grows tongue-like processes that fuse together",
+      "Multiple separate HERS structures develop independently for each root",
+      "The single root trunk splits into two or three after it is fully formed",
+      "Bone deposition from the inter-radicular area physically divides the root"
+    ],
+    correct: 0,
+    explain: "For multi-rooted teeth, the epithelial diaphragm at the root trunk produces two or three extensions that grow horizontally and fuse, dividing the single opening into multiple openings, each forming a root."
+  },
+  {
+    q: "An enamel pearl is a clinical anomaly that occurs when:",
+    opts: [
+      "HERS remains adherent to the dentin and its cells differentiate into ameloblasts",
+      "A small piece of the enamel organ is trapped in the dental follicle",
+      "Odontoblasts mistakenly produce enamel instead of dentin on the root surface",
+      "Cementoblasts undergo metaplasia and form enamel-like tissue"
+    ],
+    correct: 0,
+    explain: "If HERS doesn't detach properly from the newly formed dentin, its inner enamel epithelium cells can be induced to become functional ameloblasts and deposit a sphere of enamel."
+  },
+  {
+    q: "What is the primary cause of an accessory root canal?",
+    opts: [
+      "A break in the continuity of HERS before dentin formation",
+      "Excessive proliferation of epithelial rests of Malassez",
+      "Premature calcification of the dental pulp",
+      "Fusion of two adjacent tooth germs during development"
+    ],
+    correct: 0,
+    explain: "If there is a gap in HERS, dentin does not form in that specific spot. This allows a direct connection to remain between the pulp and the periodontal ligament, forming an accessory canal."
+  },
+  {
+    q: "The clinical condition known as dilaceration refers to:",
+    opts: [
+      "A sharp bend or twist in the root of a tooth",
+      "The complete absence of a tooth root",
+      "The formation of an abnormally short root",
+      "Excessive deposition of cementum on the root surface"
+    ],
+    correct: 0,
+    explain: "Dilaceration is a root distortion caused by the dislocation of HERS after partial root formation has already occurred, often due to trauma."
+  },
+  {
+    q: "The epithelial diaphragm, formed by the bending of HERS, is responsible for:",
+    opts: [
+      "Forming the boundary for the future apical foramen",
+      "Secreting the final layer of coronal enamel",
+      "Inducing the formation of the periodontal ligament",
+      "Initiating the breakdown of the dental lamina"
+    ],
+    correct: 0,
+    explain: "The epithelial diaphragm is the growing end of HERS, and its opening outlines the primary apical foramen of the developing root."
+  },
+  {
+    q: "Which layers of the enamel organ collapse to form the Reduced Enamel Epithelium (REE)?",
+    opts: [
+      "Ameloblasts, stratum intermedium, stellate reticulum, and outer enamel epithelium",
+      "Only the ameloblasts and the outer enamel epithelium",
+      "The stratum intermedium and stellate reticulum only",
+      "The cervical loop and the dental papilla"
+    ],
+    correct: 0,
+    explain: "The REE is formed by the compression of all four layers of the enamel organ after enamel formation is complete."
+  },
+  {
+    q: "What is the primary protective function of the Reduced Enamel Epithelium (REE)?",
+    opts: [
+      "Protecting the enamel from resorption before eruption",
+      "Preventing dentin from being exposed to the oral cavity",
+      "Shielding the pulp from thermal stimuli",
+      "Guiding the formation of cementum"
+    ],
+    correct: 0,
+    explain: "The REE covers the newly formed enamel, protecting it from being resorbed by surrounding connective tissue cells before the tooth erupts."
+  },
+  {
+    q: "In which part of the developing tooth are the epithelial rests of Malassez most likely to be found throughout life?",
+    opts: [
+      "Periodontal ligament (PDL)",
+      "Dental pulp",
+      "Alveolar bone",
+      "Gingival tissue"
+    ],
+    correct: 0,
+    explain: "These remnants of HERS persist within the periodontal ligament space adjacent to the root surface."
+  },
+  {
+    q: "Under conditions of chronic inflammation, epithelial rests of Malassez can proliferate to form what?",
+    opts: [
+      "Cysts and tumours",
+      "Accessory roots",
+      "Cementicles",
+      "Secondary dentin"
+    ],
+    correct: 0,
+    explain: "These dormant epithelial cells can be stimulated by inflammation to grow and form pathological structures like periapical cysts."
+  },
+  {
+    q: "The 'root trunk' is a term associated with the initial root development of which type of teeth?",
+    opts: [
+      "Multi-rooted teeth like molars",
+      "Single-rooted teeth like incisors",
+      "All permanent teeth",
+      "All deciduous teeth"
+    ],
+    correct: 0,
+    explain: "The root trunk is the undivided portion of the root in molars and premolars before it bifurcates or trifurcates into individual roots."
+  },
+    {
+    q: "The inner cell layer of HERS induces the differentiation of which cells?",
+    opts: [
+      "Odontoblasts from the dental papilla",
+      "Ameloblasts from the dental papilla",
+      "Cementoblasts from the dental follicle",
+      "Fibroblasts from the dental follicle"
+    ],
+    correct: 0,
+    explain: "The inner epithelial cells of HERS provide the signal for undifferentiated mesenchymal cells in the adjacent dental papilla to become odontoblasts."
+  },
+  {
+    q: "The structure responsible for shaping the root and determining if it will be straight, curved, single, or multiple is:",
+    opts: [
+      "Hertwig's Epithelial Root Sheath (HERS)",
+      "The dental follicle",
+      "The outer enamel epithelium",
+      "The alveolar bone crypt"
+    ],
+    correct: 0,
+    explain: "The proliferation, growth pattern, and eventual disintegration of HERS dictates the final morphology of the tooth's root system."
+  },
+  {
+    q: "The formation of the first layer of root dentin is immediately followed by what event?",
+    opts: [
+      "The degeneration of HERS",
+      "The formation of the apical foramen",
+      "The eruption of the tooth crown",
+      "The completion of enamel formation"
+    ],
+    correct: 0,
+    explain: "Once the first layer of root dentin is laid down, HERS begins to break apart, allowing cells from the dental follicle to access the root surface."
+  },
+  {
+    q: "Enamel pearls are most commonly found in which specific location on a molar?",
+    opts: [
+      "The furcation area",
+      "The apex of the root",
+      "The occlusal surface",
+      "The pulp chamber floor"
+    ],
+    correct: 0,
+    explain: "While they can be at the CEJ, they are particularly common in the area where the roots divide (the furcation) on multi-rooted teeth."
+  },
+  {
+    q: "A large blood vessel that prevents the local continuity of HERS during development can lead to the formation of:",
+    opts: [
+      "An accessory root canal",
+      "An enamel pearl",
+      "Dilaceration",
+      "Hypercementosis"
+    ],
+    correct: 0,
+    explain: "The presence of a blood vessel can create a gap in the root sheath, preventing dentin formation in that area and resulting in a lateral or accessory canal."
+  },
+  {
+    q: "The 'cervical loop' is structurally composed of:",
+    opts: [
+      "The junction of the inner and outer enamel epithelium",
+      "The junction of the stratum intermedium and stellate reticulum",
+      "The most apical cells of the dental papilla",
+      "The most coronal cells of the dental follicle"
+    ],
+    correct: 0,
+    explain: "The cervical loop is the deepest rim of the enamel organ where the inner and outer enamel epithelium meet, and it's the point from which HERS proliferates."
+  },
+  {
+    q: "Which cell type is responsible for laying down the initial organic matrix of cementum?",
+    opts: [
+      "Cementoblasts",
+      "Odontoblasts",
+      "Fibroblasts",
+      "Osteoblasts"
+    ],
+    correct: 0,
+    explain: "Cementoblasts, which differentiate from the dental follicle cells, are responsible for secreting cementoid, the organic matrix that mineralizes to become cementum."
+  },
+  {
+    q: "The initial narrowing of the wide apical foramen during development is caused by:",
+    opts: [
+      "The formation of the epithelial diaphragm",
+      "The deposition of cellular cementum",
+      "The constriction of pulpal blood vessels",
+      "The growth of the alveolar bone"
+    ],
+    correct: 0,
+    explain: "The inward bending of HERS to form the epithelial diaphragm creates the first constriction that defines the future apical foramen."
+  },
+  {
+    q: "Which structure is NOT part of the original enamel organ?",
+    opts: [
+      "Dental Follicle",
+      "Stellate Reticulum",
+      "Stratum Intermedium",
+      "Outer Enamel Epithelium"
+    ],
+    correct: 0,
+    explain: "The dental follicle (or dental sac) is the mesenchymal tissue that surrounds the enamel organ, it is not part of the enamel organ itself."
+  },
+  {
+    q: "The process of root dentin formation is analogous to coronal dentin formation, but it lacks the influence of:",
+    opts: [
+      "Stratum intermedium and stellate reticulum",
+      "Odontoblasts",
+      "Dental papilla",
+      "The basement membrane"
+    ],
+    correct: 0,
+    explain: "HERS is only composed of inner and outer enamel epithelium. It lacks the stratum intermedium and stellate reticulum, which are present during crown formation to support ameloblasts."
+  },
+  {
+    q: "What would be the likely outcome if HERS failed to disintegrate after inducing dentin formation?",
+    opts: [
+      "Cementum would not be formed on the root",
+      "The tooth would fail to erupt",
+      "The root would be covered in enamel",
+      "The periodontal ligament would not develop"
+    ],
+    correct: 0,
+    explain: "If HERS remained as a barrier, cells from the dental follicle could not reach the dentin surface to differentiate into cementoblasts, preventing cementum deposition."
+  },
+  {
+    q: "Dilaceration is most commonly associated with which teeth?",
+    opts: [
+      "Permanent teeth",
+      "Deciduous teeth",
+      "Both equally",
+      "Supernumerary teeth"
+    ],
+    correct: 0,
+    explain: "The lecture slide specifies that dilaceration is usually seen in permanent teeth, often due to trauma to the preceding deciduous tooth that displaces the developing permanent tooth germ."
+  },
+  {
+    q: "The final fate of the Reduced Enamel Epithelium (REE) is to:",
+    opts: [
+      "Become part of the initial junctional epithelium after eruption",
+      "Undergo apoptosis and disappear completely before eruption",
+      "Transform into the periodontal ligament",
+      "Merge with the alveolar bone"
+    ],
+    correct: 0,
+    explain: "As the tooth erupts, the REE fuses with the oral epithelium and ultimately forms the primary epithelial attachment or junctional epithelium."
+  },
+  {
+    q: "Which of the following events happens first in root development?",
+    opts: [
+      "Proliferation of the cervical loop to form HERS",
+      "Differentiation of cementoblasts",
+      "Disintegration of HERS",
+      "Deposition of the first layer of cementum"
+    ],
+    correct: 0,
+    explain: "The very first step is the growth and proliferation of the epithelial cells at the cervical loop to form HERS, which then orchestrates the subsequent events."
+  },
+  {
+    q: "The cells that form root dentin originate from the:",
+    opts: [
+      "Dental Papilla",
+      "Dental Follicle",
+      "Stellate Reticulum",
+      "Epithelial rests of Malassez"
+    ],
+    correct: 0,
+    explain: "Odontoblasts, which form dentin, are differentiated from the undifferentiated ectomesenchymal cells of the dental papilla, under the influence of HERS."
+  }
 ];
 
 const tfs = [
-  {q:"Root formation begins only after eruption has started.", answer:false, explain:"It begins once enamel and dentin reach the future CEJ, before eruption."},
-  {q:"HERS is a double epithelial membrane derived from IEE and OEE.", answer:true, explain:"This is the defining origin of HERS."},
-  {q:"Epithelial diaphragm causes a primary narrowing of the apical foramen early in development.", answer:true, explain:"Text notes an initial narrowing at the future apex."},
-  {q:"Cementoblasts are derived from dental papilla.", answer:false, explain:"They arise from the dental follicle after contact with root dentin."},
-  {q:"Rests of Malassez are remnants of HERS located in the PDL.", answer:true, explain:"They persist throughout life in the ligament."},
-  {q:"Accessory canals can form if a large vessel interrupts HERS continuity before dentin formation.", answer:true, explain:"This is one listed cause."},
-  {q:"Enamel pearls result from REE mineralizing the CEJ directly.", answer:false, explain:"They occur if HERS adheres to dentin and inner cells differentiate into ameloblasts forming enamel."},
-  {q:"Dilaceration may follow dislocation of HERS after partial root mineralization.", answer:true, explain:"Leads to a bent/twisted root."},
-  {q:"During active root elongation, HERS remains intact along the entire root surface.", answer:false, explain:"It fragments except at the advancing root edge."}
+  {
+    q: "Hertwig's Epithelial Root Sheath is composed of all four layers of the enamel organ.",
+    answer: false,
+    explain: "HERS is a double layer of cells, formed only from the inner and outer enamel epithelium of the cervical loop."
+  },
+  {
+    q: "The presence of epithelial rests of Malassez in the PDL is considered a pathological condition.",
+    answer: false,
+    explain: "The rests of Malassez are normal remnants of HERS and are found in a healthy PDL. They only become pathological if stimulated by chronic inflammation."
+  },
+  {
+    q: "The formation of a two-rooted tooth involves the fusion of two separate tongue-like processes from the epithelial diaphragm.",
+    answer: true,
+    explain: "Correct. For a two-rooted tooth, two processes grow toward each other and fuse, dividing the root trunk into two canals."
+  },
+  {
+    q: "Cementoblasts are derived from the same tissue as odontoblasts, the dental papilla.",
+    answer: false,
+    explain: "This is false. Cementoblasts are derived from undifferentiated mesenchymal cells in the dental follicle (or dental sac)."
+  },
+  {
+    q: "An enamel pearl is essentially a small deposit of enamel on the root surface.",
+    answer: true,
+    explain: "Correct. It's caused by HERS cells differentiating into ameloblasts and producing a small sphere of enamel in an abnormal location."
+  },
+  {
+    q: "Root formation is typically completed at the same time the tooth erupts into the oral cavity.",
+    answer: false,
+    explain: "Root formation continues for a significant time (2-3 years for permanent teeth) after the tooth has erupted."
+  },
+  {
+    q: "Dilaceration is caused by a failure of HERS to disintegrate.",
+    answer: false,
+    explain: "Dilaceration is a bend or distortion of the root, caused by the displacement of HERS after some root has already formed, not by its failure to disintegrate."
+  },
+  {
+    q: "The Reduced Enamel Epithelium (REE) plays a crucial role in inducing root dentin formation.",
+    answer: false,
+    explain: "The REE's role is to protect the crown's enamel pre-eruption. It is HERS, which proliferates from the cervical loop, that induces root dentin formation."
+  },
+  {
+    q: "Accessory root canals can form if a blood vessel disrupts the continuity of HERS.",
+    answer: true,
+    explain: "Correct. A persistent blood vessel can create a pathway through HERS, preventing dentin formation and leaving a patent canal between the pulp and PDL."
+  }
 ];
 
 const saqs = [
-  // 1) Direct Answer
-  { q: "Define Hertwig epithelial root sheath (HERS).", a: "A double layer of IEE+OEE from the cervical loop that shapes the root and induces root dentin." },
-  // 2) List / Enumeration (≥3)
-  { q: "List three functions/events attributed to HERS during root formation.", a: "1) Shapes the root. 2) Induces odontoblast differentiation/root dentin. 3) Forms epithelial diaphragm at CEJ (primary apical narrowing)." },
-  // 3) Comparison as numbered table
-  { q: "Compare single‑rooted vs multi‑rooted tooth development (provide a numbered, two‑row table).", a: "1) Single‑rooted: HERS forms sheath → induces dentin → sheath disintegrates → cementum forms. 2) Multi‑rooted: Root trunk forms like single‑rooted; epithelial diaphragm sends tongue‑like processes that grow/fuse to partition roots, then each root develops as single‑rooted." },
-  // 4) Case‑based scenario
-  { q: "A molar shows a small enamel nodule in the furcation on radiograph. What developmental event explains this finding?", a: "Enamel pearl from HERS adherence to dentin with inner cells differentiating into ameloblasts at CEJ/furcation." },
-  // 5) Short direct
-  { q: "State two causes of accessory root canals.", a: "1) Early loss of HERS continuity before dentin forms. 2) Large blood vessel disrupting the sheath." },
-  // 6) Short direct
-  { q: "When exactly does root formation begin relative to crown completion?", a: "When enamel and dentin formation reach the future CEJ (after crown completion)." }
+  {
+    q: "A 45-year-old patient presents with a slow-growing, painless swelling near the apex of a non-vital tooth. A radiograph reveals a well-defined radiolucency. Based on the developmental remnants discussed in the lecture, what is the most likely diagnosis for this lesion?",
+    a: "This is likely a periapical cyst (or radicular cyst). It forms from the proliferation of the epithelial cell rests of Malassez, which are remnants of Hertwig's epithelial root sheath (HERS) located in the periodontal ligament. Chronic inflammation from the non-vital tooth stimulates these dormant epithelial cells to grow and form a cyst."
+  },
+  {
+    q: "List the two primary functions of Hertwig's Epithelial Root Sheath (HERS).",
+    a: `<ol>
+          <li>It shapes the root of the tooth, determining its size, curvature, and whether it will be single or multi-rooted.</li>
+          <li>It induces the differentiation of undifferentiated ectomesenchymal cells from the dental papilla into odontoblasts, which then form the root dentin.</li>
+        </ol>`
+  },
+  {
+    q: "Briefly describe the sequence of events that leads to the formation of the first layer of cementum, starting from the point where root dentin has just been formed.",
+    a: "After the first layer of root dentin is formed, Hertwig's epithelial root sheath (HERS) begins to disintegrate. This breakdown allows undifferentiated mesenchymal cells from the adjacent dental follicle to come into direct contact with the newly formed dentin surface. This contact induces these cells to differentiate into cementoblasts, which then lay down the first layer of cementum (cementoid matrix)."
+  },
+  {
+    q: "Compare the developmental causes and resulting appearances of Enamel Pearls and Dilaceration in a table format.",
+    a: `<table>
+          <thead>
+            <tr>
+              <th>Feature</th>
+              <th>Enamel Pearl</th>
+              <th>Dilaceration</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><strong>Cause</strong></td>
+              <td>A portion of HERS remains adherent to the root dentin, and its inner cells differentiate into ameloblasts, producing enamel.</td>
+              <td>Displacement or trauma to HERS after a portion of the root has already mineralized, causing the rest of the root to form at an angle.</td>
+            </tr>
+            <tr>
+              <td><strong>Appearance</strong></td>
+              <td>A small, spherical nodule of enamel, typically found at the CEJ or in the furcation area of molars.</td>
+              <td>A sharp bend, curve, or twist anywhere along the length of the root. It is a distortion of the root's shape.</td>
+            </tr>
+          </tbody>
+        </table>`
+  },
+  {
+    q: "Explain how the root trunk of a mandibular molar (a two-rooted tooth) is divided into two distinct roots during development.",
+    a: "Initially, the root trunk develops like a single-rooted tooth. At the level of the future furcation, the epithelial diaphragm of HERS stops growing vertically and instead produces two horizontal, tongue-like processes. These processes grow towards each other and eventually fuse in the middle. This fusion divides the single, wide cervical opening into two separate openings, each of which will then form an individual root."
+  },
+  {
+    q: "What is the Reduced Enamel Epithelium (REE), and what four cell layers of the enamel organ collapse to form it?",
+    a: "The Reduced Enamel Epithelium (REE) is a thin membrane that covers the enamel of the tooth crown after enamel formation is complete but before the tooth erupts. Its function is to protect the enamel from resorption.<br><br>The four layers that collapse and fuse to form it are: <ol><li>Ameloblasts</li><li>Stratum intermedium</li><li>Stellate reticulum</li><li>Outer enamel epithelium</li></ol>"
+  }
 ];
+
 
 // ----------- State -----------
 const state = {
@@ -314,7 +690,7 @@ mcqs.forEach((item, idx)=>{
 
 // ----------- Render True/False -----------
 const tfGrid = document.getElementById('tfGrid');
- tfs.forEach((item, idx)=>{
+tfs.forEach((item, idx)=>{
   const card = document.createElement('article');
   card.className='card qcard';
   card.dataset.type='tf';
@@ -384,7 +760,7 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
@@ -418,14 +794,14 @@ function recalc(){
   const mcqScore = state.mcq.reduce((s,v,i)=>{
     if(v===null) return s;
     const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
+    const feedback = card.querySelector('.feedback').innerHTML;
+    return s + (feedback.includes("<b>Correct ✔</b>") ? 1 : 0);
   },0);
   const tfScore = state.tf.reduce((s,v,i)=>{
     if(v===null) return s;
     const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
+    const feedback = card.querySelector('.feedback').innerHTML;
+    return s + (feedback.includes("<b>Correct ✔</b>") ? 1 : 0);
   },0);
   const saqScore = state.saq.filter(Boolean).length;
   const total = mcqScore + tfScore + saqScore;

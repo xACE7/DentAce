@@ -92,9 +92,19 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}  
-  .opt-btn.correct{border-left:6px solid var(--ok);outline:none;background:rgba(255,255,255,0.03);}  
-  .opt-btn.wrong{border-left:6px solid var(--bad);outline:none;background:rgba(255,255,255,0.03);}  
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
   .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
@@ -117,6 +127,9 @@
   }
   .score .part{color:var(--muted);font-weight:600}
   .score b{color:var(--text)}
+  .answer table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .answer th, .answer td { border: 1px solid var(--glass-border); padding: 8px; text-align: left; }
+  .answer th { background-color: var(--glass); }
 </style>
 </head>
 <body>
@@ -159,64 +172,323 @@
   </main>
 
 <script>
-// ----------- Data (from OCIH-20: Practical Session – Dentin) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q: "Which cells produce dentin?", opts:["Ameloblasts","Odontoblasts","Cementoblasts","Fibroblasts"], correct:1, explain:"Dentin is produced by odontoblasts located at the pulp periphery." },
-  { q: "Where are odontoblast cell bodies located?", opts:["Enamel","Pulp","Cementum","Periodontal ligament"], correct:1, explain:"Cell bodies lie in the dental pulp; their processes extend into dentinal tubules." },
-  { q: "Odontoblastic processes extend into which structures?", opts:["Enamel rods","Haversian canals","Dentinal tubules","Cementocyte lacunae"], correct:2, explain:"Processes traverse the dentin inside dentinal tubules." },
-  { q: "Which best describes the contents of dentinal tubules?", opts:["Erythrocytes only","Lymph and osteocytes","Odontoblastic process, dentinal fluid, afferent nerve terminals","Salivary secretions"], correct:2, explain:"Tubules contain the odontoblastic process, fluid and sensory nerve endings." },
-  { q: "Primary vs. secondary dentin: which is TRUE for secondary dentin?", opts:["Laid down before eruption only","Forms after eruption and continues slowly throughout life","More highly mineralized than enamel","Present only in the root"], correct:1, explain:"Secondary dentin forms physiologically after eruption and narrows the pulp with age." },
-  { q: "How does the primary curvature of dentinal tubules change from crown to root?", opts:["Linear to S-shaped","S-shaped to more linear","Helical to zig-zag","Unchanged"], correct:1, explain:"In the crown the course is S‑shaped; it flattens to a more linear path in the root." },
-  { q: "Secondary curvature of dentinal tubules refers to:", opts:["Overall S-shaped path","Minor spiral-like kinks superimposed on the primary curvature","Tubules branching at the DEJ","Curvature due to tooth movement"], correct:1, explain:"Secondary curvatures are small undulations along the primary S-shape." },
-  { q: "Incremental lines of von Ebner are:", opts:["Enamel growth lines","Dentin incremental lines reflecting rhythmic deposition","Cementum reversal lines","Pulpal fibrosis strands"], correct:1, explain:"They are periodic growth lines seen in dentin." },
-  { q: "A \"dead tract\" in dentin represents:", opts:["Cluster of bacteria","Region of empty/air-filled tubules after loss of odontoblastic processes","Carious lesion front","Blood vessel track"], correct:1, explain:"Loss of processes leaves empty tubules that appear as a dark tract in ground sections." },
-  { q: "Interglobular dentin is best described as:", opts:["Hypercalcified enamel","Areas of hypomineralized dentin between calcospherites","Unmineralized predentin","Tertiary dentin"], correct:1, explain:"It forms where globular mineralization fails to fuse completely." },
-  { q: "Tomes' granular layer is found:", opts:["Under the DEJ in the crown","Adjacent to cementum in root dentin (mantle dentin)","At the pulp horns only","Within enamel spindles"], correct:1, explain:"It lies parallel to the external root surface, just beneath cementum." },
-  { q: "Contour lines of Owen indicate:", opts:["Daily dentin deposition","Major metabolic disturbance during dentinogenesis","Neonatal enamel","Cementum apposition"], correct:1, explain:"They reflect pronounced growth disturbances, distinct from von Ebner lines." },
-  { q: "Enamel spindles are:", opts:["Cracks in enamel","Extensions of odontoblastic processes that cross the DEJ into enamel","Sharpey's fibers","Capillaries in enamel"], correct:1, explain:"They are short extensions of odontoblastic processes seen at the DEJ." },
-  { q: "The dentino‑enamel junction (DEJ) is typically:", opts:["Flat","Scalloped, increasing interlocking","Porous to blood cells","A cementum interface"], correct:1, explain:"A scalloped interface enhances mechanical interlocking between enamel and dentin." },
-  { q: "Which dentin around tubules is more highly mineralized?", opts:["Intertubular dentin","Peritubular dentin","Predentin","Mantle dentin"], correct:1, explain:"Peritubular dentin forms a hypermineralized cuff lining tubules." },
-  { q: "Tubule density is greatest:", opts:["Near the DEJ","Near the pulp","In cementum","Uniform throughout dentin"], correct:1, explain:"Tubules are closer and wider near the pulp." },
-  { q: "Overall direction of dentinal tubules in the crown is:", opts:["Cervico‑apical, straight","S‑shaped from pulp toward DEJ","Circular around the pulp","Random"], correct:1, explain:"They course from pulp outward with a characteristic S‑shape in crowns." },
-  { q: "Which preparation best demonstrates peritubular dentin as a bright cuff?", opts:["Decalcified section","Ground section","SEM of etched enamel","Fresh frozen pulp"], correct:1, explain:"Mineralized structures are preserved in ground sections." },
-  { q: "Mantle dentin refers to:", opts:["Outer layer of primary dentin beneath enamel/cementum","Central dentin near pulp","Only tertiary dentin","Unmineralized predentin"], correct:0, explain:"Mantle dentin is the first‑formed outer primary dentin." },
-  { q: "Progressive deposition of secondary dentin causes:", opts:["Enlargement of pulp chamber","No change in pulp size","Gradual reduction of pulp chamber volume","Exposure of pulp"], correct:2, explain:"Physiologic secondary dentin reduces the pulp space with age." },
-  { q: "Tertiary (reparative) dentin forms in response to:", opts:["Normal eruption only","Irritation/injury such as caries or cavity preparation","Orthodontic retention","Salivary flow"], correct:1, explain:"A localized, stimulus‑dependent response beneath the affected area." },
-  { q: "Compared with crown tubules, root tubules are:", opts:["More S‑shaped","More linear","Absent","Arranged in circles"], correct:1, explain:"The S‑shape flattens in root dentin." },
-  { q: "Which set correctly matches a \"digital slide\" observation?", opts:["Scalloped interface = pulp space","Light brown tissue above scallops = dentin","Scalloped interface = DEJ; above it enamel; below it dentin","Empty central space = enamel"], correct:2, explain:"DEJ is scalloped; enamel lies above; dentin below; central void corresponds to pulp." },
-  { q: "Most likely reason a deep cavity in a 56‑year‑old lacked pulp exposure:", opts:["Wide open apices","Tertiary (reparative) dentin beneath lesion","Absence of predentin","Cementum thickening in the crown"], correct:1, explain:"Age + chronic irritation encourages protective tertiary dentin over pulp." },
-  { q: "Which statement about enamel spindles is CORRECT?", opts:["They originate from ameloblasts","They are trapped odontoblastic processes at the DEJ","They are in cementum","They are blood vessels"], correct:1, explain:"Spindles are ends of odontoblastic processes extending a short way into enamel." },
-  { q: "\"Secondary curvature\" is best seen in:", opts:["Demineralized mid‑S region of dentin","Cementum cross‑section","Enamel prisms only","Pulp tissue"], correct:0, explain:"The demineralized mid‑S region shows fine undulations of tubules." },
-  { q: "Interglobular dentin is commonly observed:", opts:["Immediately at the DEJ in enamel","Beneath mantle dentin where globules fail to fuse","Only in roots","Only after bleaching"], correct:1, explain:"It appears where globular mineralization is incomplete, often beneath mantle dentin." },
-  { q: "Tomes' granular layer aligns:", opts:["Parallel to external root surface","Perpendicular to cementum","Only in crowns","Across the DEJ"], correct:0, explain:"It runs parallel to the outer root surface adjacent to cementum." },
-  { q: "Primary curvature of tubules is also called:", opts:["Owen line","S‑shaped pathway","Hunter–Schreger band","Striae of Retzius"], correct:1, explain:"The overall S‑shaped path constitutes the primary curvature." },
-  { q: "Which component is NOT part of dentinal tubule contents?", opts:["Dentinal fluid","Afferent nerve terminals","Erythrocytes","Odontoblastic process"], correct:2, explain:"Blood cells are not present within intact dentinal tubules." }
+    {
+        q: "What is the primary function of odontoblast cells?",
+        opts: ["To produce dentin", "To form enamel", "To nourish the pulp", "To create cementum"],
+        correct: 0,
+        explain: "Odontoblasts are specialized cells that reside at the periphery of the dental pulp and are responsible for the production of dentin."
+    },
+    {
+        q: "Which type of dentin is formed prior to root completion?",
+        opts: ["Primary dentin", "Secondary dentin", "Tertiary dentin", "Mantle dentin"],
+        correct: 0,
+        explain: "Primary dentin is all the dentin that is formed before the completion of root formation."
+    },
+    {
+        q: "Secondary dentin is produced as a result of:",
+        opts: ["Normal physiological aging after root completion", "Trauma or caries", "The initial phase of tooth development", "Genetic anomalies"],
+        correct: 0,
+        explain: "Secondary dentin is produced after root formation is complete and is not a response to trauma, but a part of the normal aging process."
+    },
+    {
+        q: "Tertiary dentin is also known as:",
+        opts: ["Reparative dentin", "Physiological dentin", "Mantle dentin", "Circumpulpal dentin"],
+        correct: 0,
+        explain: "Tertiary dentin is formed in response to stimuli like caries or attrition and is considered reparative."
+    },
+    {
+        q: "What is contained within the dentinal tubules?",
+        opts: ["Odontoblastic processes, dentinal fluid, and nerve terminals", "Only odontoblastic processes", "Blood vessels and lymphatics", "Enamel spindles and cementocytes"],
+        correct: 0,
+        explain: "Dentinal tubules are microscopic channels that house odontoblastic processes, dentinal fluid, and afferent nerve terminals."
+    },
+    {
+        q: "The S-shaped pathway of dentinal tubules is referred to as the:",
+        opts: ["Primary curvature", "Secondary curvature", "Terminal branching", "Contour lines of Owen"],
+        correct: 0,
+        explain: "The major S-shaped curve of the dentinal tubules as they extend from the pulp to the dentino-enamel junction is known as the primary curvature."
+    },
+    {
+        q: "In which part of the tooth do dentinal tubules exhibit a more linear, less S-shaped path?",
+        opts: ["In the root", "In the crown near the cusp tip", "In the mantle dentin", "In the interglobular dentin"],
+        correct: 0,
+        explain: "As you move from the crown down into the root, the S-shape of the dentinal tubules flattens out to a more linear shape."
+    },
+    {
+        q: "What is peritubular dentin?",
+        opts: ["Dentin that immediately surrounds the dentinal tubule", "Dentin located between the tubules", "The first layer of dentin formed", "Unmineralized dentin matrix"],
+        correct: 0,
+        explain: "Peritubular dentin is a hypermineralized cuff of dentin that lines the wall of the dentinal tubule."
+    },
+    {
+        q: "The bulk of the dentin, located between the dentinal tubules, is called:",
+        opts: ["Intertubular dentin", "Peritubular dentin", "Mantle dentin", "Predentin"],
+        correct: 0,
+        explain: "Intertubular dentin forms the main body of dentin and is located between the peritubular dentin of adjacent tubules."
+    },
+    {
+        q: "Minor spiral-like kinks along the length of the primary curvature of dentinal tubules are known as:",
+        opts: ["Secondary curvatures", "Primary curvatures", "Enamel spindles", "Dead tracts"],
+        correct: 0,
+        explain: "Secondary curvatures are small, wave-like deviations in the path of dentinal tubules, superimposed on the primary curvature."
+    },
+    {
+        q: "What are 'dead tracts' in dentin?",
+        opts: ["Empty dentinal tubules resulting from odontoblast death", "Hypomineralized areas in dentin", "Lines indicating rhythmic deposition of dentin", "Branches of dentinal tubules near the DEJ"],
+        correct: 0,
+        explain: "Dead tracts appear dark in ground sections because the dentinal tubules are empty due to the death of the odontoblasts and are filled with air."
+    },
+    {
+        q: "Interglobular dentin represents:",
+        opts: ["Areas of unmineralized or hypomineralized dentin matrix", "Hypermineralized dentin", "Dentin formed in response to injury", "The junction between primary and secondary dentin"],
+        correct: 0,
+        explain: "Interglobular dentin is formed due to the failure of fusion of calcospherites, resulting in unmineralized areas between them."
+    },
+    {
+        q: "Where is Tomes' granular layer typically found?",
+        opts: ["In the root dentin, adjacent to the cementum", "In the coronal dentin, near the enamel", "Throughout the entire dentin layer", "Only in tertiary dentin"],
+        correct: 0,
+        explain: "Tomes' granular layer is a specific granular-appearing region of dentin found only in the root, immediately under the cementum."
+    },
+    {
+        q: "What do the incremental lines of von Ebner represent?",
+        opts: ["The daily rhythmic pattern of dentin deposition", "A major interruption in dentin formation", "Faults in mineralization", "The branching of dentinal tubules"],
+        correct: 0,
+        explain: "The incremental lines of von Ebner are fine lines that represent the daily, cyclical deposition of dentin matrix."
+    },
+    {
+        q: "Contour lines of Owen are indicative of:",
+        opts: ["Major metabolic disruption during odontogenesis", "The speed of dentin formation", "The age of the tooth", "The direction of dentinal tubules"],
+        correct: 0,
+        explain: "Contour lines of Owen are accentuated incremental lines that reflect a significant disturbance in the body's metabolism during tooth formation."
+    },
+    {
+        q: "Mantle dentin is the:",
+        opts: ["First formed layer of dentin, adjacent to the enamel or cementum", "Dentin formed after root completion", "Dentin surrounding the pulp chamber", "Reparative dentin formed due to caries"],
+        correct: 0,
+        explain: "Mantle dentin is the outermost layer of primary dentin, formed first by newly differentiated odontoblasts."
+    },
+    {
+        q: "What is the primary difference between a ground section and a decalcified section for viewing dentin?",
+        opts: ["Ground sections show mineralized tissues, while decalcified sections show cellular components", "Ground sections are thicker than decalcified sections", "Decalcified sections are stained, while ground sections are not", "Ground sections show only tubules, while decalcified sections show only matrix"],
+        correct: 0,
+        explain: "Ground sections are prepared by grinding the tooth down to a thin slice, preserving hard mineralized structures. Decalcified sections remove the mineral content to better visualize the organic matrix and cellular details."
+    },
+    {
+        q: "Enamel spindles are:",
+        opts: ["Odontoblastic processes trapped in enamel", "Cracks in the enamel surface", "Hypomineralized enamel rods", "A type of tertiary dentin"],
+        correct: 0,
+        explain: "Enamel spindles are the trapped ends of odontoblastic processes that crossed the future dentino-enamel junction (DEJ) before enamel formation began."
+    },
+    {
+        q: "The tissue immediately adjacent to the pulp, consisting of the cell bodies of odontoblasts, is the:",
+        opts: ["Pulp", "Predentin", "Secondary dentin", "Cementum"],
+        correct: 0,
+        explain: "The cell bodies of odontoblasts line the periphery of the dental pulp, with their processes extending into the dentin."
+    },
+    {
+        q: "What is predentin?",
+        opts: ["The unmineralized organic matrix of dentin located next to the pulp", "The fully mineralized dentin", "The first layer of dentin formed", "Dentin found only in the root"],
+        correct: 0,
+        explain: "Predentin is the layer of newly secreted, unmineralized dentin matrix situated between the odontoblast layer and the mineralized dentin."
+    },
+    {
+        q: "The dentino-enamel junction (DEJ) is characteristically:",
+        opts: ["Scalloped", "A straight line", "Smooth and flat", "Undefined"],
+        correct: 0,
+        explain: "The DEJ has a scalloped appearance, with the convexities facing the dentin, which helps to lock the enamel and dentin together."
+    },
+    {
+        q: "What is the main reason for dentin sensitivity?",
+        opts: ["Fluid movement within the dentinal tubules stimulating nerve endings", "Direct exposure of odontoblasts to stimuli", "Presence of blood vessels in the dentin", "Thinning of the enamel layer"],
+        correct: 0,
+        explain: "The 'hydrodynamic theory' suggests that stimuli cause rapid movement of dentinal fluid within the tubules, which in turn activates nerve endings in the pulp."
+    },
+    {
+        q: "Compared to coronal dentin, root dentin tubules are typically:",
+        opts: ["Straighter", "More S-shaped", "More branched", "Larger in diameter"],
+        correct: 0,
+        explain: "The primary curvature of dentinal tubules in the root is much less pronounced, appearing more linear or straight compared to the S-shaped tubules in the crown."
+    },
+    {
+        q: "What causes the appearance of interglobular dentin spaces?",
+        opts: ["Failure of mineralizing globules (calcospherites) to fuse", "Death of odontoblasts", "Rapid formation of dentin", "Incorporation of pulp tissue"],
+        correct: 0,
+        explain: "Interglobular dentin is a mineralization defect where the globular zones of mineralization fail to coalesce, leaving areas of unmineralized matrix."
+    },
+    {
+        q: "Which type of dentin is formed as a direct response to a specific injury like caries or attrition?",
+        opts: ["Tertiary dentin", "Primary dentin", "Secondary dentin", "Mantle dentin"],
+        correct: 0,
+        explain: "Tertiary (reparative or reactionary) dentin is produced locally by odontoblasts in response to an external stimulus or injury."
+    },
+    {
+        q: "The main organic component of dentin matrix is:",
+        opts: ["Type I collagen", "Elastin", "Keratin", "Type II collagen"],
+        correct: 0,
+        explain: "The organic matrix of dentin is primarily composed of Type I collagen fibers, which provide a scaffold for mineralization."
+    },
+    {
+        q: "What are the fine branches that connect adjacent dentinal tubules called?",
+        opts: ["Lateral branches or canaliculi", "Secondary curvatures", "Terminal branches", "Enamel spindles"],
+        correct: 0,
+        explain: "Dentinal tubules are interconnected by numerous fine lateral branches, or canaliculi, along their length."
+    },
+    {
+        q: "Which structure lies immediately external to the Tomes' granular layer?",
+        opts: ["Cementum", "Dentin", "Enamel", "Pulp"],
+        correct: 0,
+        explain: "Tomes' granular layer is in the root dentin, and the tissue immediately outside of it is the cementum."
+    },
+    {
+        q: "In a transverse section of dentin, the structure with the highest mineral content is:",
+        opts: ["Peritubular dentin", "Intertubular dentin", "Odontoblast process", "Predentin"],
+        correct: 0,
+        explain: "Peritubular dentin is significantly more mineralized (hypermineralized) than the surrounding intertubular dentin."
+    },
+    {
+        q: "A 56-year-old patient has a deep carious lesion. Pulp exposure is avoided during cavity preparation. This is likely due to the formation of:",
+        opts: ["Tertiary dentin", "Excessive primary dentin", "Sclerotic dentin only", "Secondary dentin only"],
+        correct: 0,
+        explain: "In response to a slow-progressing stimulus like caries, the pulp forms tertiary (reparative) dentin, which increases the thickness of the dentin layer and protects the pulp from exposure."
+    }
 ];
 
 const tfs = [
-  { q:"Dentin is a calcified tissue with composition different from enamel.", answer:true, explain:"Both are mineralized but differ in composition and structure." },
-  { q:"Odontoblast processes are confined to the pulp and do not enter dentin.", answer:false, explain:"They extend into dentinal tubules throughout dentin." },
-  { q:"Secondary dentin is a physiologic deposition that continues after eruption.", answer:true, explain:"It slowly narrows the pulp chamber over time." },
-  { q:"In the root, dentinal tubules show a more linear course than in the crown.", answer:true, explain:"The S‑shape flattens apically." },
-  { q:"Secondary curvature describes the overall S‑shape of tubules.", answer:false, explain:"It refers to small undulations superimposed on the S‑shape." },
-  { q:"Dead tracts result from loss of odontoblastic processes.", answer:true, explain:"Empty tubules appear as dark tracts in ground sections." },
-  { q:"Tomes' granular layer is a crown feature adjacent to enamel.", answer:false, explain:"It is a root feature adjacent to cementum in mantle dentin." },
-  { q:"Contour lines of Owen indicate major interruptions in dentin deposition.", answer:true, explain:"They reflect metabolic disturbances during odontogenesis." },
-  { q:"Peritubular dentin is less mineralized than intertubular dentin.", answer:false, explain:"Peritubular is more highly mineralized." }
+    {
+        q: "Dentin is a non-calcified tissue similar in composition to pulp.",
+        answer: false,
+        explain: "Dentin is a calcified, mineralized tissue, distinctly different from the soft connective tissue of the pulp."
+    },
+    {
+        q: "Primary dentin formation ceases once the tooth erupts into the oral cavity.",
+        answer: false,
+        explain: "Primary dentin formation continues until root formation is complete, which occurs after the tooth has erupted."
+    },
+    {
+        q: "Secondary dentin is formed at a slower rate than primary dentin.",
+        answer: true,
+        explain: "The deposition of secondary dentin is much slower and less regular than that of primary dentin throughout the life of the tooth."
+    },
+    {
+        q: "Dentinal tubules are wider in diameter near the pulp and narrower near the DEJ.",
+        answer: true,
+        explain: "The tubules taper as they extend from the pulp towards the dentino-enamel junction (DEJ)."
+    },
+    {
+        q: "Interglobular dentin contains dentinal tubules passing through it.",
+        answer: true,
+        explain: "Although interglobular dentin is unmineralized, the dentinal tubules pass through these areas uninterrupted."
+    },
+    {
+        q: "Dead tracts appear white in transmitted light microscopy because they are filled with fluid.",
+        answer: false,
+        explain: "Dead tracts appear dark in transmitted light because the tubules are empty and filled with air, which has a different refractive index."
+    },
+    {
+        q: "Tomes' granular layer is a result of a metabolic disturbance during tooth formation.",
+        answer: false,
+        explain: "Tomes' granular layer's origin is debated but it is a distinct structure in root dentin, not a result of metabolic disturbance like Contour lines of Owen."
+    },
+    {
+        q: "Odontoblast cell bodies are located within the dentinal tubules.",
+        answer: false,
+        explain: "The cell bodies of odontoblasts are located in the pulp, at the pulp-dentin border. Only their processes extend into the dentinal tubules."
+    },
+    {
+        q: "Peritubular dentin is less mineralized than intertubular dentin.",
+        answer: false,
+        explain: "Peritubular dentin is hypermineralized, meaning it is more calcified than the surrounding intertubular dentin."
+    }
 ];
 
 const saqs = [
-  // 1. Direct Answer
-  { q: "Define dentin in one sentence.", a: "A mineralized tissue produced by odontoblasts that forms the bulk of the tooth beneath enamel and surrounds the pulp." },
-  // 2. List/Enumeration (3+ items)
-  { q: "List three components commonly found within dentinal tubules.", a: "1) Odontoblastic process\n2) Dentinal fluid\n3) Afferent nerve terminals" },
-  // 3. Comparison (numbered table)
-  { q: "Compare primary and secondary curvature of dentinal tubules in a numbered table.", a: "<table style=\"width:100%;border-collapse:collapse\"><tr><th style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">#</th><th style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Primary curvature</th><th style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Secondary curvature</th></tr><tr><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">1</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Overall S‑shaped path</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Small undulations on the S‑shape</td></tr><tr><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">2</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Pronounced in crown</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Seen along tubules, best in mid‑S region</td></tr><tr><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">3</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Flattens toward root (more linear)</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Fine, spiral‑like kinks</td></tr></table>" },
-  // 4. Case-based Scenario
-  { q: "A 56‑year‑old has a deep carious lesion; after caries removal no pulp exposure occurred. What dentin change most likely prevented exposure?", a: "Formation of localized tertiary (reparative) dentin beneath the lesion." },
-  // Extra SAQs to make 6
-  { q: "State the location of Tomes' granular layer.", a: "In root dentin, parallel to the external surface, immediately adjacent to cementum (mantle dentin)." },
-  { q: "Name the dentin band reflecting major disturbances in dentinogenesis.", a: "Contour lines of Owen." }
+    {
+        q: "Define tertiary dentin and explain the circumstances under which it is formed.",
+        a: "Tertiary dentin, also known as reparative or reactionary dentin, is a type of dentin that is formed in response to a specific stimulus or injury, such as caries, attrition, or a dental restoration. It is deposited locally at the pulp-dentin interface beneath the affected area to protect the pulp."
+    },
+    {
+        q: "List three main components found within a dentinal tubule.",
+        a: `
+            <ol>
+                <li><strong>Odontoblastic process:</strong> A cytoplasmic extension of an odontoblast cell.</li>
+                <li><strong>Dentinal fluid:</strong> Tissue fluid that fills the space around the process.</li>
+                <li><strong>Afferent nerve terminal:</strong> Sensory nerve endings that contribute to dentin sensitivity.</li>
+            </ol>
+        `
+    },
+    {
+        q: "Compare the primary and secondary curvatures of dentinal tubules.",
+        a: `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Primary Curvature</th>
+                        <th>Secondary Curvature</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Description</strong></td>
+                        <td>The large, overall S-shaped path of the tubule from the pulp to the DEJ.</td>
+                        <td>Small, delicate spiral-like kinks or waves along the length of the primary curve.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Scale</strong></td>
+                        <td>A major, large-scale curve determining the overall tubule direction.</td>
+                        <td>Minor, small-scale oscillations along the main path.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Location</strong></td>
+                        <td>Most prominent in the crown, becoming straighter in the root.</td>
+                        <td>Present along the entire length of the tubule.</td>
+                    </tr>
+                </tbody>
+            </table>
+        `
+    },
+    {
+        q: "A patient complains of sharp, short pain when drinking cold beverages. Based on the histology of dentin, explain the most likely mechanism causing this sensitivity.",
+        a: "The patient is experiencing dentin hypersensitivity. This is best explained by the 'hydrodynamic theory'. The cold stimulus causes the dentinal fluid within the dentinal tubules to contract and flow rapidly. This fluid movement stimulates mechanoreceptors on the afferent nerve endings located near the pulp, which is interpreted by the brain as sharp pain."
+    },
+    {
+        q: "Describe the histological appearance and location of interglobular dentin.",
+        a: "Interglobular dentin appears as irregular, arc-shaped, unmineralized or hypomineralized areas within the dentin. It is located in the coronal dentin, just below the mantle dentin. It is caused by the incomplete fusion of mineralizing globules called calcospherites during dentinogenesis. Dentinal tubules pass through these areas without interruption."
+    },
+    {
+        q: "Explain the difference between incremental lines of von Ebner and contour lines of Owen.",
+        a: `
+            <table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Incremental Lines of von Ebner</th>
+                        <th>Contour Lines of Owen</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td><strong>Represents</strong></td>
+                        <td>Daily, rhythmic deposition of dentin (approx. 4 µm per day).</td>
+                        <td>A major disturbance in metabolism or body physiology during odontogenesis.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Appearance</strong></td>
+                        <td>Fine, delicate lines running perpendicular to the dentinal tubules.</td>
+                        <td>Accentuated, wider, and more prominent incremental lines.</td>
+                    </tr>
+                    <tr>
+                        <td><strong>Significance</strong></td>
+                        <td>Indicates the normal, daily pattern of dentin formation.</td>
+                        <td>Indicates a significant systemic event (e.g., birth, major illness) occurred during tooth formation.</td>
+                    </tr>
+                </tbody>
+            </table>
+        `
+    }
 ];
 
 // ----------- State -----------
@@ -275,17 +547,16 @@ mcqs.forEach((item, idx)=>{
     btn.addEventListener('click', ()=>{
       if(card.dataset.locked === 'true') return; // one attempt
       const v = Number(btn.dataset.v);
-      state.mcq[idx] = v;
+      const originalIndex = visualToOriginal[v];
+      state.mcq[idx] = originalIndex;
 
-      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
-      // Always mark the correct option (green)
       const correctBtn = buttons[correctVisualIndex];
       correctBtn.classList.add('correct');
 
-      if(v !== correctVisualIndex){
-        // Mark chosen wrong option (red)
+      const isCorrect = (originalIndex === item.correct);
+      if(!isCorrect){
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
@@ -337,16 +608,13 @@ tfs.forEach((item, idx)=>{
       const val = btn.dataset.v === "true";
       state.tf[idx] = val;
 
-      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
-
-      // Always mark the correct button (green)
+      
       const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
       correctBtn.classList.add('correct');
 
       const isCorrect = (val === item.answer);
       if(!isCorrect){
-        // mark chosen wrong (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
@@ -373,13 +641,14 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
   </div>
   <div class="answer" hidden>${item.a}</div>
 `;
+
 
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');
@@ -403,18 +672,16 @@ saqs.forEach((item, idx)=>{
 
 // ----------- Score + Reset -----------
 function recalc(){
-  const mcqScore = state.mcq.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const tfScore = state.tf.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
+  const mcqScore = state.mcq.reduce((s, selectedOriginalIndex, i) => {
+    if (selectedOriginalIndex === null) return s;
+    return s + (selectedOriginalIndex === mcqs[i].correct ? 1 : 0);
+  }, 0);
+  
+  const tfScore = state.tf.reduce((s, v, i) => {
+    if (v === null) return s;
+    return s + (v === tfs[i].answer ? 1 : 0);
+  }, 0);
+
   const saqScore = state.saq.filter(Boolean).length;
   const total = mcqScore + tfScore + saqScore;
 

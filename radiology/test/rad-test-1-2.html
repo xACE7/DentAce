@@ -92,14 +92,23 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
-  .opt-btn.correct{border-left:6px solid var(--ok);outline:none;background:rgba(255,255,255,0.03);} 
-  .opt-btn.wrong{border-left:6px solid var(--bad);outline:none;background:rgba(255,255,255,0.03);} 
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
-  .feedback[hidden]{display:none;} 
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
@@ -160,89 +169,59 @@
   </main>
 
 <script>
-// ----------- Data (from rad-1-2.pdf) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q: "Who discovered X-rays and is known as the Father of Radiology?", opts:["Marie Curie","Guglielmo Marconi","Sir Wilhelm Conrad Roentgen","Niels Bohr"], correct:2, explain:"Roentgen discovered X-rays on Nov 8, 1895 and is called the Father of Radiology." },
-  { q: "In Bohr's atomic model (1913), electrons:", opts:["reside inside the nucleus","are fixed in space without motion","revolve around the nucleus in discrete shells","move randomly without energy levels"], correct:2, explain:"Bohr proposed electrons revolve in quantized orbits (K, L, M, ...)." },
-  { q: "Which statement about protons, neutrons, and electrons is TRUE?", opts:["Electrons carry +1 charge","Neutrons carry -1 charge","Protons have no charge","Electrons are negatively charged"], correct:3, explain:"Electrons are negatively charged; protons are +1; neutrons are neutral." },
-  { q: "Maximum number of electron shells in an atom typically considered in dental radiology is:", opts:["4 (K–N)","5 (K–O)","6 (K–P)","7 (K–Q)"], correct:3, explain:"Up to seven shells K to Q are described (K holds 2, L 8, M 18, etc.)." },
-  { q: "Electrons are maintained in orbit by two opposing forces. They are:", opts:["Nuclear force and gravity","Electrostatic attraction and centrifugal force","Magnetism and friction","Strong force and weak force"], correct:1, explain:"Electrostatic attraction to nucleus and centrifugal force balance." },
-  { q: "Ionization refers to:", opts:["Formation of molecules from atoms","Conversion of an atom into an ion by gaining or losing electrons","Splitting of the nucleus","Excitation of outer electrons without charge change"], correct:1, explain:"Ionization forms ions by removing or adding electrons." },
-  { q: "Electromagnetic radiation includes all EXCEPT:", opts:["Radio waves","Visible light","Alpha particles","Gamma rays"], correct:2, explain:"Alpha particles are particulate radiation, not electromagnetic." },
-  { q: "Relationship between wavelength (\u03bb) and frequency (f) in EM waves is:", opts:["As \u03bb decreases, f decreases","As \u03bb decreases, f increases","\u03bb and f are independent","As distance increases, \u03bb increases and f constant"], correct:1, explain:"Shorter wavelength means higher frequency and greater energy." },
-  { q: "Which is NOT a property of X-rays?", opts:["Have mass and weight","Travel at speed of light","Cannot be focused to a point","Are invisible"], correct:0, explain:"X-rays have no mass or weight; they are invisible, travel at c, and cannot be focused to a point." },
-  { q: "Typical intraoral tube voltage (kVp) setting is:", opts:["20–30 kVp","40–50 kVp","60–70 kVp","90–110 kVp"], correct:2, explain:"Most intraoral units operate at 60–70 kVp." },
-  { q: "Tube current (mA) primarily controls:", opts:["Beam quality (penetration)","Focal spot size","Beam quantity (number of photons)","Collimation"], correct:2, explain:"mA heats the filament; more electrons = more photons (quantity)." },
-  { q: "Exposure time in intraoral radiography primarily controls:", opts:["Beam quality only","Beam quantity","Filtration level","Anode angle"], correct:1, explain:"Longer time = more photons emitted (quantity)." },
-  { q: "Which component shapes and aims the x-ray beam?", opts:["Leaded glass housing","Beryllium window","PID (position indicating device)","Step-down transformer"], correct:2, explain:"PID is an open-ended, lead-lined cylinder that shapes/aims the beam." },
-  { q: "A rectangular PID reduces exposure by approximately:", opts:["10%","30%","60%","90%"], correct:2, explain:"Rectangular collimation ~60% exposure reduction compared to round." },
-  { q: "Leaded glass housing purpose is to:", opts:["Focus the beam to a point","Prevent x-ray escape except at the window","Increase photon energy","Filter low-energy photons"], correct:1, explain:"The housing prevents escape of X-rays in all directions except through the window." },
-  { q: "The x-ray tube cathode consists of:", opts:["Tungsten target embedded in copper","Tungsten filament within a molybdenum focusing cup","Lead diaphragm and aluminum discs","Copper stem and glass envelope"], correct:1, explain:"Cathode = tungsten filament inside molybdenum focusing cup." },
-  { q: "Thermionic emission is:", opts:["Emission of X-rays from anode","Release of electrons from the heated filament","Emission of photons from aluminum filter","Ionization in patient tissues"], correct:1, explain:"Heating the filament releases electrons (thermionic emission)." },
-  { q: "The anode's tungsten target is embedded in copper primarily to:", opts:["Reduce focal spot size","Dissipate heat efficiently","Increase beam filtration","Increase mA"], correct:1, explain:"Copper conducts heat away from the tungsten target." },
-  { q: "Line focus principle in dental x-ray tubes uses a target angle approximately:", opts:["0.5\u00b0","5\u00b0","17\u201320\u00b0","45\u00b0"], correct:2, explain:"Target angulation of about 17\u201320\u00b0 yields a small effective focal spot." },
-  { q: "Which transformer reduces voltage to protect the filament?",
-    opts:["Autotransformer","Step-up transformer","Step-down transformer","Isolation transformer"],
-    correct:2, explain:"Step-down transformer lowers voltage for the filament; step-up is controlled by kVp." },
-  { q: "Most diagnostic X-ray photons from a tungsten target are produced by:", opts:["Pair production","Bremsstrahlung interactions","Characteristic radiation exclusively","Nuclear transitions"], correct:1, explain:"Bremsstrahlung (braking) accounts for the majority; characteristic contributes a portion." },
-  { q: "A 'direct hit' in Bremsstrahlung results in:", opts:["No photon emission","One high-energy photon from full kinetic energy loss","Multiple low-energy photons only","Only characteristic photons"], correct:1, explain:"A rare direct hit converts nearly all kinetic energy into a single photon." },
-  { q: "Characteristic radiation arises when:", opts:["Electron passes near nucleus and slows","Outer-shell electron is excited","Inner-shell electron is ejected and vacancy filled","Photon scatters with no energy loss"], correct:2, explain:"Ejection of an inner-shell electron followed by transition releases a characteristic photon." },
-  { q: "Which factor primarily increases beam QUALITY (penetration)?",
-    opts:["Increasing mA","Increasing kVp","Increasing exposure time","Increasing PID length"],
-    correct:1, explain:"kVp controls photon energy (quality); mA/time affect quantity." },
-  { q: "Total filtration required for units ABOVE 70 kVp is:", opts:["0.5 mm Al","1.0 mm Al","1.5 mm Al","2.5 mm Al"], correct:3, explain:"Regulatory total filtration above 70 kVp is 2.5 mm Al equivalent." },
-  { q: "Collimation is defined as:", opts:["Removal of low-energy photons","Control of beam size and shape","Increase in exposure time","Magnification control"], correct:1, explain:"Collimation limits size/shape to reduce tissue exposure and scatter." },
-  { q: "According to the inverse square law, beam intensity is:", opts:["Directly proportional to distance","Inversely proportional to distance","Inversely proportional to the square of distance","Independent of distance"], correct:2, explain:"Intensity \u221d 1/distance^2." },
-  { q: "Which interaction with matter contributes most to patient dose (image formation) in the diagnostic range?",
-    opts:["Compton scattering","Photoelectric absorption","Coherent scattering","Pair production"],
-    correct:1, explain:"Photoelectric absorption is responsible for radiographic contrast but increases dose." },
-  { q: "Compton scatter results in:", opts:["Photon absorption with no scatter","Ejected inner-shell electron and no scatter","Ejected outer-shell electron and scattered photon","No ionization"], correct:2, explain:"Compton: outer-shell electron ejected and photon deflected (scatter)." },
-  { q: "Coherent (Thomson) scattering is characterized by:", opts:["High-energy interaction with K-shell","Complete photon absorption","Low-energy elastic scattering with no ionization","Pair production at 1.02 MeV"], correct:2, explain:"Coherent is low-energy, elastic, no ionization; direction changes slightly." }
+    { q: "Who is credited with the discovery of X-rays in 1895?", opts: ["Marie Curie", "Wilhelm Conrad Roentgen", "Charles Edmond Kells", "Niels Bohr"], correct: 1, explain: "Sir Wilhelm Conrad Roentgen discovered X-rays on November 8th, 1895, and is considered the Father of Radiology." },
+    { q: "According to Bohr's Atomic Model, what is at the center of the atom?", opts: ["Electrons", "Protons", "Neutrons", "Nucleus"], correct: 3, explain: "Bohr's model views the atom as a miniature solar system with the nucleus at the center, containing protons and neutrons." },
+    { q: "Which particle in an atom carries a positive electrical charge?", opts: ["Electron", "Neutron", "Proton", "Ion"], correct: 2, explain: "Protons, located in the nucleus, carry a positive (+1) electrical charge." },
+    { q: "An atom that loses an electron becomes what?", opts: ["A negatively charged ion", "A neutral atom", "A positively charged ion", "A molecule"], correct: 2, explain: "When an atom loses a negatively charged electron, it has more protons than electrons, resulting in a net positive charge, making it a positively charged ion." },
+    { q: "What is the process of converting an atom into an ion by removing or adding an electron called?", opts: ["Radiation", "Ionization", "Electrification", "Fusion"], correct: 1, explain: "Ionization is the process of converting an atom into an ion by removing or adding an electron to it." },
+    { q: "X-rays belong to which type of radiation?", opts: ["Particulate radiation", "Alpha radiation", "Beta radiation", "Electromagnetic radiation"], correct: 3, explain: "X-rays are a form of electromagnetic radiation, which is the movement of energy through space as a combination of electric and magnetic fields." },
+    { q: "What is the relationship between wavelength and frequency of an electromagnetic wave?", opts: ["Directly proportional", "Inversely proportional", "No relationship", "Exponentially related"], correct: 1, explain: "Wavelength and frequency are inversely proportional. If the wavelength decreases, the frequency increases." },
+    { q: "Which of the following is NOT a property of X-rays?", opts: ["They are invisible", "They travel at the speed of light", "They can be focused to a point", "They have no mass"], correct: 2, explain: "X-rays travel in a straight line and cannot be focused to a single point." },
+    { q: "What part of the X-ray machine controls the penetrating quality (energy) of the X-ray beam?", opts: ["Tube current (mA)", "Exposure time (sec)", "Tube voltage (kVp)", "Lead collimator"], correct: 2, explain: "The tube voltage (kVp) primarily controls the energy or penetrating quality of the X-ray beam." },
+    { q: "What is the function of the lead collimator in the tube head?", opts: ["To filter out low-energy X-rays", "To dissipate heat", "To restrict the size and shape of the X-ray beam", "To increase the voltage"], correct: 2, explain: "The lead collimator is used to restrict, or control, the size and shape of the X-ray beam, reducing tissue exposure." },
+    { q: "The cathode in an X-ray tube is a negative electrode that consists of which two principal parts?", opts: ["Tungsten target and Copper stem", "Filament and Focusing cup", "Leaded glass housing and Beryllium window", "Anode and Cathode"], correct: 1, explain: "The cathode is the negative electrode and consists of the tungsten filament and the molybdenum focusing cup." },
+    { q: "What is the phenomenon called when a hot filament releases electrons?", opts: ["Ionization", "Photoelectric effect", "Thermionic emission", "Compton scattering"], correct: 2, explain: "When the filament is heated, it releases electrons in a process known as thermionic emission." },
+    { q: "What is the primary purpose of the tungsten target in the anode?", opts: ["To dissipate heat", "To focus the electron beam", "To convert the kinetic energy of electrons into X-ray photons", "To house the filament"], correct: 2, explain: "The tungsten target's function is to convert the kinetic energy of the high-speed electrons into X-ray photons." },
+    { q: "The 'Line Focus Principle' is used to achieve what?", opts: ["A larger effective focal spot", "A smaller effective focal spot", "Higher energy X-rays", "Lower energy X-rays"], correct: 1, explain: "By angling the target (17-20 degrees), the Line Focus Principle creates a smaller effective focal spot, which results in a sharper radiographic image." },
+    { q: "Which type of X-ray production occurs when a high-speed electron is slowed down and changes direction as it passes near the nucleus of a tungsten atom?", opts: ["Characteristic radiation", "Coherent scattering", "Photoelectric absorption", "Bremsstrahlung radiation"], correct: 3, explain: "Bremsstrahlung (or 'braking') radiation is produced when an electron is decelerated by the nuclear field of a target atom." },
+    { q: "Characteristic radiation is produced when:", opts: ["An electron hits the nucleus directly", "An electron from an outer orbit fills a vacancy in an inner orbit", "A low-energy photon excites an outer shell electron", "A photon interacts with an outer orbital electron and is scattered"], correct: 1, explain: "Characteristic radiation occurs when a high-speed electron dislodges an inner-shell electron, and the vacancy is filled by an electron from an outer shell, releasing energy as an X-ray photon." },
+    { q: "Increasing the tube current (mA) will result in:", opts: ["A lower number of X-rays", "Higher energy X-rays", "A higher number of X-rays", "A smaller focal spot"], correct: 2, explain: "Increasing the mA heats the filament more, releasing more electrons, which results in an increased number (quantity) of X-rays produced." },
+    { q: "What is the primary purpose of filtration in an X-ray beam?", opts: ["To increase the number of photons", "To remove low-energy photons", "To shape the beam", "To decrease exposure time"], correct: 1, explain: "Filtration, using aluminum discs, removes low-energy, less penetrating photons from the beam to reduce the patient's skin dose." },
+    { q: "According to the Inverse Square Law, if you double the distance from the X-ray source, the intensity of the beam will:", opts: ["Double", "Be reduced by half", "Be reduced to one quarter", "Remain the same"], correct: 2, explain: "The intensity of the beam is inversely proportional to the square of the distance. Doubling the distance (2D) results in (1/2^2) or 1/4 the intensity." },
+    { q: "Which interaction with matter is most common in dental radiography, accounting for about 57% of interactions?", opts: ["No interaction", "Coherent scattering", "Photoelectric absorption", "Compton scattering"], correct: 3, explain: "Compton scattering is the most prevalent interaction in dental radiography, where an X-ray photon interacts with an outer orbital electron." },
+    { q: "Which interaction with matter is responsible for creating the contrast between different tissues on a radiograph and involves total absorption of the photon?", opts: ["Coherent scattering", "Compton scattering", "Photoelectric absorption", "Thomson effect"], correct: 2, explain: "Photoelectric absorption occurs when an incident photon is completely absorbed by an inner-shell electron. This interaction is crucial for producing the image contrast." },
+    { q: "Which interaction with matter results in a scattered photon and is a primary cause of film fogging?", opts: ["Photoelectric absorption", "Compton scattering", "Characteristic radiation", "Bremsstrahlung radiation"], correct: 1, explain: "In Compton scattering, the incident photon is deflected (scattered). These scattered photons can reach the film and degrade image quality, causing fogging." },
+    { q: "The focusing cup is typically made of what material?", opts: ["Tungsten", "Copper", "Lead", "Molybdenum"], correct: 3, explain: "The focusing cup, which directs the electrons toward the target, is made of Molybdenum." },
+    { q: "The total filtration for an X-ray machine operating above 70 kVp must be at least:", opts: ["1.5 mm aluminum equivalent", "2.5 mm aluminum equivalent", "0.2 mm aluminum equivalent", "7.0 cm"], correct: 1, explain: "Regulations require a total filtration of at least 2.5 mm of aluminum equivalent for X-ray units operating at voltages above 70 kVp." },
+    { q: "The copper stem in the anode serves to:", opts: ["Convert electrons to X-rays", "Dissipate heat away from the target", "Focus the electron stream", "Filter the X-ray beam"], correct: 1, explain: "The copper stem is an excellent thermal conductor and its function is to dissipate the large amount of heat generated at the tungsten target." },
+    { q: "Which component of the X-ray tubehead is a leaded glass vacuum tube?", opts: ["The X-ray tube housing", "The transformer", "The PID", "The leaded-glass housing of the X-ray tube"], correct: 3, explain: "The X-ray tube itself is housed within a leaded-glass vacuum tube to prevent X-rays from escaping in all directions." },
+    { q: "What is the fundamental unit of matter?", opts: ["Molecule", "Ion", "Atom", "Electron"], correct: 2, explain: "The atom is the fundamental unit of all matter." },
+    { q: "In an electrically neutral atom, the number of electrons is equal to the number of:", opts: ["Neutrons", "Shells", "Protons", "Ions"], correct: 2, explain: "For an atom to be electrically neutral, the number of negatively charged electrons must equal the number of positively charged protons." },
+    { q: "Which of the following Position Indicating Devices (PID) is considered best for reducing patient exposure?", opts: ["Pointed conical PID", "Round, lead-lined PID", "Rectangular, lead-lined PID", "Short, plastic PID"], correct: 2, explain: "A rectangular, lead-lined PID is best because it collimates the beam to a size just larger than the film, significantly reducing tissue exposure compared to a round PID." },
+    { q: "In which type of interaction does the incident photon cease to exist without causing ionization, only momentarily exciting an outer shell electron?", opts: ["Photoelectric absorption", "Compton scattering", "Coherent scattering", "Bremsstrahlung"], correct: 2, explain: "In Coherent (Thomson) scattering, a low-energy photon passes near an outer electron, exciting it, and then scatters in a different direction with the same energy without causing ionization." }
 ];
 
 const tfs = [
-  { q:"X-rays have mass and can be focused to a point.", answer:false, explain:"X-rays have no mass/charge and cannot be focused to a point." },
-  { q:"Increasing kVp increases the penetrating quality of the x-ray beam.", answer:true, explain:"kVp raises photon energy and penetration." },
-  { q:"Doubling mA approximately doubles the number of X-ray photons.", answer:true, explain:"mA controls filament heating and electron flow (quantity)." },
-  { q:"Total filtration for 60 kVp intraoral units should be 2.5 mm Al.", answer:false, explain:"Up to 70 kVp requires 1.5 mm Al; above 70 kVp requires 2.5 mm Al." },
-  { q:"Rectangular collimation typically reduces exposure by around 60% compared with round.", answer:true, explain:"Rectangular beam limits area significantly." },
-  { q:"In the inverse square law, intensity at 2D is one-fourth of intensity at D.", answer:true, explain:"I \u221d 1/d^2, so (D to 2D) becomes 1/4." },
-  { q:"Characteristic radiation is produced when an electron slows in the nuclear field without ejecting an inner electron.", answer:false, explain:"That describes Bremsstrahlung; characteristic requires inner-shell vacancy filling." },
-  { q:"Thermionic emission occurs at the anode target.", answer:false, explain:"It occurs at the heated tungsten filament (cathode)." },
-  { q:"Compton scattering produces a recoil electron and a deflected photon.", answer:true, explain:"Defining features of Compton interaction." }
+    { q: "The nucleus of an atom contains only protons.", answer: false, explain: "The nucleus contains both positively charged protons and neutral neutrons." },
+    { q: "X-rays have a positive electrical charge.", answer: false, explain: "X-rays are a form of electromagnetic radiation and have no mass and no electrical charge." },
+    { q: "The control panel of an X-ray machine allows the operator to adjust the kVp, mA, and exposure time.", answer: true, explain: "These are the main settings on the control panel that control the quantity and quality of the X-ray beam." },
+    { q: "The filament in the X-ray tube is made of copper.", answer: false, explain: "The filament is made of tungsten because of its high melting point and ability to emit electrons when heated." },
+    { q: "Bremsstrahlung radiation is the primary source of X-rays produced in a dental X-ray tube.", answer: true, explain: "Most X-rays (about 70%) are produced through the Bremsstrahlung or 'braking' radiation mechanism." },
+    { q: "Increasing the exposure time decreases the number of X-rays produced.", answer: false, explain: "Increasing the exposure time increases the duration the filament is heated, releasing more electrons and thus producing more X-rays (increased quantity)." },
+    { q: "Collimation reduces patient exposure by filtering out low-energy X-rays.", answer: false, explain: "Collimation reduces exposure by restricting the size and shape of the beam. Filtration is what removes low-energy X-rays." },
+    { q: "In photoelectric absorption, the incident X-ray photon is scattered and continues on a different path.", answer: false, explain: "In photoelectric absorption, the incident photon is completely absorbed and ceases to exist; it does not scatter." },
+    { q: "Compton scattering is beneficial for the radiographic image as it enhances contrast.", answer: false, explain: "Compton scattering is disadvantageous to the image as the scattered photons cause fogging, which reduces contrast and detail." }
 ];
 
-// SAQs: 6 total; include 3 'factors/properties' list questions as requested
 const saqs = [
-  // Direct answer
-  { q: "Define ionization in the context of radiation physics.", a: "Ionization is the process of converting an atom into an ion by removing or adding an electron, creating an electrically unbalanced atom." },
-  // Factors/properties (list)
-  { q: "List three factors that control the dental X-ray beam and state what each primarily affects.", a: `<ol style='margin:0;padding-left:1.2rem'>
-      <li><b>kVp</b> \u2192 beam <b>quality</b> (penetration/energy)</li>
-      <li><b>mA</b> \u2192 beam <b>quantity</b> (number of photons)</li>
-      <li><b>Exposure time</b> \u2192 beam <b>quantity</b> (duration/photons)</li>
-    </ol>` },
-  // Comparison (numbered table)
-  { q: "Compare Bremsstrahlung and Characteristic radiation (two points).", a: `<table style='width:100%;border-collapse:collapse'>
-      <tr><th style='text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)'>#</th><th style='text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)'>Bremsstrahlung</th><th style='text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)'>Characteristic</th></tr>
-      <tr><td>1</td><td>Electron decelerates in nuclear field; spectrum continuous.</td><td>Inner-shell electron ejected; photon energy discrete.</td></tr>
-      <tr><td>2</td><td>Direct hit \u2192 single high-energy photon; near-miss \u2192 multiple photons.</td><td>Vacancy filled by outer electron releasing characteristic x-ray.</td></tr>
-    </table>` },
-  // Case-based scenario
-  { q: "A radiograph appears excessively dark though exposure time was correct. The operator had increased kVp from 60 to 70. What parameter primarily caused the darkening and why?", a: "Increased kVp. Higher kVp increases photon energy and penetrability, producing a darker image even at the same exposure time." },
-  // Factors/properties (list)
-  { q: "List four properties of diagnostic X-rays relevant to dentistry.", a: `<ol style='margin:0;padding-left:1.2rem'>
-      <li>No mass, no charge, travel at speed of light.</li>
-      <li>Invisible and travel in straight lines as waves.</li>
-      <li>Wide range of wavelengths; higher energy with shorter wavelength.</li>
-      <li>Cannot be focused to a point; can penetrate matter and ionize.</li>
-    </ol>` },
-  // Factors/properties (list)
-  { q: "List three methods to reduce patient exposure at the tubehead/beam level.", a: `<ol style='margin:0;padding-left:1.2rem'>
-      <li>Use <b>rectangular collimation</b> (smaller field size).</li>
-      <li>Appropriate <b>filtration</b> (e.g., 1.5 mm Al at \u2264 70 kVp; 2.5 mm Al at >70 kVp).</li>
-      <li>Use the <b>long PID</b> and follow the <b>inverse square law</b> for proper distance.</li>
-    </ol>` }
+    { q: "Define ionization.", a: "Ionization is the process of converting a neutral atom into an electrically unbalanced ion by adding or removing an electron." },
+    { q: "List the three main components of a dental X-ray machine.", a: "<ol><li>The Control Panel</li><li>The Extension Arm</li><li>The Tube Head</li></ol>" },
+    { q: "Compare Bremsstrahlung radiation and Characteristic radiation.", a: "<ol><li><b>Bremsstrahlung Radiation:</b> Produced when a high-speed electron is slowed down and deflected by the nucleus of a target atom, converting its kinetic energy into an X-ray photon. It produces a continuous spectrum of X-ray energies.</li><li><b>Characteristic Radiation:</b> Produced when a high-speed electron dislodges an electron from an inner shell of a target atom. When an outer shell electron drops to fill the vacancy, it releases a specific amount of energy as an X-ray photon. This occurs only at specific energy levels.</li></ol>" },
+    { q: "A dental assistant notices that recent radiographs are coming out too dark. They are using a setting of 70 kVp and 10 mA. What single setting could they adjust to make the radiographs lighter, and in which direction should they adjust it?", a: "To make the radiographs lighter (less dense), the assistant should decrease the total exposure. The easiest single setting to adjust is the <b>exposure time</b>. They should <b>reduce the exposure time</b>. Alternatively, they could reduce the mA, but time is more commonly adjusted." },
+    { q: "Describe the function of the two main components of the cathode in an X-ray tube.", a: "<ol><li><b>Filament (Tungsten):</b> Serves as the source of electrons. When heated by the electric current (determined by mA), it emits electrons through thermionic emission.</li><li><b>Focusing Cup (Molybdenum):</b> Electrostatically focuses the cloud of electrons from the filament into a narrow beam and directs it towards the focal spot on the anode.</li></ol>" },
+    { q: "Explain the Inverse Square Law as it applies to dental radiography.", a: "The Inverse Square Law states that the intensity of the X-ray beam is inversely proportional to the square of the distance from the source. This means that if you double the distance from the X-ray tube to the patient/film, the beam's intensity will be reduced to one-quarter of its original strength." }
 ];
 
 // ----------- State -----------

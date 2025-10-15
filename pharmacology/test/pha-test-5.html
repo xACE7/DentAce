@@ -92,7 +92,7 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
   /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
@@ -107,7 +107,7 @@
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
@@ -169,153 +169,59 @@
   </main>
 
 <script>
-// ----------- Data (from Lecture 5: Drugs Contraindicated in Pregnancy) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q: "Which statement best defines teratogenesis?", opts: [
-      "Physiologic changes in the mother only.",
-      "Any structural or functional defect of the embryo/fetus including IUGR, death, or transplacental carcinogenesis.",
-      "Only genetic chromosomal abnormalities inherited from parents.",
-      "Postnatal growth delay without fetal effects."], correct: 1,
-    explain: "Teratogenesis includes structural/functional defects, intrauterine growth retardation, fetal death and transplacental carcinogenesis." },
-  { q: "During the 0–8 week pre-/post-implantation period, which of the following is NOT a possible outcome of teratogen exposure?", opts: [
-      "Abortion (pregnancy loss).",
-      "No discernible effect.",
-      "Enhanced fetal growth and maturation.",
-      "An anatomic or later metabolic/functional defect."], correct: 2,
-    explain: "In the 0–8 week window outcomes include abortion, no effect, anatomic defects, or later functional defects—not enhanced growth." },
-  { q: "From 9 weeks to birth, teratogen exposure may influence which domains?", opts: [
-      "Neurologic development only.",
-      "Growth, physiologic/biochemical function, mental development, reproduction, or fetal death.",
-      "Placental implantation only.",
-      "Only skeletal development."], correct: 1,
-    explain: "Fetal period effects are broad: neurodevelopment, growth, physiology/biochemistry, mental development, reproduction, or death." },
-  { q: "Congenital abnormalities account for approximately what fraction of infant fatalities?", opts: ["1/2","1/5","1/10","2/3"], correct: 1,
-    explain: "Birth defects comprise roughly one-fifth of newborn/infant fatalities." },
-  { q: "Which group contributes the largest portion of fatal congenital abnormalities?", opts: [
-      "Cardiac abnormalities.","Lung abnormalities.","Chromosomal aberrations.","Renal anomalies."], correct: 0,
-    explain: "Cardiac abnormalities are the largest portion, followed by lung and chromosomal causes." },
-  { q: "FDA Category A indicates:", opts: [
-      "Fetal risk shown in animals but not in humans.",
-      "No fetal risk demonstrated in controlled human studies in all trimesters.",
-      "Risk to fetus clearly outweighs any benefit.",
-      "Fetal risk shown in humans; benefits may outweigh risks."], correct: 1,
-    explain: "Category A: controlled human data show no fetal risk across trimesters." },
-  { q: "FDA Category B means:", opts: [
-      "Animal studies show risk that is not confirmed in human studies.",
-      "No animal or human data available.",
-      "Clear human fetal risk; benefit may outweigh risk.",
-      "Contraindicated in pregnancy."], correct: 0,
-    explain: "Category B: animal risk seen but not confirmed in controlled human studies." },
-  { q: "FDA Category C is best described as:", opts: [
-      "Human studies show safety in all trimesters.",
-      "Animal studies show fetal risk; adequate human studies lacking or not available.",
-      "Risk outweighs benefit in all cases.",
-      "Placebo-equivalent safety."], correct: 1,
-    explain: "Category C: fetal risk in animals and insufficient human data." },
-  { q: "FDA Category D indicates:", opts: [
-      "Evidence of human fetal risk; use may be acceptable despite risks.",
-      "Absolute contraindication with no circumstances for use.",
-      "Only animal evidence of harm.",
-      "Risk unknown due to lack of data."], correct: 0,
-    explain: "Category D: positive evidence of human fetal risk; use only if benefit justifies risk." },
-  { q: "FDA Category X means:", opts: [
-      "Use if benefit outweighs risk.",
-      "Risk to the fetus clearly outweighs any benefit; contraindicated.",
-      "No animal studies exist.",
-      "Safe in later trimesters."], correct: 1,
-    explain: "Category X: contraindicated—risks clearly outweigh any possible benefit." },
-  { q: "Thalidomide exposure in pregnancy is classically associated with:", opts: [
-      "Neural tube closure defects.","Limb reduction defects and multiple congenital anomalies.","Hypertelorism only.","Macroglossia."], correct: 1,
-    explain: "Thalidomide (Category X) causes limb defects and other anomalies." },
-  { q: "Warfarin use during pregnancy (Category D) is associated with:", opts: [
-      "Renal tubular dysgenesis.","Skeletal abnormalities including spinal curvature and limb defects.","Cleft palate exclusively.","No fetal risk after week 20."], correct: 1,
-    explain: "Warfarin embryopathy includes skeletal and limb abnormalities." },
-  { q: "High-dose aminoglycosides may damage which cranial nerve in the fetus?", opts: ["II","V","VIII","XII"], correct: 2,
-    explain: "Aminoglycosides can cause ototoxicity—VIII cranial nerve damage." },
-  { q: "ACE inhibitors (Category D) in pregnancy are linked to:", opts: [
-      "Renal tubular dysplasia and skull/pulmonary hypoplasia.",
-      "Polydactyly.",
-      "Omphalocele only.",
-      "Benign fetal tachycardia."], correct: 0,
-    explain: "ACE inhibitors: renal tubular dysplasia, skull and pulmonary hypoplasia." },
-  { q: "Antineoplastic agents in pregnancy are MOST likely to cause:", opts: [
-      "Growth retardation and multi-organ malformations.","Improved neurocognitive outcomes.","Only limb shortening.","Exclusive ocular anomalies."], correct: 0,
-    explain: "Antineoplastics: growth retardation and defects of palate, eyes, kidney, heart, limbs, skull." },
-  { q: "Which dental treatments are considered safe throughout pregnancy?", opts: [
-      "Preventive, diagnostic, and restorative procedures.",
-      "Orthognathic surgery only in third trimester.",
-      "No dental procedures are safe.",
-      "Radiographic exams without shielding only."], correct: 0,
-    explain: "Preventive, diagnostic, and restorative care are safe throughout pregnancy." },
-  { q: "Which local anesthetic is generally preferred for pregnant patients?", opts: [
-      "Lidocaine with epinephrine.","Bupivacaine (high dose).","Mepivacaine (routine use).","Cocaine topical."], correct: 0,
-    explain: "Lidocaine is acceptable in pregnancy; bupivacaine/mepivacaine deserve caution due to fetal bradycardia reports." },
-  { q: "Which pair has been linked to fetal bradycardia and therefore warrants caution?", opts: [
-      "Prilocaine and etidocaine.","Mepivacaine and bupivacaine.","Lidocaine and articaine.","Procaine and benzocaine."], correct: 1,
-    explain: "Mepivacaine and bupivacaine: caution—reported fetal bradycardia." },
-  { q: "Pregnant dental personnel require special consideration mainly due to potential exposure to:", opts: [
-      "Ultrasonic vibrations only.","Nitrous oxide and ionizing radiation.","Fluoride varnish.","Dental amalgam."], correct: 1,
-    explain: "Workplace exposure to nitrous oxide and radiation merits special precautions." },
-  { q: "Regarding timing of dental care, which statement is TRUE?", opts: [
-      "Root canals/restorations should always be delayed until postpartum.",
-      "Root canals or restorations can be safely performed during pregnancy; delays may worsen outcomes.",
-      "Only extractions are safe.",
-      "No anesthetic should be used."], correct: 1,
-    explain: "Needed dental treatment should proceed; delaying can complicate problems." },
-  { q: "Which antibiotic is CONTRAINDICATED in pregnancy due to fetal tooth discoloration?", opts: [
-      "Amoxicillin","Erythromycin","Tetracycline","Penicillin"], correct: 2,
-    explain: "Tetracyclines discolor developing teeth and are avoided in pregnancy." },
-  { q: "Which antimicrobial is associated with maternal toxicity/fetal death and is generally avoided in pregnancy?", opts: [
-      "Clindamycin","Chloramphenicol","Metronidazole","Cephalosporins"], correct: 1,
-    explain: "Chloramphenicol is associated with serious toxicity and fetal death—avoid in pregnancy." },
-  { q: "Which statement about aminoglycosides in pregnancy is MOST accurate?", opts: [
-      "They are Category A agents.",
-      "High doses carry risk of fetal ototoxicity (VIII nerve).",
-      "They cause universal nephrotoxicity without hearing loss.",
-      "They are absolutely contraindicated (Category X)."], correct: 1,
-    explain: "Aminoglycosides can damage the fetal auditory nerve at high doses." },
-  { q: "Which analgesic is considered safe throughout pregnancy when used appropriately?", opts: [
-      "Acetaminophen","Aspirin","Ibuprofen","Naproxen"], correct: 0,
-    explain: "Acetaminophen is preferred; NSAIDs and aspirin have trimester-specific risks." },
-  { q: "Which drug should be AVOIDED in the third trimester due to fetal/maternal risks?", opts: [
-      "Acetaminophen","Morphine","Ibuprofen","Prednisolone"], correct: 2,
-    explain: "NSAIDs like ibuprofen are avoided in the 3rd trimester; aspirin and naproxen also avoided then." },
-  { q: "Which antifungal is appropriate for use in pregnancy and lactation?", opts: [
-      "Ketoconazole (systemic) without caution.","Fluconazole at high dose.","Nystatin (topical).","Terbinafine (systemic)."], correct: 2,
-    explain: "Topical nystatin or clotrimazole are acceptable; ketoconazole/fluconazole warrant caution due to fetal toxicity reports." },
-  { q: "Which local anesthetic warrants caution in pregnancy because of reported fetal bradycardia?", opts: [
-      "Bupivacaine","Lidocaine","Prilocaine","Etidocaine"], correct: 0,
-    explain: "Use bupivacaine with caution; lidocaine is generally preferred." },
-  { q: "Which corticosteroid is acceptable to use in pregnancy when indicated?", opts: [
-      "Prednisolone","Dexamethasone (high dose, long term) only.","Betamethasone topical class I.","None are ever acceptable."], correct: 0,
-    explain: "Prednisolone is considered acceptable in pregnancy when clinically indicated." },
-  { q: "Which sedative/hypnotic class is CONTRAINDICATED due to risk of cleft lip/palate?", opts: [
-      "Benzodiazepines","Melatonin","Antihistamines (H1)","Z-drugs (short-term)."], correct: 0,
-    explain: "Benzodiazepines are associated with orofacial clefts; avoid in pregnancy." },
-  { q: "Which opioid analgesic requires CAUTION during lactation?", opts: [
-      "Oxycodone","Acetaminophen","Ibuprofen","Prednisolone"], correct: 0,
-    explain: "Agents like oxycodone/hydrocodone warrant caution in lactation; monitor and prefer safer alternatives." }
+    { q: "Which FDA Pregnancy Risk Category indicates that controlled human studies show no fetal risk in any trimester?", opts: ["Category A", "Category B", "Category C", "Category X"], correct: 0, explain: "Category A is the safest, where adequate and well-controlled studies in pregnant women have failed to demonstrate a risk to the fetus." },
+    { q: "The drug Thalidomide, known for causing severe limb defects, belongs to which FDA category?", opts: ["Category C", "Category D", "Category B", "Category X"], correct: 3, explain: "Thalidomide is a classic example of a Category X drug, where the risks involved in use of the drug in pregnant women clearly outweigh potential benefits." },
+    { q: "Exposure to which of the following drugs during pregnancy is associated with skeletal abnormalities and curvature of the spine?", opts: ["Aminoglycosides", "Warfarin", "ACE inhibitors", "Antineoplastics"], correct: 1, explain: "Warfarin (Category D) is known to cause skeletal and limb abnormalities if taken during pregnancy." },
+    { q: "According to the dental drug chart, which antibiotic can cause discoloration of teeth in the developing fetus?", opts: ["Amoxicillin", "Metronidazole", "Tetracycline", "Clindamycin"], correct: 2, explain: "Tetracycline is contraindicated because it can lead to permanent discoloration of the teeth." },
+    { q: "Use of ACE inhibitors during pregnancy is linked to which of the following congenital defects?", opts: ["VIII cranial nerve damage", "Limb defects", "Renal tubular dysplasia", "Cleft palate"], correct: 2, explain: "ACE inhibitors (Category D) are associated with renal tubular dysplasia, as well as skull and pulmonary hypoplasia." },
+    { q: "Which analgesic is specifically contraindicated in the 3rd trimester of pregnancy?", opts: ["Acetaminophen", "Morphine", "Ibuprofen", "Oxycodone"], correct: 2, explain: "Aspirin, Ibuprofen, and Naproxen are to be avoided in the third trimester due to risks like postpartum hemorrhage." },
+    { q: "Which local anesthetic should be used with caution during pregnancy due to a risk of fetal bradycardia?", opts: ["Lidocaine", "Prilocaine", "Mepivacaine", "Etidocaine"], correct: 2, explain: "Mepivacaine and Bupivacaine should be used with caution because they are associated with fetal bradycardia." },
+    { q: "Exposure to which sedative/hypnotic group during pregnancy is associated with a risk of cleft lip/palate?", opts: ["Nitrous oxide", "Barbiturates", "Benzodiazepines", "Prednisolone"], correct: 2, explain: "Benzodiazepines are noted to have a risk of causing cleft lip and/or palate." },
+    { q: "What is the primary risk of using high-dose Aminoglycosides during pregnancy?", opts: ["Cardiac defects", "VIII cranial nerve damage", "Growth retardation", "Pulmonary hypoplasia"], correct: 1, explain: "High doses of Aminoglycosides (Category C) can cause damage to the VIII cranial nerve (auditory nerve)." },
+    { q: "The fetal development stage, occurring from 9 weeks to birth, is primarily associated with the development of:", opts: ["Major anatomical structures", "Implantation", "Neurologic function and growth", "Cellular division only"], correct: 2, explain: "During the fetal stage (9 weeks to birth), development is focused on growth, as well as physiologic, neurologic, and biochemical functioning." },
+    { q: "Which of these antifungals is considered safe to use during pregnancy according to the provided chart?", opts: ["Ketoconazole", "Clotrimazole", "Fluconazole", "Nystatin"], correct: 1, explain: "Clotrimazole is marked as 'YES' for use in pregnancy. Ketoconazole and Fluconazole should be used with caution." },
+    { q: "What potential adverse effect is associated with Chloramphenicol use during pregnancy?", opts: ["Fetal ototoxicity", "Discoloration of teeth", "Maternal toxicity/fetal death", "Skeletal abnormalities"], correct: 2, explain: "The remarks for Chloramphenicol explicitly state 'Maternal toxicity/fetal death'." },
+    { q: "According to the FDA classifications, Category D means:", opts: ["No fetal risk shown in human studies.", "Risk to fetus clearly outweighs any benefits.", "Fetal risk shown in animals, but not in humans.", "Studies show fetal risk, but use may be acceptable."], correct: 3, explain: "Category D indicates there is positive evidence of human fetal risk, but potential benefits may warrant use of the drug in pregnant women despite potential risks." },
+    { q: "Which of the following dental procedures is considered unsafe during pregnancy?", opts: ["Root canals", "Restorations", "Local anesthetics with epinephrine", "None of the above"], correct: 3, explain: "The lecture states that preventive, diagnostic, and restorative dental treatment, including root canals and restorations with local anesthetics, is safe throughout pregnancy." },
+    { q: "What is the main concern with dental personnel's exposure to nitrous oxide during the first trimester?", opts: ["Fetal bradycardia", "Spontaneous abortions", "Renal dysplasia", "Limb abnormalities"], correct: 1, explain: "The chart notes that nitrous oxide is associated with spontaneous abortions and should not be used in the first trimester." },
+    { q: "Which of the following is NOT considered a characteristic of teratogenesis?", opts: ["Structural defects", "Functional defects", "Intrauterine growth retardation", "Enhanced fetal growth"], correct: 3, explain: "Teratogenesis involves defects, growth retardation, and death, not enhanced growth." },
+    { q: "Which drug is mentioned to potentially cause respiratory depression when used with caution during pregnancy?", opts: ["Acetaminophen", "Ibuprofen", "Aspirin", "Morphine"], correct: 3, explain: "The analgesics chart indicates a risk of respiratory depression associated with opioids like Morphine, Oxycodone, etc." },
+    { q: "What is the FDA risk category for Warfarin?", opts: ["Category A", "Category B", "Category C", "Category D"], correct: 3, explain: "Warfarin is listed as a Category D drug due to its known risk of causing skeletal abnormalities." },
+    { q: "Which of these corticosteroids is considered safe to use during pregnancy and lactation?", opts: ["Hydrocortisone", "Dexamethasone", "Prednisolone", "Betamethasone"], correct: 2, explain: "Prednisolone is the only corticosteroid listed, and it is marked 'YES' for use in both pregnancy and lactation." },
+    { q: "In the post-implantation stage (0-8 weeks), a teratogen may produce all of the following EXCEPT:", opts: ["Abortion", "An anatomic defect", "No effect at all", "Only minor functional defects"], correct: 3, explain: "During this critical period, teratogens can cause major anatomic defects, abortion, or no effect. The idea of 'only minor' effects is misleading for this stage." },
+    { q: "Which of the following antibiotics is generally considered safe in pregnancy?", opts: ["Gentamycin", "Tetracycline", "Amoxicillin", "Chloramphenicol"], correct: 2, explain: "Amoxicillin is listed as 'YES' for use in pregnancy. Gentamycin, Tetracycline, and Chloramphenicol have significant fetal risks." },
+    { q: "The term 'transplacental carcinogenesis' refers to:", opts: ["The drug causing cancer in the mother.", "The drug causing cancer in the fetus.", "The drug being unable to cross the placenta.", "The drug preventing cancer development."], correct: 1, explain: "Transplacental carcinogenesis is when a substance crosses the placenta and induces cancer in the fetus." },
+    { q: "Which of the following is a known teratogenic effect of antineoplastic agents?", opts: ["Enhanced VIII cranial nerve function", "Accelerated fetal growth", "Growth retardation and cleft palate", "Improved skeletal formation"], correct: 2, explain: "Antineoplastics (Category D) are associated with a wide range of defects, including growth retardation and cleft palate." },
+    { q: "Fetal toxicity is a specific concern for which antifungal drug?", opts: ["Nystatin", "Clotrimazole", "Ketoconazole", "Amphotericin B"], correct: 2, explain: "The remarks section for antifungals explicitly mentions 'Fetal toxicity with ketoconazole'." },
+    { q: "Barbiturates are contraindicated for use in:", opts: ["Pregnancy only", "Lactation only", "Both pregnancy and lactation", "Neither pregnancy nor lactation"], correct: 2, explain: "The chart for sedatives shows Barbiturates are marked 'NO' for both use in pregnancy and lactation." },
+    { q: "Which class of drugs is associated with pulmonary hypoplasia when used during pregnancy?", opts: ["ACE inhibitors", "Aminoglycosides", "Beta-blockers", "Corticosteroids"], correct: 0, explain: "ACE inhibitors are linked to renal tubular dysplasia, skull hypoplasia, and pulmonary hypoplasia." },
+    { q: "What is the recommendation for Metronidazole use during pregnancy and lactation?", opts: ["NO in both", "YES in both", "YES in pregnancy, NO in lactation", "NO in pregnancy, YES in lactation"], correct: 1, explain: "Metronidazole is listed as 'YES' for use in both pregnancy and lactation." },
+    { q: "Anatomic defects caused by teratogens are most likely to occur during which period?", opts: ["Pre-implantation", "Post-implantation (0-8 weeks)", "Fetal development (9-birth)", "During labor"], correct: 1, explain: "The post-implantation stage is when organogenesis occurs, making the embryo most vulnerable to major structural/anatomic defects." },
+    { q: "FDA Category B implies that:", opts: ["Human studies show no risk.", "Animal studies show risk, not confirmed in humans.", "Risk clearly outweighs benefits.", "Human studies show definite risk."], correct: 1, explain: "Category B means animal reproduction studies have shown a risk but there are no adequate and well-controlled studies in pregnant women." },
+    { q: "Which common analgesic is considered safe throughout pregnancy and lactation?", opts: ["Aspirin", "Ibuprofen", "Naproxen", "Acetaminophen"], correct: 3, explain: "Acetaminophen is the only analgesic listed as 'YES' for use in both pregnancy and lactation without major restrictions." }
 ];
 
 const tfs = [
-  { q: "Teratogenesis includes transplacental carcinogenesis.", answer: true, explain: "Yes—it's part of the definition alongside structural/functional defects and IUGR/fetal death." },
-  { q: "Pre-implantation exposure (0–8 weeks) always results in an anatomic defect only.", answer: false, explain: "Outcomes range from abortion to no effect to anatomic or later functional defects." },
-  { q: "FDA Category A means controlled human studies show no fetal risk across trimesters.", answer: true, explain: "That's the definition of Category A." },
-  { q: "ACE inhibitors are Category B in pregnancy.", answer: false, explain: "ACE inhibitors are Category D with serious fetal risks." },
-  { q: "Preventive, diagnostic and restorative dental treatment is unsafe during pregnancy.", answer: false, explain: "These are considered safe." },
-  { q: "Tetracyclines are acceptable in pregnancy because they do not affect teeth.", answer: false, explain: "They discolor developing teeth and are avoided." },
-  { q: "NSAIDs should be avoided in the third trimester.", answer: true, explain: "Aspirin, ibuprofen, naproxen are avoided late in pregnancy." },
-  { q: "Lidocaine is an acceptable local anesthetic for pregnant patients.", answer: true, explain: "Yes—commonly used when indicated." },
-  { q: "Nitrous oxide is considered safe in the first trimester.", answer: false, explain: "Avoid N2O in the first trimester; spontaneous abortion risk noted." }
+    { q: "Preventive and restorative dental treatment is considered safe throughout the entire duration of pregnancy.", answer: true, explain: "The lecture explicitly states that preventive, diagnostic, and restorative dental treatment is safe throughout pregnancy." },
+    { q: "Lidocaine with epinephrine is contraindicated for use as a local anesthetic in pregnant patients.", answer: false, explain: "The presentation notes that local anesthetics like lidocaine with epinephrine may be used during pregnancy." },
+    { q: "The use of Tetracycline during pregnancy can lead to fetal ototoxicity (hearing damage).", answer: false, explain: "Tetracycline causes discoloration of teeth. Fetal ototoxicity is associated with Gentamycin (an aminoglycoside)." },
+    { q: "According to the FDA, Category X drugs may be acceptable to use in pregnancy if the benefits are significant.", answer: false, explain: "For Category X drugs, the risk to the fetus clearly outweighs any possible benefits. They are contraindicated." },
+    { q: "The drug Warfarin is classified as an FDA Category D agent.", answer: true, explain: "Warfarin is listed as a Category D drug, known to cause skeletal and limb abnormalities." },
+    { q: "Nitrous oxide is considered safe to use for sedation in a dental patient who is in her first trimester.", answer: false, explain: "The chart indicates that nitrous oxide should NOT be used in the first trimester due to its association with spontaneous abortions." },
+    { q: "All cephalosporin antibiotics are contraindicated during pregnancy.", answer: false, explain: "The chart groups Cephalosporins with Amoxicillin, Metronidazole, and Penicillin as 'YES' for use in pregnancy." },
+    { q: "Exposure to a teratogen during the pre-implantation stage will always result in a severe anatomic defect.", answer: false, explain: "During the pre-implantation stage, a teratogen is more likely to cause an 'all-or-none' effect: either abortion or no effect at all." },
+    { q: "Prednisolone is a corticosteroid that can be safely used during both pregnancy and lactation.", answer: true, explain: "The chart on corticosteroids lists Prednisolone as 'YES' for use in both pregnancy and lactation." }
 ];
 
 const saqs = [
-  { q: "Define teratogenesis in one sentence.", a: "Structural or functional defects in the embryo/fetus, including IUGR, fetal death, and transplacental carcinogenesis." },
-  { q: "List three FDA pregnancy risk categories and give a 2–3 word description for each.", a: "1) A – human studies safe. 2) C – animal risk, limited human data. 3) X – contraindicated; risks > benefits." },
-  { q: "Contrast Category D and Category X in a numbered table (keep it brief).", a: "<table style=\"width:100%;border-collapse:collapse\"><tr><th>#</th><th>Category</th><th>Key Point</th></tr><tr><td>1</td><td>D</td><td>Human fetal risk; use only if benefit justifies risk.</td></tr><tr><td>2</td><td>X</td><td>Risk clearly outweighs benefit; contraindicated.</td></tr></table>" },
-  { q: "A 32‑year‑old in her 3rd trimester needs analgesia after a filling. What do you recommend?", a: "Acetaminophen; avoid NSAIDs (e.g., ibuprofen, naproxen) and aspirin in 3rd trimester." },
-  { q: "Name two first‑line dental antibiotics acceptable in pregnancy.", a: "Amoxicillin; Penicillin (also erythromycin, cephalosporins)." },
-  { q: "You plan local anesthesia for a pregnant patient needing a root canal. Which agent is preferred?", a: "Lidocaine with epinephrine; use mepivacaine/bupivacaine with caution." }
+    { q: "Define teratogenesis as described in the lecture.", a: "Teratogenesis is characterized by structural or functional defects in the developing embryo or fetus. It also includes intrauterine growth retardation, death of the embryo or fetus, and transplacental carcinogenesis." },
+    { q: "List the five FDA Pregnancy Risk Categories, starting from the one with the least demonstrated risk to the one with the highest.", a: "The five categories are:<br>1. <b>Category A:</b> No risk in controlled human studies.<br>2. <b>Category B:</b> No risk in human studies, despite animal findings (or only animal studies showing no risk).<br>3. <b>Category C:</b> Risk shown in animals, but no human studies available.<br>4. <b>Category D:</b> Evidence of human fetal risk, but benefits may outweigh risks.<br>5. <b>Category X:</b> Risk clearly outweighs any benefits; contraindicated." },
+    { q: "Compare the FDA risk categories D and X. What is the key difference in their clinical recommendation?", a: "<b>Category D</b> drugs have shown a risk to the human fetus, but their use may be acceptable if the potential benefits to the mother are great (e.g., for a life-threatening condition).<br><b>Category X</b> drugs have also shown fetal abnormalities and risk, but this risk clearly and unequivocally outweighs any possible benefit. These drugs are contraindicated in women who are or may become pregnant." },
+    { q: "A pregnant patient in her third trimester has a severe dental abscess. The dentist considers prescribing an analgesic. Based on the lecture, which class of common analgesics must be avoided and why?", a: "NSAIDs like Aspirin, Ibuprofen, and Naproxen must be avoided. They are specifically contraindicated in the third trimester due to risks such as causing premature closure of the fetal ductus arteriosus and potential for postpartum hemorrhage." },
+    { q: "List three different teratogenic agents mentioned in the lecture and the primary defect associated with each.", a: "1. <b>Thalidomide:</b> Limb defects.<br>2. <b>Warfarin:</b> Skeletal abnormalities (e.g., curvature of the spine).<br>3. <b>ACE inhibitors:</b> Renal tubular dysplasia and pulmonary hypoplasia." },
+    { q: "Describe the three main stages of intrauterine development discussed and the general effect a teratogen might have in each stage.", a: "1. <b>Pre-implantation/Post-implantation (0-8 weeks):</b> This is the period of organogenesis. Teratogens can produce major anatomical defects, abortion, or have no effect at all.<br>2. <b>Fetal development (9 weeks to birth):</b> This period influences growth, neurologic and functional development. Teratogens can cause functional or metabolic defects, growth retardation, or death of the fetus." }
 ];
 
 // ----------- State -----------
@@ -472,7 +378,7 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
@@ -503,33 +409,48 @@ saqs.forEach((item, idx)=>{
 
 // ----------- Score + Reset -----------
 function recalc(){
-  const mcqScore = state.mcq.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const tfScore = state.tf.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const saqScore = state.saq.filter(Boolean).length;
-  const total = mcqScore + tfScore + saqScore;
+    // Recalculate MCQ score based on whether the chosen answer was correct
+    const mcqScore = state.mcq.reduce((score, selectedVisualIndex, idx) => {
+        if (selectedVisualIndex === null) return score;
+        const item = mcqs[idx];
+        const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${idx}"]`);
+        const buttons = card.querySelectorAll('.opt-btn');
 
-  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
-  ids.forEach(id=>{
-    const el = document.getElementById(id);
-    if(!el) return;
-    if(id.includes('Mcq')) el.textContent = mcqScore;
-    if(id.includes('Tf')) el.textContent = tfScore;
-    if(id.includes('Saq')) el.textContent = saqScore;
-    if(id.includes('Total')) el.textContent = total;
-  });
+        // Re-derive the correct visual index for this card
+        const originalToVisual = Array(4);
+        const btnLabels = Array.from(buttons).map(b => b.querySelector('.label').textContent);
+        item.opts.forEach((optText, origIdx) => {
+          const visualIdx = btnLabels.findIndex(label => label === optText);
+          originalToVisual[origIdx] = visualIdx;
+        });
+        const correctVisualIndex = originalToVisual[item.correct];
+
+        return score + (selectedVisualIndex === correctVisualIndex ? 1 : 0);
+    }, 0);
+
+    // Recalculate T/F score
+    const tfScore = state.tf.reduce((score, selectedValue, idx) => {
+        if (selectedValue === null) return score;
+        return score + (selectedValue === tfs[idx].answer ? 1 : 0);
+    }, 0);
+
+    const saqScore = state.saq.filter(Boolean).length;
+    const total = mcqScore + tfScore + saqScore;
+
+    const ids = ["sMcq", "sTf", "sSaq", "sTotal", "sMcq2", "sTf2", "sSaq2", "sTotal2"];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (id.includes('Mcq')) el.textContent = mcqScore;
+        if (id.includes('Tf')) el.textContent = tfScore;
+        if (id.includes('Saq')) el.textContent = saqScore;
+        if (id.includes('Total')) el.textContent = total;
+    });
 }
 
+
 document.getElementById('resetAll').addEventListener('click', ()=>{
+  if (!confirm("Are you sure you want to reset all answers and scores?")) return;
   document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
   document.querySelectorAll('.opt-btn').forEach(b=>{
     b.classList.remove('correct','wrong');

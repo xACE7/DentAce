@@ -1,0 +1,495 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Cell Injury</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .answer table{width:100%; border-collapse: collapse;}
+  .answer th, .answer td{border:1px solid var(--card-border); padding:8px; text-align:left;}
+  .answer th{font-weight:bold;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">General Pathology</h1>
+      <p class="subtitle">Test based on Lecture 4</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+    { q: "What is the primary definition of cell injury?", opts: ["A response to normal physiologic demands", "The effect of stresses on a cell, causing functional and morphologic changes", "A state of perfect cellular balance and homeostasis", "The process of cellular adaptation to the environment"], correct: 1, explain: "Cell injury is defined as the functional and morphologic effects of various stresses a cell encounters, leading to changes in its internal and external environment." },
+    { q: "Which of the following is considered the main cause of cell injury discussed in the lecture?", opts: ["Nutritional disturbances", "Genetic disorders", "Hypoxia", "Immunological reactions"], correct: 2, explain: "The slides identify Hypoxia (decreased oxygen supply) as a main cause of cell injury." },
+    { q: "Ischemia, a cause of hypoxia, is best described as:", opts: ["Low blood flow", "Inadequate oxygenation of the lungs", "Decreased oxygen-carrying capacity of blood", "An increase in red blood cells"], correct: 0, explain: "Ischemia is defined as low blood flow, for example, due to arterial occlusion." },
+    { q: "Which is NOT a listed cause of cell injury?", opts: ["Physical agents", "Infectious agents", "Excessive homeostasis", "Chemical agents & drugs"], correct: 2, explain: "Homeostasis is the state of balance. Cell injury occurs when this balance is disrupted by an injurious stimulus. The others are all listed causes." },
+    { q: "What is a key mechanism of cell injury involving ATP?", opts: ["ATP overproduction", "ATP depletion", "ATP binding to DNA", "ATP conversion to glucose"], correct: 1, explain: "ATP depletion is a central event in hypoxic and chemical injury, leading to failure of many energy-dependent cellular functions." },
+    { q: "Increased intracellular calcium (Ca2+) activates which of the following?", opts: ["Ribosomes", "Multiple cellular enzymes", "Pro-apoptotic proteins only", "The Na-K pump"], correct: 1, explain: "Increased cytosolic calcium activates various enzymes like proteases, phospholipases, and endonucleases that cause cellular damage." },
+    { q: "The effects of cell injury depend on which two factors?", opts: ["Cell size and shape", "Severity and duration of the injurious agent", "Patient age and gender", "Organ location and function"], correct: 1, explain: "The lecture explicitly states that the effects of cell injury depend on the severity and duration of the injurious agent." },
+    { q: "What are the two main types of irreversible cell injury (cell death)?", opts: ["Cloudy swelling and hydropic swelling", "Necrosis and Apoptosis", "Fatty change and atrophy", "Hyperplasia and Metaplasia"], correct: 1, explain: "Irreversible injury leads to cell death, which primarily occurs through necrosis or apoptosis." },
+    { q: "Cloudy swelling is characterized by cell swelling and:", opts: ["Clear cytoplasm", "Multiple large vacuoles", "Granularity of the cytoplasm", "A shrunken nucleus"], correct: 2, explain: "Cloudy swelling is defined by cell swelling and a granular appearance of the cytoplasm due to water accumulation and swollen organelles." },
+    { q: "What is the primary cause of cellular swelling in reversible injury?", opts: ["Failure of the Na-K pump", "Increased protein synthesis", "Damage to the nucleus", "Activation of apoptosis"], correct: 0, explain: "Due to ATP depletion, the Na-K pump fails, leading to an influx of sodium and water, causing the cell to swell." },
+    { q: "What happens to an organ affected by cloudy swelling?", opts: ["It becomes smaller and darker", "It becomes enlarged, pale, and soft", "It becomes fibrotic and hard", "It remains unchanged in size and color"], correct: 1, explain: "Grossly, an organ with cloudy swelling is enlarged, pale (due to capillary compression), soft, and heavy." },
+    { q: "If an injurious stimulus causing cloudy swelling continues, what is the likely progression?", opts: ["The cell returns to normal", "The cell undergoes apoptosis immediately", "The cell progresses to hydropic swelling", "The cell develops fatty change"], correct: 2, explain: "If the injury continues, cloudy swelling can progress to hydropic swelling, a more advanced form of reversible injury." },
+    { q: "Hydropic swelling is morphologically distinguished from cloudy swelling by the presence of:", opts: ["A granular cytoplasm", "A normal-sized nucleus", "Vacuoles in the cytoplasm", "Red coloration"], correct: 2, explain: "Hydropic swelling is characterized by the formation of clear vacuoles in the cytoplasm due to excess water accumulation." },
+    { q: "Fatty change (steatosis) is the pathological accumulation of what substance in cells?", opts: ["Glycogen", "Water", "Proteins", "Neutral fat"], correct: 3, explain: "Fatty change is defined as the pathological accumulation of excess neutral fat (triglycerides) within cells." },
+    { q: "Which organ is the most common site for fatty change?", opts: ["Kidney", "Heart", "Brain", "Liver"], correct: 3, explain: "The liver is the most common site for fatty change because it is the major organ involved in fat metabolism." },
+    { q: "A 'signet ring' appearance in microscopy of a fatty liver is caused by:", opts: ["The nucleus being centrally located", "Multiple small fat vacuoles", "A large fat vacuole pushing the nucleus to the periphery", "Glycogen accumulation around the nucleus"], correct: 2, explain: "In fatty change, a large fat vacuole can displace the nucleus to the cell periphery, creating a 'signet ring' appearance." },
+    { q: "Which is a common cause of fatty liver?", opts: ["Viral infection", "High protein diet", "Alcohol abuse", "Regular exercise"], correct: 2, explain: "Alcohol abuse is listed as a primary cause of fatty change in the liver." },
+    { q: "The initial stage of hypoxic injury is typically:", opts: ["Irreversible", "Reversible", "Apoptotic", "Necrotic"], correct: 1, explain: "Mild or transient hypoxia leads to reversible cell injury. Only if the hypoxia is severe or prolonged does it become irreversible." },
+    { q: "In anaerobic glycolysis during hypoxia, the accumulation of which substance causes a decrease in intracellular pH?", opts: ["Pyruvic acid", "Lactic acid", "Citric acid", "Fatty acid"], correct: 1, explain: "With no oxygen, the cell switches to anaerobic glycolysis, producing lactic acid, which lowers the pH and causes clumping of nuclear chromatin." },
+    { q: "Which event is considered a point of no return, indicating irreversible cell injury?", opts: ["Cellular swelling", "Detachment of ribosomes", "Severe membrane damage", "Clumping of chromatin"], correct: 2, explain: "Severe damage to the plasma membrane and lysosomal membranes is a hallmark of irreversible injury, leading to leakage of cell contents." },
+    { q: "Leakage of pro-apoptotic proteins from which organelle can trigger apoptosis?", opts: ["Nucleus", "Endoplasmic Reticulum", "Mitochondria", "Golgi Apparatus"], correct: 2, explain: "Mitochondrial damage can lead to the leakage of pro-apoptotic proteins like cytochrome c, which initiates the apoptotic cascade." },
+    { q: "Free radicals cause damage to:", opts: ["Lipids, proteins, and DNA", "Only the cell membrane", "Only mitochondrial DNA", "Only the nucleus"], correct: 0, explain: "Free radicals (like ROS) are highly reactive and can cause widespread damage to lipids (membrane peroxidation), proteins, and DNA." },
+    { q: "Which of these is a form of reversible cell injury?", opts: ["Necrosis", "Apoptosis", "Hydropic swelling", "Nuclear fragmentation"], correct: 2, explain: "Hydropic swelling, along with cloudy swelling and fatty change, is classified as a form of reversible cell injury." },
+    { q: "What is the microscopic appearance of cytoplasm in cloudy swelling?", opts: ["Clear with vacuoles", "Basophilic and shrunken", "Red and finely granular", "Yellow and greasy"], correct: 2, explain: "Microscopically, the cytoplasm in cloudy swelling is described as red (eosinophilic) and having fine granules." },
+    { q: "Pulmonary disease can cause hypoxia through which mechanism?", opts: ["Ischemia", "Inadequate oxygenation", "Decreased oxygen carrying capacity", "Increased blood flow"], correct: 1, explain: "Pulmonary diseases lead to inadequate oxygenation of the blood in the lungs, a direct cause of hypoxia." },
+    { q: "Anemia causes hypoxia by:", opts: ["Blocking arteries", "Damaging lung tissue", "Decreasing the oxygen-carrying capacity of the blood", "Causing an autoimmune reaction"], correct: 2, explain: "Anemia results in fewer red blood cells or less hemoglobin, thus reducing the blood's capacity to carry oxygen." },
+    { q: "Autoimmune diseases are an example of which category of cell injury cause?", opts: ["Physical agents", "Immunological reactions", "Nutritional disturbances", "Infectious agents"], correct: 1, explain: "Autoimmune diseases, where the body's immune system attacks its own cells, fall under immunological reactions." },
+    { q: "In reversible injury, what happens to ribosomes?", opts: ["They multiply rapidly", "They detach from the endoplasmic reticulum", "They migrate to the nucleus", "They are destroyed by lysosomes"], correct: 1, explain: "One of the ultrastructural changes in reversible injury is the detachment of ribosomes from the ER, which impairs protein synthesis." },
+    { q: "What is the gross appearance of a fatty liver?", opts: ["Small, dark, and firm", "Enlarged, pale yellow, and greasy", "Normal size with red spots", "Shrunken, fibrotic, and hard"], correct: 1, explain: "Grossly, a fatty liver is enlarged, has a pale yellow color, and feels soft and greasy." },
+    { q: "The central event that triggers the cascade of reversible injury under hypoxia is:", opts: ["Increased protein synthesis", "Increased intracellular pH", "Damage to the cell nucleus", "Inhibition of oxidative phosphorylation and ATP formation"], correct: 3, explain: "The lack of oxygen inhibits oxidative phosphorylation in the mitochondria, leading to a sharp decrease in ATP, which kicks off the subsequent events of reversible injury." }
+];
+
+const tfs = [
+    { q: "Cell injury is a state where a cell perfectly maintains its internal and external environment.", answer: false, explain: "This describes homeostasis. Cell injury occurs when stresses cause changes to the cell's environment, disrupting homeostasis." },
+    { q: "The effects of cell injury are independent of the duration of the injurious stimulus.", answer: false, explain: "The lecture states that the effects depend on both the severity and the duration of the injurious agent." },
+    { q: "Reversible cell injury means the alterations are correctable if the damaging stimulus is removed.", answer: true, explain: "This is the definition of reversible injury. The cell can return to normal if the stress is eliminated." },
+    { q: "Necrosis and apoptosis are two forms of reversible cell injury.", answer: false, explain: "Necrosis and apoptosis are forms of irreversible cell injury, also known as cell death." },
+    { q: "In cloudy swelling, the affected organ typically becomes smaller and darker.", answer: false, explain: "The organ becomes enlarged, pale, and soft due to cellular swelling and compression of capillaries." },
+    { q: "Fatty change most commonly occurs in the brain.", answer: false, explain: "The most common site for fatty change is the liver, due to its central role in fat metabolism." },
+    { q: "Increased intracellular calcium is protective against cell injury.", answer: false, explain: "Increased intracellular calcium is damaging because it activates multiple enzymes that degrade cellular components." },
+    { q: "Anaerobic glycolysis leads to an increase in intracellular pH.", answer: false, explain: "Anaerobic glycolysis produces lactic acid, which causes a decrease (more acidic) in intracellular pH." },
+    { q: "A 'signet ring' appearance is characteristic of hydropic swelling.", answer: false, explain: "The 'signet ring' appearance is seen in fatty change, where a large lipid vacuole pushes the nucleus to the side." }
+];
+
+const saqs = [
+    { q: "Define 'Cell Injury' based on the lecture.", a: "Cell injury is defined as the functional and morphologic effects of a variety of stresses that a cell encounters, resulting in changes to its internal and external environment." },
+    { q: "List the seven main causes of cell injury mentioned in the presentation.", a: `
+        <table>
+            <thead><tr><th>#</th><th>Cause</th></tr></thead>
+            <tbody>
+                <tr><td>1</td><td>Hypoxia</td></tr>
+                <tr><td>2</td><td>Infectious agents</td></tr>
+                <tr><td>3</td><td>Physical agents</td></tr>
+                <tr><td>4</td><td>Chemical agents & Drugs</td></tr>
+                <tr><td>5</td><td>Immunological reactions</td></tr>
+                <tr><td>6</td><td>Nutritional disturbances</td></tr>
+                <tr><td>7</td><td>Genetic & Enzymatic disorders</td></tr>
+            </tbody>
+        </table>`
+    },
+    { q: "A 55-year-old man with a history of chronic alcoholism presents with an enlarged, soft, and yellowish liver on physical examination. What pathological process is most likely occurring in his liver, and what is the underlying mechanism?", a: "The most likely process is Fatty Change (steatosis). The mechanism is that the alcohol-induced injury to the liver cells diminishes their enzyme activity, impairing their ability to metabolize neutral fats, which then accumulate in the cytoplasm." },
+    { q: "Explain the sequence of events that leads to cellular swelling after a cell is deprived of oxygen (hypoxia).", a: "Hypoxia inhibits mitochondrial oxidative phosphorylation, causing ATP depletion. This leads to failure of the ATP-dependent Na-K pump. As a result, sodium accumulates inside the cell, increasing intracellular osmotic pressure and causing water to enter, which results in cellular swelling." },
+    { q: "Compare the key microscopic features of Cloudy Swelling and Hydropic Swelling.", a: `
+        <table>
+            <thead>
+                <tr><th>Feature</th><th>Cloudy Swelling</th><th>Hydropic Swelling</th></tr>
+            </thead>
+            <tbody>
+                <tr><td><b>1. Cytoplasm</b></td><td>Shows fine red (eosinophilic) granules.</td><td>Contains multiple clear vacuoles.</td></tr>
+                <tr><td><b>2. Severity</b></td><td>An early, mild form of reversible injury.</td><td>A more advanced stage of reversible injury than cloudy swelling.</td></tr>
+                <tr><td><b>3. Nucleus</b></td><td>Typically normal.</td><td>Typically normal.</td></tr>
+            </tbody>
+        </table>`
+    },
+    { q: "What are the five principal mechanisms of cell injury that occur downstream of an injurious stimulus?", a: `
+        <table>
+            <thead><tr><th>#</th><th>Mechanism</th></tr></thead>
+            <tbody>
+                <tr><td>1</td><td>ATP depletion</td></tr>
+                <tr><td>2</td><td>Permeability of cell membrane</td></tr>
+                <tr><td>3</td><td>Calcium entry (increased intracellular Ca2+)</td></tr>
+                <tr><td>4</td><td>Damage of Mitochondria</td></tr>
+                <tr><td>5</td><td>Free radicals formation</td></tr>
+            </tbody>
+        </table>`
+    }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null),
+  tf: Array(tfs.length).fill(null),
+  saq: Array(saqs.length).fill(false)
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return;
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return;
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+    const mcqScore = state.mcq.reduce((s, v, i) => {
+        if (v === null) return s;
+        const item = mcqs[i];
+        const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+        const buttons = card.querySelectorAll('.opt-btn');
+        const chosenOriginalIndex = Array.from(buttons).findIndex(b => Number(b.dataset.v) === v);
+        
+        const map = [];
+        const optsDiv = card.querySelector('.opts');
+        optsDiv.querySelectorAll('.opt-btn').forEach(btn => {
+            const label = btn.querySelector('.label').textContent;
+            map.push(mcqs[i].opts.indexOf(label));
+        });
+
+        const correctVisualIndex = map.indexOf(item.correct);
+        return s + (v === correctVisualIndex ? 1 : 0);
+    }, 0);
+
+    const tfScore = state.tf.reduce((s, v, i) => {
+        if (v === null) return s;
+        return s + (v === tfs[i].answer ? 1 : 0);
+    }, 0);
+
+    const saqScore = state.saq.filter(Boolean).length;
+    const total = mcqScore + tfScore + saqScore;
+
+    const ids = ["sMcq", "sTf", "sSaq", "sTotal", "sMcq2", "sTf2", "sSaq2", "sTotal2"];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (id.includes('Mcq')) el.textContent = mcqScore;
+        if (id.includes('Tf')) el.textContent = tfScore;
+        if (id.includes('Saq')) el.textContent = saqScore;
+        if (id.includes('Total')) el.textContent = total;
+    });
+}
+
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

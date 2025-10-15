@@ -113,6 +113,10 @@
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer table {width: 100%; border-collapse: collapse; margin-top: 10px;}
+  .answer th, .answer td { border: 1px solid var(--card-border); padding: 8px; text-align: left;}
+  .answer th { background-color: var(--glass);}
+
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -169,138 +173,298 @@
   </main>
 
 <script>
-// ----------- Data (lecture-based) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q: "Which of the following is NOT a principal component of the normal periodontium?",
-    opts: ["Gingiva","Periodontal ligament","Dentin","Cementum"], correct: 2,
-    explain: "The four principal components are gingiva, periodontal ligament, cementum, and alveolar bone." },
-  { q: "The normal periodontium primarily provides:",
-    opts: ["Esthetics","Support necessary to maintain teeth in function","Salivary secretion","Thermal insulation"], correct: 1,
-    explain: "Its role is to support teeth in function." },
-  { q: "The alveolar bone proper is radiographically continuous with:",
-    opts: ["Enamel","Lamina dura","Cementum","Pulp chamber"], correct: 1,
-    explain: "The lamina dura is the dense radiopaque line lining the socket and is continuous with the alveolar crest cortical bone." },
-  { q: "Which label corresponds to the periodontal ligament in schematic diagrams?",
-    opts: ["G","PL","ABP","RC"], correct: 1,
-    explain: "Abbreviations: G—Gingiva; PL—Periodontal ligament; ABP—Alveolar bone proper; RC—Root cementum." },
-  { q: "Clinical probing depth of a healthy gingival sulcus is typically:",
-    opts: ["0.5–1 mm","2–3 mm","4–5 mm",">5 mm"], correct: 1,
-    explain: "A healthy sulcus is V‑shaped and permits a probe to 2–3 mm." },
-  { q: "Which statement about attached gingiva is TRUE?",
-    opts: ["It is loose and movable","It is firmly bound to the underlying periosteum","It is non‑keratinized","It terminates at the incisal edge"], correct: 1,
-    explain: "Attached gingiva is firm, resilient, and tightly bound to periosteum." },
-  { q: "The mucogingival junction (MGJ) demarcates:",
-    opts: ["Enamel from cementum","Attached gingiva from alveolar mucosa","Free gingiva from interdental gingiva","Hard from soft palate"], correct: 1,
-    explain: "MGJ separates attached gingiva from the relatively loose alveolar mucosa." },
-  { q: "Interdental gingiva may present as:",
-    opts: ["Only pyramidal","Only papillary","Pyramidal or col","Only flat"], correct: 2,
-    explain: "The embrasure is filled by interdental gingiva that can be pyramidal or a col." },
-  { q: "In the presence of a diastema, the interdental papilla:",
-    opts: ["Enlarges into a col","Is absent; gingiva forms a smooth, rounded surface","Shows crater‑like defects","Always becomes bulbous"], correct: 1,
-    explain: "With missing proximal contact (diastema), papilla/col are absent and tissue is smoothly rounded over bone." },
-  { q: "Frenum attachments often include:",
-    opts: ["Only mucosa","Mucosa and muscle fibers","Only periosteum","Cartilage"], correct: 1,
-    explain: "Frenum are folds of mucosa often with muscle fibers joining movable to attached/specialized mucosa." },
-  { q: "The lingual frenum is located:",
-    opts: ["On the palate","On the underside of the tongue","Between mandibular canines","At the retromolar pad"], correct: 1,
-    explain: "It is found on the ventral surface of the tongue." },
-  { q: "The alveolar process is that part of the jaws which:",
-    opts: ["Forms and supports the sockets of the teeth","Forms the mandibular condyle","Houses maxillary sinuses","Forms the zygomatic arch"], correct: 0,
-    explain: "Definition of the alveolar process." },
-  { q: "Radiographically, the lamina dura appears:",
-    opts: ["Radiolucent line","Dense radiopaque line lining the socket","Mixed radiolucent‑opaque","Invisible in health"], correct: 1,
-    explain: "Lamina dura is a thin outer layer of dense cortical bone lining the socket—radiopaque." },
-  { q: "A normal alveolar crest lies approximately how far apical to the CEJ of adjacent teeth?",
-    opts: ["0.5–1.0 mm","1.5–2.0 mm","2.5–3.0 mm",">3.5 mm"], correct: 1,
-    explain: "Normal crest level is ~1.5–2 mm from CEJ." },
-  { q: "Rounding of the alveolar crest angle is most suggestive of:",
-    opts: ["Enamel hypoplasia","Periodontal ligament disease/periodontal disease","Caries","Periapical cyst"], correct: 1,
-    explain: "In disease the crest may lose its sharp angle and appear rounded." },
-  { q: "The periodontal ligament (PDL) space appears radiographically as:",
-    opts: ["A radiopaque band","A radiolucent space between root and lamina dura","A trabecular pattern","A sclerotic zone"], correct: 1,
-    explain: "The collagenous PDL shows as a radiolucent space separating root and lamina dura." },
-  { q: "Which region of the PDL space is generally widest in health?",
-    opts: ["At the apex","Mid‑root","Coronally","Uniform everywhere"], correct: 2,
-    explain: "Widest coronally and slightly narrower toward the apex." },
-  { q: "Horizontal vs vertical bone loss are terms that describe:",
-    opts: ["Gingival color changes","Patterns of alveolar bone loss on radiographs","Calculus types","Types of caries"], correct: 1,
-    explain: "They are patterns of bone loss—horizontal or angular/vertical." },
-  { q: "Before assessing gingival color and surface texture, the gingiva should be:",
-    opts: ["Left moist","Dried for accurate observation","Anesthetized","Stretched with retraction cord"], correct: 1,
-    explain: "Drying facilitates accurate visual inspection and stippling assessment." },
-  { q: "Healthy gingival color is best described as:",
-    opts: ["Coral/salmon pink","Bluish‑red","Bluish‑pink","Bright red glossy"], correct: 0,
-    explain: "Healthy gingiva is coral/salmon pink; alveolar mucosa is red." },
-  { q: "Which factor contributes to normal gingival color?",
-    opts: ["Amount of melanin‑containing cells and keratinization","Salivary buffering","Root concavities","Crown translucency"], correct: 0,
-    explain: "Color depends on vascularity, epithelial thickness/keratinization, and pigment‑containing cells." },
-  { q: "Healthy gingival contour at the margin is:",
-    opts: ["Rounded and rolled","Scalloped with knife‑edge margin","Flat and thickened","Irregular with craters"], correct: 1,
-    explain: "Health: scalloped margin with sharp pointed papillae." },
-  { q: "Stippling of attached gingiva is:",
-    opts: ["A pathologic sign","More prominent on lingual surfaces","An orange‑peel surface that varies with age","Only seen in inflamed tissue"], correct: 2,
-    explain: "Stippling (orange‑peel) may vary with age and is less prominent lingually." },
-  { q: "Bleeding on probing in health is:",
-    opts: ["Marked","Moderate","Absent or slight","Always present"], correct: 2,
-    explain: "Healthy tissue exhibits absent or minimal bleeding." },
-  { q: "In gingivitis, gingival color may become:",
-    opts: ["Uniformly coral pink","Reddish to bluish‑red, localized or generalized","White and keratotic only","Always cyanotic"], correct: 1,
-    explain: "Inflammation yields pink to bluish‑red shades; distribution can be localized or generalized." },
-  { q: "Which change in contour suggests periodontal disease?",
-    opts: ["Knife‑edge margin","Pointed interdental papilla","Rounded/rolled margins with blunted papillae","Scalloped margin"], correct: 2,
-    explain: "Disease: rounded/rolled margins; papillae bulbous or blunted or absent." },
-  { q: "Consistency of healthy gingiva on palpation is:",
-    opts: ["Soft and edematous","Firm and resilient","Friable","Leathery nodular"], correct: 1,
-    explain: "Healthy tissue feels firm and resilient." },
-  { q: "Surface texture in disease is typically:",
-    opts: ["Matte and stippled","Smooth and shiny with loss of stippling","Rough and hairy","Highly keratinized"], correct: 1,
-    explain: "Inflamed tissue often appears smooth and glossy without stippling." },
-  { q: "Normal probing depth vs periodontal pocket is best differentiated by:",
-    opts: ["Color alone","Pocket depth: ≤3 mm vs >4 mm","Presence of calculus only","Pain on probing"], correct: 1,
-    explain: "Sulcus ≤3 mm is healthy; periodontal pocket typically >4 mm." },
-  { q: "During probing, the instrument should:",
-    opts: ["Be jabbed vertically at one point","Slide along the tooth and be ‘walked’ circumferentially","Avoid contact with the tooth","Be forced apically"], correct: 1,
-    explain: "Probe tip maintains contact with the tooth and is walked around to explore the pocket." },
-  { q: "Which tissue is non‑keratinized and red due to rich vascularity?",
-    opts: ["Attached gingiva","Alveolar mucosa","Marginal gingiva","Palatal masticatory mucosa"], correct: 1,
-    explain: "Alveolar mucosa has thin non‑keratinized epithelium with many blood vessels." }
+  {
+    q: "Which of the following is NOT one of the four principal components of the normal periodontium?",
+    opts: ["Gingiva", "Periodontal ligament", "Enamel", "Alveolar bone"],
+    correct: 2,
+    explain: "The normal periodontium consists of Gingiva, Periodontal ligament, Cementum, and Alveolar bone. Enamel is the outer layer of the tooth crown, not part of the periodontium."
+  },
+  {
+    q: "What is the clinically normal probing depth for a gingival sulcus?",
+    opts: ["1 to 2 mm", "2 to 3 mm", "4 to 5 mm", "Less than 1 mm"],
+    correct: 1,
+    explain: "A healthy gingival sulcus has a clinical probing depth of 2 to 3 mm. Depths greater than this may indicate a periodontal pocket."
+  },
+  {
+    q: "The attached gingiva is demarcated from the alveolar mucosa by the:",
+    opts: ["Free gingival groove", "Gingival margin", "Mucogingival junction (MGJ)", "Cementoenamel junction (CEJ)"],
+    correct: 2,
+    explain: "The Mucogingival junction (MGJ) is the distinct line that separates the firm, resilient attached gingiva from the looser, movable alveolar mucosa."
+  },
+  {
+    q: "What is the typical shape of the interdental gingiva in the anterior region?",
+    opts: ["Col", "Blunted", "Pyramidal", "Rounded"],
+    correct: 2,
+    explain: "In the anterior region, where teeth are more triangular, the interdental gingiva typically has a pyramidal shape."
+  },
+  {
+    q: "Radiographically, the thin outer layer of dense cortical bone lining the tooth socket is known as:",
+    opts: ["Trabecular bone", "Spongy bone", "Alveolar crest", "Lamina dura"],
+    correct: 3,
+    explain: "The lamina dura appears as a dense radiopaque line on radiographs and represents the cortical bone that lines the tooth socket."
+  },
+  {
+    q: "What is the normal distance from the alveolar crest to the cementoenamel junction (CEJ) of adjacent teeth?",
+    opts: ["0.5-1 mm", "1.5-2 mm", "2.5-3 mm", "More than 3 mm"],
+    correct: 1,
+    explain: "The level of the alveolar crest is considered normal when it is not more than 1.5-2 mm from the CEJ of the adjacent teeth."
+  },
+  {
+    q: "How does the Periodontal Ligament (PDL) space typically appear on a radiograph?",
+    opts: ["Radiopaque line", "Radiolucent space", "Mixed density area", "It is not visible"],
+    correct: 1,
+    explain: "Because the PDL is composed primarily of collagen (soft tissue), it appears as a radiolucent (dark) space between the tooth root and the lamina dura."
+  },
+  {
+    q: "Which of these is a primary factor responsible for the 'coral pink' color of healthy gingiva?",
+    opts: ["Presence of inflammatory cells", "High number of nerve endings", "Vascular supply and epithelial thickness", "Amount of salivary flow"],
+    correct: 2,
+    explain: "The color of the gingiva is determined by the vascular supply, the thickness and degree of keratinization of the epithelium, and the presence of pigment-containing cells."
+  },
+  {
+    q: "What term describes the contour of the gingival margin in a state of health?",
+    opts: ["Rolled and thickened", "Scalloped and knife-edged", "Flat and uniform", "Blunted and bulbous"],
+    correct: 1,
+    explain: "Healthy gingiva has a scalloped contour that follows the shape of the teeth, with a thin, knife-edged margin."
+  },
+  {
+    q: "The characteristic 'orange peel' appearance of healthy attached gingiva is known as:",
+    opts: ["Keratinization", "Erythema", "Stippling", "Edema"],
+    correct: 2,
+    explain: "Stippling is the term for the textured, orange peel-like surface of healthy attached gingiva, caused by the rete pegs of the epithelium."
+  },
+  {
+    q: "In periodontal disease, the interdental papilla may change its shape to become:",
+    opts: ["Pyramidal", "Knife-edged", "Pointed", "Bulbous or blunted"],
+    correct: 3,
+    explain: "Inflammation in periodontal disease often causes the interdental papilla to become swollen (bulbous) or flattened (blunted)."
+  },
+  {
+    q: "What is the consistency of healthy gingiva when palpated?",
+    opts: ["Soft and edematous", "Firm and resilient", "Leathery and nodular", "Spongy and easily deflected"],
+    correct: 1,
+    explain: "Healthy gingiva is firm and resilient, tightly bound to the underlying periosteum."
+  },
+  {
+    q: "A probing depth measurement of 5mm would most likely indicate:",
+    opts: ["A healthy gingival sulcus", "Gingival recession", "A periodontal pocket", "Normal anatomy"],
+    correct: 2,
+    explain: "Probing depths greater than 3-4 mm are generally indicative of a periodontal pocket, a sign of periodontal disease."
+  },
+  {
+    q: "What type of bone loss is characterized by the alveolar crest remaining horizontal but at a lower level?",
+    opts: ["Vertical bone loss", "Angular bone loss", "Horizontal bone loss", "Fenestration"],
+    correct: 2,
+    explain: "Horizontal bone loss refers to a generalized reduction in the height of the alveolar bone, where the crest remains relatively horizontal."
+  },
+  {
+    q: "The color of the alveolar mucosa is typically red because its epithelium is:",
+    opts: ["Thick and keratinized", "Thin and non-keratinized", "Heavily pigmented", "Lacking blood vessels"],
+    correct: 1,
+    explain: "The alveolar mucosa is redder than the gingiva because its epithelium is thin and non-keratinized, allowing the underlying blood vessels to be more visible."
+  },
+  {
+    q: "Which frenum is located on the underside of the tongue?",
+    opts: ["Maxillary anterior frenum", "Mandibular anterior frenum", "Lingual frenum", "Buccal frenum"],
+    correct: 2,
+    explain: "The lingual frenum is the fold of mucosal tissue located on the underside of the tongue."
+  },
+  {
+    q: "What happens to the shape of the interdental gingiva if a diastema (space between teeth) is present?",
+    opts: ["It becomes pyramidal", "It forms a prominent col", "It becomes bulbous and inflamed", "It forms a smooth, rounded surface"],
+    correct: 3,
+    explain: "When there is no proximal tooth contact (diastema), the interdental papillae and col are absent, and the gingiva is firmly bound over the bone, creating a smooth surface."
+  },
+  {
+    q: "Rounding of the sharp angle between the alveolar crest and lamina dura can be an early sign of:",
+    opts: ["Tooth eruption", "Periodontal disease", "Healthy remodeling", "Orthodontic movement"],
+    correct: 1,
+    explain: "Radiographically, the crest of the bone normally forms a sharp angle with the lamina dura. Rounding or loss of this sharp angle is an early indicator of periodontal disease."
+  },
+  {
+    q: "The part of the maxilla or mandible that forms and supports the tooth sockets is called the:",
+    opts: ["Basal bone", "Cortical plate", "Alveolar process", "Ramus"],
+    correct: 2,
+    explain: "The alveolar process is the specific part of the jawbones that contains the tooth sockets (alveoli)."
+  },
+  {
+    q: "What is the correct technique for using a periodontal probe to explore a pocket?",
+    opts: ["Insert it at a 45-degree angle", "Push firmly to the base", "'Walk' the probe circumferentially", "Take a single measurement on the buccal side"],
+    correct: 2,
+    explain: "The correct technique is to 'walk' the probe with light pressure along the entire circumference of the tooth to detect variations in pocket depth."
+  },
+  {
+    q: "A change in gingival color to a reddish or bluish-red is a clinical sign of:",
+    opts: ["Health", "Gingivitis", "Gingival recession", "Hyperkeratosis"],
+    correct: 1,
+    explain: "Inflammation (gingivitis) causes increased vascularization and blood flow, leading to a change in color from coral pink to various shades of red or bluish-red (cyanotic)."
+  },
+  {
+    q: "The PDL space is typically widest at which two points along the root?",
+    opts: ["Mid-root and apex", "Coronally and apex", "Evenly distributed", "Only at the apex"],
+    correct: 1,
+    explain: "The periodontal ligament space is not uniform; it is widest coronally (near the crestal bone) and at the apex to accommodate tooth movement."
+  },
+  {
+    q: "Gingival enlargement refers to an increase in the:",
+    opts: ["Color", "Size", "Stippling", "Recession"],
+    correct: 1,
+    explain: "Gingival enlargement is an increase in the size of the gingiva, resulting from an increase in its cellular and intercellular elements."
+  },
+  {
+    q: "In a state of periodontal disease, the surface texture of the gingiva often becomes:",
+    opts: ["Matte and stippled", "Firm and leathery", "Smooth and shiny", "Fibrotic and nodular"],
+    correct: 2,
+    explain: "Inflammation and edema in gingivitis cause the loss of stippling, resulting in a smooth and shiny surface texture."
+  },
+  {
+    q: "Which component of the periodontium provides attachment for the principal fibers of the PDL?",
+    opts: ["Gingiva", "Alveolar mucosa", "Cementum", "Enamel"],
+    correct: 2,
+    explain: "The principal fibers of the periodontal ligament embed into the cementum on the root surface on one side and the alveolar bone proper on the other."
+  },
+  {
+    q: "Vertical or angular bone loss is characterized by:",
+    opts: ["Bone loss that is parallel to the CEJ", "Bone loss that is not horizontal and creates a trough-like defect", "A uniform decrease in bone height", "An increase in bone density"],
+    correct: 1,
+    explain: "Vertical (or angular) bone loss is an uneven pattern of bone destruction that results in a trough-like defect alongside the root."
+  },
+  {
+    q: "Which of the following is NOT a type of gingiva?",
+    opts: ["Marginal gingiva", "Attached gingiva", "Sulcular gingiva", "Interdental gingiva"],
+    correct: 2,
+    explain: "The main clinical types are marginal, attached, and interdental gingiva. Sulcular epithelium lines the gingival sulcus but isn't considered a main type of gingiva in this context."
+  },
+  {
+    q: "What is the primary function of the normal periodontium?",
+    opts: ["To produce saliva", "To provide support and maintain teeth in function", "To aid in mastication through muscle contraction", "To form the visible part of the tooth"],
+    correct: 1,
+    explain: "The primary role of the periodontium is to provide the necessary support structure to anchor the teeth within the jaws and maintain their function."
+  },
+  {
+    q: "The absence of bleeding on probing is a strong indicator of:",
+    opts: ["Deep periodontal pockets", "Aggressive periodontitis", "Periodontal health", "The need for surgery"],
+    correct: 2,
+    explain: "Bleeding on probing is a key sign of inflammation. Its absence is a reliable indicator of a healthy periodontium."
+  },
+  {
+    q: "Gingival recession describes the:",
+    opts: ["Movement of the gingival margin coronally", "Deepening of the gingival sulcus", "Exposure of the root surface by apical migration of the gingival margin", "Swelling of the interdental papilla"],
+    correct: 2,
+    explain: "Gingival recession is the condition where the gingival margin migrates apically (towards the root tip), exposing the root surface."
+  }
 ];
 
 const tfs = [
-  { q: "The lamina dura is radiolucent in health.", answer: false, explain: "It is dense radiopaque cortical bone lining the socket." },
-  { q: "In a normal periodontium, the alveolar crest is continuous with the lamina dura and forms a sharp angle.", answer: true, explain: "Continuity and sharpness characterize health." },
-  { q: "The mucogingival junction separates free gingiva from interdental gingiva.", answer: false, explain: "It separates attached gingiva from alveolar mucosa." },
-  { q: "Healthy gingiva exhibits absent or only slight bleeding on probing.", answer: true, explain: "Minimal bleeding is a feature of health." },
-  { q: "Stippling is always more prominent on lingual surfaces than buccal.", answer: false, explain: "Stippling is less prominent on lingual surfaces." },
-  { q: "A diastema often results in absence of interdental papilla and col.", answer: true, explain: "Without proximal contact, papilla/col are absent." },
-  { q: "The PDL space is uniform in width from crown to apex in all teeth.", answer: false, explain: "It is typically widest coronally and slightly narrower apically." },
-  { q: "Vertical bone loss is also called angular bone loss.", answer: true, explain: "Angular defects represent vertical patterns." },
-  { q: "Healthy gingival color is bright red and shiny.", answer: false, explain: "Health is coral/salmon pink with matte surface." }
+  {
+    q: "The Periodontal Ligament (PDL) is composed primarily of elastic fibers, making it appear radiopaque on x-rays.",
+    answer: false,
+    explain: "The PDL is composed primarily of collagen fibers (soft tissue), which makes it appear as a radiolucent space on radiographs, not radiopaque."
+  },
+  {
+    q: "In a healthy state, the gingiva is firm, resilient, and tightly bound to the underlying periosteum.",
+    answer: true,
+    explain: "This describes the correct consistency and attachment of healthy attached gingiva."
+  },
+  {
+    q: "A clinical probing depth of 4 mm is always considered to be within the normal range for a healthy gingival sulcus.",
+    answer: false,
+    explain: "A normal, healthy sulcus is typically 2-3 mm deep. A depth of 4 mm or more usually indicates a periodontal pocket."
+  },
+  {
+    q: "Stippling, the 'orange peel' texture, is always more prominent on the lingual surfaces of the gingiva.",
+    answer: false,
+    explain: "Stippling is generally less prominent on the lingual surfaces compared to the facial surfaces."
+  },
+  {
+    q: "The lamina dura is a thin layer of cortical bone that is continuous with the alveolar crest.",
+    answer: true,
+    explain: "The lamina dura lines the socket and is continuous with the cortical bone of the alveolar crest, forming a sharp angle in health."
+  },
+  {
+    q: "In the presence of inflammation, gingiva may become soft and edematous.",
+    answer: true,
+    explain: "Inflammation (gingivitis) leads to edema, which makes the gingival tissue soft and spongy."
+  },
+  {
+    q: "If a diastema is present, the interdental gingiva forms a 'col' shape.",
+    answer: false,
+    explain: "A 'col' is present when there is contact between adjacent teeth. If a diastema exists, there is no col or interdental papilla."
+  },
+  {
+    q: "The color of healthy gingiva can vary due to the presence of pigment-containing cells.",
+    answer: true,
+    explain: "While typically 'coral pink', the color can be influenced by physiologic pigmentation (melanin), especially in individuals with darker complexions."
+  },
+  {
+    q: "The supporting alveolar bone consists of the lamina dura and the spongy bone.",
+    answer: false,
+    explain: "The alveolar process consists of the alveolar bone proper (lamina dura) and the supporting alveolar bone. The supporting bone is made of cortical plates and spongy bone."
+  }
 ];
 
 const saqs = [
-  // 1. Direct Answer
-  { q: "Define the normal periodontium and list its principal function.",
-    a: "The normal periodontium comprises the supporting tissues of the teeth; its principal function is to provide support to maintain teeth in function." },
-  // 2. List (≥3)
-  { q: "Name the four principal components of the periodontium.",
-    a: "<ol><li>Gingiva</li><li>Periodontal ligament</li><li>Cementum</li><li>Alveolar bone</li></ol>" },
-  // 3. Comparison (numbered table)
-  { q: "Compare healthy vs diseased gingival features (color, contour, surface texture).",
-    a: `<table border="1" cellpadding="6" style="border-collapse:collapse;width:100%"><thead><tr><th>#</th><th>Healthy</th><th>Diseased</th></tr></thead><tbody>
-        <tr><td>1</td><td>Color: coral/salmon pink</td><td>Pink to bluish‑red</td></tr>
-        <tr><td>2</td><td>Contour: scalloped, knife‑edge; pointed papillae</td><td>Rounded/rolled margins; bulbous/blunted/absent papillae</td></tr>
-        <tr><td>3</td><td>Surface: matte, stippled</td><td>Smooth, shiny, loss of stippling</td></tr>
-      </tbody></table>` },
-  // 4. Case-based Scenario
-  { q: "A 22‑year‑old has a diastema between #11 and #21 with no proximal contact. What interdental gingival feature would you expect clinically?",
-    a: "Absence of interdental papilla and col; tissue appears smoothly rounded over the interdental bone." },
-  // 5. Direct Answer
-  { q: "State the normal distance from the alveolar crest to the cementoenamel junction (CEJ) of adjacent teeth.",
-    a: "Approximately 1.5–2.0 mm apical to the CEJ." },
-  // 6. List (≥3)
-  { q: "List three factors that influence normal gingival color.",
-    a: "<ol><li>Vascular supply</li><li>Thickness and degree of epithelial keratinization</li><li>Presence of pigment‑containing cells (e.g., melanin)</li></ol>" }
+  {
+    q: "Define the gingival sulcus and state its normal clinical probing depth.",
+    a: "The gingival sulcus is the shallow crevice or space around the tooth, bounded by the tooth surface on one side and the epithelium lining the free margin of the gingiva on the other. Its normal clinical probing depth is 2 to 3 mm."
+  },
+  {
+    q: "List the four principal components of the normal periodontium.",
+    a: `
+      <ol>
+        <li>Gingiva</li>
+        <li>Periodontal ligament</li>
+        <li>Cementum</li>
+        <li>Alveolar bone</li>
+      </ol>
+    `
+  },
+  {
+    q: "Compare the clinical features of healthy gingiva versus gingiva in a state of disease (gingivitis) based on color and consistency.",
+    a: `
+      <table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Healthy Gingiva</th>
+            <th>Diseased Gingiva (Gingivitis)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Color</b></td>
+            <td>Coral pink or salmon pink. Uniform in color.</td>
+            <td>Red, reddish-pink, or bluish-red (cyanotic). Can be localized or generalized.</td>
+          </tr>
+          <tr>
+            <td><b>Consistency</b></td>
+            <td>Firm and resilient when palpated. Tightly adapted to the teeth.</td>
+            <td>Soft and edematous (swollen with fluid), or firm and fibrotic in chronic cases.</td>
+          </tr>
+        </tbody>
+      </table>
+    `
+  },
+  {
+    q: "A new patient presents with bright red, swollen gums that bleed easily upon gentle probing. The interdental papillae between their lower incisors are swollen and rounded. Based on these signs, what is the likely condition and how do these signs deviate from a healthy state?",
+    a: "The likely condition is gingivitis. These signs deviate from a healthy state in several ways: 1) The color should be coral pink, not bright red. 2) The consistency should be firm, not swollen (edematous). 3) Healthy gums do not bleed easily on probing. 4) The interdental papillae should be pointed and knife-edged, not swollen and rounded (bulbous)."
+  },
+  {
+    q: "Describe the radiographic appearance of the lamina dura and the alveolar crest in a healthy periodontium.",
+    a: "In a healthy periodontium, the lamina dura appears as a dense, continuous radiopaque (white) line around the tooth root. The alveolar crest is also radiopaque and forms a sharp, distinct angle where it meets the lamina dura of the adjacent teeth. The crest is typically located 1.5 to 2 mm apical to the cementoenamel junction (CEJ)."
+  },
+  {
+    q: "List three factors that are responsible for the color of the gingiva.",
+    a: `
+      <ol>
+        <li>Vascular supply (the number and proximity of blood vessels).</li>
+        <li>Thickness and degree of keratinization of the epithelium.</li>
+        <li>Presence of pigment-containing cells (e.g., melanocytes).</li>
+      </ol>
+    `
+  }
 ];
 
 // ----------- State -----------
@@ -387,8 +551,7 @@ mcqs.forEach((item, idx)=>{
 
 // ----------- Render True/False -----------
 const tfGrid = document.getElementById('tfGrid');
-TFS_ORDER = tfs; // preserve name usage
-TFS_ORDER.forEach((item, idx)=>{
+tfs.forEach((item, idx)=>{
   const card = document.createElement('article');
   card.className='card qcard';
   card.dataset.type='tf';
@@ -458,7 +621,7 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
@@ -481,6 +644,7 @@ saqs.forEach((item, idx)=>{
     state.saq[idx] = now;
     toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
     toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    toggleBtn.style.borderColor = now ? "var(--ok)" : "rgba(255,255,255,0.18)";
     recalc();
   });
 
@@ -490,17 +654,18 @@ saqs.forEach((item, idx)=>{
 // ----------- Score + Reset -----------
 function recalc(){
   const mcqScore = state.mcq.reduce((s,v,i)=>{
-    if(v===null) return s;
+    if(v === null) return s;
     const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
     const feedback = card.querySelector('.feedback').textContent;
     return s + (feedback.startsWith("Correct") ? 1 : 0);
   },0);
+
   const tfScore = state.tf.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
+    if(v === null) return s;
+    const isCorrect = (v === tfs[i].answer);
+    return s + (isCorrect ? 1 : 0);
   },0);
+
   const saqScore = state.saq.filter(Boolean).length;
   const total = mcqScore + tfScore + saqScore;
 
@@ -525,7 +690,11 @@ document.getElementById('resetAll').addEventListener('click', ()=>{
   document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
   document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
   document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
-  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{
+    b.textContent="I was correct";
+    b.style.outline="none";
+    b.style.borderColor = "rgba(255,255,255,0.18)";
+  });
 
   state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
   recalc();

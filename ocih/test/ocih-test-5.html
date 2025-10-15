@@ -113,6 +113,10 @@
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer table { width: 100%; border-collapse: collapse; }
+  .answer th, .answer td { border: 1px solid var(--card-border); padding: 8px; text-align: left;}
+  .answer th { background-color: rgba(255,255,255,0.05); font-weight: 600; }
+
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -169,77 +173,263 @@
   </main>
 
 <script>
-// ----------- Data (from ocih-5.pdf: Saliva Part-2; Lecture 5) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q: "Salivary secretion is divided into how many phases?", opts:["Two: primary & secondary","Three: cephalic, gastric, intestinal","Two: endocrine & exocrine","One continuous phase"], correct:0, explain:"Slides divide secretion into primary (acini) and secondary (ductal modification)." },
-  { q: "The primary phase of saliva formation occurs mainly in:", opts:["Secretory acini","Intercalated ducts","Striated ducts","Oral cavity"], correct:0, explain:"Primary secretion is produced by acinar cells." },
-  { q: "The secondary phase of saliva formation occurs in the:", opts:["Ductal system","Blood capillaries","Lymphatics","Salivary pelvis"], correct:0, explain:"Secondary (modification) phase happens along ducts, especially striated ducts." },
-  { q: "Tonicity of acinar (primary) saliva is:", opts:["Isotonic","Hypertonic","Hypotonic","Variable but typically hypertonic"], correct:0, explain:"Primary secretion released by acini is isotonic." },
-  { q: "Final saliva entering the oral cavity is typically:", opts:["Hypotonic","Isotonic","Hypertonic","Equitonic"], correct:0, explain:"Net ductal reabsorption of Na+ and Cl− makes saliva hypotonic." },
-  { q: "During ductal modification, which ions are predominantly reabsorbed?", opts:["Na+ and Cl−","K+ and HCO3−","Ca2+ and PO4 3−","H+ and OH−"], correct:0, explain:"Na+ and Cl− are reabsorbed; K+ and HCO3− are secreted." },
-  { q: "Which ions are predominantly secreted into saliva within ducts?", opts:["K+ and HCO3−","Na+ and Cl−","Ca2+ and Mg2+","H+ and Cl−"], correct:0, explain:"K+ and HCO3− secretion accompanies NaCl reabsorption." },
-  { q: "Most of the ionic modification of saliva occurs in the:", opts:["Striated ducts","Acini","Oral cavity","Parotid capsule"], correct:0, explain:"Striated ducts perform most ion exchange." },
-  { q: "Serous acinar cells primarily secrete:", opts:["Watery fluid","Mucin-rich viscous gel","Electrolyte-free fluid","Keratinized material"], correct:0, explain:"Serous cells produce a watery secretion." },
-  { q: "Mucous acinar cells primarily secrete:", opts:["Viscous mucin-rich secretion","Watery serous fluid","Sebum","Plasma ultrafiltrate"], correct:0, explain:"Mucous cells yield viscous, mucin-rich saliva." },
-  { q: "Correct sequence of saliva flow is:", opts:["Acini → lumen → ducts → oral cavity","Ducts → acini → lumen → oral cavity","Lumen → acini → ducts → oral cavity","Oral cavity → ducts → acini → lumen"], correct:0, explain:"Slides describe formation in acini, entry to lumen, ductal modification, then oral cavity." },
-  { q: "Physiological control of salivary secretion is mediated mainly by:", opts:["Autonomic nervous system","Somatic motor cortex","Endocrine pancreas","Spinal reflex only"], correct:0, explain:"ANS (parasympathetic and sympathetic) controls salivary flow." },
-  { q: "Parasympathetic stimulation generally:", opts:["Increases salivary secretion","Decreases salivary secretion","Has no effect","Only increases protein content"], correct:0, explain:"Slides: parasympathetic increases secretion." },
-  { q: "Sympathetic stimulation generally:", opts:["Decreases salivary secretion","Greatly increases volume","Has no effect on glands","Only changes taste"], correct:0, explain:"Slides: sympathetic decreases secretion (fight/flight)." },
-  { q: "Which is a normal stimulus for salivation noted in the slides?", opts:["Smell/taste and mastication","Deep sleep only","High altitude","Fever"], correct:0, explain:"Control is linked to changing smell/taste of food and masticatory stimuli." },
-  { q: "Hyposalivation is defined as:", opts:["Reduced secretion of saliva","Excess secretion of saliva","Absence of taste buds","Inability to chew"], correct:0, explain:"Term given for reduced salivary flow." },
-  { q: "Oral dryness due to reduced saliva is termed:", opts:["Xerostomia","Sialorrhea","Dysgeusia","Anosmia"], correct:0, explain:"Slide explicitly names dry mouth as Xerostomia." },
-  { q: "Excess salivary secretion is termed:", opts:["Hypersalivation (sialorrhea/ptyalism)","Hyposalivation","Xerostomia","Ageusia"], correct:0, explain:"Hypersalivation = sialorrhea (ptyalism)." },
-  { q: "Which is listed as a cause of xerostomia?", opts:["Radiation-induced gland damage","High dietary sugar","Excess vitamin C","Regular exercise"], correct:0, explain:"Destruction of secretory cells by radiation is a stated cause." },
-  { q: "Which medication class is NOT listed among common causes of dry mouth in the slides?", opts:["Antibiotics","Anticholinergics","Antidepressants","Antipsychotics"], correct:0, explain:"Slides list anticholinergics, antidepressants, antipsychotics, antihypertensives; not antibiotics." },
-  { q: "A general consequence of decreased salivary volume is:", opts:["Increased caries susceptibility","Permanent tooth whitening","Improved taste acuity","Reduced plaque formation"], correct:0, explain:"Slides: teeth become susceptible to caries when saliva is low." },
-  { q: "Which problem is associated with xerostomia per slides?", opts:["Painful swallowing","Excessive drooling","Hyper-salivary pH","Improved mastication"], correct:0, explain:"Swallowing becomes painful with oral dryness." },
-  { q: "Low saliva predisposes oral tissues to:", opts:["Infection, inflammation, and ulceration","Immediate healing","Increased enamel hardness","Leukoplakia only"], correct:0, explain:"Slides mention susceptibility to infection, inflammation, ulceration." },
-  { q: "Sialorrhea can occur during:", opts:["Teething","Fasting","Aphakia","Color blindness"], correct:0, explain:"Teething is listed among causes of hypersalivation." },
-  { q: "A neurological condition linked with hypersalivation in the slides is:", opts:["Cerebral palsy","Multiple fractures","Hemophilia","Myopia"], correct:0, explain:"Neurological disorders such as cerebral palsy are noted." },
-  { q: "Which of the following may induce sialorrhea?", opts:["Nausea & vomiting","Fever reduction","Sun exposure","Sedentary lifestyle"], correct:0, explain:"Nausea/vomiting listed as a cause." },
-  { q: "Presence of foreign material (e.g., orthodontic appliance) may:", opts:["Increase salivation","Eliminate salivation","Have no effect","Cause enamel erosion directly"], correct:0, explain:"Slides list foreign material as a cause for hypersalivation." },
-  { q: "From a dental perspective, saliva is essential because it:", opts:["Regulates the oral environment","Only provides taste","Weakens all restorations","Is irrelevant clinically"], correct:0, explain:"Slides: saliva regulates oral environment; pathology impacts dental practice." },
-  { q: "Primary saliva becomes hypotonic mainly because ducts:", opts:["Reabsorb Na+/Cl− and secrete K+/HCO3−","Secrete Na+/Cl− and reabsorb K+/HCO3−","Add proteins only","Add water only"], correct:0, explain:"Net NaCl reabsorption with K+/HCO3− secretion drives hypotonicity." },
-  { q: "Best pairing is:", opts:["Primary = acini; Secondary = ducts","Primary = ducts; Secondary = acini","Primary = oral cavity; Secondary = acini","Primary = nerves; Secondary = muscles"], correct:0, explain:"Accurate mapping of phases and sites." },
+    {
+        q: "What is the primary characteristic of saliva secreted by the acinar cells?",
+        opts: ["Hypotonic", "Isotonic", "Hypertonic", "Acidic"],
+        correct: 1,
+        explain: "The primary secretion from the acini is isotonic, meaning it has the same solute concentration as blood plasma."
+    },
+    {
+        q: "Which process occurs in the ductal system to modify primary saliva?",
+        opts: ["Secretion of Na+ and Cl-", "Reabsorption of K+ and HCO3-", "Reabsorption of Na+ and Cl-", "Secretion of water"],
+        correct: 2,
+        explain: "In the ductal system, Na+ and Cl- are reabsorbed, while K+ and HCO3- are secreted, making the final saliva hypotonic."
+    },
+    {
+        q: "The final saliva that enters the oral cavity is typically:",
+        opts: ["Isotonic", "Hypertonic", "Hypotonic", "Neutral"],
+        correct: 2,
+        explain: "Due to the modification in the ducts (reabsorption of NaCl), the final saliva becomes hypotonic."
+    },
+    {
+        q: "Which part of the autonomic nervous system increases salivary secretion?",
+        opts: ["Sympathetic system", "Parasympathetic system", "Somatic system", "Enteric system"],
+        correct: 1,
+        explain: "The parasympathetic nervous system is the primary stimulator of salivary secretion, leading to a watery, high-volume saliva."
+    },
+    {
+        q: "Xerostomia is a condition characterized by:",
+        opts: ["Excessive salivation", "Reduced salivation (dry mouth)", "Painful swallowing", "Inflammation of the tongue"],
+        correct: 1,
+        explain: "Xerostomia is the clinical term for dry mouth, resulting from a reduction in salivary secretion."
+    },
+    {
+        q: "Which of the following is NOT a common cause of xerostomia?",
+        opts: ["Dehydration", "Radiation therapy to the head/neck", "Teething in infants", "Side effects of antidepressants"],
+        correct: 2,
+        explain: "Teething is associated with hypersalivation (sialorrhea), not xerostomia."
+    },
+    {
+        q: "The condition of excessive salivation is known as:",
+        opts: ["Hyposalivation", "Xerostomia", "Sialorrhea", "Ptyalism"],
+        correct: 2, // Sialorrhea and Ptyalism are synonyms. Sialorrhea is more common.
+        explain: "Sialorrhea, also known as hypersalivation or ptyalism, is the condition of excessive saliva production."
+    },
+    {
+        q: "Which cells are responsible for producing the primary watery secretion in salivary glands?",
+        opts: ["Mucous cells", "Ductal cells", "Serous cells", "Myoepithelial cells"],
+        correct: 2,
+        explain: "Serous cells in the acini produce a watery, enzyme-rich secretion, which forms the basis of primary saliva."
+    },
+    {
+        q: "What is the function of myoepithelial cells in the salivary glands?",
+        opts: ["To produce mucus", "To reabsorb ions", "To secrete enzymes", "To contract and expel saliva"],
+        correct: 3,
+        explain: "Myoepithelial cells have contractile properties; they surround the acini and contract to help expel saliva into the ducts."
+    },
+    {
+        q: "Which ions are actively secreted into the saliva in the striated ducts?",
+        opts: ["Sodium and Chloride", "Calcium and Phosphate", "Potassium and Bicarbonate", "Magnesium and Sulfate"],
+        correct: 2,
+        explain: "The secondary modification phase in the striated ducts involves the secretion of Potassium (K+) and Bicarbonate (HCO3-)."
+    },
+    {
+        q: "A patient taking antihypertensive medication is most likely to complain of which oral condition?",
+        opts: ["Sialorrhea", "Xerostomia", "Oral ulcers", "Tooth discoloration"],
+        correct: 1,
+        explain: "Antihypertensives are listed as one of the common drug classes that cause xerostomia (dry mouth) as a side effect."
+    },
+    {
+        q: "What is a major clinical consequence of hyposalivation?",
+        opts: ["Increased buffering capacity", "Reduced risk of oral infections", "Difficulty in speech and mastication", "Enhanced taste perception"],
+        correct: 2,
+        explain: "Decreased salivary volume makes it difficult to speak, chew, and swallow. It also increases the risk of caries and infections."
+    },
+    {
+        q: "Which of these is a physiological cause of hypersalivation?",
+        opts: ["Anxiety", "Dehydration", "Nausea and vomiting", "Depression"],
+        correct: 2,
+        explain: "Nausea and vomiting are common physiological triggers for hypersalivation."
+    },
+    {
+        q: "The secretion of saliva is divided into how many phases?",
+        opts: ["One", "Two", "Three", "Four"],
+        correct: 1,
+        explain: "Salivary secretion is a two-phase process: primary secretion in the acini and secondary modification in the ducts."
+    },
+    {
+        q: "The primary secretion of saliva is rich in which compound?",
+        opts: ["KCl", "H2O", "HCO3-", "NaCl"],
+        correct: 3,
+        explain: "The first secretory step involves the secretion of a primary isotonic fluid rich in NaCl."
+    },
+    {
+        q: "What type of cells are found in the end pieces (acini) of salivary glands?",
+        opts: ["Serous and ductal cells", "Serous and mucous cells", "Mucous and myoepithelial cells", "Ductal and myoepithelial cells"],
+        correct: 1,
+        explain: "The acini are composed of serous cells (watery secretion) and mucous cells (viscous, mucin-rich secretion)."
+    },
+    {
+        q: "The sympathetic nervous system's effect on saliva is typically:",
+        opts: ["Increased, watery flow", "Decreased, viscous flow", "No effect", "Increased, viscous flow"],
+        correct: 1,
+        explain: "The sympathetic system generally decreases salivary flow, resulting in a thicker, more viscous saliva. This is often associated with the 'fight or flight' response."
+    },
+    {
+        q: "Which of these is considered a function of saliva related to tooth integrity?",
+        opts: ["Digestion", "Buffering action", "Taste", "Swallowing"],
+        correct: 1,
+        explain: "The buffering action of saliva helps neutralize acids, protecting tooth enamel and maintaining tooth integrity."
+    },
+    {
+        q: "What is a common consequence for oral tissues in a patient with xerostomia?",
+        opts: ["Increased tissue repair", "Reduced susceptibility to infections", "Inflammation and ulceration", "Thickening of the mucosa"],
+        correct: 2,
+        explain: "Without the protective and lubricating effects of saliva, oral tissues are more prone to infections, inflammation, and ulceration."
+    },
+    {
+        q: "Which type of duct is primarily responsible for the ion exchange that makes saliva hypotonic?",
+        opts: ["Intercalated duct", "Excretory duct", "Striated duct", "Parotid duct"],
+        correct: 2,
+        explain: "Most of the ion exchange (reabsorption of NaCl, secretion of K+/HCO3-) occurs in the striated ducts."
+    },
+    {
+        q: "Orthodontic appliances can sometimes lead to which condition?",
+        opts: ["Xerostomia", "Hyposalivation", "Sialorrhea", "Decreased buffering"],
+        correct: 2,
+        explain: "The presence of a foreign material in the mouth, like an orthodontic appliance, can stimulate an increase in salivary flow (sialorrhea)."
+    },
+    {
+        q: "The initial fluid formed in the acini is derived from what?",
+        opts: ["Intracellular fluid", "Lymphatic fluid", "Interstitial fluid from blood", "Cerebrospinal fluid"],
+        correct: 2,
+        explain: "The process begins with the formation of interstitial fluid from blood in capillaries, which is then modified by acinar cells."
+    },
+    {
+        q: "Which function of saliva is essential for forming a food bolus?",
+        opts: ["Antimicrobial action", "Buffering action", "Mastication and swallowing", "Digestion"],
+        correct: 2,
+        explain: "Saliva's lubricating properties are crucial for binding masticated food into a bolus that can be safely swallowed."
+    },
+    {
+        q: "Which drug class is NOT listed as a common cause of dry mouth?",
+        opts: ["Anticholinergics", "Antidepressants", "Antibiotics", "Antipsychotics"],
+        correct: 2,
+        explain: "The lecture lists anticholinergics, antidepressants, antipsychotics, and antihypertensives as common causes of xerostomia. Antibiotics are not on this list."
+    },
+    {
+        q: "The term 'ptyalism' is synonymous with:",
+        opts: ["Hyposalivation", "Xerostomia", "Sialorrhea", "Dysgeusia"],
+        correct: 2,
+        explain: "Ptyalism is another term for sialorrhea or hypersalivation."
+    },
+    {
+        q: "What role does bicarbonate (HCO3-) play in saliva?",
+        opts: ["Antimicrobial action", "Lubrication", "Buffering capacity", "Enzymatic digestion"],
+        correct: 2,
+        explain: "Bicarbonate is a key component of the salivary buffering system, helping to neutralize acids in the oral cavity."
+    },
+    {
+        q: "Which gland's duct is shown opening near the upper molars in diagrams?",
+        opts: ["Sublingual gland", "Submandibular gland", "Parotid gland", "Von Ebner's gland"],
+        correct: 2,
+        explain: "The Parotid duct (Stensen's duct) opens into the oral cavity opposite the maxillary second molar."
+    },
+    {
+        q: "Neurological disorders like cerebral palsy are often associated with:",
+        opts: ["Xerostomia", "Normal salivation", "Hypersalivation", "Painful salivary glands"],
+        correct: 2,
+        explain: "The slides list neurological disorders such as cerebral palsy and mental retardation as causes of hypersalivation (sialorrhea)."
+    },
+    {
+        q: "What is the main visual difference between a healthy mouth and one with xerostomia?",
+        opts: ["Tooth color", "Gum color", "Tongue texture and moisture", "Lip size"],
+        correct: 2,
+        explain: "Images in the lecture highlight the difference: a healthy tongue is moist, while a dry mouth shows a dry, often fissured or coated tongue."
+    },
+    {
+        q: "Salivary secretion control is NOT linked to which of the following stimuli?",
+        opts: ["Smell of food", "Taste of food", "Masticatory stimuli", "Auditory stimuli (sound)"],
+        correct: 3,
+        explain: "The lecture mentions that secretion control is linked to smell, taste, and masticatory stimuli, but not auditory stimuli."
+    }
 ];
 
 const tfs = [
-  { q:"Acinar (primary) saliva is isotonic.", answer:true, explain:"Primary secretion from acini is isotonic." },
-  { q:"Saliva becomes hypertonic as it passes through ducts.", answer:false, explain:"It becomes hypotonic due to NaCl reabsorption." },
-  { q:"Parasympathetic stimulation decreases salivary secretion.", answer:false, explain:"Slides: parasympathetic increases secretion." },
-  { q:"Xerostomia is the same as hypersalivation.", answer:false, explain:"Xerostomia = dry mouth; hypersalivation = sialorrhea." },
-  { q:"Dehydration can contribute to oral dryness.", answer:true, explain:"Dehydration is listed among causes of xerostomia." },
-  { q:"Antibiotics are the most common drug class causing dry mouth per the slides.", answer:false, explain:"Slides list anticholinergics, antidepressants, antipsychotics, antihypertensives." },
-  { q:"Teething can be associated with sialorrhea.", answer:true, explain:"Teething is a listed cause of hypersalivation." },
-  { q:"Reduced saliva can impair speech and taste perception.", answer:true, explain:"Slides: difficulty in speech and taste perception with low saliva." },
-  { q:"Most electrolyte modification of saliva occurs in striated ducts.", answer:true, explain:"Striated ducts handle most ion exchange." },
+    {
+        q: "The primary secretion of saliva from the acini is hypotonic.",
+        answer: false,
+        explain: "This is false. The primary secretion is isotonic; it becomes hypotonic after modification in the ducts."
+    },
+    {
+        q: "The sympathetic nervous system activation typically results in a watery, high-volume salivary flow.",
+        answer: false,
+        explain: "This is false. The sympathetic system usually decreases secretion and makes saliva more viscous. The parasympathetic system increases watery flow."
+    },
+    {
+        q: "Xerostomia increases a patient's susceptibility to dental caries.",
+        answer: true,
+        explain: "This is true. Reduced saliva compromises its protective functions, including buffering and remineralization, leading to a higher caries risk."
+    },
+    {
+        q: "Sialorrhea is another term for hyposalivation.",
+        answer: false,
+        explain: "This is false. Sialorrhea means hypersalivation (excessive saliva), while hyposalivation means reduced saliva."
+    },
+    {
+        q: "During the secondary phase of secretion, potassium (K+) and bicarbonate (HCO3-) are reabsorbed from the saliva.",
+        answer: false,
+        explain: "This is false. In the secondary phase, K+ and HCO3- are secreted into the saliva, while Na+ and Cl- are reabsorbed."
+    },
+    {
+        q: "Myoepithelial cells are responsible for producing the mucous component of saliva.",
+        answer: false,
+        explain: "This is false. Myoepithelial cells have contractile properties to expel saliva. Mucous cells produce the mucous component."
+    },
+    {
+        q: "Teething is a common cause of xerostomia in infants.",
+        answer: false,
+        explain: "This is false. Teething is associated with hypersalivation (sialorrhea), not xerostomia."
+    },
+    {
+        q: "The final saliva is hypertonic compared to plasma.",
+        answer: false,
+        explain: "This is false. The final saliva is hypotonic due to the reabsorption of more solutes (NaCl) than water in the ducts."
+    },
+    {
+        q: "Antidepressants and antipsychotics can lead to dry mouth.",
+        answer: true,
+        explain: "This is true. These medication classes are listed as common causes of xerostomia by interfering with neuroregulation."
+    }
 ];
 
 const saqs = [
-  // 1. Direct Answer
-  { q: "Define hyposalivation.", a: "Reduced secretion of saliva (low salivary flow)." },
-  // 2. List / Enumeration (3+)
-  { q: "List four medication classes associated with dry mouth as mentioned in the slides.", a: "1) Anticholinergics\n2) Antidepressants\n3) Antipsychotics\n4) Antihypertensives" },
-  // 3. Comparison as a numbered table
-  { q: "Compare primary vs. secondary salivary secretion (location, tonicity, key ion movements).", a: `
-    <table style="width:100%;border-collapse:collapse">
-      <thead>
-        <tr><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">#</th>
-            <th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">Aspect</th>
-            <th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">Primary</th>
-            <th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">Secondary</th></tr></thead>
-      <tbody>
-        <tr><td>1</td><td>Location</td><td>Acini</td><td>Ducts (esp. striated)</td></tr>
-        <tr><td>2</td><td>Tonicity</td><td>Isotonic</td><td>Becomes hypotonic</td></tr>
-        <tr><td>3</td><td>Key ions</td><td>Initial secretion</td><td>Reabsorb Na+/Cl−; secrete K+/HCO3−</td></tr>
-      </tbody>
-    </table>` },
-  // 4. Case-based Scenario
-  { q: "A patient post-radiation therapy reports persistent oral dryness and painful swallowing. What is the likely condition and name one functional complaint you expect?", a: "Likely xerostomia due to hyposalivation; expected: difficulty in speech or taste perception." },
-  // 5. Direct (very short)
-  { q: "Which autonomic branch primarily increases salivary flow?", a: "Parasympathetic." },
-  // 6. List (3+)
-  { q: "Give three causes of hypersalivation noted in the slides.", a: "1) Teething\n2) Neurological disorders (e.g., cerebral palsy)\n3) Nausea & vomiting (also: acute oral inflammation, foreign material)." },
+    {
+        q: "Define xerostomia and list four common causes mentioned in the lecture.",
+        a: "Xerostomia is the clinical term for a dry mouth due to a reduction in the volume of secreted saliva.<br><br><b>Common Causes:</b><br>1. Destruction of glandular cells (e.g., by radiation).<br>2. Psychological causes like anxiety and depression.<br>3. Dehydration.<br>4. Side effects of medications (e.g., anticholinergics, antidepressants)."
+    },
+    {
+        q: "Describe the two main phases of salivary secretion.",
+        a: "<b>Phase 1 (Primary Secretion):</b> Occurs in the acini. Serous and mucous cells produce an isotonic fluid rich in NaCl, proteins, and water.<br><br><b>Phase 2 (Secondary Modification):</b> Occurs in the ducts (primarily striated ducts). Sodium (Na+) and chloride (Cl-) are actively reabsorbed from the primary saliva, while potassium (K+) and bicarbonate (HCO3-) are secreted into it. This makes the final saliva hypotonic."
+    },
+    {
+        q: "List five conditions or situations that can lead to hypersalivation (sialorrhea).",
+        a: "<ol><li>Acute inflammation of the mouth or tongue.</li><li>Neurological disorders (e.g., cerebral palsy).</li><li>Teething.</li><li>Nausea and vomiting.</li><li>Presence of a foreign material (e.g., orthodontic appliance).</li></ol>"
+    },
+    {
+        q: "A 65-year-old patient reports persistent dry mouth, difficulty swallowing, and a recent increase in cavities. They are currently taking medication for high blood pressure and depression. What is the likely diagnosis for their oral condition, and what are the probable contributing factors?",
+        a: "<b>Likely Diagnosis:</b> Xerostomia (hyposalivation).<br><br><b>Contributing Factors:</b> The patient's medications for high blood pressure (antihypertensives) and depression (antidepressants) are known to cause xerostomia as a side effect. Their age can also be a factor. The reported symptoms (difficulty swallowing, increased cavities) are classic consequences of this condition."
+    },
+    {
+        q: "Compare the composition of primary saliva (in the acini) with final saliva (in the oral cavity) with respect to tonicity and key ion concentrations.",
+        a: "<table><thead><tr><th>Feature</th><th>Primary Saliva (Acini)</th><th>Final Saliva (Oral Cavity)</th></tr></thead><tbody><tr><td>1. Tonicity</td><td>Isotonic (similar to plasma)</td><td>Hypotonic (less than plasma)</td></tr><tr><td>2. Na+ & Cl- Conc.</td><td>High (similar to plasma)</td><td>Low (reabsorbed in ducts)</td></tr><tr><td>3. K+ & HCO3- Conc.</td><td>Low (similar to plasma)</td><td>High (secreted in ducts)</td></tr></tbody></table>"
+    },
+    {
+        q: "Explain the clinical consequences of decreased salivary volume on oral health.",
+        a: "A decrease in salivary volume (hyposalivation) leads to:<br><br>1. <b>Difficulty with function:</b> Problems with speech, mastication, and taste perception. Swallowing can become painful.<br>2. <b>Increased Caries Risk:</b> The teeth become more susceptible to caries due to loss of buffering, remineralization, and cleansing actions.<br>3. <b>Tissue Susceptibility:</b> Oral tissues are more prone to frequent infections, inflammation, and ulceration without the protective lubricating film of saliva."
+    }
 ];
 
 // ----------- State -----------
@@ -253,7 +443,7 @@ function shuffleIndices(n){
   const arr = Array.from({length:n}, (_,i)=>i);
   for(let i=n-1;i>0;i--){
     const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
+    [arr[i],arr[j]] = [arr[j],arr[j]] = [arr[j],arr[i]];
   }
   return arr;
 }
@@ -298,7 +488,8 @@ mcqs.forEach((item, idx)=>{
     btn.addEventListener('click', ()=>{
       if(card.dataset.locked === 'true') return; // one attempt
       const v = Number(btn.dataset.v);
-      state.mcq[idx] = v;
+      const originalIndex = visualToOriginal[v];
+      state.mcq[idx] = originalIndex; // store original index
 
       // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
@@ -306,8 +497,9 @@ mcqs.forEach((item, idx)=>{
       // Always mark the correct option (green)
       const correctBtn = buttons[correctVisualIndex];
       correctBtn.classList.add('correct');
+      const isCorrect = (originalIndex === item.correct);
 
-      if(v !== correctVisualIndex){
+      if(!isCorrect){
         // Mark chosen wrong option (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
@@ -326,7 +518,7 @@ mcqs.forEach((item, idx)=>{
 
 // ----------- Render True/False -----------
 const tfGrid = document.getElementById('tfGrid');
- tfs.forEach((item, idx)=>{
+tfs.forEach((item, idx)=>{
   const card = document.createElement('article');
   card.className='card qcard';
   card.dataset.type='tf';
@@ -396,7 +588,7 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
@@ -427,30 +619,26 @@ saqs.forEach((item, idx)=>{
 
 // ----------- Score + Reset -----------
 function recalc(){
-  const mcqScore = state.mcq.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const tfScore = state.tf.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const saqScore = state.saq.filter(Boolean).length;
-  const total = mcqScore + tfScore + saqScore;
+    const mcqScore = state.mcq.reduce((s, selectedOriginalIndex, i) => {
+        if (selectedOriginalIndex === null) return s;
+        return s + (selectedOriginalIndex === mcqs[i].correct ? 1 : 0);
+    }, 0);
+    const tfScore = state.tf.reduce((s, v, i) => {
+        if (v === null) return s;
+        return s + (v === tfs[i].answer ? 1 : 0);
+    }, 0);
+    const saqScore = state.saq.filter(Boolean).length;
+    const total = mcqScore + tfScore + saqScore;
 
-  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
-  ids.forEach(id=>{
-    const el = document.getElementById(id);
-    if(!el) return;
-    if(id.includes('Mcq')) el.textContent = mcqScore;
-    if(id.includes('Tf')) el.textContent = tfScore;
-    if(id.includes('Saq')) el.textContent = saqScore;
-    if(id.includes('Total')) el.textContent = total;
-  });
+    const ids = ["sMcq", "sTf", "sSaq", "sTotal", "sMcq2", "sTf2", "sSaq2", "sTotal2"];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (id.includes('Mcq')) el.textContent = mcqScore;
+        if (id.includes('Tf')) el.textContent = tfScore;
+        if (id.includes('Saq')) el.textContent = saqScore;
+        if (id.includes('Total')) el.textContent = total;
+    });
 }
 
 document.getElementById('resetAll').addEventListener('click', ()=>{
@@ -469,7 +657,7 @@ document.getElementById('resetAll').addEventListener('click', ()=>{
   recalc();
 });
 
-recalc();
+recalc(); // Initial calculation
 </script>
 </body>
 </html>

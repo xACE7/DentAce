@@ -67,7 +67,6 @@
     .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
   }
 
-  /* Cards (no accent on the card itself) */
   .card{
     background:var(--card);
     border:1px solid var(--card-border);
@@ -87,17 +86,28 @@
     background:rgba(255,255,255,0.03);
     border:1px solid rgba(255,255,255,0.10);
     transition:transform .06s ease, background .15s ease, border-color .15s ease;
+    text-align: left;
   }
   .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+    flex-shrink: 0;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}  
-  .opt-btn.correct{border-left:6px solid var(--ok);outline:none;background:rgba(255,255,255,0.03);}  
-  .opt-btn.wrong{border-left:6px solid var(--bad);outline:none;background:rgba(255,255,255,0.03);}  
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}  
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
@@ -117,6 +127,9 @@
   }
   .score .part{color:var(--muted);font-weight:600}
   .score b{color:var(--text)}
+  .answer table{width:100%; border-collapse:collapse; margin-top:10px;}
+  .answer th, .answer td{border:1px solid var(--card-border); padding:8px; text-align:left;}
+  .answer th{background-color:rgba(255,255,255,0.05);}
 </style>
 </head>
 <body>
@@ -159,80 +172,309 @@
   </main>
 
 <script>
-// ----------- Data (from Lecture 5: Intra-oral Radiographic Techniques & Object Localization) -----------
+// ----------- Data -----------
 const mcqs = [
-  {q:"What does 'periapical' refer to in intraoral radiography?",opts:["Around the apex of a tooth","Around the crown only","Around the periodontal ligament only","Around the entire jaw"],correct:0,explain:"'Peri' = around; 'apical' = apex. Periapical radiographs image the region around tooth apices."},
-  {q:"Which two periapical techniques are standard for intraoral imaging?",opts:["Bisecting angle and paralleling","Occlusal and bitewing","Panoramic and cephalometric","Tomography and CBCT"],correct:0,explain:"The slides list Bisecting Angle (short cone/Cieszynski) and Paralleling (long cone)."},
-  {q:"Cieszynski’s rule of isometry underpins which technique?",opts:["Bisecting angle technique","Paralleling technique","Bitewing technique","Right‑angle localization"],correct:0,explain:"Bisecting angle relies on isometry: two triangles are equal if they share one side and have two equal angles."},
-  {q:"Primary goal for horizontal angulation in bitewing or periapical views is to:",opts:["Pass the central ray through the contact areas","Aim apically by +10°","Aim occlusally by −10°","Align perpendicular to the film and tooth"],correct:0,explain:"Horizontal angulation should be 0° to pass through interproximal contacts and avoid overlap."},
-  {q:"Vertical angulation for maxillary canines in bisecting angle technique is approximately:",opts:["+45°","+20°","−20°","+30°"],correct:0,explain:"Maxillary canines: about +45°. Other maxillary: incisors +40°, premolars +30°, molars +20°."},
-  {q:"Vertical angulation for mandibular incisors (bisecting angle) is:",opts:["−15°","−5°","+15°","0°"],correct:0,explain:"Mandibular incisors ≈ −15°. Mandibular: canines −20°, premolars −10°, molars −5°."},
-  {q:"Which statement best defines intraoral radiographs?",opts:["Film/receiver placed inside the mouth; beam projected from outside","Beam and film both placed outside the mouth","Sensor always placed extraorally with long cone","Image receptor placed on skin surface only"],correct:0,explain:"Intraoral radiographs place the receptor intraorally while the x‑ray source remains extraoral."},
-  {q:"A quality intraoral radiograph should include at least how much periapical bone beyond the apex?",opts:["≥2 mm","≥0.5 mm","≥5 mm","Exactly 1 mm"],correct:0,explain:"Criteria of quality include showing at least 2 mm of periapical bone."},
-  {q:"Which is NOT a listed criterion of radiographic quality?",opts:["Maximal geometric distortion","Complete area of interest with roots","Optimal density and contrast","At least 2 mm of periapical bone"],correct:0,explain:"Least possible geometric distortion is desired; 'maximal' is incorrect."},
-  {q:"Paralleling technique is also known as:",opts:["Long cone technique","Short cone technique","Right‑angle technique","Vertex technique"],correct:0,explain:"Paralleling employs a long cone to reduce divergence and distortion."},
-  {q:"In bitewing radiography, the typical vertical angulation is approximately:",opts:["+10°","0°","−10°","+30°"],correct:0,explain:"Slides specify vertical angulation around +10° for bitewings."},
-  {q:"Bitewing radiographs are primarily indicated for:",opts:["Interproximal caries detection","Periapical pathology visualization","Sinus evaluation","TMJ assessment"],correct:0,explain:"Indications include incipient/interproximal caries, progression, restorations, early bone loss, calculus."},
-  {q:"Which is a contraindication for bitewing radiography?",opts:["Periapical infection","Interproximal caries","Calculus assessment","Monitoring restorations"],correct:0,explain:"When periapical infection is suspected, periapical views (not bitewings) are indicated."},
-  {q:"A full‑mouth intraoral series commonly comprises:",opts:["≈21 exposures (≈17 IOPA + 4 bitewings)","10 bitewings only","30 periapicals only","One panoramic with two bitewings"],correct:0,explain:"Slide shows '21 (17 + 4)' with IOPA and Bitewing listed."},
-  {q:"Object localization by parallax is also called:",opts:["Tube‑shift or Clark’s SLOB rule","Waters’ projection","Right‑angle tomography","Paralleling rule"],correct:0,explain:"Synonyms: Tube‑shift, Clark’s rule, SLOB (Same Lingual Opposite Buccal) / BOPS."},
-  {q:"According to SLOB, if the tube is shifted mesially and the image of the object moves mesially, the object lies:",opts:["Lingual to the reference","Buccal to the reference","At the same depth as the reference","Outside the jaws"],correct:0,explain:"Same Lingual: image moves in the same direction as tube if object is lingual (farther from tube)."},
-  {q:"Right‑angle localization typically combines which views?",opts:["Occlusal and periapical (IOPA)","Two bitewings","Panoramic and cephalometric","Paralleling and bisecting on the same tooth"],correct:0,explain:"The method uses an occlusal radiograph at right angles to a periapical view."},
-  {q:"Which occlusal projection uses approximately +65° vertical angulation?",opts:["True/Cross‑sectional maxillary","Anterior maxillary","Lateral/Topographical maxillary","Vertex occlusal"],correct:0,explain:"Slides list True/Cross‑sectional maxillary at about +65°."},
-  {q:"Typical vertical angulation for anterior maxillary occlusal is:",opts:["+45°","−55°","+60°","−90°"],correct:0,explain:"Anterior maxillary occlusal ≈ +45°."},
-  {q:"Which mandibular occlusal view is around −90°?",opts:["Cross‑sectional mandibular","Anterior mandibular","Topographical maxillary","Vertex occlusal"],correct:0,explain:"Slides show cross‑sectional mandibular ≈ −90°; lateral/topographical mandibular also near −90°."},
-  {q:"A key advantage of bitewings is:",opts:["Edge enhancement for early changes","Visualization of periapical area","Wide field of the maxillary sinus","Evaluation of condylar position"],correct:0,explain:"Advantages note 'edge enhancement' and clear early radiographic changes interproximally."},
-  {q:"Which is a limitation of bitewing radiographs?",opts:["Radicular and periradicular structures not visible","Caries cannot be assessed","Crown contacts are always overlapped","They require extraoral sensors"],correct:0,explain:"Bitewings do not show apices and periapical regions."},
-  {q:"Horizontal parallax to localize objects generally changes the tube position in which plane?",opts:["Mesiodistal (horizontal) plane","Vertical (superio‑inferior) plane","Axial rotation only","No tube movement is required"],correct:0,explain:"Parallax principle relies on changing beam angulation—commonly mesial vs distal tube shift."},
-  {q:"Which best describes vertical angulation across all teeth?",opts:["Different for each tooth due to varied long‑axis inclinations","Always 0° in both jaws","Always +10° in maxilla and −10° in mandible","Depends only on receptor size"],correct:0,explain:"Slides emphasize vertical angulations differ for every single tooth."},
-  {q:"For horizontal angulation in periapicals, the PID surface should be:",opts:["Parallel to the labial/buccal surface of teeth","Perpendicular to the occlusal plane","Angled 15° mesially","Parallel to the receptor only"],correct:0,explain:"Slides: horizontal 0°—PID surface parallel to labial/buccal surfaces; beam through contacts."},
-  {q:"Which set correctly matches maxillary periapical vertical angulations (bisecting)?",opts:["Incisors +40°, Canines +45°, Premolars +30°, Molars +20°","Incisors −15°, Canines −20°, Premolars −10°, Molars −5°","Incisors +20°, Canines +40°, Premolars +45°, Molars +30°","Incisors 0°, Canines +10°, Premolars +20°, Molars +30°"],correct:0,explain:"These are the listed maxillary values."},
-  {q:"Which set correctly matches mandibular periapical vertical angulations (bisecting)?",opts:["Incisors −15°, Canines −20°, Premolars −10°, Molars −5°","Incisors +15°, Canines +20°, Premolars +10°, Molars +5°","Incisors −5°, Canines −10°, Premolars −15°, Molars −20°","All mandibular teeth 0°"],correct:0,explain:"These are the listed mandibular values."},
-  {q:"Which is NOT an indication for occlusal radiography listed in the lecture?",opts:["Assessment of TMJ disc displacement","Evaluation of cyst/tumor extent","Sialolith detection","Localization of unerupted teeth"],correct:0,explain:"TMJ disc assessment is not an occlusal indication on the slides; others are listed."},
-  {q:"The reference structure for parallax localization is commonly:",opts:["The root of an adjacent tooth","The mandibular canal only","The maxillary sinus floor only","The cusp tip of the same tooth"],correct:0,explain:"Slides specify the root of an adjacent tooth as the reference object."},
-  {q:"If an object appears to move opposite to the tube shift, it is positioned:",opts:["Buccally","Lingually","At midline","Outside the field"],correct:0,explain:"Opposite Buccal: if the image moves opposite the tube shift, the object is on the buccal."},
-  {q:"Which statement about bitewing anatomy visibility is correct?",opts:["Apices are generally not captured","Entire root including apex is always shown","Sinus borders are the main focus","Only mandibular teeth are imaged"],correct:0,explain:"Bitewings are not periapical; apices typically not seen—hence the contraindication for periapical infection."}
+    {
+        q: "Which of the following are the three main types of intra-oral radiographs?",
+        opts: ["Intra-oral Periapical, Bitewing, and Occlusal", "Panoramic, Cephalometric, and CBCT", "Lateral Skull, Waters View, and Towne's View", "Digital, Film-based, and Phosphor Plate"],
+        correct: 0,
+        explain: "The lecture classifies intra-oral radiographs into three main types: Periapical, Bitewing, and Occlusal."
+    },
+    {
+        q: "According to the criteria for a quality radiograph, a periapical film should show the complete root and at least how much of the surrounding periapical bone?",
+        opts: ["2mm", "1mm", "3mm", "The entire bone structure"],
+        correct: 0,
+        explain: "An ideal periapical radiograph must show the complete area of interest, including the full root and at least 2mm of periapical bone."
+    },
+    {
+        q: "The Bisecting Angle technique for periapical radiography is also known by what name?",
+        opts: ["Cieszynski's Technique", "Paralleling Technique", "Clark's Rule", "Long Cone Technique"],
+        correct: 0,
+        explain: "The Bisecting Angle technique is also referred to as the Short Cone or Cieszynski's Technique."
+    },
+    {
+        q: "What is the fundamental principle of the Bisecting Angle technique based on?",
+        opts: ["Cieszynski's Rule of Isometry", "The Parallax Principle", "The Inverse Square Law", "The SLOB rule"],
+        correct: 0,
+        explain: "The technique is based on Cieszynski's Rule of Isometry, which states that two triangles are equal if they share one side and have two equal angles."
+    },
+    {
+        q: "In the Bisecting Angle technique, the central X-ray beam is directed perpendicular to which of the following?",
+        opts: ["The imaginary bisector of the angle between the tooth's long axis and the film", "The long axis of the tooth", "The surface of the film", "The occlusal plane"],
+        correct: 0,
+        explain: "The central ray should be aimed at a 90-degree angle to the imaginary line that bisects the angle formed by the tooth's long axis and the film plane."
+    },
+    {
+        q: "What is the recommended vertical angulation for maxillary incisors when using the Bisecting Angle technique?",
+        opts: ["+40°", "+45°", "+30°", "-15°"],
+        correct: 0,
+        explain: "The standard vertical angulation for maxillary incisors in the bisecting angle technique is +40 degrees."
+    },
+    {
+        q: "What is the recommended vertical angulation for mandibular canines in the Bisecting Angle technique?",
+        opts: ["-20°", "-15°", "+45°", "-10°"],
+        correct: 0,
+        explain: "The standard vertical angulation for mandibular canines in the bisecting angle technique is -20 degrees."
+    },
+    {
+        q: "For taking maxillary radiographs with the bisecting angle technique, which anatomical guideline should be parallel to the floor?",
+        opts: ["The Ala-tragal line", "The line from the corner of the mouth to the tragus", "The Frankfort horizontal plane", "The cantho-meatal line"],
+        correct: 0,
+        explain: "The patient's head should be positioned so that the Ala-tragal line (from the ala of the nose to the tragus of the ear) is parallel to the floor."
+    },
+    {
+        q: "The Paralleling technique is commonly referred to as the:",
+        opts: ["Long Cone Technique", "Short Cone Technique", "Rule of Isometry", "Tube-shift Technique"],
+        correct: 0,
+        explain: "The Paralleling technique is also known as the Long Cone Technique due to the increased target-film distance used."
+    },
+    {
+        q: "What is the primary requirement for film placement in the Paralleling technique?",
+        opts: ["The film is placed parallel to the long axis of the tooth", "The film must be in contact with the lingual surface of the tooth", "A short (8-inch) PID must be used", "The vertical angulation is always positive"],
+        correct: 0,
+        explain: "The core principle of this technique is that the film is placed in the mouth parallel to the long axis of the tooth being radiographed."
+    },
+    {
+        q: "What is a primary indication for taking a Bitewing radiograph?",
+        opts: ["Detecting incipient interproximal caries", "Diagnosing a periapical infection", "Locating an impacted canine", "Evaluating the temporomandibular joint"],
+        correct: 0,
+        explain: "Bitewing radiographs excel at showing the crowns of posterior teeth and are the primary tool for detecting early dental caries between teeth (interproximal)."
+    },
+    {
+        q: "Which of the following conditions is a contraindication for using Bitewing radiography?",
+        opts: ["Periapical infection", "Assessing restoration margins", "Detecting calculus deposits", "Monitoring incipient bone loss"],
+        correct: 0,
+        explain: "Since bitewings do not show the root apex, they are not suitable for diagnosing periapical infections."
+    },
+    {
+        q: "What is the standard vertical angulation for a Bitewing radiograph?",
+        opts: ["+10°", "0°", "-10°", "+20°"],
+        correct: 0,
+        explain: "A +10 degree vertical angulation is used for bitewings to compensate for the slight tilt of the maxillary posterior teeth and the curve of Spee."
+    },
+    {
+        q: "A standard full mouth radiographic series (FMX) typically includes how many films?",
+        opts: ["21 (17 periapical and 4 bitewing)", "18 (14 periapical and 4 bitewing)", "14 (all periapical)", "24 (18 periapical and 6 bitewing)"],
+        correct: 0,
+        explain: "The lecture specifies that a full mouth series consists of 21 films in total: 17 periapical views and 4 bitewing views."
+    },
+    {
+        q: "Object localization techniques are necessary in dentistry because a standard radiograph is a:",
+        opts: ["2D representation of a 3D object", "3D representation of a 2D object", "Perfect anatomical replica without distortion", "Cross-sectional image"],
+        correct: 0,
+        explain: "A conventional radiograph flattens three-dimensional structures into a two-dimensional image, losing information about depth (buccal-lingual relationship)."
+    },
+    {
+        q: "Which of the following is a common reason to use an object localization technique?",
+        opts: ["Determining the buccolingual position of an impacted tooth", "Diagnosing periodontal disease", "Detecting occlusal caries", "Assessing pulp vitality"],
+        correct: 0,
+        explain: "Localization techniques are essential for finding the precise position of objects like impacted teeth, foreign bodies, or root canals."
+    },
+    {
+        q: "The two main methods for object localization described in the lecture are:",
+        opts: ["Parallax and Right angle", "Bisecting and Paralleling", "Bitewing and Occlusal", "Horizontal and Vertical shift"],
+        correct: 0,
+        explain: "The lecture outlines two primary techniques: the Parallax (or Tube-shift) method and the Right Angle method."
+    },
+    {
+        q: "The Parallax method for object localization is also known as:",
+        opts: ["Clark's rule (SLOB rule)", "Cieszynski's rule", "Miller's technique", "Right Angle technique"],
+        correct: 0,
+        explain: "The Parallax method is also referred to as the Tube-shift Technique, Clark's rule, and most commonly, the SLOB rule."
+    },
+    {
+        q: "The acronym 'SLOB' in object localization stands for:",
+        opts: ["Same Lingual, Opposite Buccal", "Superior Lingual, Oblique Buccal", "Slow Lingual, Opposite Buccal", "Same Labial, Opposite Buccal"],
+        correct: 0,
+        explain: "SLOB is a mnemonic for Same Lingual, Opposite Buccal, which describes how the object's image moves in relation to the tube head shift."
+    },
+    {
+        q: "According to the SLOB rule, if the X-ray tube is shifted distally and an unerupted tooth also appears to have moved distally on the new radiograph, the tooth is located:",
+        opts: ["Lingually", "Buccally", "Directly in the arch", "Apically"],
+        correct: 0,
+        explain: "If the object moves in the SAME direction as the tube shift, it is located on the lingual side."
+    },
+    {
+        q: "According to the SLOB rule, if the tube is shifted mesially and the object appears to move distally, where is it located?",
+        opts: ["Buccally", "Lingually", "Palatally", "In the center of the alveolus"],
+        correct: 0,
+        explain: "If the object moves in the OPPOSITE direction of the tube shift, it is located on the buccal side."
+    },
+    {
+        q: "The Right Angle technique for object localization most commonly uses a periapical radiograph in conjunction with what other type of film?",
+        opts: ["An Occlusal radiograph", "A Bitewing radiograph", "A Panoramic radiograph", "A Cephalometric radiograph"],
+        correct: 0,
+        explain: "This technique uses two films taken at right angles to each other, typically a periapical view and an occlusal view, to determine an object's location."
+    },
+    {
+        q: "Which is a primary indication for taking an Occlusal radiograph?",
+        opts: ["Evaluating the size and extent of large lesions like cysts or tumors", "Detecting incipient interproximal caries", "Assessing routine periodontal health", "Checking for minor restoration overhangs"],
+        correct: 0,
+        explain: "Occlusal films are excellent for viewing large areas of the maxilla or mandible and are used to assess large lesions, fractures, and locate unerupted teeth."
+    },
+    {
+        q: "Occlusal radiography is an especially valuable technique for patients who have:",
+        opts: ["Trismus (limited mouth opening)", "A severe gag reflex", "High caries risk", "No remaining teeth"],
+        correct: 0,
+        explain: "Since placing an occlusal film requires minimal mouth opening, it is a very useful technique for patients with trismus."
+    },
+    {
+        q: "What is the correct vertical angulation for a True (or Cross-sectional) Maxillary Occlusal radiograph?",
+        opts: ["+65°", "+90°", "+45°", "-55°"],
+        correct: 0,
+        explain: "For a True Maxillary Occlusal view, the central ray is directed at +65 degrees through the bridge of the nose."
+    },
+    {
+        q: "What is the correct vertical angulation for an Anterior Mandibular Occlusal radiograph?",
+        opts: ["-55°", "-90°", "+45°", "0°"],
+        correct: 0,
+        explain: "The lecture states the angulation for an Anterior Mandibular Occlusal is -55 degrees. Note: The diagram on slide 40 shows a different angulation, but the list on slide 35 is the primary reference."
+    },
+    {
+        q: "For a Cross-sectional Mandibular Occlusal view, the central ray is directed at what angle relative to the film?",
+        opts: ["90°", "65°", "45°", "55°"],
+        correct: 0,
+        explain: "The central ray is projected at a 90-degree angle to the film from a point approximately 3 cm below the chin."
+    },
+    {
+        q: "The point of entry for the central ray in an Anterior Maxillary (Topographic) Occlusal view is:",
+        opts: ["The tip of the nose", "The bridge of the nose", "The outer canthus of the eye", "The tip of the chin"],
+        correct: 0,
+        explain: "For the anterior topographic maxillary view, the central ray is directed at +65 (or +45 as per other slides) degrees through the tip of the nose."
+    },
+    {
+        q: "Which principle states that the apparent displacement of an object is caused by a change in the angulation of the x-ray beam?",
+        opts: ["Parallax", "Isometry", "Right Angle", "Tomography"],
+        correct: 0,
+        explain: "This is the definition of Parallax, which is the underlying principle of the tube-shift or SLOB technique."
+    },
+    {
+        q: "What is the recommended vertical angulation for maxillary molars in the Bisecting Angle technique?",
+        opts: ["+20°", "+30°", "+40°", "-5°"],
+        correct: 0,
+        explain: "The standard vertical angulation for maxillary molars in the bisecting angle technique is +20 degrees."
+    }
 ];
 
 const tfs = [
-  {q:"Intraoral radiographs place the image receptor inside the mouth.",answer:true,explain:"Definition given on the slides."},
-  {q:"Paralleling technique is synonymous with the short‑cone method.",answer:false,explain:"Paralleling uses a long cone; short‑cone refers to bisecting angle."},
-  {q:"At least 2 mm of periapical bone should be visible on a quality periapical radiograph.",answer:true,explain:"Listed under criteria of quality."},
-  {q:"Horizontal angulation should be 15° to open contacts in bitewings.",answer:false,explain:"It should be 0° with the beam through contacts to avoid overlap."},
-  {q:"Bitewing radiographs are ideal for diagnosing periapical infections.",answer:false,explain:"They do not show apical regions; periapicals are indicated."},
-  {q:"SLOB stands for Same Lingual Opposite Buccal.",answer:true,explain:"Yes—synonym for the tube‑shift parallax rule (Clark)."},
-  {q:"Right‑angle localization uses an occlusal view with a periapical view.",answer:true,explain:"That combination provides orthogonal projections."},
-  {q:"Anterior maxillary occlusal typically uses about −55° vertical angulation.",answer:false,explain:"Anterior maxillary is around +45°. −55° relates to anterior mandibular occlusal (~−55°)."},
-  {q:"Edge enhancement and early change visibility are advantages of bitewings.",answer:true,explain:"Stated advantage in the lecture."}
+    {
+        q: "An ideal periapical radiograph should show only the crown and the cervical third of the root.",
+        answer: false,
+        explain: "False. An ideal radiograph must show the complete root structure and at least 2mm of surrounding periapical bone."
+    },
+    {
+        q: "The Bisecting Angle technique is also known as the 'Long Cone' technique.",
+        answer: false,
+        explain: "False. The Bisecting Angle technique is the 'Short Cone' technique. The Paralleling technique is the 'Long Cone' technique."
+    },
+    {
+        q: "In the Paralleling technique, the film and the long axis of the tooth should be perpendicular to each other.",
+        answer: false,
+        explain: "False. As the name suggests, the film and the long axis of the tooth must be parallel to each other."
+    },
+    {
+        q: "The correct horizontal angulation for a bitewing radiograph is 0°, with the central ray aimed through the contact areas.",
+        answer: true,
+        explain: "True. This ensures that the interproximal spaces are open and can be evaluated for caries."
+    },
+    {
+        q: "Bitewing radiographs are the best imaging choice for diagnosing a periapical abscess.",
+        answer: false,
+        explain: "False. This is a contraindication. Bitewings do not capture the apical region, so a periapical radiograph is required."
+    },
+    {
+        q: "The SLOB rule is a mnemonic and a synonym for the Parallax method of object localization.",
+        answer: true,
+        explain: "True. The SLOB (Same Lingual, Opposite Buccal) rule is the practical application of the Parallax principle."
+    },
+    {
+        q: "The Right Angle object localization technique requires taking only one standard periapical radiograph.",
+        answer: false,
+        explain: "False. It requires two radiographs taken at right angles to each other, typically a periapical and an occlusal film."
+    },
+    {
+        q: "A valid indication for taking an occlusal radiograph is to detect sialoliths in the salivary ducts.",
+        answer: true,
+        explain: "True. Occlusal views are effective for visualizing the floor of the mouth and detecting calcifications like sialoliths."
+    },
+    {
+        q: "For maxillary periapical radiographs, the patient's head should be positioned so the line from the corner of the mouth to the tragus is parallel to the floor.",
+        answer: false,
+        explain: "False. This head position is for mandibular radiographs. For maxillary radiographs, the ala-tragal line should be parallel to the floor."
+    }
 ];
 
 const saqs = [
-  // 1. Direct answer
-  {q:"Define Cieszynski’s rule of isometry as applied in dental radiography.",a:"Two triangles are equal when they share one complete side and have two equal angles; used in bisecting angle technique to project the tooth with minimal distortion."},
-  // 2. List (≥3) — show as numbered table
-  {q:"List four criteria of a quality intraoral radiograph.",a:`<ol><li>Entire area of interest including complete roots</li><li>≥2 mm of periapical bone beyond apices</li><li>Least possible geometric distortion</li><li>Optimal density and contrast for interpretation</li></ol>`},
-  // 3. Comparison — numbered table
-  {q:"Compare bisecting angle vs paralleling techniques (two points).",a:`<ol><li>Geometry: Bisecting uses tooth–receptor bisector (short cone); Paralleling uses receptor parallel to long axis (long cone).</li><li>Distortion: Bisecting more prone to distortion/elongation/foreshortening; Paralleling reduces distortion with long PID.</li></ol>`},
-  // 4. Case-based
-  {q:"A maxillary canine requires a periapical using bisecting angle. What approximate vertical angulation would you set, and what should the horizontal angulation achieve?",a:"About +45° vertically; horizontally 0° with central ray through contact areas to avoid overlap."},
-  // 5. List
-  {q:"Enumerate five indications for occlusal radiography.",a:`<ol><li>Assess size and extent of cysts/tumors</li><li>Determine medial/lateral spread of mandibular or palatal disease</li><li>Detect/assess fractures of alveolar bone and teeth</li><li>Diagnose sialoliths and locate foreign bodies</li><li>Evaluate unerupted canines/supernumeraries/odontomes; useful in trismus; periapical assessment when needed</li></ol>`},
-  // 6. Direct/short
-  {q:"Explain the SLOB outcome when the tube is shifted distally and the image of a foreign body shifts mesially.",a:"Opposite movement implies the object is on the buccal side (Opposite Buccal)."}
+    {
+        q: "Describe the principle of Cieszynski's Rule of Isometry as it applies to the bisecting angle technique.",
+        a: "It states that two triangles are equal when they share one complete side and have two equal angles. In radiography, this geometric principle is applied by creating two imaginary triangles. The accurate image length of the tooth is achieved by directing the central X-ray beam perpendicular to the imaginary bisector of the angle formed by the tooth's long axis and the film plane."
+    },
+    {
+        q: "List three distinct indications for using Occlusal Radiography.",
+        a: "A numbered list of acceptable answers includes:<br>1. Evaluation of the size and extent of large lesions like cysts and tumors.<br>2. Localization of foreign bodies, unerupted teeth, or sialoliths.<br>3. Assessment of the medial and lateral extent of fractures of the mandible or maxilla.<br>4. Periapical assessment for patients with trismus (limited mouth opening)."
+    },
+    {
+        q: "In a numbered table, compare the Bisecting Angle and Paralleling techniques on three key features: cone length, film placement, and image distortion.",
+        a: `
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Feature</th>
+                        <th>Bisecting Angle Technique</th>
+                        <th>Paralleling Technique</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1</td>
+                        <td>Cone Length</td>
+                        <td>Short Cone (8-inch PID)</td>
+                        <td>Long Cone (16-inch PID)</td>
+                    </tr>
+                    <tr>
+                        <td>2</td>
+                        <td>Film Placement</td>
+                        <td>As close to the tooth as possible, forming an angle with it.</td>
+                        <td>Parallel to the long axis of the tooth, often away from it.</td>
+                    </tr>
+                    <tr>
+                        <td>3</td>
+                        <td>Image Distortion</td>
+                        <td>More inherent geometric distortion (e.g., foreshortening).</td>
+                        <td>Less geometric distortion, producing a more accurate image.</td>
+                    </tr>
+                </tbody>
+            </table>
+        `
+    },
+    {
+        q: "A patient presents with a suspected impacted maxillary canine. The dentist takes a periapical radiograph but cannot determine if the tooth is positioned buccally or palatally. Describe the steps to take using the Parallax (SLOB) technique to make this determination.",
+        a: "The dentist should take a second periapical radiograph after changing the horizontal angulation of the X-ray tube head (shifting it either mesially or distally). By comparing the two images, the buccolingual position can be determined:<br>1. If the impacted canine appears to move in the <b>SAME</b> direction as the tube shift, it is on the <b>Lingual</b> (or Palatal) side.<br>2. If it appears to move in the <b>OPPOSITE</b> direction of the tube shift, it is on the <b>Buccal</b> side."
+    },
+    {
+        q: "What are the four criteria for an ideal quality radiograph as mentioned in the lecture?",
+        a: "A numbered list of the four criteria:<br>1. It should record the complete area of interest, including the entire root.<br>2. It should show at least 2mm of periapical bone.<br>3. It should have the least possible amount of geometric distortion (mistake of shape/size).<br>4. It should have optimal density and contrast to facilitate interpretation."
+    },
+    {
+        q: "List the recommended vertical angulations for all maxillary teeth (Incisors, Canines, Premolars, Molars) when using the Bisecting Angle Technique.",
+        a: "A numbered list of the angulations:<br>1. <b>Incisors:</b> +40°<br>2. <b>Canines:</b> +45°<br>3. <b>Premolars:</b> +30°<br>4. <b>Molars:</b> +20°"
+    }
 ];
+
 
 // ----------- State -----------
 const state = {
-  mcq: Array(mcqs.length).fill(null),
-  tf: Array(tfs.length).fill(null),
-  saq: Array(saqs.length).fill(false)
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
 };
 
 function shuffleIndices(n){
   const arr = Array.from({length:n}, (_,i)=>i);
   for(let i=n-1;i>0;i--){
     const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
+    [arr[i],arr[j]] = [arr[j],arr[j]];
   }
   return arr;
 }
@@ -277,10 +519,10 @@ mcqs.forEach((item, idx)=>{
     btn.addEventListener('click', ()=>{
       if(card.dataset.locked === 'true') return; // one attempt
       const v = Number(btn.dataset.v);
-      state.mcq[idx] = v;
+      const originalSelectedIndex = visualToOriginal[v];
+      state.mcq[idx] = originalSelectedIndex;
 
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
-
       const correctBtn = buttons[correctVisualIndex];
       correctBtn.classList.add('correct');
 
@@ -369,13 +611,14 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
   </div>
   <div class="answer" hidden>${item.a}</div>
 `;
+
 
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');
@@ -399,31 +642,34 @@ saqs.forEach((item, idx)=>{
 
 // ----------- Score + Reset -----------
 function recalc(){
-  const mcqScore = state.mcq.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const tfScore = state.tf.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const saqScore = state.saq.filter(Boolean).length;
-  const total = mcqScore + tfScore + saqScore;
+    let mcqScore = 0;
+    state.mcq.forEach((selectedIndex, i) => {
+        if (selectedIndex === null) return;
+        const item = mcqs[i];
+        if (selectedIndex === item.correct) {
+            mcqScore++;
+        }
+    });
 
-  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
-  ids.forEach(id=>{
-    const el = document.getElementById(id);
-    if(!el) return;
-    if(id.includes('Mcq')) el.textContent = mcqScore;
-    if(id.includes('Tf')) el.textContent = tfScore;
-    if(id.includes('Saq')) el.textContent = saqScore;
-    if(id.includes('Total')) el.textContent = total;
-  });
+    const tfScore = state.tf.reduce((s, v, i) => {
+        if (v === null) return s;
+        return s + (v === tfs[i].answer ? 1 : 0);
+    }, 0);
+
+    const saqScore = state.saq.filter(Boolean).length;
+    const total = mcqScore + tfScore + saqScore;
+
+    const ids = ["sMcq", "sTf", "sSaq", "sTotal", "sMcq2", "sTf2", "sSaq2", "sTotal2"];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (id.includes('Mcq')) el.textContent = mcqScore;
+        if (id.includes('Tf')) el.textContent = tfScore;
+        if (id.includes('Saq')) el.textContent = saqScore;
+        if (id.includes('Total')) el.textContent = total;
+    });
 }
+
 
 document.getElementById('resetAll').addEventListener('click', ()=>{
   document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
@@ -445,3 +691,4 @@ recalc();
 </script>
 </body>
 </html>
+

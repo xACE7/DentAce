@@ -1,0 +1,699 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .answer table{width:100%;border-collapse:collapse;}
+  .answer th, .answer td{border:1px solid var(--glass-border);padding:8px;text-align:left;}
+  .answer th{background-color:var(--glass);}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 9</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+    {
+        q: "Which process results in the complete restoration of original tissues by replacing damaged tissue with specialized cells?",
+        opts: ["Repair by scar formation", "Regeneration", "Fibrosis", "Angiogenesis"],
+        correct: 1,
+        explain: "Regeneration is the replacement of damaged tissue by specialized (parenchymal) cells, leading to a complete restoration of the original tissue structure and function."
+    },
+    {
+        q: "Which of the following cell types are considered 'permanent cells' with no capacity for proliferation after birth?",
+        opts: ["Hepatocytes (Liver cells)", "Fibroblasts", "Cardiac muscle cells", "Epidermal cells (Skin)"],
+        correct: 2,
+        explain: "Permanent cells, like neurons and cardiac muscle cells, lose their ability to proliferate after birth and cannot regenerate."
+    },
+    {
+        q: "The initial phase of wound healing, characterized by platelet aggregation and clot formation, is known as:",
+        opts: ["Inflammatory Phase", "Proliferative Phase", "Maturation Phase", "Hemostasis"],
+        correct: 3,
+        explain: "Hemostasis is the first step, occurring immediately after injury, to stop bleeding through clot formation."
+    },
+    {
+        q: "Granulation tissue, which fills the wound space during the proliferative phase, is primarily composed of:",
+        opts: ["Collagen and nerve cells", "New blood vessels and fibroblasts", "Mature scar tissue and elastin", "Neutrophils and platelets"],
+        correct: 1,
+        explain: "Granulation tissue is a hallmark of the proliferative phase and consists mainly of newly formed blood vessels (angiogenesis) and proliferating fibroblasts that deposit collagen."
+    },
+    {
+        q: "A clean, uninfected surgical incision is most likely to heal by which mechanism?",
+        opts: ["Secondary intention", "Tertiary intention", "Primary intention", "Delayed closure"],
+        correct: 2,
+        explain: "Healing by primary intention occurs in clean wounds with opposed edges, like surgical incisions, resulting in minimal scarring."
+    },
+    {
+        q: "A deficiency in which vitamin impairs the carboxylation and maturation of collagen, leading to fragile blood vessels and poor wound healing?",
+        opts: ["Vitamin A", "Vitamin D", "Vitamin K", "Vitamin C"],
+        correct: 3,
+        explain: "Vitamin C is a crucial co-factor for the enzymes responsible for collagen synthesis and maturation. Its deficiency (scurvy) severely impairs wound healing."
+    },
+    {
+        q: "Which local factor is most likely to delay wound healing by reducing oxygen and nutrient supply to the injury site?",
+        opts: ["Infection", "Foreign bodies", "Ischemia", "Movement"],
+        correct: 2,
+        explain: "Ischemia, or inadequate blood supply, critically impairs healing by depriving the tissue of oxygen and nutrients necessary for cell proliferation and matrix synthesis."
+    },
+    {
+        q: "A keloid is a complication of wound healing characterized by:",
+        opts: ["Insufficient scar formation leading to a hernia", "Excessive collagen deposition that grows beyond the original wound boundaries", "A scar that is confined to the original wound boundaries and may regress", "The formation of an epidermal cyst within the wound"],
+        correct: 1,
+        explain: "A keloid is a type of excessive scar formation where the collagenous tissue grows beyond the borders of the initial injury and does not regress."
+    },
+    {
+        q: "During the inflammatory phase of wound healing (Day 1-4), which cells are the first to arrive and are responsible for phagocytosis and debridement?",
+        opts: ["Fibroblasts", "Macrophages", "Neutrophils", "Lymphocytes"],
+        correct: 2,
+        explain: "Neutrophils are the predominant inflammatory cells in the first 24-48 hours, cleaning the wound of debris and bacteria."
+    },
+    {
+        q: "The process of forming new blood vessels during tissue repair is called:",
+        opts: ["Fibrosis", "Epithelialization", "Angiogenesis", "Hemostasis"],
+        correct: 2,
+        explain: "Angiogenesis is the formation of new blood vessels from pre-existing ones, a critical step in forming granulation tissue."
+    },
+    {
+        q: "Which of the following is a key feature of healing by secondary intention?",
+        opts: ["Minimal tissue loss", "No wound contraction", "Formation of a large amount of granulation tissue", "Absence of a scar"],
+        correct: 2,
+        explain: "Secondary intention healing involves large wounds with separated edges, requiring more extensive granulation tissue to fill the defect, leading to a significant scar and wound contraction."
+    },
+    {
+        q: "The final maturation or remodeling phase of wound healing can last up to 2 years and primarily involves:",
+        opts: ["Neutrophil infiltration", "Collagen strengthening and reorganization", "Platelet aggregation", "Formation of granulation tissue"],
+        correct: 1,
+        explain: "The maturation phase focuses on reorganizing and cross-linking collagen fibers to increase the tensile strength of the scar, which can reach up to 80% of normal skin strength."
+    },
+    {
+        q: "Which cell type differentiates into myofibroblasts to cause wound contraction, a prominent feature in secondary intention healing?",
+        opts: ["Epithelial cells", "Fibroblasts", "Macrophages", "Endothelial cells"],
+        correct: 1,
+        explain: "Fibroblasts at the wound margins differentiate into myofibroblasts, which have contractile properties similar to smooth muscle cells, causing the wound to shrink."
+    },
+    {
+        q: "Which systemic condition primarily delays wound healing due to neutrophil dysfunction and reduced vascular perfusion?",
+        opts: ["Old age", "Vitamin C deficiency", "Diabetes mellitus", "Steroid use"],
+        correct: 2,
+        explain: "Diabetes mellitus impairs healing through multiple mechanisms, including poor neutrophil function (chemotaxis and phagocytosis) and microvascular disease that reduces blood flow."
+    },
+    {
+        q: "Which growth factor is a key regulator of angiogenesis?",
+        opts: ["Transforming Growth Factor-β (TGF-β)", "Platelet-Derived Growth Factor (PDGF)", "Vascular Endothelial Growth Factor (VEGF)", "Fibroblast Growth Factor (FGF)"],
+        correct: 2,
+        explain: "VEGF is the most important growth factor involved in stimulating the proliferation and migration of endothelial cells to form new blood vessels."
+    },
+    {
+        q: "Which cells are classified as 'labile' and continue to proliferate throughout life, allowing for constant regeneration?",
+        opts: ["Cardiac muscle", "Neurons", "Gastrointestinal (GIT) mucosa", "Kidney tubular cells"],
+        correct: 2,
+        explain: "Labile cells, such as those in the skin and GIT mucosa, are continuously dividing to replace lost cells."
+    },
+    {
+        q: "A hypertrophic scar differs from a keloid in that it:",
+        opts: ["Grows beyond the original wound boundaries", "Is composed of excessive collagen", "Is confined to the original wound boundaries and may regress", "Is more common in certain ethnic groups"],
+        correct: 2,
+        explain: "Unlike a keloid, a hypertrophic scar is an excessive accumulation of collagen that remains within the confines of the original wound and often flattens over time."
+    },
+    {
+        q: "The presence of foreign bodies, such as sutures or debris, in a wound primarily delays healing by:",
+        opts: ["Reducing blood supply", "Inhibiting collagen synthesis", "Persisting inflammation and infection risk", "Preventing wound contraction"],
+        correct: 2,
+        explain: "Foreign bodies act as a nidus for infection and cause a persistent inflammatory response, which hinders the transition to the proliferative phase of healing."
+    },
+    {
+        q: "In which phase of wound healing does epithelialization, the migration of epithelial cells to cover the wound surface, occur?",
+        opts: ["Hemostasis", "Inflammatory Phase", "Proliferative Phase", "Maturation Phase"],
+        correct: 2,
+        explain: "Epithelialization begins early but is a key event of the proliferative phase, where epithelial cells migrate and proliferate to re-establish a barrier."
+    },
+    {
+        q: "A common complication of deficient scar formation in an abdominal surgical wound is:",
+        opts: ["Keloid formation", "Wound contraction", "Incisional hernia", "Epidermal cyst"],
+        correct: 2,
+        explain: "If scar formation is inadequate, the wound will be weak, potentially leading to the rupture (dehiscence) or formation of an incisional hernia, where abdominal contents protrude through the weak scar."
+    },
+    {
+        q: "Use of corticosteroids (steroids) can impair wound healing by:",
+        opts: ["Increasing angiogenesis", "Inhibiting inflammation", "Enhancing collagen deposition", "Promoting fibroblast proliferation"],
+        correct: 1,
+        explain: "Steroids have a potent anti-inflammatory effect, which can inhibit the crucial early inflammatory response needed to clear debris and signal the start of the repair process."
+    },
+    {
+        q: "Which type of collagen is predominantly found in a mature scar?",
+        opts: ["Type II Collagen", "Type III Collagen", "Type I Collagen", "Type IV Collagen"],
+        correct: 2,
+        explain: "Initially, Type III collagen is deposited, but during the remodeling phase, it is largely replaced by the stronger Type I collagen, which is the main component of a mature scar."
+    },
+    {
+        q: "The red, granular appearance of a healing wound surface is due to:",
+        opts: ["The initial blood clot", "Excessive scar tissue", "The presence of granulation tissue", "Epithelial migration"],
+        correct: 2,
+        explain: "The term 'granulation tissue' comes from its pink, soft, granular appearance, which is due to the high density of new capillaries and proliferating fibroblasts."
+    },
+    {
+        q: "Smoking impairs wound healing primarily because nicotine acts as a:",
+        opts: ["Vasodilator", "Growth factor inhibitor", "Vasoconstrictor", "Collagen synthesis inhibitor"],
+        correct: 2,
+        explain: "Nicotine is a potent vasoconstrictor, which reduces blood flow to the wound, causing microvascular occlusion and subsequent ischemia."
+    },
+    {
+        q: "Ulceration is a complication of wound healing defined as:",
+        opts: ["Excessive scar formation", "A defect in the surface epithelium", "Protrusion of an organ through the wound", "Formation of a fluid-filled cyst"],
+        correct: 1,
+        explain: "Ulceration is caused by deficient scar formation or inadequate re-epithelialization, resulting in a persistent defect or excavation of a tissue surface."
+    },
+    {
+        q: "'Stable cells', such as those in the liver and kidney, are characterized by their ability to:",
+        opts: ["Continuously proliferate throughout life", "Never proliferate under any circumstances", "Remain quiescent but can proliferate in response to injury", "Differentiate into any cell type"],
+        correct: 2,
+        explain: "Stable cells are normally in a non-dividing (G0) state but can re-enter the cell cycle and proliferate when stimulated by injury or loss of tissue mass."
+    },
+    {
+        q: "Which process is NOT considered a primary mechanism of tissue regeneration?",
+        opts: ["Cell migration", "Fibrosis", "Proliferation", "Differentiation"],
+        correct: 1,
+        explain: "Fibrosis, the deposition of collagen to form a scar, is the hallmark of repair, not regeneration. Regeneration involves replacing lost tissue with the same type of cells."
+    },
+    {
+        q: "The tensile strength of a sutured wound at the end of the first week is approximately what percentage of normal skin?",
+        opts: ["80%", "50%", "10%", "1%"],
+        correct: 2,
+        explain: "Wound strength increases rapidly during the proliferative phase. By the time sutures are removed (around 1 week), the strength is about 10% of unwounded skin, relying on collagen deposition."
+    },
+    {
+        q: "Transforming Growth Factor-β (TGF-β) is a critical cytokine that primarily stimulates:",
+        opts: ["Neutrophil chemotaxis", "Fibroblast migration and collagen production", "Endothelial cell proliferation", "Epithelial cell migration"],
+        correct: 1,
+        explain: "TGF-β is a key fibrogenic agent. It is produced by macrophages and other cells to stimulate fibroblast activity, leading to the deposition of extracellular matrix (collagen)."
+    },
+    {
+        q: "Which factor is NOT considered a local factor that can delay wound healing?",
+        opts: ["Infection", "Ischemia", "Nutritional status (e.g., protein deficiency)", "Presence of a foreign body"],
+        correct: 2,
+        explain: "Nutritional status is a systemic factor, affecting the entire body's ability to heal, whereas infection, ischemia, and foreign bodies are local to the wound site."
+    }
+];
+
+const tfs = [
+    {
+        q: "Permanent cells, such as cardiac muscle, can readily regenerate after severe injury.",
+        answer: false,
+        explain: "Permanent cells have no significant regenerative capacity. Severe injury to tissues like the heart results in repair by scar formation, not regeneration."
+    },
+    {
+        q: "Healing by secondary intention typically results in a larger scar and more wound contraction than primary intention.",
+        answer: true,
+        explain: "Because secondary intention involves larger tissue defects, it requires more granulation tissue, leading to a more substantial scar and significant wound contraction by myofibroblasts."
+    },
+    {
+        q: "Vitamin C is essential for the angiogenesis phase of wound healing.",
+        answer: false,
+        explain: "While important for overall health, Vitamin C's primary role in wound healing is as a co-factor for collagen synthesis and maturation, not directly for angiogenesis (new blood vessel formation)."
+    },
+    {
+        q: "Keloids are a type of excessive scar that remains strictly within the boundaries of the original wound.",
+        answer: false,
+        explain: "This describes a hypertrophic scar. Keloids are defined by their tendency to grow beyond the original wound boundaries."
+    },
+    {
+        q: "Angiogenesis is the process of forming new blood vessels from pre-existing ones.",
+        answer: true,
+        explain: "This is the definition of angiogenesis, a crucial step in the proliferative phase of healing that provides nutrients and oxygen to the new tissue."
+    },
+    {
+        q: "Wound contraction is primarily mediated by the transformation of macrophages into myofibroblasts.",
+        answer: false,
+        explain: "Wound contraction is mediated by fibroblasts differentiating into myofibroblasts, which possess contractile abilities."
+    },
+    {
+        q: "Diabetes impairs wound healing partly because high glucose levels enhance neutrophil function.",
+        answer: false,
+        explain: "Diabetes impairs wound healing because high glucose levels cause neutrophil and macrophage dysfunction (impaired chemotaxis and phagocytosis) and vascular problems."
+    },
+    {
+        q: "Hemostasis, involving clot formation, is considered the first phase of the wound healing cascade.",
+        answer: true,
+        explain: "The immediate response to vessel injury is hemostasis, which stops bleeding and provides a provisional matrix for cells to migrate into."
+    },
+    {
+        q: "Stable cells, such as liver hepatocytes, have lost all ability to proliferate in response to injury after adolescence.",
+        answer: false,
+        explain: "Stable cells are normally quiescent but retain the ability to proliferate when stimulated by injury, as seen in liver regeneration."
+    }
+];
+
+const saqs = [
+    {
+        q: "Compare and contrast healing by primary intention and secondary intention, focusing on four key features.",
+        a: `Healing by primary and secondary intention differs in several ways:
+        <table>
+          <thead>
+            <tr><th>Feature</th><th>Primary Intention</th><th>Secondary Intention</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1. Wound Edges</td><td>Opposed (apposed)</td><td>Separated (wide gap)</td></tr>
+            <tr><td>2. Size / Contamination</td><td>Small, clean (e.g., surgical)</td><td>Large, often contaminated</td></tr>
+            <tr><td>3. Granulation Tissue</td><td>Minimal amount</td><td>Large amount</td></tr>
+            <tr><td>4. Outcome</td><td>Minimal scar, no contraction</td><td>Large, permanent scar with wound contraction</td></tr>
+          </tbody>
+        </table>`
+    },
+    {
+        q: "List four systemic factors that can delay wound healing and briefly explain the mechanism for each.",
+        a: `Four systemic factors that delay wound healing are:
+        <ol>
+          <li><b>Protein/Nutritional Deficiency:</b> Impairs fibroblast proliferation and collagen synthesis, leading to poor granulation tissue formation.</li>
+          <li><b>Vitamin C Deficiency:</b> Essential for collagen synthesis and maturation. Deficiency leads to unstable collagen and fragile vessels.</li>
+          <li><b>Diabetes Mellitus:</b> Causes neutrophil/macrophage dysfunction, and reduced vascular perfusion (ischemia) impairs nutrient and oxygen delivery.</li>
+          <li><b>Steroid Administration:</b> Potent anti-inflammatory effects can inhibit the crucial initial inflammatory response required for proper healing.</li>
+        </ol>`
+    },
+    {
+        q: "Describe the four main phases of cutaneous wound healing, mentioning a key event for each phase.",
+        a: `The four main phases of wound healing are:
+        <ol>
+          <li><b>Hemostasis:</b> Occurs immediately. Key event is <b>platelet aggregation and clot formation</b> to stop bleeding.</li>
+          <li><b>Inflammatory Phase (Day 1-4):</b> Key event is the influx of <b>neutrophils and macrophages</b> to clean the wound of debris and bacteria (debridement).</li>
+          <li><b>Proliferative Phase (Day 4-21):</b> Key events include <b>formation of granulation tissue</b> (angiogenesis and fibroblast proliferation) and <b>epithelialization</b>.</li>
+          <li><b>Maturation/Remodeling Phase (Day 21 - 2 years):</b> Key event is the replacement of Type III collagen with Type I and the <b>reorganization of collagen fibers</b> to increase tensile strength.</li>
+        </ol>`
+    },
+    {
+        q: "A 60-year-old patient with poorly controlled type 2 diabetes has a non-healing ulcer on their foot. Based on the lecture, what are two primary mechanisms by which diabetes is impairing the healing process?",
+        a: "The two primary mechanisms are: <br>1. <b>Neutrophil and Macrophage Dysfunction:</b> High blood sugar (glycation of proteins) impairs the ability of these immune cells to move to the site of injury (chemotaxis) and clear bacteria and debris (phagocytosis), increasing infection risk. <br>2. <b>Decreased Vascular Perfusion:</b> Diabetes often leads to microvascular disease, which narrows blood vessels and reduces blood flow (ischemia) to the wound, depriving it of essential oxygen and nutrients needed for repair."
+    },
+    {
+        q: "What is granulation tissue, and what are its two main histological components?",
+        a: "Granulation tissue is the new connective tissue that forms to fill a wound gap during the proliferative phase of healing. Its two main histological components are: <br>1. <b>New Blood Vessels (Angiogenesis):</b> A proliferation of small capillaries that give the tissue a granular, red appearance. <br>2. <b>Fibroblasts:</b> Proliferating cells that are actively synthesizing extracellular matrix, primarily collagen, to provide structure to the new tissue."
+    },
+    {
+        q: "List and describe the two main complications related to excessive scar formation.",
+        a: `The two main complications from excessive scarring are:
+        <ol>
+          <li><b>Hypertrophic Scar:</b> This is a raised, red scar caused by an excessive amount of collagen. It is characterized by remaining <b>confined to the boundaries</b> of the original wound and may regress or flatten over time.</li>
+          <li><b>Keloid:</b> This is a more severe form of excessive scarring. It is a thick, raised scar that <b>grows beyond the boundaries</b> of the original wound. Keloids do not regress and often recur after excision.</li>
+        </ol>`
+    }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    toggleBtn.style.border = now ? "1px solid transparent" : "1px solid rgba(255,255,255,0.18)";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  // Update all score displays
+    document.getElementById('sMcq').textContent = mcqScore;
+    document.getElementById('sTf').textContent = tfScore;
+    document.getElementById('sSaq').textContent = saqScore;
+    document.getElementById('sTotal').textContent = total;
+    document.getElementById('sMcq2').textContent = mcqScore;
+    document.getElementById('sTf2').textContent = tfScore;
+    document.getElementById('sSaq2').textContent = saqScore;
+    document.getElementById('sTotal2').textContent = total;
+}
+
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{
+      b.textContent="I was correct";
+      b.style.outline="none";
+      b.style.border = "1px solid rgba(255,255,255,0.18)";
+  });
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+// Initial score calculation
+document.addEventListener('DOMContentLoaded', recalc);
+</script>
+</body>
+</html>
+

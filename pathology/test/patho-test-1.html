@@ -1,94 +1,453 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" style="direction:ltr;">
+<html lang="en" style="direction:ltr;">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>🦷 Dentistry 3rd year — Nothing</title>
+<title>Interactive Exam • Glowing Dark Theme</title>
 <meta name="color-scheme" content="dark" />
 <style>
   :root{
-    --radius:20px; --gap:32px;
-    --title-size: clamp(1.6rem, 1.1rem + 1.6vw, 2.2rem);
-    --h2-size: clamp(1.2rem, 1rem + .7vw, 1.4rem);
-
-    --bg:#0b0b12; --fg:#f6f7fb; --muted:#a6afc6;
-    --panel:#0f1221; --elev:#151834; --border:rgba(255,255,255,.12);
-    --shadow:0 14px 34px rgba(0,0,0,.42);
-
-    --purple:#8b5cf6; --cyan:#06b6d4; --pink:#ec4899; --lime:#84cc16;
-    --blue:#3b82f6; --yellow:#facc15; --green:#22c55e;
-
-    --glow-purple: rgba(139,92,246,.25);
-    --glow-cyan:   rgba(6,182,212,.25);
-    --glow-pink:   rgba(236,72,153,.25);
-    --glow-lime:   rgba(132,204,22,.25);
-    --glow-blue:   rgba(59,130,246,.28);
-    --glow-yellow: rgba(250,204,21,.30);
-    --glow-green:  rgba(34,197,94,.28);
-
-    --title-a: var(--cyan);
-    --title-b: var(--purple);
-
-    --card-width: 650px;
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
   }
 
-  html,body{
-    margin:0;min-height:100%;color:var(--fg);
-    font-family: Inter, ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-    background:
-      radial-gradient(1200px 800px at 8% -10%, var(--glow-purple) 0%, rgba(0,0,0,0) 60%),
-      radial-gradient(1100px 700px at 110% 0%, var(--glow-cyan) 0%, rgba(0,0,0,0) 55%),
-      radial-gradient(1000px 800px at 50% 120%, var(--glow-pink) 0%, rgba(0,0,0,0) 55%),
-      radial-gradient(900px 700px at -10% 110%, var(--glow-lime) 0%, rgba(0,0,0,0) 55%),
-      var(--bg);
-    background-repeat:no-repeat; background-attachment:fixed;
-    display:flex;flex-direction:column;
-  }
   *{box-sizing:border-box}
-  .container{max-width:2000px;margin:0 auto;padding: clamp(16px, 2.5vw, 32px)}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
 
-  header{position:sticky;top:0;z-index:50;
-    background:linear-gradient(180deg, color-mix(in oklab, var(--bg) 92%, transparent), color-mix(in oklab, var(--bg) 70%, transparent));
-    backdrop-filter: blur(6px);border-bottom:1px solid var(--border)}
-  .hdr{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;padding:14px 0}
-  .title{font-size:var(--title-size);font-weight:900;letter-spacing:.2px;
-    background:linear-gradient(135deg,var(--title-a), var(--title-b));
-    -webkit-background-clip:text;background-clip:text;color:transparent;
-    text-shadow: 0 0 20px rgba(6,182,212,.22), 0 0 20px rgba(139,92,246,.18); text-align:center;}
-  .subtitle{font-size:1rem;color:var(--muted);margin-top:-2px;text-align:center;}
-
-  .section{margin-top: clamp(40px, 5vw, 60px)}
-
-  .section-head.bar{
-    display:block;
-    width: calc(var(--card-width) * 2 + var(--gap));
-    margin:0 auto;
-    padding:24px 28px;
-    border-radius:18px;
-    background:linear-gradient(135deg, rgba(255,255,255,.045), rgba(255,255,255,.02));
-    border:1px solid var(--border);
-    box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 8px 24px rgba(255,255,255,.06);
-    text-align:center;
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
   }
-  .section-head h2{margin:0;font-size:var(--h2-size);font-weight:900;text-align:center;}
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .answer table{width:100%;border-collapse:collapse;margin-top:8px;}
+  .answer th, .answer td{border:1px solid var(--card-border);padding:8px;text-align:left;}
+  .answer th{background:rgba(255,255,255,0.05);}
+  .answer ol{padding-left:20px;margin:0;}
+
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
 </style>
 </head>
 <body>
-
-<header>
-  <div class="hdr container">
-    <div style="text-align:center;">
-      <div class="title">🦷 Dentistry 3rd year</div>
-      <div class="subtitle"></div>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 1</p>
     </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+    { q: "What is the fundamental definition of Pathology?", opts: ["The study of normal cell functions", "The scientific study of disease, focusing on structural and functional changes", "The study of drug interactions within the body", "The classification of infectious microorganisms"], correct: 1, explain: "Pathology is defined as the scientific study (logos) of disease (pathos), examining the structural, biochemical, and functional changes in cells, tissues, and organs." },
+    { q: "Which term refers to the origin or cause of a disease?", opts: ["Pathogenesis", "Morphology", "Prognosis", "Etiology"], correct: 3, explain: "Etiology is the term for the origin or cause of a disease, which can be genetic (intrinsic) or acquired (extrinsic)." },
+    { q: "What does 'Pathogenesis' describe?", opts: ["The cause of a disease", "The sequence of events from stimulus to expression of a disease", "The visible structural alterations in tissues", "The predicted outcome of a disease"], correct: 1, explain: "Pathogenesis is the mechanism of disease development, describing the sequence of events from the initial stimulus to the ultimate expression of the disease." },
+    { q: "A structural alteration in tissues due to disease, such as an ulcer, is known as a:", opts: ["Symptom", "Sign", "Lesion", "Syndrome"], correct: 2, explain: "A lesion is a structural alteration in tissues or organs resulting from disease or injury." },
+    { q: "Which of the following is considered a 'symptom'?", opts: ["Swelling observed by a doctor", "Redness of the skin", "Pain experienced by a patient", "High blood pressure reading"], correct: 2, explain: "Symptoms are subjective evidence of disease, experienced by the patient, like pain or nausea. Signs are objective evidence observed by a clinician." },
+    { q: "A 'provisional diagnosis' is best described as:", opts: ["A list of all possible diseases", "The final confirmed identification of a disease", "The most likely working diagnosis before confirmatory tests", "A diagnosis based only on laboratory results"], correct: 2, explain: "A provisional diagnosis is a temporary or working diagnosis made before all test results are available, based on initial findings." },
+    { q: "Which branch of pathology deals with basic mechanisms common to all diseases, like inflammation and healing?", opts: ["Systemic Pathology", "Oral Pathology", "General Pathology", "Clinical Pathology"], correct: 2, explain: "General Pathology focuses on the basic principles and mechanisms of disease that are common across all tissues and organ systems." },
+    { q: "The study of diseases affecting specific organs or systems, like the cardiovascular or respiratory system, is called:", opts: ["General Pathology", "Systemic Pathology", "Forensic Pathology", "Cytopathology"], correct: 1, explain: "Systemic Pathology applies the principles of general pathology to specific organs and systems." },
+    { q: "A post-mortem examination performed to determine the cause of a suspicious or violent death is a:", opts: ["Clinical Autopsy", "Academic Autopsy", "Pathological Autopsy", "Medico-Legal or Forensic Autopsy"], correct: 3, explain: "Forensic or Medico-Legal autopsies are performed in cases of violent, suspicious, or sudden deaths as prescribed by law." },
+    { q: "What is considered the 'gold standard' for diagnosing tumors and confirming many oral lesions?", opts: ["Cytology", "Histopathology", "Blood test", "Radiography"], correct: 1, explain: "Histopathology, the microscopic study of tissue from a biopsy, is the gold standard for diagnosing tumors and many other diseases." },
+    { q: "Which technique involves the microscopic evaluation of individual cells scraped from a surface, like the oral mucosa?", opts: ["Fine-Needle Aspiration Cytology (FNAC)", "Incisional Biopsy", "Exfoliative Cytology", "Histopathology"], correct: 2, explain: "Exfoliative cytology involves examining cells that have been scraped or brushed from a surface, such as in a Pap smear or oral brush biopsy." },
+    { q: "What is the primary focus of Forensic Pathology?", opts: ["Laboratory investigations of body fluids", "Diagnosing blood disorders like anemia", "Medico-legal aspects of disease and death", "Studying diseases of the oral cavity"], correct: 2, explain: "Forensic Pathology deals with the medico-legal investigation of disease, injury, and death, often contributing to criminal investigations." },
+    { q: "The routine staining method used in histopathology to make cell structures visible is:", opts: ["Gram stain", "Ziehl-Neelsen stain", "PAS stain", "Hematoxylin & Eosin (H&E)"], correct: 3, explain: "Hematoxylin & Eosin (H&E) is the most common, routine stain used in histopathology to visualize tissue morphology." },
+    { q: "A group of signs and symptoms that occur together and characterize a particular abnormality is known as a:", opts: ["Lesion", "Prognosis", "Syndrome", "Diagnosis"], correct: 2, explain: "A syndrome is a collection of signs and symptoms that consistently appear together, pointing towards a specific disease or condition." },
+    { q: "Which category of etiology includes infections, chemicals, and trauma?", opts: ["Genetic (intrinsic)", "Acquired (extrinsic)", "Idiopathic", "Iatrogenic"], correct: 1, explain: "Acquired or extrinsic causes of disease originate from the external environment, such as infections, chemical exposure, or physical trauma." },
+    { q: "The prediction of the outcome of a disease is called:", opts: ["Diagnosis", "Prognosis", "Etiology", "Pathogenesis"], correct: 1, explain: "Prognosis is the forecast or prediction of the probable course and outcome of a disease." },
+    { q: "Which subdivision of Clinical Pathology focuses on blood disorders like anemia and leukemia?", opts: ["Microbiology", "Clinical Chemistry", "Hematology", "Cytology"], correct: 2, explain: "Hematology is the branch of medicine concerned with the study, diagnosis, treatment, and prevention of diseases related to blood." },
+    { q: "Fine-Needle Aspiration Cytology (FNAC) is most commonly used for:", opts: ["Screening for cervical cancer", "Analyzing tissue from a large tumor", "Evaluating swellings, lymph nodes, and salivary glands", "Staining biopsy specimens"], correct: 2, explain: "FNAC is a quick, minimally invasive technique used to investigate superficial lumps or masses, such as in lymph nodes or the thyroid." },
+    { q: "Molecular Pathology uses techniques like PCR and FISH to study disease at what level?", opts: ["Organ and system level", "Cellular level", "DNA, RNA, and protein levels", "Gross macroscopic level"], correct: 2, explain: "Molecular Pathology applies molecular biology techniques to study disease mechanisms at the level of DNA, RNA, and proteins, detecting mutations and biomarkers." },
+    { q: "What is the key difference between a sign and a symptom?", opts: ["Signs are severe, symptoms are mild", "Signs are subjective, symptoms are objective", "Signs are objective, symptoms are subjective", "There is no difference"], correct: 2, explain: "Signs are objective evidence observed by a clinician (e.g., swelling), while symptoms are subjective experiences reported by the patient (e.g., pain)." },
+    { q: "An 'Anatomical or academic autopsy' is performed for the purpose of:", opts: ["Determining cause of death in a crime", "Confirming a clinical diagnosis", "Study by students of anatomy", "Investigating a hospital death"], correct: 2, explain: "Anatomical or academic autopsies are performed for the purpose of study and research, typically by medical students." },
+    { q: "Which field would investigate the biochemical changes in diseases like diabetes or renal failure?", opts: ["Hematology", "Microbiology", "Clinical Chemistry", "Forensic Pathology"], correct: 2, explain: "Clinical chemistry (or biochemistry) analyzes body fluids for biochemical markers to diagnose and monitor diseases like diabetes." },
+    { q: "Oral Pathology is a specialized branch focusing on diseases of the:", opts: ["Entire gastrointestinal tract", "Respiratory system and lungs", "Oral cavity, jaws, and related structures", "Central nervous system"], correct: 2, explain: "Oral Pathology is dedicated to the diseases affecting the oral cavity, jaws, salivary glands, and maxillofacial region." },
+    { q: "The term for structural alterations visible only under a microscope is:", opts: ["Gross changes", "Macroscopic changes", "Clinical manifestations", "Microscopic changes"], correct: 3, explain: "Microscopic changes are structural alterations in cells and tissues that are visible only with the aid of a microscope." },
+    { q: "A 'Differential diagnosis' refers to:", opts: ["The final, confirmed diagnosis", "A diagnosis made by a different doctor", "A list of possible diseases with similar features", "The prediction of a disease's outcome"], correct: 2, explain: "A differential diagnosis is a systematic process of distinguishing between two or more conditions that share similar clinical features." },
+    { q: "Which cell organelle is responsible for making ATP energy from sugar and oxygen?", opts: ["Nucleus", "Ribosome", "Mitochondria", "Lysosome"], correct: 2, explain: "The mitochondria are the powerhouses of the cell, responsible for generating most of the cell's supply of adenosine triphosphate (ATP)." },
+    { q: "The study of normal functions of cells is called:", opts: ["Pathology", "Histology", "Physiology", "Anatomy"], correct: 2, explain: "Physiology is the scientific study of the functions and mechanisms which work within a living system." },
+    { q: "What is the main purpose of a 'Clinical or Pathological autopsy'?", opts: ["To be used in a court of law", "To clarify or confirm medical diagnoses that were unclear before death", "To train surgical residents", "To harvest organs for donation"], correct: 1, explain: "Clinical autopsies are performed to learn more about the patient's disease, confirm diagnoses, and educate medical professionals." },
+    { q: "Which of these is an example of a genetic (intrinsic) etiology?", opts: ["Bacterial infection", "Nutritional imbalance", "Inherited mutations", "Chemical exposure"], correct: 2, explain: "Genetic or intrinsic etiology refers to causes that are inherited, such as gene mutations or chromosomal abnormalities." },
+    { q: "The 'control center' of the cell that protects the DNA is the:", opts: ["Golgi apparatus", "Mitochondria", "Cell membrane", "Nucleus"], correct: 3, explain: "The nucleus serves as the cell's control center, containing the genetic material (DNA) and controlling cell growth and reproduction." }
+];
+
+const tfs = [
+    { q: "Pathology is the study of the normal structure and function of the body.", answer: false, explain: "This describes anatomy and physiology. Pathology is the study of diseased or damaged cells and their altered functions." },
+    { q: "Etiology and Pathogenesis are two terms for the same concept.", answer: false, explain: "Etiology is the cause of a disease, while Pathogenesis is the mechanism by which the disease develops." },
+    { q: "Gross morphological changes are those visible to the naked eye.", answer: true, explain: "Gross or macroscopic changes are structural alterations that can be seen without a microscope." },
+    { q: "A 'sign' is a subjective experience reported by the patient, such as pain.", answer: false, explain: "This describes a symptom. A sign is an objective finding observed by a clinician, such as swelling or redness." },
+    { q: "Systemic Pathology deals with basic disease principles common to all organs.", answer: false, explain: "This is the definition of General Pathology. Systemic Pathology applies these principles to specific organ systems." },
+    { q: "Exfoliative cytology is a highly invasive diagnostic procedure.", answer: false, explain: "Exfoliative cytology is minimally invasive, involving scraping or brushing cells from a surface." },
+    { q: "The main purpose of a Forensic Autopsy is to confirm a pre-existing medical diagnosis.", answer: false, explain: "Its main purpose is medico-legal: to determine the cause and manner of death in suspicious, violent, or sudden cases." },
+    { q: "H&E is a special stain used only for detecting bacteria.", answer: false, explain: "H&E (Hematoxylin & Eosin) is the most common, routine stain in histopathology for general tissue visualization, not a special stain for bacteria." },
+    { q: "A 'lesion' is defined as a functional change without any structural alteration.", answer: false, explain: "A lesion is specifically a structural alteration in tissues or organs caused by disease or injury." }
+];
+
+const saqs = [
+    { q: "Define 'Pathogenesis' and provide a clear example.", a: "Pathogenesis is the sequence of events that occur in the body from the initial stimulus or cause of a disease to its ultimate expression. It explains 'how' the cause leads to the disease.<br><br><b>Example:</b> In a Tuberculosis (TB) infection, the pathogenesis is the sequence of: inhalation of bacilli → colonization in the lung alveoli → formation of a granuloma as the body's immune system responds." },
+    { q: "A patient is admitted to the hospital with a high fever, cough, and chest pain. The doctor observes a rapid breathing rate and hears abnormal sounds in the lungs with a stethoscope. Compare and contrast the signs and symptoms in this case.", a: "This comparison illustrates the difference between objective clinical findings and subjective patient experiences.<table><tr><th>Feature</th><th>Signs (Objective)</th><th>Symptoms (Subjective)</th></tr><tr><td>1</td><td>High fever (measurable temperature)</td><td>Chest pain (patient's feeling)</td></tr><tr><td>2</td><td>Rapid breathing rate (observable, countable)</td><td>Cough (can be a sign, but the urge to cough is a symptom)</td></tr><tr><td>3</td><td>Abnormal lung sounds (detected by doctor)</td><td>General feeling of illness</td></tr></table>" },
+    { q: "List and briefly describe the three main types of autopsy mentioned in the lecture.", a: "The three main types of autopsy are:<ol><li><b>Medico-Legal or Forensic Autopsy:</b> Performed as required by law to investigate violent, suspicious, or sudden deaths to determine the cause and manner of death for legal proceedings.</li><li><b>Clinical or Pathological Autopsy:</b> Performed to determine or confirm medical diagnoses that were unclear before death, serving educational and quality assurance purposes in healthcare.</li><li><b>Anatomical or Academic Autopsy:</b> Performed by anatomy students purely for the purpose of studying the structure of the human body.</li></ol>" },
+    { q: "A 55-year-old man who is a heavy smoker presents to his dentist with a persistent white patch (leukoplakia) on the inside of his cheek. The dentist is concerned it could be a precancerous lesion. Describe the diagnostic process, naming the key branch of pathology and the 'gold standard' technique that would be used to get a definitive diagnosis.", a: "In this case, the dentist would need a definitive diagnosis to guide treatment. The primary branch of pathology involved would be <b>Oral Pathology</b>, which specializes in diseases of the mouth and jaws.<br><br>The 'gold standard' diagnostic technique is <b>Histopathology</b>. This involves performing a <b>biopsy</b> (likely an incisional biopsy to take a small piece of the lesion), processing the tissue, staining it with H&E, and examining it under a microscope to identify any cellular abnormalities like dysplasia or cancer." },
+    { q: "Explain what a 'Differential Diagnosis' is and why it is important in clinical practice.", a: "A Differential Diagnosis is a list of possible diseases or conditions that could be causing a patient's signs and symptoms. It is a systematic method used by clinicians to distinguish between diseases that have similar features.<br><br>It is important because it guides the diagnostic process, helping the clinician decide which confirmatory tests (like lab work, imaging, or biopsy) are needed to narrow down the possibilities and arrive at a single, final diagnosis." },
+    { q: "List the four core aspects of a disease that pathology focuses on studying.", a: "Pathology studies four main aspects of a disease:<ol><li><b>Etiology:</b> The cause or origin of the disease.</li><li><b>Pathogenesis:</b> The mechanism or sequence of events in the development of the disease.</li><li><b>Morphologic Changes:</b> The structural alterations in cells, tissues, and organs.</li><li><b>Clinical Features & Prognosis:</b> The functional consequences of the morphologic changes (signs/symptoms) and the predicted outcome.</li></ol>" }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      const originalSelection = visualToOriginal[v];
+      state.mcq[idx] = originalSelection; // Store original index for scoring logic
+
+      // Mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
   </div>
-</header>
+  <div class="answer" hidden>${item.a}</div>
+`;
 
-<main class="container">
-  <section class="section">
-    <div class="section-head bar"><h2>Nothing</h2></div>
-  </section>
-</main>
 
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+    const mcqScore = state.mcq.reduce((score, selectedOriginalIndex, i) => {
+        if (selectedOriginalIndex === null) return score;
+        return score + (selectedOriginalIndex === mcqs[i].correct ? 1 : 0);
+    }, 0);
+
+    const tfScore = state.tf.reduce((score, selectedValue, i) => {
+        if (selectedValue === null) return score;
+        return score + (selectedValue === tfs[i].answer ? 1 : 0);
+    }, 0);
+
+    const saqScore = state.saq.filter(Boolean).length;
+    const total = mcqScore + tfScore + saqScore;
+
+    const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+    ids.forEach(id=>{
+        const el = document.getElementById(id);
+        if(!el) return;
+        if(id.includes('Mcq')) el.textContent = mcqScore;
+        if(id.includes('Tf')) el.textContent = tfScore;
+        if(id.includes('Saq')) el.textContent = saqScore;
+        if(id.includes('Total')) el.textContent = total;
+    });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
 </body>
 </html>

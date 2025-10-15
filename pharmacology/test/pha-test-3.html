@@ -92,14 +92,23 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}  
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
-  .opt-btn.correct{border-left:6px solid var(--ok);outline:none;background:rgba(255,255,255,0.03);} 
-  .opt-btn.wrong{border-left:6px solid var(--bad);outline:none;background:rgba(255,255,255,0.03);} 
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
-  .feedback[hidden]{display:none;} 
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
@@ -130,7 +139,7 @@
 
   <main class="wrap">
 
-    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
 
     <section class="score" id="scoreTop">
       <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
@@ -160,66 +169,415 @@
   </main>
 
 <script>
-// ----------- Data (from pharma-3.pdf) -----------
+// ----------- Data -----------
 const mcqs = [
-  {q:"Pharmacodynamics primarily studies:", opts:["How the body handles a drug (ADME)", "The economic cost of drug therapy", "The detailed mode of drug action at the cellular level", "How to formulate dosage forms"], correct:2, explain:"Pharmacodynamics is the detailed study of how drugs exert effects at a cellular level (mechanism of action)."},
-  {q:"Most drugs exert their effects by interacting with:", opts:["Receptors","Lysosomes","Ribosomes exclusively","Mitochondrial DNA"], correct:0, explain:"Most drugs bind to receptors (cell-surface or intracellular) to initiate responses."},
-  {q:"Where are pharmacologic receptors typically located?", opts:["Only in the nucleus","Only on the cell surface","Cell surface or intracellularly","Only in synaptic clefts"], correct:2, explain:"Receptors are specialized macromolecules present on the cell surface or inside the cell."},
-  {q:"Formation of the drug–receptor complex usually leads to:", opts:["Drug inactivation","Biological response","Drug precipitation","No change"], correct:1, explain:"Recognition of a drug by its receptor triggers a biological response."},
-  {q:"Which pair correctly matches a drug to an enzyme target?", opts:["Trimethoprim – xanthine oxidase","Trimethoprim – dihydrofolate reductase","Allopurinol – acetylcholinesterase","Neostigmine – cyclooxygenase"], correct:1, explain:"Trimethoprim inhibits dihydrofolate reductase (antimetabolite action)."},
-  {q:"Which agent blocks transcription by binding nucleic acids?", opts:["Dactinomycin","Aspirin","Penicillin","Pilocarpine"], correct:0, explain:"Dactinomycin interferes with transcription by binding DNA."},
-  {q:"Alteration of membrane permeability is a noted effect of:", opts:["Pilocarpine","Methotrexate","Cephalosporins","Amiloride"], correct:0, explain:"Pilocarpine can alter membrane receptor-mediated permeability."},
-  {q:"Receptors are often named after:", opts:["The first discoverer","The best-interacting ligand","Their subcellular location","The organ where found"], correct:1, explain:"E.g., histamine receptor is named for histamine, the ligand that binds best."},
-  {q:"On the heart, which pairing is correct?", opts:["β-receptors – acetylcholine","Muscarinic receptors – norepinephrine","β-receptors – norepinephrine","Histamine receptors – dopamine"], correct:2, explain:"Cardiac β-receptors respond to norepinephrine; muscarinic receptors respond to acetylcholine."},
-  {q:"How many major receptor families are highlighted?", opts:["Three","Four","Five","Six"], correct:1, explain:"Four: ligand-gated ion channels, GPCRs, enzyme-linked, intracellular receptors."},
-  {q:"Ligand-gated ion channels typically act within:", opts:["Milliseconds","Seconds","Minutes","Hours"], correct:0, explain:"Ionotropic receptors produce responses in milliseconds."},
-  {q:"Which is an example of a GPCR-mediated receptor?", opts:["Nicotinic ACh receptor","GABA_A receptor","Muscarinic ACh receptor","Insulin receptor"], correct:2, explain:"Muscarinic receptors are GPCRs and act within seconds."},
-  {q:"Kinase-linked receptors usually signal over:", opts:["Milliseconds","Seconds","Minutes","Hours"], correct:3, explain:"Kinase-linked receptors (e.g., insulin) have effects that often take hours."},
-  {q:"A classic nuclear intracellular receptor ligand is:", opts:["Acetylcholine","Insulin","Thyroid hormone","Histamine"], correct:2, explain:"Steroid and thyroid hormones act via intracellular (nuclear) receptors; effects take hours."},
-  {q:"In transmembrane signaling, a serpentine receptor coupled to G protein corresponds to:", opts:["Ligand-gated channel","G protein–coupled receptor","Receptor-kinase","Intracellular receptor"], correct:1, explain:"Serpentine 7-TM receptors are GPCRs that couple to G proteins."},
-  {q:"The dose–response relationship described in the slides is:", opts:["Quantal only","Graded (continuous)","All-or-none","Bell-shaped only"], correct:1, explain:"The response is graded—continuous and gradual with concentration."},
-  {q:"EC50 is defined as the concentration producing:", opts:["50% toxicity","50% of maximal effect","Onset of action","Half-life"], correct:1, explain:"EC50 is a potency measure: concentration giving 50% of Emax."},
-  {q:"Magnitude of drug effect primarily depends on:", opts:["Route alone","Genetics alone","Drug concentration at the receptor site","Patient age only"], correct:2, explain:"Concentration at the receptor—shaped by dose and pharmacokinetics—drives effect size."},
-  {q:"Which pharmacokinetic factors determine concentration at receptors?", opts:["Absorption, distribution, metabolism","Color, taste, odor","Height, weight, eye color","Enzyme names only"], correct:0, explain:"ADME characteristics modulate the concentration reaching receptors."},
-  {q:"Penicillins and cephalosporins act mainly by:", opts:["Inhibiting protein synthesis at 50S","Blocking folate utilization","Inhibiting bacterial cell wall synthesis","Blocking DNA gyrase"], correct:2, explain:"β-lactams inhibit peptidoglycan cell wall synthesis."},
-  {q:"Methotrexate interferes with DNA synthesis by:", opts:["Activating folic acid","Inhibiting formation of folic acid","Chelating calcium","Opening chloride channels"], correct:1, explain:"Methotrexate inhibits folate formation, impairing DNA synthesis."},
-  {q:"Aspirin’s primary mechanism relevant here is:", opts:["Blocks Na+ channels","Activates muscarinic receptors","Inhibits cyclooxygenase (prostaglandin synthesis)","Inhibits acetylcholinesterase"], correct:2, explain:"Aspirin irreversibly inhibits COX, reducing prostaglandins."},
-  {q:"Cytotoxic anticancer drugs typically act by:", opts:["Enhancing cell growth","Interfering with cell growth/division","Increasing DNA repair","Blocking insulin receptors"], correct:1, explain:"They interfere with the cell cycle at various stages."},
-  {q:"Which is NOT listed as a factor in physiological variability affecting drug response?", opts:["Liver disease","Eye color","Renal disease","Chronic alcoholism"], correct:1, explain:"Slides list liver disease, renal disease, chronic alcoholism, allergy—not eye color."},
-  {q:"Therapeutically rich sources of pharmacologic receptors are:", opts:["Carbohydrates","Lipids","Proteins transducing extracellular signals","Nucleic acids only"], correct:2, explain:"Signal-transducing proteins are the richest therapeutic receptor sources."},
-  {q:"As drug concentration increases (within range), the pharmacologic effect generally:", opts:["Decreases","Remains constant","Increases","Becomes unpredictable only"], correct:2, explain:"Magnitude of effect increases with concentration until saturation."},
-  {q:"Drug tolerance refers to:", opts:["Increased response with repeated use","Reduced response with repeated use","Immediate hypersensitivity","Irreversible receptor loss only"], correct:1, explain:"Tolerance = reduced reaction after repeated use."},
-  {q:"Increasing dose to overcome tolerance may:", opts:["Always cure tolerance","Accelerate tolerance development","Reverse tolerance permanently","Eliminate side effects"], correct:1, explain:"Higher doses can transiently restore effect but may hasten tolerance."},
-  {q:"Tolerance is:", opts:["Always permanent","Never reversible","Potentially reversible (e.g., drug holiday)","Only psychological"], correct:2, explain:"Tolerance can be reversible and involves physiological and psychological factors."},
-  {q:"Examples of drugs commonly associated with tolerance include:", opts:["Amphetamines and opiates","Penicillins and cephalosporins","Aspirin and acetaminophen","Pilocarpine and atropine"], correct:0, explain:"Slides cite amphetamine and opiates as examples."}
+    {
+        q: "What is the primary definition of Pharmacodynamics?",
+        opts: [
+            "The study of how the body absorbs, distributes, metabolizes, and excretes drugs.",
+            "The detailed study of the mode of action of drugs in the body.",
+            "The process of developing new pharmaceutical products.",
+            "The study of drug toxicity and adverse effects on organs."
+        ],
+        correct: 1,
+        explain: "Pharmacodynamics specifically studies what drugs do to the body and their mechanisms of action at a cellular level."
+    },
+    {
+        q: "Which of the following is NOT a major receptor family?",
+        opts: [
+            "Ligand-gated ion channels",
+            "G protein-coupled receptors",
+            "Enzyme-linked receptors",
+            "Voltage-gated sodium channels"
+        ],
+        correct: 3,
+        explain: "While important, voltage-gated channels are a different category. The four major families are Ligand-gated, G protein-coupled, Enzyme-linked, and Intracellular receptors."
+    },
+    {
+        q: "Which type of receptor family demonstrates the fastest response time, typically in milliseconds?",
+        opts: [
+            "Nuclear intracellular receptors",
+            "Kinase-linked receptors",
+            "Ligand-gated ion channels",
+            "G-protein-coupled receptors"
+        ],
+        correct: 2,
+        explain: "Ligand-gated ion channels act the fastest (milliseconds) because they directly open or close to allow ion flow, causing an immediate change in membrane potential."
+    },
+    {
+        q: "Steroid and thyroid hormones typically interact with which family of receptors?",
+        opts: [
+            "G protein-coupled receptors",
+            "Enzyme-linked receptors",
+            "Intracellular receptors",
+            "Ligand-gated ion channels"
+        ],
+        correct: 2,
+        explain: "These lipid-soluble hormones can diffuse across the cell membrane to bind with intracellular (nuclear) receptors, which then alter gene expression."
+    },
+    {
+        q: "Aspirin and other NSAIDs produce their anti-inflammatory effects by inhibiting which enzyme?",
+        opts: [
+            "Dihydrofolate reductase",
+            "Cyclo-oxygenase (COX)",
+            "DNA polymerase",
+            "Acetylcholinesterase"
+        ],
+        correct: 1,
+        explain: "NSAIDs block the cyclo-oxygenase enzyme, which prevents the synthesis of prostaglandins from arachidonic acid, thereby reducing inflammation."
+    },
+    {
+        q: "What does the term EC50 represent in a dose-response curve?",
+        opts: [
+            "The dose of a drug that is lethal to 50% of a population.",
+            "The concentration of a drug that produces 50% of the maximal response.",
+            "The time it takes for 50% of the drug to be eliminated from the body.",
+            "The dose that produces a therapeutic effect in 50% of patients."
+        ],
+        correct: 1,
+        explain: "EC50 stands for 'half maximal effective concentration' and is a measure of a drug's potency."
+    },
+    {
+        q: "Which of the following drugs acts by inhibiting the synthesis of the bacterial cell wall?",
+        opts: [
+            "Methotrexate",
+            "Trimethoprim",
+            "Penicillin",
+            "Dactinomycin"
+        ],
+        correct: 2,
+        explain: "Penicillins and cephalosporins are classic examples of antibiotics that interfere with bacterial cell wall synthesis."
+    },
+    {
+        q: "The interaction of a drug with which of the following initiates the events leading to a biological response?",
+        opts: [
+            "Plasma proteins",
+            "Red blood cells",
+            "Receptors",
+            "Adipose tissue"
+        ],
+        correct: 2,
+        explain: "The formation of a drug-receptor complex is the critical first step that triggers a cascade of events resulting in a cellular and biological response."
+    },
+    {
+        q: "Insulin binds to which type of receptor?",
+        opts: [
+            "G protein-coupled receptor",
+            "Ligand-gated ion channel",
+            "Intracellular receptor",
+            "Enzyme-linked receptor"
+        ],
+        correct: 3,
+        explain: "The insulin receptor is a classic example of an enzyme-linked receptor, specifically a tyrosine kinase receptor, which activates intracellular signaling pathways."
+    },
+    {
+        q: "What concept describes a subject's reduced reaction to a drug after repeated use?",
+        opts: [
+            "Drug allergy",
+            "Drug toxicity",
+            "Drug tolerance",
+            "Drug dependency"
+        ],
+        correct: 2,
+        explain: "Drug tolerance occurs when the body adapts to a drug, requiring a higher dose to achieve the same effect."
+    },
+    {
+        q: "Methotrexate is a chemotherapeutic agent that interferes with DNA synthesis by inhibiting the formation of:",
+        opts: [
+            "Prostaglandins",
+            "Folic acid",
+            "Arachidonic acid",
+            "Nucleic acids directly"
+        ],
+        correct: 1,
+        explain: "Methotrexate inhibits dihydrofolate reductase, an enzyme crucial for the synthesis of folic acid, which is necessary for DNA production."
+    },
+    {
+        q: "Muscarinic ACh receptors and adrenoceptors are examples of which receptor family?",
+        opts: [
+            "G-protein-coupled receptors",
+            "Kinase-linked receptors",
+            "Ligand-gated ion channels",
+            "Nuclear intracellular receptors"
+        ],
+        correct: 0,
+        explain: "Both muscarinic and adrenergic receptors are classic examples of G-protein-coupled receptors, which act within seconds."
+    },
+    {
+        q: "The magnitude of a drug's effect primarily depends on:",
+        opts: [
+            "The color of the drug.",
+            "The time of day it is administered.",
+            "The drug's concentration at the receptor site.",
+            "The patient's age and gender only."
+        ],
+        correct: 2,
+        explain: "The dose-response relationship dictates that the drug's effect increases as its concentration at the receptor site increases, up to a maximal point."
+    },
+    {
+        q: "Which process is NOT considered part of pharmacodynamics?",
+        opts: [
+            "Drug binding to a receptor.",
+            "Activation of a second messenger system.",
+            "Drug metabolism in the liver.",
+            "Alteration of gene expression by a steroid."
+        ],
+        correct: 2,
+        explain: "Metabolism is a key component of pharmacokinetics (what the body does to the drug), not pharmacodynamics (what the drug does to the body)."
+    },
+    {
+        q: "A drug that binds to a receptor and initiates a cellular response is known as a(n):",
+        opts: [
+            "Antagonist",
+            "Agonist",
+            "Chelator",
+            "Enzyme inhibitor"
+        ],
+        correct: 1,
+        explain: "An agonist is a molecule that, by binding to a receptor site, stimulates a response. This is a core concept in pharmacodynamics."
+    },
+    {
+        q: "What is the consequence of a drug binding to a receptor?",
+        opts: [
+            "The receptor is permanently destroyed.",
+            "The drug is immediately metabolized.",
+            "A biological response is triggered.",
+            "The cell undergoes apoptosis."
+        ],
+        correct: 2,
+        explain: "The binding of a drug to its receptor is the signal that initiates a cascade of intracellular events leading to a biological response."
+    },
+    {
+        q: "A response that is continuous and gradual as the dose increases is called a:",
+        opts: [
+            "Quantal effect",
+            "All-or-none effect",
+            "Toxic effect",
+            "Graded effect"
+        ],
+        correct: 3,
+        explain: "Graded dose-response curves show that the magnitude of the response increases with the drug concentration."
+    },
+    {
+        q: "Which of the following is an example of a ligand for a ligand-gated ion channel?",
+        opts: [
+            "Steroid hormone",
+            "Insulin",
+            "Acetylcholine (at nicotinic receptors)",
+            "Thyroid hormone"
+        ],
+        correct: 2,
+        explain: "Acetylcholine binds to nicotinic receptors, which are ligand-gated ion channels, causing them to open and allow ion flow."
+    },
+    {
+        q: "The process of drug tolerance is generally:",
+        opts: [
+            "Permanent and irreversible.",
+            "Reversible, for example, through a drug holiday.",
+            "Only a psychological phenomenon.",
+            "Caused exclusively by liver damage."
+        ],
+        correct: 1,
+        explain: "Tolerance can often be reversed by temporarily discontinuing the drug, allowing the body's sensitivity to reset."
+    },
+    {
+        q: "What is the richest source of therapeutically relevant pharmacologic receptors?",
+        opts: [
+            "Carbohydrates in the cell wall",
+            "Lipids in the adipose tissue",
+            "Proteins that transduce extracellular signals",
+            "Inorganic ions in the cytoplasm"
+        ],
+        correct: 2,
+        explain: "Proteins that are involved in signal transduction are the most common and important targets for therapeutic drugs."
+    },
+    {
+        q: "The name of a receptor, like 'histamine receptor', is typically based on:",
+        opts: [
+            "The scientist who discovered it.",
+            "The organ where it is most abundant.",
+            "The type of drug/chemical that interacts best with it.",
+            "The disease it is associated with."
+        ],
+        correct: 2,
+        explain: "Receptors are most often named for their primary endogenous ligand or the drug that was first found to bind to them."
+    },
+    {
+        q: "Which action is characteristic of an intracellular receptor?",
+        opts: [
+            "Opening an ion channel immediately.",
+            "Activating a G-protein.",
+            "Altering gene expression.",
+            "Phosphorylating another protein directly."
+        ],
+        correct: 2,
+        explain: "Intracellular receptors, when bound by their ligand, typically act as transcription factors to alter gene expression, a process that takes hours."
+    },
+    {
+        q: "Opiates and amphetamines are classic examples of drugs that can lead to:",
+        opts: [
+            "Cell wall destruction",
+            "Inhibition of folic acid synthesis",
+            "Drug tolerance",
+            "Activation of kinase receptors"
+        ],
+        correct: 2,
+        explain: "These drugs are well-known for causing tolerance with repeated use, where users need to take more to get the same effect."
+    },
+    {
+        q: "What is the initial source of prostaglandins in the inflammatory pathway?",
+        opts: [
+            "Cyclo-oxygenase",
+            "Arachidonic acid",
+            "Folic acid",
+            "Damaged cell membranes"
+        ],
+        correct: 1,
+        explain: "Arachidonic acid, released from damaged cell membranes, is the precursor molecule that cyclo-oxygenase converts into prostaglandins."
+    },
+    {
+        q: "Which factor is part of a drug's pharmacokinetic profile, which influences its concentration at the receptor site?",
+        opts: [
+            "Receptor binding affinity",
+            "Rate of absorption",
+            "Second messenger activation",
+            "Intrinsic activity"
+        ],
+        correct: 1,
+        explain: "Absorption, distribution, metabolism, and excretion (ADME) are the core components of pharmacokinetics that determine drug concentration."
+    },
+    {
+        q: "GABA-benzodiazepine receptors are an example of which receptor type?",
+        opts: [
+            "Enzyme-linked receptors",
+            "G-protein coupled receptors",
+            "Nuclear receptors",
+            "Ligand-gated ion channels"
+        ],
+        correct: 3,
+        explain: "The GABA-A receptor, where benzodiazepines act, is a classic example of a ligand-gated ion channel that allows chloride ions to enter the neuron."
+    },
+    {
+        q: "Kinase-linked receptors, such as the insulin receptor, typically have a response time of:",
+        opts: [
+            "Milliseconds",
+            "Seconds",
+            "Hours",
+            "Days"
+        ],
+        correct: 2,
+        explain: "Their mechanism involves protein phosphorylation and downstream signaling cascades, which take a longer time (hours) to manifest a full effect compared to ion channels or GPCRs."
+    },
+    {
+        q: "The term 'ligand' in pharmacology refers to:",
+        opts: [
+            "A type of cell membrane.",
+            "A molecule that binds to a receptor.",
+            "An enzyme that breaks down drugs.",
+            "A component of DNA."
+        ],
+        correct: 1,
+        explain: "A ligand is any substance (like a drug, hormone, or neurotransmitter) that forms a complex with a biomolecule (like a receptor) to serve a biological purpose."
+    },
+    {
+        q: "A drug's ability to produce a maximal response is known as its:",
+        opts: [
+            "Potency",
+            "Efficacy",
+            "Affinity",
+            "Selectivity"
+        ],
+        correct: 1,
+        explain: "Efficacy refers to the maximum effect a drug can produce, regardless of the dose. Potency (related to EC50) refers to the amount of drug needed to produce an effect."
+    },
+    {
+        q: "Understanding pharmacodynamics helps predict:",
+        opts: [
+            "The cost of a drug.",
+            "The rate of drug absorption.",
+            "Drug interactions and toxicities.",
+            "The shelf life of a medication."
+        ],
+        correct: 2,
+        explain: "By knowing how drugs act at a cellular level, clinicians can anticipate potential interactions with other drugs and understand their toxic effects."
+    }
 ];
 
 const tfs = [
-  {q:"Receptors exist only on the cell membrane and never inside cells.", answer:false, explain:"They can be cell-surface or intracellular."},
-  {q:"Ligand-gated ion channels act faster than GPCRs.", answer:true, explain:"Ion channels: milliseconds; GPCRs: seconds."},
-  {q:"Insulin signals via a kinase-linked receptor pathway.", answer:true, explain:"Insulin is a classic enzyme-linked (tyrosine kinase) receptor ligand."},
-  {q:"Steroid hormones typically act through GPCRs.", answer:false, explain:"They act via intracellular (nuclear) receptors."},
-  {q:"EC50 is a measure related to drug potency.", answer:true, explain:"It’s the concentration producing 50% of maximal effect."},
-  {q:"Penicillins inhibit bacterial cell wall synthesis.", answer:true, explain:"β-lactams block peptidoglycan synthesis."},
-  {q:"Tolerance development can involve psychological factors only, not physiological ones.", answer:false, explain:"Both physiological and psychological factors may contribute."},
-  {q:"Dactinomycin inhibits transcription by interacting with nucleic acids.", answer:true, explain:"Correct as per slide example."},
-  {q:"All physiological variability factors listed were liver disease, renal disease, chronic alcoholism, and allergy.", answer:true, explain:"These were explicitly shown."}
+    {
+        q: "Pharmacodynamics is the study of what the body does to a drug.",
+        answer: false,
+        explain: "This statement describes pharmacokinetics. Pharmacodynamics is the study of what the drug does to the body."
+    },
+    {
+        q: "Most drugs exert their effects by interacting with specific receptors.",
+        answer: true,
+        explain: "The drug-receptor interaction is the fundamental basis for the action of most therapeutic agents."
+    },
+    {
+        q: "Enzyme-linked receptors are the fastest-acting type of receptor.",
+        answer: false,
+        explain: "Ligand-gated ion channels are the fastest (milliseconds), while enzyme-linked receptors take hours to produce their effect."
+    },
+    {
+        q: "The EC50 is a measure of a drug's efficacy.",
+        answer: false,
+        explain: "The EC50 is a measure of a drug's potency (the concentration needed for a 50% response), not its efficacy (the maximal response)."
+    },
+    {
+        q: "The development of drug tolerance is an irreversible process.",
+        answer: false,
+        explain: "Drug tolerance is often reversible, for example, by temporarily stopping the drug (a drug holiday)."
+    },
+    {
+        q: "Penicillin acts by inhibiting the synthesis of folic acid in bacteria.",
+        answer: false,
+        explain: "Penicillin inhibits the synthesis of the bacterial cell wall. Methotrexate is an example of a drug that inhibits folic acid formation."
+    },
+    {
+        q: "An increase in drug concentration at the receptor site generally leads to an increase in the pharmacologic effect.",
+        answer: true,
+        explain: "This is the principle of the dose-response relationship, where a greater concentration leads to a greater effect, up to a maximum."
+    },
+    {
+        q: "All receptors for drugs are located on the cell surface.",
+        answer: false,
+        explain: "Some receptors, like those for steroid hormones, are intracellular (located within the cell, often in the nucleus)."
+    },
+    {
+        q: "G-protein coupled receptors typically elicit their effects within a few seconds.",
+        answer: true,
+        explain: "Their response time is in seconds, which is slower than ligand-gated ion channels but faster than enzyme-linked or nuclear receptors."
+    }
 ];
 
 const saqs = [
-  // 1) Direct Answer
-  { q: "Define pharmacodynamics in one line.", a: "Study of how drugs exert effects at cellular/organ level (mechanism of action)." },
-  // 2) List / Enumeration (3+ items)
-  { q: "List four major receptor families.", a: "1) Ligand-gated ion channels\n2) G protein–coupled receptors\n3) Enzyme-linked receptors\n4) Intracellular (nuclear) receptors" },
-  // 3) Comparison (numbered table)
-  { q: "Compare timing of responses across receptor classes.", a: `<table style="width:100%;border-collapse:collapse"><tr><th style="border:1px solid #444;padding:6px">#</th><th style="border:1px solid #444;padding:6px">Receptor</th><th style="border:1px solid #444;padding:6px">Typical Onset</th></tr><tr><td style="border:1px solid #444;padding:6px">1</td><td style="border:1px solid #444;padding:6px">Ligand-gated ion channel</td><td style="border:1px solid #444;padding:6px">Milliseconds</td></tr><tr><td style="border:1px solid #444;padding:6px">2</td><td style="border:1px solid #444;padding:6px">GPCR</td><td style="border:1px solid #444;padding:6px">Seconds</td></tr><tr><td style="border:1px solid #444;padding:6px">3</td><td style="border:1px solid #444;padding:6px">Kinase-linked</td><td style="border:1px solid #444;padding:6px">Hours</td></tr><tr><td style="border:1px solid #444;padding:6px">4</td><td style="border:1px solid #444;padding:6px">Intracellular (nuclear)</td><td style="border:1px solid #444;padding:6px">Hours</td></tr></table>` },
-  // 4) Case-based Scenario
-  { q: "A patient on repeated opioid doses reports diminishing analgesia. What pharmacodynamic phenomenon explains this?", a: "Tolerance (reduced response with repeated use)." },
-  // 5) Short factual
-  { q: "What does EC50 represent?", a: "Concentration producing 50% of maximal effect (potency)." },
-  // 6) Short list (determinants of concentration)
-  { q: "Name three PK factors that determine drug concentration at receptors.", a: "1) Absorption\n2) Distribution\n3) Metabolism (and elimination)" }
+    {
+        q: "Define 'Pharmacodynamics' and state the three main ways drugs can exert their action as discussed in the lecture.",
+        a: "<b>Definition:</b> Pharmacodynamics is the detailed study of the mode of action of drugs in the body, or how drugs exert their effect at a cellular level.<br><br><b>Three mechanisms of action:</b><br>1. Binding to Receptors<br>2. Interacting with Enzymes<br>3. Through Chemotherapy (e.g., interfering with cell growth or bacterial processes)."
+    },
+    {
+        q: "List the four major families of receptors.",
+        a: "The four major receptor families are:<br><br>1. Ligand-gated ion channels<br>2. G protein-coupled receptors<br>3. Enzyme-linked receptors<br>4. Intracellular receptors"
+    },
+    {
+        q: "Compare the typical response times for Ligand-gated ion channels and Kinase-linked receptors.",
+        a: "A comparison of response times is shown below:<br><br><ol><li><b>Ligand-gated ion channels:</b> Very fast, with a response time in the order of milliseconds.</li><li><b>Kinase-linked receptors:</b> Slow, with a response time that typically takes hours to develop.</li></ol>"
+    },
+    {
+        q: "A patient with rheumatoid arthritis is prescribed a Non-Steroidal Anti-Inflammatory Drug (NSAID). Briefly explain the mechanism by which this drug reduces inflammation, mentioning the enzyme and the substance whose synthesis is blocked.",
+        a: "The NSAID reduces inflammation by inhibiting the <b>cyclo-oxygenase (COX) enzyme</b>. This enzyme is responsible for converting arachidonic acid into <b>prostaglandins</b>. By blocking the COX enzyme, the synthesis of prostaglandins is inhibited, leading to a reduction in inflammation."
+    },
+    {
+        q: "Explain the concept of drug tolerance and give an example of a class of drugs where this is commonly observed.",
+        a: "Drug tolerance is a pharmacological concept where a subject has a reduced reaction to a drug following its repeated use. This means a higher dose is required to achieve the original effect. The process is often reversible.<br><br>A common example is with <b>Opiates</b> or <b>Amphetamines</b>."
+    },
+    {
+        q: "Describe the key difference between a drug's potency and its efficacy, referencing the dose-response curve.",
+        a: "<b>Potency:</b> Refers to the amount of drug needed to produce an effect. On a dose-response curve, potency is determined by the EC50 value (the concentration that gives 50% of the maximal effect). A drug with a lower EC50 is more potent.<br><br><b>Efficacy:</b> Refers to the maximum possible effect that a drug can produce, regardless of the dose. On a dose-response curve, it is represented by the plateau (the highest point) of the curve."
+    }
 ];
+
 
 // ----------- State -----------
 const state = {
@@ -232,7 +590,7 @@ function shuffleIndices(n){
   const arr = Array.from({length:n}, (_,i)=>i);
   for(let i=n-1;i>0;i--){
     const j = Math.floor(Math.random()*(i+1));
-    [arr[i],arr[j]] = [arr[j],arr[i]];
+    [arr[i],arr[j]] = [arr[j],arr[j]];
   }
   return arr;
 }
@@ -277,10 +635,8 @@ mcqs.forEach((item, idx)=>{
     btn.addEventListener('click', ()=>{
       if(card.dataset.locked === 'true') return; // one attempt
       const v = Number(btn.dataset.v);
-      state.mcq[idx] = v;
-
-      // clear classes
-      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+      const originalIndex = visualToOriginal[v];
+      state.mcq[idx] = originalIndex; // Store original index
 
       // Always mark the correct option (green)
       const correctBtn = buttons[correctVisualIndex];
@@ -303,9 +659,10 @@ mcqs.forEach((item, idx)=>{
   mcqGrid.appendChild(card);
 });
 
+
 // ----------- Render True/False -----------
 const tfGrid = document.getElementById('tfGrid');
- tfs.forEach((item, idx)=>{
+tfs.forEach((item, idx)=>{
   const card = document.createElement('article');
   card.className='card qcard';
   card.dataset.type='tf';
@@ -339,24 +696,18 @@ const tfGrid = document.getElementById('tfGrid');
       const val = btn.dataset.v === "true";
       state.tf[idx] = val;
 
-      // clear classes
-      buttons.forEach(b=>b.classList.remove('correct','wrong'));
-
-      // Always mark the correct button (green)
+      const isCorrect = (val === item.answer);
+      
       const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
       correctBtn.classList.add('correct');
 
-      const isCorrect = (val === item.answer);
       if(!isCorrect){
-        // mark chosen wrong (red)
         btn.classList.add('wrong');
-        feedback.hidden=false;
-        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
-      }else{
-        feedback.hidden=false;
-        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
       }
-
+      
+      feedback.hidden=false;
+      feedback.innerHTML = `<b>${isCorrect ? 'Correct ✔' : 'Wrong ✖'}</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      
       lock();
       recalc();
     });
@@ -405,32 +756,53 @@ saqs.forEach((item, idx)=>{
 });
 
 // ----------- Score + Reset -----------
-function recalc(){
-  const mcqScore = state.mcq.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const tfScore = state.tf.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const saqScore = state.saq.filter(Boolean).length;
-  const total = mcqScore + tfScore + saqScore;
+function recalc() {
+    const mcqScore = state.mcq.reduce((score, selectedOriginalIndex, i) => {
+        if (selectedOriginalIndex === null) return score;
+        const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+        const buttons = card.querySelectorAll('.opt-btn');
+        let isCorrect = false;
 
-  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
-  ids.forEach(id=>{
-    const el = document.getElementById(id);
-    if(!el) return;
-    if(id.includes('Mcq')) el.textContent = mcqScore;
-    if(id.includes('Tf')) el.textContent = tfScore;
-    if(id.includes('Saq')) el.textContent = saqScore;
-    if(id.includes('Total')) el.textContent = total;
-  });
+        buttons.forEach(btn => {
+            if(btn.classList.contains('correct') && !btn.classList.contains('wrong')) {
+                const visualIndex = parseInt(btn.dataset.v);
+                
+                // We need to find which original option corresponds to this visual button.
+                // The shuffle mapping is local to the creation scope. We have to re-evaluate based on DOM.
+                // A simpler check: if the feedback says 'Correct', score it.
+                const feedback = card.querySelector('.feedback').innerHTML;
+                if(feedback.includes('<b>Correct ✔</b>')) {
+                    isCorrect = true;
+                }
+            }
+        });
+        
+        const feedback = card.querySelector('.feedback').innerHTML;
+        if (feedback.includes('<b>Correct ✔</b>')) {
+          return score + 1;
+        }
+
+        return score;
+    }, 0);
+
+    const tfScore = state.tf.reduce((score, selectedValue, i) => {
+        if (selectedValue === null) return score;
+        return score + (selectedValue === tfs[i].answer ? 1 : 0);
+    }, 0);
+
+    const saqScore = state.saq.filter(Boolean).length;
+    const total = mcqScore + tfScore + saqScore;
+
+    document.getElementById('sMcq').textContent = mcqScore;
+    document.getElementById('sTf').textContent = tfScore;
+    document.getElementById('sSaq').textContent = saqScore;
+    document.getElementById('sTotal').textContent = total;
+    document.getElementById('sMcq2').textContent = mcqScore;
+    document.getElementById('sTf2').textContent = tfScore;
+    document.getElementById('sSaq2').textContent = saqScore;
+    document.getElementById('sTotal2').textContent = total;
 }
+
 
 document.getElementById('resetAll').addEventListener('click', ()=>{
   document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});

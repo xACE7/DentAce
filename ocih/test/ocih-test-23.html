@@ -113,6 +113,10 @@
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer table {width:100%;border-collapse:collapse;margin-top:10px;}
+  .answer th, .answer td {border:1px solid var(--card-border);padding:8px;text-align:left;}
+  .answer th {background-color: var(--glass);}
+
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -169,64 +173,263 @@
   </main>
 
 <script>
-// ----------- Data (PDL-based) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q: 'The periodontal ligament (PDL) primarily connects the tooth root to:', opts: ['Inner wall of the alveolar bone', 'Oral mucosa', 'Gingival epithelium', 'Enamel of adjacent teeth'], correct: 0, explain: 'PDL is a vascular, highly cellular connective tissue around the root that connects it to alveolar bone.' },
-  { q: 'Typical average width of a healthy PDL is approximately:', opts: ['0.2 mm', '2.0 mm', '0.02 mm', '1.0 mm'], correct: 0, explain: 'PDL width ranges ~0.15–0.38 mm; average about 0.2 mm.' },
-  { q: 'The PDL is thinnest in which root region?', opts: ['Middle third', 'Apical third', 'Cervical third', 'Furcation'], correct: 0, explain: 'Slides note the PDL is thinnest in the middle region of the root.' },
-  { q: 'Radiographically, the PDL space appears as a:', opts: ['Thin radiolucent line', 'Thick radiopaque band', 'Uniform radiopaque lamina', 'Mottled radiopacity'], correct: 0, explain: 'It presents as a thin radiolucent line; it may widen with trauma or hyperfunction.' },
-  { q: 'Sharpey fibers are the terminal portions of principal fibers inserted into:', opts: ['Cementum and alveolar bone', 'Dentin and enamel', 'Enamel and gingiva', 'Pulp and dentin'], correct: 0, explain: 'Sharpey fibers anchor into cementum and bone.' },
-  { q: 'The principal fibers of the PDL are mainly composed of:', opts: ['Collagen type I', 'Elastin', 'Reticulin (type III collagen) only', 'Keratin'], correct: 0, explain: 'Principal ligament fibers are predominantly collagen type I.' },
-  { q: 'Collagen’s key amino acids include all EXCEPT:', opts: ['Tryptophan', 'Glycine', 'Proline', 'Hydroxyproline'], correct: 0, explain: 'Collagen is rich in glycine, proline, hydroxyproline, and hydroxylysine; tryptophan is not typical.' },
-  { q: 'Correct sequence in collagen assembly is:', opts: ['Tropocollagen → microfibrils → fibrils → fibers → bundles', 'Fibrils → tropocollagen → bundles → fibers', 'Microfibrils → tropocollagen → bundles → fibers', 'Bundles → fibers → fibrils → microfibrils'], correct: 0, explain: 'Slides specify intracellular tropocollagen, then microfibrils → fibrils → fibers → bundles.' },
-  { q: 'Which PDL fiber group bears vertical masticatory stresses and converts them to tension on bone?', opts: ['Oblique fibers', 'Horizontal fibers', 'Apical fibers', 'Interradicular fibers'], correct: 0, explain: 'Oblique fibers are the largest group and bear vertical loads.' },
-  { q: 'Transseptal fibers:', opts: ['Reform even after alveolar bone loss', 'Insert into enamel of adjacent tooth', 'Are exclusive to deciduous teeth', 'Run from bone to bone'], correct: 0, explain: 'They span cementum-to-cementum across the interdental septum and can reform after bone loss.' },
-  { q: 'Alveolar crest fibers primarily function to:', opts: ['Prevent extrusion and resist lateral movement', 'Sense pain', 'Deposit cementum', 'Prevent caries'], correct: 0, explain: 'They extend to the alveolar crest and resist extrusion/lateral forces.' },
-  { q: 'Horizontal fibers extend:', opts: ['At right angles from cementum to bone', 'Apically to coronally within cementum', 'From furcation to crown', 'Only in multi-rooted teeth'], correct: 0, explain: 'They run perpendicular to the tooth long axis from cementum to bone.' },
-  { q: 'Apical fibers are absent in:', opts: ['Incompletely formed roots', 'Hypererupted teeth', 'Third molars', 'Single-rooted teeth'], correct: 0, explain: 'Apical fibers do not occur until root formation is complete.' },
-  { q: 'Interradicular fibers are located:', opts: ['In furcation areas of multirooted teeth', 'Between enamel and dentin', 'At the CEJ', 'Only in primary incisors'], correct: 0, explain: 'They fan from cementum into the furcation region.' },
-  { q: 'Which fiber types represent immature elastin within PDL?', opts: ['Oxytalan and elaunin', 'Elastin and fibrillin', 'Keratin and amyloid', 'Actin and myosin'], correct: 0, explain: 'Slides note oxytalan and elaunin present; mature elastin is absent.' },
-  { q: 'The “indifferent fiber plexus” refers to:', opts: ['Small collagen fibers forming a plexus around principal fibers', 'A neural network of unmyelinated fibers', 'A vascular network in apical region', 'A lymphatic plexus near CEJ'], correct: 0, explain: 'Small collagen fibers run in all directions forming a plexus.' },
-  { q: 'Most numerous cells in the PDL are:', opts: ['Fibroblasts', 'Osteoclasts', 'Odontoblasts', 'Mast cells'], correct: 0, explain: 'Fibroblasts dominate and align with principal fibers.' },
-  { q: 'A unique property of PDL fibroblasts is their ability to:', opts: ['Phagocytose “old” collagen', 'Mineralize enamel', 'Present antigen to T cells', 'Produce mature elastin'], correct: 0, explain: 'They synthesize and also phagocytose collagen for turnover.' },
-  { q: 'Epithelial rests of Malassez are remnants of:', opts: ['Hertwig’s epithelial root sheath', 'Stellate reticulum', 'Reduced enamel epithelium', 'Dental lamina only'], correct: 0, explain: 'They derive from HERS and persist in PDL.' },
-  { q: 'With age, epithelial rests of Malassez:', opts: ['Diminish in number', 'Increase significantly', 'Calcify into cementicles always', 'Transform into osteoblasts'], correct: 0, explain: 'They tend to decrease with age.' },
-  { q: 'Which cells are typical PDL defense cells?', opts: ['Neutrophils, lymphocytes, macrophages, mast cells, eosinophils', 'Chondrocytes and megakaryocytes', 'Hepatocytes and Kupffer cells', 'Podocytes and microglia'], correct: 0, explain: 'These immune cells are listed among PDL cellular elements.' },
-  { q: 'Ground substance of the PDL contains mainly:', opts: ['GAGs/proteoglycans and glycoproteins', 'Calcium hydroxyapatite crystals', 'Keratinized proteins', 'Type II collagen only'], correct: 0, explain: 'Hyaluronic acid, proteoglycans, and glycoproteins (fibronectin, laminin) are key components.' },
-  { q: 'Approximate water content of PDL ground substance is:', opts: ['~70%', '~30%', '~5%', '~90%'], correct: 0, explain: 'Slides specify high water content of about 70%.' },
-  { q: 'Cementicles are:', opts: ['Calcified masses adherent to or free from root surface', 'Dystrophic calcifications in pulp', 'Calcified plaque deposits', 'Synonym for Sharpey fibers'], correct: 0, explain: 'Cementicles are calcified masses associated with the root surface/PDL.' },
-  { q: 'Major secretory source for ground substance components in PDL is:', opts: ['Fibroblasts', 'Osteoclasts', 'Endothelial cells', 'Schwann cells'], correct: 0, explain: 'Slides: All ground substance components are presumed secreted by fibroblasts.' },
-  { q: 'Arterial supply to PDL comes from branches entering via all EXCEPT:', opts: ['Salivary gland arteries', 'Apical vessels of the pulp', 'Intra-alveolar vessels', 'Gingival vessels from coronal direction'], correct: 0, explain: 'Three sources: apical, intra-alveolar (horizontal), and gingival vessels.' },
-  { q: 'Lymph from periodontal tissues drains primarily to:', opts: ['Submental, submandibular, jugulodigastric, deep cervical nodes', 'Parotid only', 'Axillary nodes', 'Thoracic duct directly'], correct: 0, explain: 'Slides list these head-and-neck nodes for drainage.' },
-  { q: 'PDL sensory fibers are associated with:', opts: ['Touch, pressure, pain, proprioception', 'Taste and smell', 'Vision and hearing', 'Thermal regulation only'], correct: 0, explain: 'Two fiber types: sensory (touch/pressure/pain/proprioception) and autonomic (vessels).' },
-  { q: 'Unique features of PDL include:', opts: ['Cells that both form and resorb bone and cementum; oriented collagen linking two mineralized tissues', 'Exclusive presence of mature elastin', 'Complete absence of vascular supply', 'Keratinized epithelium lining the space'], correct: 0, explain: 'Formation and resorption capability plus oriented collagen between cementum and bone are unique.' },
-  { q: 'A clinical situation directly involving PDL remodeling is:', opts: ['Orthodontic tooth movement', 'Fluoride varnish therapy', 'Amalgam polishing', 'Sealant application'], correct: 0, explain: 'Orthodontic movement depends on PDL cell-mediated bone/cementum remodeling.' }
+    {
+        q: "What is the average width of a healthy periodontal ligament (PDL)?",
+        opts: ["0.2 mm", "0.05 mm", "1.0 mm", "It is uniform along the root"],
+        correct: 0,
+        explain: "The average width of the PDL is about 0.2 mm, though it can range from 0.15 to 0.38 mm. It is thinnest in the middle region of the root."
+    },
+    {
+        q: "On a dental radiograph, how does the PDL typically appear?",
+        opts: ["As a thin radiolucent line", "As a thick radiopaque line", "It is not visible on radiographs", "As a mottled, mixed-density area"],
+        correct: 0,
+        explain: "The PDL space appears as a thin radiolucent line between the tooth root (radiopaque) and the alveolar bone (radiopaque)."
+    },
+    {
+        q: "The terminal portions of the principal fibers that insert into cementum and bone are known as:",
+        opts: ["Sharpey fibers", "Oxytalan fibers", "Reticular fibers", "Indifferent fiber plexus"],
+        correct: 0,
+        explain: "Sharpey fibers are the mineralized terminal ends of the principal collagen fibers that embed into the cementum and alveolar bone."
+    },
+    {
+        q: "Which of the following is NOT one of the six principal fiber groups of the PDL?",
+        opts: ["Gingivodental fibers", "Transseptal fibers", "Oblique fibers", "Apical fibers"],
+        correct: 0,
+        explain: "The six principal fiber groups are transseptal, alveolar crest, horizontal, oblique, apical, and interradicular. Gingivodental fibers are part of the gingival fiber group, not the PDL proper."
+    },
+    {
+        q: "Which group of principal fibers is the most numerous and bears the brunt of vertical masticatory forces?",
+        opts: ["Oblique fibers", "Horizontal fibers", "Alveolar crest fibers", "Interradicular fibers"],
+        correct: 0,
+        explain: "The oblique fibers constitute the largest group and are responsible for transforming vertical masticatory stresses into tension on the alveolar bone."
+    },
+    {
+        q: "What is the most common type of cell found in the periodontal ligament?",
+        opts: ["Fibroblasts", "Osteoblasts", "Cementoblasts", "Mast cells"],
+        correct: 0,
+        explain: "Fibroblasts are the most common cells, responsible for both synthesizing and resorbing collagen fibers, thus maintaining the PDL."
+    },
+    {
+        q: "The Epithelial Rests of Malassez are remnants of which structure?",
+        opts: ["Hertwig's epithelial root sheath", "Dental pulp", "Dental follicle", "Stellate reticulum"],
+        correct: 0,
+        explain: "These epithelial cell clusters are remnants of Hertwig's root sheath, which disintegrates during root development. They can proliferate to form cysts."
+    },
+    {
+        q: "The ground substance of the PDL is primarily composed of glycosaminoglycans, glycoproteins, and a high content of:",
+        opts: ["Water (70%)", "Collagen type III", "Minerals", "Lipids"],
+        correct: 0,
+        explain: "The ground substance is a gel-like matrix with a high water content (about 70%), which helps it withstand functional forces."
+    },
+    {
+        q: "Which type of collagen is the main component of the PDL's principal fibers?",
+        opts: ["Type I", "Type II", "Type III", "Type IV"],
+        correct: 0,
+        explain: "The principal fibers are mainly composed of collagen type I, which provides high tensile strength."
+    },
+    {
+        q: "What is the function of the transseptal fibers?",
+        opts: ["Connect adjacent teeth interproximally", "Resist lateral tooth movement", "Attach the tooth to the alveolar crest", "Resist vertical occlusal forces"],
+        correct: 0,
+        explain: "Transseptal fibers extend interproximally over the alveolar bone crest, connecting the cementum of adjacent teeth and helping to maintain tooth alignment."
+    },
+    {
+        q: "A tooth with reduced function (e.g., an unerupted tooth) would be expected to have a:",
+        opts: ["Thinner PDL", "Wider PDL", "PDL with more cells", "PDL with no fibers"],
+        correct: 0,
+        explain: "The width of the PDL decreases with reduced function and increases with hyperfunction. An unerupted tooth has a thinner PDL."
+    },
+    {
+        q: "Which cells in the PDL are responsible for synthesizing new bone?",
+        opts: ["Osteoblasts", "Osteoclasts", "Fibroblasts", "Cementoblasts"],
+        correct: 0,
+        explain: "Osteoblasts are located along the surface of the alveolar bone and are responsible for its formation."
+    },
+    {
+        q: "Which fiber group prevents extrusion and resists lateral tooth movements?",
+        opts: ["Alveolar crest fibers", "Oblique fibers", "Apical fibers", "Horizontal fibers"],
+        correct: 0,
+        explain: "Alveolar crest fibers extend from the cementum just below the junctional epithelium to the alveolar crest, helping to secure the tooth in its socket."
+    },
+    {
+        q: "The blood supply to the PDL comes from all the following sources EXCEPT:",
+        opts: ["Vessels from the dental pulp only", "Apical vessels that supply the pulp", "Intra-alveolar vessels", "Gingival vessels"],
+        correct: 0,
+        explain: "The PDL has a rich, triple blood supply from apical vessels, intra-alveolar vessels, and gingival vessels, not just from the pulp."
+    },
+    {
+        q: "The sensory nerve fibers in the PDL are associated with which sensations?",
+        opts: ["Touch, pressure, pain, and proprioception", "Taste and temperature", "Only deep pain", "Only autonomic functions"],
+        correct: 0,
+        explain: "The PDL is highly innervated with sensory fibers that provide feedback on touch, pressure, pain, and proprioception (spatial awareness)."
+    },
+    {
+        q: "What are oxytalan and elaunin fibers found in the PDL?",
+        opts: ["Immature forms of elastin", "Mature elastin fibers", "A type of collagen fiber", "Nerve fibers"],
+        correct: 0,
+        explain: "The PDL does not contain mature elastin but does have two immature forms, oxytalan and elaunin, which are thought to regulate vascular flow."
+    },
+    {
+        q: "Which cells are involved in the resorption of cementum?",
+        opts: ["Cementoclasts", "Cementoblasts", "Odontoblasts", "Osteoclasts"],
+        correct: 0,
+        explain: "Cementoclasts are specialized cells responsible for the resorption of cementum, similar to how osteoclasts resorb bone."
+    },
+    {
+        q: "The process of collagen biosynthesis to form bundles follows which sequence?",
+        opts: ["Tropocollagen → microfibrils → fibrils → fibers → bundles", "Fibrils → fibers → tropocollagen → microfibrils → bundles", "Microfibrils → tropocollagen → fibrils → fibers → bundles", "Bundles → fibers → fibrils → microfibrils → tropocollagen"],
+        correct: 0,
+        explain: "Collagen biosynthesis occurs in a hierarchical assembly, starting from tropocollagen molecules aggregating up to large bundles."
+    },
+    {
+        q: "Which fiber group fans out from the cementum in the furcation area of multirooted teeth?",
+        opts: ["Interradicular fibers", "Apical fibers", "Transseptal fibers", "Oblique fibers"],
+        correct: 0,
+        explain: "Interradicular fibers are found specifically in the furcation areas of multirooted teeth, providing stability."
+    },
+    {
+        q: "What is the primary role of the indifferent fiber plexus?",
+        opts: ["To form a supportive network between principal fibers", "To transmit pain signals", "To produce ground substance", "To directly attach tooth to bone"],
+        correct: 0,
+        explain: "The indifferent fiber plexus consists of small collagen fibers that run in all directions, forming a supportive meshwork around the principal fiber bundles."
+    },
+    {
+        q: "A 'cementicle' is best described as:",
+        opts: ["A calcified mass found in the PDL", "A type of PDL cell", "A small collagen fiber", "A developing cementoblast"],
+        correct: 0,
+        explain: "Cementicles are small, calcified bodies found in the PDL, which may be free, attached to, or embedded in the cementum."
+    },
+    {
+        q: "The unique nature of the PDL allows it to:",
+        opts: ["Connect two different mineralized tissues (bone and cementum)", "Produce enamel and dentin", "Function as a typical ligament with high elasticity", "Contain only one type of cell"],
+        correct: 0,
+        explain: "A unique feature of the PDL is that it is a soft connective tissue that connects the mineralized tissues of cementum and alveolar bone."
+    },
+    {
+        q: "Which defense cells are typically found in a healthy PDL?",
+        opts: ["Neutrophils, lymphocytes, macrophages, mast cells", "Only neutrophils", "Only plasma cells", "Red blood cells and platelets"],
+        correct: 0,
+        explain: "A range of defense cells, including neutrophils, lymphocytes, macrophages, mast cells, and eosinophils, are present to protect the periodontium."
+    },
+    {
+        q: "What is the function of glycoproteins like fibronectin and laminin in the ground substance?",
+        opts: ["Mediate interaction between cells and other components", "Provide tensile strength", "Store water", "Resorb old collagen"],
+        correct: 0,
+        explain: "Glycoproteins such as fibronectin and laminin play a crucial role in mediating the adhesion and interaction between cells and the extracellular matrix."
+    },
+    {
+        q: "Orthodontic tooth movement is possible because of the PDL's ability to:",
+        opts: ["Remodel itself through cellular activity", "Stretch indefinitely like an elastic band", "Dissolve the tooth root completely", "Become inflamed and swell"],
+        correct: 0,
+        explain: "The cellular activity (resorption and formation of bone and fibers) within the PDL allows it to remodel in response to orthodontic forces, enabling tooth movement."
+    },
+    {
+        q: "Which fiber group extends at right angles to the long axis of the tooth?",
+        opts: ["Horizontal fibers", "Oblique fibers", "Apical fibers", "Alveolar crest fibers"],
+        correct: 0,
+        explain: "Horizontal fibers run perpendicular to the long axis of the tooth, from the cementum to the alveolar bone."
+    },
+    {
+        q: "Autonomic nerve fibers in the PDL are primarily associated with:",
+        opts: ["Regulating blood vessel diameter", "Sensing tooth contact", "Transmitting pain", "Controlling cell division"],
+        correct: 0,
+        explain: "The autonomic fibers in the PDL are associated with the neurovascular elements and regulate the blood flow within the ligament."
+    },
+    {
+        q: "All of the following are important amino acids for collagen synthesis EXCEPT:",
+        opts: ["Tryptophan", "Glycine", "Proline", "Hydroxyproline"],
+        correct: 0,
+        explain: "Glycine, proline, and hydroxyproline are key amino acids in the structure of collagen. Tryptophan is not a primary component."
+    },
+    {
+        q: "Periapical cysts can be formed by the proliferation of which cells in the PDL?",
+        opts: ["Epithelial Rests of Malassez", "Fibroblasts", "Undifferentiated mesenchymal cells", "Mast cells"],
+        correct: 0,
+        explain: "When stimulated by inflammation, the Epithelial Rests of Malassez can proliferate and are implicated in the formation of periapical and lateral root cysts."
+    },
+    {
+        q: "The term 'gomphosis' refers to:",
+        opts: ["The specialized joint that anchors a tooth to the jawbone", "A type of PDL fiber", "A disease of the periodontium", "A cell that forms cementum"],
+        correct: 0,
+        explain: "Gomphosis is a term for the unique fibrous joint that secures a tooth in its socket, with the PDL being the primary component of this joint."
+    }
 ];
 
 const tfs = [
-  { q: 'The PDL space commonly widens in hyperfunction or occlusal trauma.', answer: true, explain: 'Widening/thickening of PDL is noted with increased functional demand or trauma.' },
-  { q: 'Mature elastin fibers are abundant in the PDL.', answer: false, explain: 'PDL lacks mature elastin; oxytalan and elaunin (immature forms) are present.' },
-  { q: 'Sharpey fibers insert into both cementum and alveolar bone.', answer: true, explain: 'They are terminal portions of principal fibers embedded in these tissues.' },
-  { q: 'Apical PDL fibers are well-developed in teeth with incomplete root formation.', answer: false, explain: 'They do not occur on incompletely formed roots.' },
-  { q: 'Fibroblasts in the PDL only synthesize collagen and cannot degrade it.', answer: false, explain: 'They also phagocytose and enzymatically degrade old collagen.' },
-  { q: 'Ground substance of the PDL is predominantly mineralized.', answer: false, explain: 'It is a gel-like matrix rich in GAGs/glycoproteins with ~70% water.' },
-  { q: 'Transseptal fibers span from cementum to cementum over the alveolar crest.', answer: true, explain: 'They extend interproximally and can reform after bone loss.' },
-  { q: 'Epithelial rests of Malassez originate from Hertwig’s epithelial root sheath.', answer: true, explain: 'They are HERS remnants found in PDL.' },
-  { q: 'The autonomic nerve fibers in the PDL are mainly associated with the vessels.', answer: true, explain: 'Slides attribute autonomic fibers to vascular regulation in PDL.' }
+    {
+        q: "The PDL is thinnest at the apex and cervix of the tooth and widest in the middle.",
+        answer: false,
+        explain: "The PDL is thinnest in the middle region of the root, not widest."
+    },
+    {
+        q: "Fibroblasts in the PDL are capable of both synthesizing and phagocytosing collagen fibers.",
+        answer: true,
+        explain: "This dual function allows fibroblasts to actively remodel the PDL in response to functional demands."
+    },
+    {
+        q: "The PDL contains a rich network of mature, elastic elastin fibers.",
+        answer: false,
+        explain: "The PDL does not contain mature elastin; it contains two immature forms called oxytalan and elaunin."
+    },
+    {
+        q: "The principal fibers of the PDL follow a straight, rigid course from bone to cementum.",
+        answer: false,
+        explain: "The principal fibers follow a wavy or undulating course when viewed in longitudinal section, which allows for slight tooth movement."
+    },
+    {
+        q: "The ground substance of the PDL is secreted by cementoblasts.",
+        answer: false,
+        explain: "The components of the ground substance are presumed to be secreted by fibroblasts, the most common cell type in the PDL."
+    },
+    {
+        q: "Apical fibers are present on both completely and incompletely formed roots.",
+        answer: false,
+        explain: "Apical fibers radiate from the apical cementum to the bone and do not occur on incompletely formed roots."
+    },
+    {
+        q: "Increased function or hyperfunction of a tooth can lead to a widening of the PDL space.",
+        answer: true,
+        explain: "The PDL adapts to increased functional demands by increasing its width and fiber thickness."
+    },
+    {
+        q: "The PDL has a poor blood supply, making it susceptible to necrosis.",
+        answer: false,
+        explain: "The PDL has an abundant and rich vasculature from three different sources, ensuring its vitality."
+    },
+    {
+        q: "Transseptal fibers are reconstructed even after destruction of the alveolar bone from periodontal disease.",
+        answer: true,
+        explain: "These fibers, connecting adjacent teeth, have a remarkable capacity for regeneration."
+    }
 ];
 
 const saqs = [
-  // 1) Direct answer
-  { q: 'Define the periodontal ligament (PDL) in one sentence.', a: 'A highly cellular, vascular connective tissue that surrounds the tooth root and connects it to the inner wall of the alveolar bone.' },
-  // 2) List/enumeration (3 or more)
-  { q: 'List three arterial sources that supply the PDL.', a: '1) Branches from apical vessels of the pulp. 2) Horizontal branches from intra-alveolar vessels. 3) Branches from gingival vessels entering coronally.' },
-  // 3) Comparison as numbered table
-  { q: 'Compare alveolar crest, horizontal, and oblique PDL fiber groups briefly.', a: '<table style="width:100%;border-collapse:collapse"><thead><tr><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">#</th><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">Fiber group</th><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">Key direction / function</th></tr></thead><tbody><tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">1</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Alveolar crest</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Extend obliquely to alveolar crest; resist extrusion & lateral movement.</td></tr><tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">2</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Horizontal</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Run at right angles from cementum to bone; resist lateral displacement.</td></tr><tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">3</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Oblique</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">From cementum coronally toward bone; bear vertical masticatory stresses.</td></tr></tbody></table>' },
-  // 4) Case-based scenario
-  { q: 'A 21‑year‑old starts orthodontic treatment. Which PDL changes enable controlled tooth movement?', a: 'Remodeling of principal collagen fibers and coordinated activity of fibroblasts, osteoclasts, and osteoblasts on bone/cementum surfaces.' },
-  // 5) Extra SAQs to meet 6 total
-  { q: 'Name two immature elastin-related fibers found in the PDL.', a: 'Oxytalan fibers and elaunin fibers.' },
-  { q: 'List four typical defense (immune) cells identified in the PDL.', a: 'Neutrophils, lymphocytes, macrophages, mast cells (also eosinophils).' }
+    {
+        q: "What is the primary function of fibroblasts within the Periodontal Ligament?",
+        a: "Fibroblasts are the most common cells in the PDL and have a dual function. They are responsible for synthesizing collagen to form and maintain the principal fibers, and they also possess the capacity to phagocytose and degrade 'old' collagen fibers. This allows for continuous remodeling and adaptation of the PDL."
+    },
+    {
+        q: "List the three sources of arterial blood supply to the Periodontal Ligament.",
+        a: "The PDL receives a rich blood supply from three main sources: <br>1. <b>Apical vessels:</b> Branches from the vessels that supply the dental pulp. <br>2. <b>Intra-alveolar vessels:</b> Branches that run horizontally, penetrating the alveolar bone to enter the PDL. <br>3. <b>Gingival vessels:</b> Branches from gingival arteries that enter the PDL from the coronal direction."
+    },
+    {
+        q: "A patient's radiograph reveals a distinct, uniform widening of the PDL space around a molar that supports a dental bridge. The patient reports sensitivity upon biting. What is the likely clinical condition and its cause?",
+        a: "The clinical condition is likely <b>occlusal trauma</b>. The widening of the PDL space on the radiograph indicates a response to excessive occlusal (biting) forces, also known as hyperfunction. The bridge may be concentrating these forces on the molar, causing the PDL to thicken as an adaptive response. The sensitivity is a common symptom of this condition."
+    },
+    {
+        q: "Describe the composition of the ground substance in the PDL.",
+        a: "The ground substance fills the spaces between fibers and cells. It consists of two main components: <br>1. <b>Glycosaminoglycans (GAGs):</b> such as hyaluronic acid and proteoglycans. <br>2. <b>Glycoproteins:</b> such as fibronectin and laminin. <br>It also has a very high water content (about 70%), which helps the PDL resist forces."
+    },
+    {
+        q: "In a numbered table, list the six groups of principal fibers in the PDL.",
+        a: "<table><thead><tr><th>#</th><th>Fiber Group</th></tr></thead><tbody><tr><td>1</td><td>Transseptal fibers</td></tr><tr><td>2</td><td>Alveolar crest fibers</td></tr><tr><td>3</td><td>Horizontal fibers</td></tr><tr><td>4</td><td>Oblique fibers</td></tr><tr><td>5</td><td>Apical fibers</td></tr><tr><td>6</td><td>Interradicular fibers</td></tr></tbody></table>"
+    },
+    {
+        q: "Compare the main functions of the Oblique fiber group and the Horizontal fiber group in a numbered table.",
+        a: "<table><thead><tr><th>#</th><th>Oblique Fibers</th><th>Horizontal Fibers</th></tr></thead><tbody><tr><td>1</td><td>Constitute the largest group of fibers in the PDL.</td><td>Run at right angles to the long axis of the tooth.</td></tr><tr><td>2</td><td>Bear the brunt of vertical masticatory stresses.</td><td>Primarily resist horizontal or lateral forces.</td></tr><tr><td>3</td><td>Transform vertical stress into tension on the alveolar bone.</td><td>Help to prevent lateral tooth movement.</td></tr></tbody></table>"
+    }
 ];
 
 // ----------- State -----------
@@ -313,7 +516,7 @@ mcqs.forEach((item, idx)=>{
 
 // ----------- Render True/False -----------
 const tfGrid = document.getElementById('tfGrid');
- tfs.forEach((item, idx)=>{
+tfs.forEach((item, idx)=>{
   const card = document.createElement('article');
   card.className='card qcard';
   card.dataset.type='tf';
@@ -383,7 +586,7 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
@@ -441,6 +644,7 @@ function recalc(){
 }
 
 document.getElementById('resetAll').addEventListener('click', ()=>{
+  if (!confirm("Are you sure you want to reset all progress?")) return;
   document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
   document.querySelectorAll('.opt-btn').forEach(b=>{
     b.classList.remove('correct','wrong');
@@ -456,6 +660,7 @@ document.getElementById('resetAll').addEventListener('click', ()=>{
   recalc();
 });
 
+// Initial calculation
 recalc();
 </script>
 </body>

@@ -1,0 +1,773 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Two-Column Sections</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+  strong { color: #8b5cf6; font-weight: 800;}
+</style>
+</head>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 3</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِنْ لِسَانِي يَفْقَهُوا قَوْلِي</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Pathologic Calcification and Intracellular Accumulations</b></span>
+<span class="ar"><b>الموضوع: التكلس المرضي والتراكمات داخل الخلايا</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Introduction to Pathologic Calcification</span><span class="ar">مقدمة في التكلس المرضي</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Pathologic calcification</strong>, also known as <strong>Heterotopic Calcification</strong>, is the process where calcium salts are deposited in tissues other than bone or enamel. This is an abnormal condition.</p>
+<p><strong>Morphological Features:</strong></p>
+<ul>
+<li><strong>Macroscopic (Gross) appearance:</strong> It looks like fine, white, gritty deposits.</li>
+<li><strong>Microscopic appearance:</strong> Under a microscope, it appears as basophilic (blue-colored) granular deposits.</li>
+</ul>
+<p>There are <strong>two main types</strong> of pathologic calcification:</p>
+<ol>
+<li><strong>Dystrophic calcification:</strong> Occurs in dead or damaged tissue.</li>
+<li><strong>Metastatic calcification:</strong> Occurs in living, healthy tissue.</li>
+</ol>
+</div>
+<div class="ar">
+<p><strong>التكلس المرضي</strong>، المعروف أيضًا باسم <strong>التكلس المنتبذ</strong>، هو عملية تترسب فيها أملاح الكالسيوم في أنسجة أخرى غير العظام أو مينا الأسنان. هذه حالة غير طبيعية.</p>
+<p><strong>الخصائص الشكلية:</strong></p>
+<ul>
+<li><strong>المظهر العياني (الإجمالي):</strong> يبدو على شكل رواسب دقيقة، بيضاء، وحبيبية.</li>
+<li><strong>المظهر المجهري:</strong> تحت المجهر، يظهر على شكل رواسب حبيبية قاعدية (زرقاء اللون).</li>
+</ul>
+<p>هناك <strong>نوعان رئيسيان</strong> من التكلس المرضي:</p>
+<ol>
+<li><strong>التكلس الحثري:</strong> يحدث في الأنسجة الميتة أو التالفة.</li>
+<li><strong>التكلس النقيلي:</strong> يحدث في الأنسجة الحية والسليمة.</li>
+</ol>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 3-4 of 29</span>
+<span class="ar">المصدر: الصفحات 3-4 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Macroscopically, calcification presents as fine, white, gritty deposits. Microscopically, it's seen as basophilic (blue) granular deposits.</div><div class="ar">عيانياً، يظهر التكلس على شكل رواسب دقيقة وبيضاء وحبيبية. مجهرياً، يُرى على شكل رواسب حبيبية قاعدية (زرقاء).</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">This condition specifically involves calcium deposition in soft tissues, not in the normal locations like bone or teeth.</div><div class="ar">تتضمن هذه الحالة تحديدًا ترسب الكالسيوم في الأنسجة الرخوة، وليس في المواقع الطبيعية مثل العظام أو الأسنان.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">"Heterotopic" means occurring in an abnormal place. Think of it as calcium in the "wrong place."</div><div class="ar">"منتبذ" (Heterotopic) يعني الحدوث في مكان غير طبيعي. فكر فيه كالكالسيوم في "المكان الخطأ".</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Dystrophic Calcification</span><span class="ar">التكلس الحثري</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Dystrophic calcification</strong> is the deposition of calcium salts specifically in <strong>dead or degenerated (injured) tissues</strong>. A key feature is that it occurs even when serum calcium levels are <strong>normal</strong> and there are no issues with calcium metabolism.</p>
+<p><strong>Common Conditions Leading to Dystrophic Calcification:</strong></p>
+<ul>
+<li><strong>Atherosclerosis:</strong> Calcification is almost always present in the atheromas of advanced atherosclerosis in large arteries.</li>
+<li><strong>Damaged Heart Valves:</strong> It commonly develops in aging or damaged heart valves.</li>
+<li><strong>Necrosis:</strong> It can be seen in any area of necrosis. For example, a tuberculous lymph node can become as hard as stone due to calcification.</li>
+</ul>
+<p><strong>Morphology:</strong></p>
+<ul>
+<li><strong>Grossly:</strong> Calcium salts appear as fine, white granules or clumps that feel gritty.</li>
+<li><strong>Microscopically:</strong> Using an H&E stain, the salts have a basophilic, amorphous, granular appearance, sometimes clumped together.</li>
+</ul>
+</div>
+<div class="ar">
+<p><strong>التكلس الحثري</strong> هو ترسب أملاح الكالسيوم تحديدًا في <strong>الأنسجة الميتة أو المتنكسة (المصابة)</strong>. السمة الرئيسية هي أنه يحدث حتى عندما تكون مستويات الكالسيوم في الدم <strong>طبيعية</strong> ولا توجد مشاكل في استقلاب الكالسيوم.</p>
+<p><strong>الحالات الشائعة التي تؤدي إلى التكلس الحثري:</strong></p>
+<ul>
+<li><strong>تصلب الشرايين:</strong> التكلس موجود دائمًا تقريبًا في لويحات تصلب الشرايين المتقدم في الشرايين الكبيرة.</li>
+<li><strong>صمامات القلب التالفة:</strong> يتطور بشكل شائع في صمامات القلب المتقدمة في السن أو التالفة.</li>
+<li><strong>النخر:</strong> يمكن رؤيته في أي منطقة من مناطق النخر. على سبيل المثال، يمكن أن تصبح عقدة لمفاوية سلية صلبة كالحجر بسبب التكلس.</li>
+</ul>
+<p><strong>الشكل:</strong></p>
+<ul>
+<li><strong>عيانياً:</strong> تظهر أملاح الكالسيوم على شكل حبيبات بيضاء دقيقة أو كتل ذات ملمس رملي.</li>
+<li><strong>مجهرياً:</strong> باستخدام صبغة H&E، تكون للأملاح مظهر قاعدي، غير متبلور، وحبيبي، وأحيانًا متكتل معًا.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 5-8 of 29</span>
+<span class="ar">المصدر: الصفحات 5-8 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Atheromas in arteries, damaged heart valves, and old tuberculous lymph nodes are classic examples of where dystrophic calcification occurs.</div><div class="ar">تعتبر لويحات تصلب الشرايين، وصمامات القلب التالفة، والعقد اللمفاوية السلية القديمة أمثلة كلاسيكية على أماكن حدوث التكلس الحثري.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">A crucial diagnostic point is that dystrophic calcification happens despite having normal serum calcium levels. The problem is in the tissue, not the blood.</div><div class="ar">نقطة تشخيصية حاسمة هي أن التكلس الحثري يحدث على الرغم من وجود مستويات طبيعية للكالسيوم في الدم. المشكلة تكمن في النسيج، وليس في الدم.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Histologically, the calcium deposits appear as amorphous, basophilic (purple/blue) granular clumps on an H&E stain.</div><div class="ar">نسيجيًا، تظهر رواسب الكالسيوم على شكل كتل حبيبية غير متبلورة وقاعدية (بنفسجية/زرقاء) عند صبغها بـ H&E.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Metastatic Calcification</span><span class="ar">التكلس النقيلي</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Metastatic calcification</strong> can occur in <strong>normal, healthy tissues</strong>. The underlying cause is always <strong>Hypercalcemia</strong>, which means an increased level of serum calcium.</p>
+<p>Any disorder that elevates serum calcium can lead to this type of calcification in inappropriate locations. While it can occur throughout the body, it most commonly affects:</p>
+<ul>
+<li>Gastric mucosa</li>
+<li>Kidneys</li>
+<li>Lungs</li>
+</ul>
+<p>The main driver is a derangement in calcium metabolism, leading to high levels of calcium in the blood that then deposits in otherwise healthy tissues.</p>
+</div>
+<div class="ar">
+<p><strong>التكلس النقيلي</strong> يمكن أن يحدث في <strong>الأنسجة الطبيعية والسليمة</strong>. السبب الأساسي دائمًا هو <strong>فرط كالسيوم الدم (Hypercalcemia)</strong>، مما يعني زيادة مستوى الكالسيوم في الدم.</p>
+<p>أي اضطراب يرفع مستوى الكالسيوم في الدم يمكن أن يؤدي إلى هذا النوع من التكلس في أماكن غير مناسبة. بينما يمكن أن يحدث في جميع أنحاء الجسم، فإنه يؤثر بشكل أكثر شيوعًا على:</p>
+<ul>
+<li>الغشاء المخاطي في المعدة</li>
+<li>الكلى</li>
+<li>الرئتين</li>
+</ul>
+<p>الدافع الرئيسي هو اضطراب في استقلاب الكالسيوم، مما يؤدي إلى مستويات عالية من الكالسيوم في الدم تترسب بعد ذلك في الأنسجة السليمة.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 9-11 of 29</span>
+<span class="ar">المصدر: الصفحات 9-11 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Metastatic calcification is always caused by hypercalcemia. It's a sign of an underlying systemic issue with calcium metabolism.</div><div class="ar">التكلس النقيلي يحدث دائمًا بسبب فرط كالسيوم الدم. إنه علامة على وجود مشكلة جهازية كامنة في استقلاب الكالسيوم.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Unlike dystrophic calcification, metastatic calcification occurs in living, healthy tissue. The tissue is normal; the serum calcium is not.</div><div class="ar">على عكس التكلس الحثري، يحدث التكلس النقيلي في الأنسجة الحية والسليمة. النسيج طبيعي؛ أما كالسيوم الدم فليس كذلك.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Common sites for metastatic calcification include the interstitial tissues of the lungs, kidneys, and gastric mucosa.</div><div class="ar">تشمل المواقع الشائعة للتكلس النقيلي الأنسجة الخلالية في الرئتين والكلى والغشاء المخاطي في المعدة.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Comparison of Calcification Types</span><span class="ar">مقارنة بين أنواع التكلس</span></h2>
+<div class="sec-body">
+<div class="en"><p>Understanding the key differences between dystrophic and metastatic calcification is essential for diagnosis.</p></div>
+<div class="ar"><p>فهم الفروق الرئيسية بين التكلس الحثري والنقيلي ضروري للتشخيص.</p></div>
+<div aria-label="Scrollable table" class="table-wrap">
+<table>
+<thead>
+<tr>
+<th><span class="en">Feature</span><span class="ar">الخاصية</span></th>
+<th><span class="en">Dystrophic Calcification</span><span class="ar">التكلس الحثري</span></th>
+<th><span class="en">Metastatic Calcification</span><span class="ar">التكلس النقيلي</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="en"><strong>Site</strong></span><span class="ar"><strong>الموقع</strong></span></td>
+<td><span class="en">Dead or damaged tissue</span><span class="ar">الأنسجة الميتة أو التالفة</span></td>
+<td><span class="en">Normal (living) tissue</span><span class="ar">الأنسجة الطبيعية (الحية)</span></td>
+</tr>
+<tr>
+<td><span class="en"><strong>Serum Calcium</strong></span><span class="ar"><strong>كالسيوم الدم</strong></span></td>
+<td><span class="en">Normal</span><span class="ar">طبيعي</span></td>
+<td><span class="en">Hypercalcemia (High)</span><span class="ar">فرط كالسيوم الدم (مرتفع)</span></td>
+</tr>
+<tr>
+<td><span class="en"><strong>Calcium Metabolism</strong></span><span class="ar"><strong>استقلاب الكالسيوم</strong></span></td>
+<td><span class="en">Normal</span><span class="ar">طبيعي</span></td>
+<td><span class="en">Deranged (Disturbed)</span><span class="ar">مضطرب (مختل)</span></td>
+</tr>
+<tr>
+<td><span class="en"><strong>Examples</strong></span><span class="ar"><strong>أمثلة</strong></span></td>
+<td><span class="en">Atherosclerosis, abscess wall, damaged heart valves</span><span class="ar">تصلب الشرايين، جدار الخراج، صمامات القلب التالفة</span></td>
+<td><span class="en">Lungs, kidneys, skin, gastric mucosa</span><span class="ar">الرئتان، الكلى، الجلد، الغشاء المخاطي في المعدة</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 12 of 29</span>
+<span class="ar">المصدر: الصفحة 12 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Focus on the three key differences: Site (damaged vs. normal), Serum Calcium (normal vs. high), and Metabolism (normal vs. deranged).</div><div class="ar">ركز على الفروق الثلاثة الرئيسية: الموقع (تالف مقابل طبيعي)، كالسيوم الدم (طبيعي مقابل مرتفع)، والاستقلاب (طبيعي مقابل مضطرب).</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong>D</strong>ystrophic = <strong>D</strong>amaged tissue. <strong>M</strong>etastatic = <strong>M</strong>etabolism problem (Hypercalcemia).</div><div class="ar"><strong>ح</strong>ثري = نسيج <strong>ح</strong>طام. <strong>ن</strong>قيلي = مشكلة <strong>ن</strong>ظامية (فرط كالسيوم الدم).</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Distinguishing between these two helps clinicians diagnose the underlying cause. Dystrophic points to local tissue injury, while metastatic points to a systemic disease affecting calcium regulation.</div><div class="ar">يساعد التمييز بين هذين النوعين الأطباء على تشخيص السبب الكامن. يشير التكلس الحثري إلى إصابة نسيجية موضعية، بينما يشير التكلس النقيلي إلى مرض جهازي يؤثر على تنظيم الكالسيوم.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Intracellular Accumulations & Fatty Change (Steatosis)</span><span class="ar">التراكمات داخل الخلايا والتغير الدهني (التنكس الدهني)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Intracellular accumulations</strong> occur when metabolic problems in cells lead to the abnormal buildup of various substances inside the cytoplasm or nucleus. These accumulations can be harmless, but sometimes they are severely toxic.</p>
+<p><strong>Mechanisms of Accumulation:</strong></p>
+<ul>
+<li><strong>Overproduction:</strong> The substance is produced faster than it can be removed.</li>
+<li><strong>Inadequate Metabolism:</strong> The cell cannot break down the substance properly.</li>
+<li><strong>Poor Removal:</strong> A lack of enzyme action prevents the substance from being removed.</li>
+</ul>
+<p><strong>Fatty Change (Steatosis)</strong> is a specific type of accumulation involving an abnormal buildup of triglycerides (fat) within parenchymal cells. It is most often seen in the <strong>liver</strong>, but can also occur in the heart, skeletal muscle, and kidneys.</p>
+<p><strong>Causes of Fatty Liver:</strong></p>
+<ul>
+<li><strong>Excess Fat:</strong> Obesity, Diabetes mellitus.</li>
+<li><strong>Liver Cell Damage:</strong> Alcohol, toxins, steroids, starvation, protein malnutrition, and chronic illness can impair the liver's ability to metabolize fat.</li>
+</ul>
+<p><strong>Morphology of Fatty Liver:</strong></p>
+<ul>
+<li><strong>Grossly:</strong> The liver is enlarged, yellow, and feels greasy.</li>
+<li><strong>Microscopically:</strong> Lipid vacuoles appear in the cytoplasm of hepatocytes, pushing the nucleus to the periphery and giving the cell an empty look.</li>
+</ul>
+</div>
+<div class="ar">
+<p>تحدث <strong>التراكمات داخل الخلايا</strong> عندما تؤدي المشاكل الأيضية في الخلايا إلى تراكم غير طبيعي لمواد مختلفة داخل السيتوبلازم أو النواة. يمكن أن تكون هذه التراكمات غير ضارة، لكنها في بعض الأحيان تكون شديدة السمية.</p>
+<p><strong>آليات التراكم:</strong></p>
+<ul>
+<li><strong>الإنتاج المفرط:</strong> يتم إنتاج المادة بشكل أسرع من إمكانية إزالتها.</li>
+<li><strong>الاستقلاب غير الكافي:</strong> لا تستطيع الخلية تكسير المادة بشكل صحيح.</li>
+<li><strong>الإزالة الضعيفة:</strong> نقص عمل الإنزيمات يمنع إزالة المادة.</li>
+</ul>
+<p><strong>التغير الدهني (التنكس الدهني أو Steatosis)</strong> هو نوع محدد من التراكم يتضمن تراكمًا غير طبيعي للدهون الثلاثية (الدهون) داخل الخلايا الحشوية. يُرى غالبًا في <strong>الكبد</strong>، ولكن يمكن أن يحدث أيضًا في القلب والعضلات الهيكلية والكلى.</p>
+<p><strong>أسباب الكبد الدهني:</strong></p>
+<ul>
+<li><strong>الدهون الزائدة:</strong> السمنة، داء السكري.</li>
+<li><strong>تلف خلايا الكبد:</strong> يمكن أن يضعف الكحول والسموم والستيرويدات والمجاعة وسوء التغذية البروتيني والأمراض المزمنة قدرة الكبد على استقلاب الدهون.</li>
+</ul>
+<p><strong>شكل الكبد الدهني:</strong></p>
+<ul>
+<li><strong>عيانياً:</strong> يكون الكبد متضخمًا، أصفر اللون، وذا ملمس دهني.</li>
+<li><strong>مجهرياً:</strong> تظهر فجوات دهنية في سيتوبلازم خلايا الكبد، مما يدفع النواة إلى المحيط ويعطي الخلية مظهرًا فارغًا.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 13-18 of 29</span>
+<span class="ar">المصدر: الصفحات 13-18 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Intracellular accumulations can be an early sign of cell injury or metabolic disease. Recognizing them is key to understanding disease progression.</div><div class="ar">يمكن أن تكون التراكمات داخل الخلايا علامة مبكرة على إصابة الخلية أو الأمراض الأيضية. التعرف عليها هو مفتاح فهم تطور المرض.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Steatosis, or fatty change, is most commonly seen in the liver because it is the central organ for fat metabolism.</div><div class="ar">التنكس الدهني، أو التغير الدهني، هو الأكثر شيوعًا في الكبد لأنه العضو المركزي لاستقلاب الدهون.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Alcoholism is the most common cause of fatty liver in developed nations. Other causes include obesity and diabetes.</div><div class="ar">يعتبر إدمان الكحول السبب الأكثر شيوعًا للكبد الدهني في الدول المتقدمة. تشمل الأسباب الأخرى السمنة ومرض السكري.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Introduction to Pigments & Exogenous Pigments</span><span class="ar">مقدمة في الأصباغ والأصباغ خارجية المنشأ</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Pigments</strong> are colored substances that can accumulate in cells. Some, like melanin, are normal cell constituents. Others are abnormal and only accumulate under special circumstances. There are two main types of abnormal pigments:</p>
+<ul>
+<li><strong>Endogenous pigments:</strong> Synthesized within the body.</li>
+<li><strong>Exogenous pigments:</strong> Come from outside the body.</li>
+</ul>
+<p><strong>Exogenous Pigments:</strong></p>
+<p><strong>1. Carbon (Anthracosis):</strong></p>
+<p>This is a common air pollutant in urban life and among smokers. When inhaled, carbon particles are taken up by alveolar macrophages. This can be coughed out or settle in the lung's interstitial tissue, causing blackening known as <strong>anthracosis</strong>.</p>
+<p><strong>2. Tattooing:</strong></p>
+<p>This is a form of localized, exogenous pigmentation. Tattoo dyes are injected into the skin and taken up by dermal macrophages. The pigment remains there permanently.</p>
+</div>
+<div class="ar">
+<p><strong>الأصباغ</strong> هي مواد ملونة يمكن أن تتراكم في الخلايا. بعضها، مثل الميلانين، هي مكونات خلوية طبيعية. والبعض الآخر غير طبيعي ولا يتراكم إلا في ظروف خاصة. هناك نوعان رئيسيان من الأصباغ غير الطبيعية:</p>
+<ul>
+<li><strong>الأصباغ داخلية المنشأ:</strong> يتم تصنيعها داخل الجسم.</li>
+<li><strong>الأصباغ خارجية المنشأ:</strong> تأتي من خارج الجسم.</li>
+</ul>
+<p><strong>الأصباغ خارجية المنشأ:</strong></p>
+<p><strong>1. الكربون (تَفَحُّمُ الرِّئَة):</strong></p>
+<p>وهو ملوث هواء شائع في الحياة الحضرية وبين المدخنين. عند استنشاقه، يتم امتصاص جزيئات الكربون من قبل البلاعم السنخية. يمكن أن يتم سعالها للخارج أو تستقر في النسيج الخلالي للرئة، مما يسبب اسودادًا يُعرف باسم <strong>تَفَحُّمُ الرِّئَة (Anthracosis)</strong>.</p>
+<p><strong>2. الوشم:</strong></p>
+<p>وهو شكل من أشكال التصبغ الموضعي خارجي المنشأ. يتم حقن أصباغ الوشم في الجلد ويتم امتصاصها من قبل البلاعم الجلدية. يبقى الصباغ هناك بشكل دائم.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 19-21 of 29</span>
+<span class="ar">المصدر: الصفحات 19-21 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Pigments are simply colored substances. Exogenous pigments originate from outside the body, while endogenous ones are made inside.</div><div class="ar">الأصباغ هي ببساطة مواد ملونة. الأصباغ خارجية المنشأ تأتي من خارج الجسم، بينما يتم تصنيع الأصباغ داخلية المنشأ في الداخل.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">The most common exogenous pigments are carbon from air pollution (causing anthracosis) and dyes used in tattoos.</div><div class="ar">أكثر الأصباغ خارجية المنشأ شيوعًا هي الكربون من تلوث الهواء (مما يسبب تفحم الرئة) والأصباغ المستخدمة في الوشم.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong>Exo-</strong> means "outside," like an exoskeleton. Exogenous pigments come from outside the body.</div><div class="ar"><strong>Exo-</strong> تعني "خارجي"، مثل الهيكل الخارجي. الأصباغ خارجية المنشأ تأتي من خارج الجسم.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Endogenous Pigments</span><span class="ar">الأصباغ داخلية المنشأ</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Endogenous pigments</strong> are synthesized within the body. The main types are:</p>
+<p><strong>1. Melanin:</strong></p>
+<p>A brown-black pigment produced by melanocytes. It normally shields against UV radiation. Increased melanin is seen in conditions like nevi (moles) and melanoma. It can be decreased in conditions like vitiligo.</p>
+<p><strong>2. Hemosiderin:</strong></p>
+<p>A golden yellow-to-brown pigment derived from hemoglobin, serving as a major storage form of iron. Accumulation often occurs with increased breakdown of red blood cells (RBCs), such as in hemolytic anemias.</p>
+<p><strong>3. Lipofuscin:</strong></p>
+<p>Known as the "wear-and-tear pigment." It is a brownish-yellow material that accumulates in lysosomes as a function of age or atrophy. It's commonly seen in the heart, hepatocytes, and neurons. It is formed from indigestible phospholipid byproducts.</p>
+</div>
+<div class="ar">
+<p><strong>الأصباغ داخلية المنشأ</strong> يتم تصنيعها داخل الجسم. الأنواع الرئيسية هي:</p>
+<p><strong>1. الميلانين:</strong></p>
+<p>صباغ بني-أسود تنتجه الخلايا الصباغية. يعمل عادة كدرع ضد الأشعة فوق البنفسجية. يلاحظ زيادة الميلانين في حالات مثل الشامات (الوحمات) وسرطان الجلد (الميلانوما). يمكن أن ينقص في حالات مثل البهاق.</p>
+<p><strong>2. الهيموسيدرين:</strong></p>
+<p>صباغ أصفر ذهبي إلى بني مشتق من الهيموجلوبين، ويعمل كأحد الأشكال الرئيسية لتخزين الحديد. يحدث التراكم غالبًا مع زيادة تكسر خلايا الدم الحمراء، كما هو الحال في فقر الدم الانحلالي.</p>
+<p><strong>3. الليبوفيوسين:</strong></p>
+<p>يُعرف باسم "صباغ الهرم والاهتراء". وهو مادة بنية-صفراء تتراكم في الجسيمات الحالة كدالة للعمر أو الضمور. يُرى بشكل شائع في القلب، خلايا الكبد، والخلايا العصبية. يتكون من نواتج الفوسفوليبيد غير القابلة للهضم.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 22-27 of 29</span>
+<span class="ar">المصدر: الصفحات 22-27 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Melanin is seen in skin moles. Hemosiderin is seen in bruises (as they turn yellow-brown). Lipofuscin is seen in the heart muscle of elderly individuals ("brown atrophy").</div><div class="ar">يُرى الميلانين في شامات الجلد. يُرى الهيموسيدرين في الكدمات (عندما تتحول إلى اللون الأصفر-البني). يُرى الليبوفوسين في عضلة القلب لدى كبار السن ("الضمور البني").</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Lipofuscin is known as the "wear-and-tear" pigment because its accumulation is associated with aging and cellular atrophy. It is not harmful to the cell.</div><div class="ar">يُعرف الليبوفوسين بأنه "صباغ الهرم والاهتراء" لأن تراكمه يرتبط بالشيخوخة وضمور الخلايا. وهو غير ضار بالخلية.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Changes in melanin can indicate disease: increased pigmentation in Addison's disease or melanoma, and decreased pigmentation in vitiligo.</div><div class="ar">يمكن أن تشير التغيرات في الميلانين إلى وجود مرض: زيادة التصبغ في مرض أديسون أو سرطان الجلد، ونقص التصبغ في البهاق.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Summary</span><span class="ar">ملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>This lecture covered two main topics: pathologic calcification and intracellular accumulations.</p>
+<p><strong>Pathologic Calcification:</strong></p>
+<ul>
+<li><strong>Dystrophic:</strong> Occurs in <strong>d</strong>amaged/<strong>d</strong>ead tissue with <strong>normal</strong> serum calcium.</li>
+<li><strong>Metastatic:</strong> Occurs in normal tissue due to <strong>hypercalcemia</strong> (a <strong>m</strong>etabolic problem).</li>
+</ul>
+<p><strong>Intracellular Accumulations:</strong></p>
+<ul>
+<li>Caused by metabolic derangements leading to the buildup of substances inside cells.</li>
+<li><strong>Fatty Change (Steatosis)</strong> is the accumulation of triglycerides, most common in the liver due to causes like alcohol and obesity.</li>
+</ul>
+<p><strong>Pigments:</strong></p>
+<ul>
+<li><strong>Exogenous (from outside):</strong> Carbon (anthracosis) and tattoo ink.</li>
+<li><strong>Endogenous (from inside):</strong> Melanin (skin color), Hemosiderin (iron storage), and Lipofuscin ("wear-and-tear" pigment of aging).</li>
+</ul>
+</div>
+<div class="ar">
+<p>غطت هذه المحاضرة موضوعين رئيسيين: التكلس المرضي والتراكمات داخل الخلايا.</p>
+<p><strong>التكلس المرضي:</strong></p>
+<ul>
+<li><strong>الحثري:</strong> يحدث في الأنسجة التالفة/الميتة مع مستوى كالسيوم <strong>طبيعي</strong> في الدم.</li>
+<li><strong>النقيلي:</strong> يحدث في الأنسجة الطبيعية بسبب <strong>فرط كالسيوم الدم</strong> (مشكلة استقلابية).</li>
+</ul>
+<p><strong>التراكمات داخل الخلايا:</strong></p>
+<ul>
+<li>تحدث بسبب اضطرابات استقلابية تؤدي إلى تراكم المواد داخل الخلايا.</li>
+<li><strong>التغير الدهني (التنكس الدهني)</strong> هو تراكم الدهون الثلاثية، وهو الأكثر شيوعًا في الكبد بسبب أسباب مثل الكحول والسمنة.</li>
+</ul>
+<p><strong>الأصباغ:</strong></p>
+<ul>
+<li><strong>خارجية المنشأ (من الخارج):</strong> الكربون (تفحم الرئة) وحبر الوشم.</li>
+<li><strong>داخلية المنشأ (من الداخل):</strong> الميلانين (لون الجلد)، الهيموسيدرين (تخزين الحديد)، والليpofuscin ("صباغ الهرم والاهتراء" للشيخوخة).</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 3-27 of 29</span>
+<span class="ar">المصدر: الصفحات 3-27 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Create a simple chart to review the main categories: Calcification (Dystrophic vs. Metastatic), Accumulations (e.g., Fat), and Pigments (Exogenous vs. Endogenous).</div><div class="ar">أنشئ جدولًا بسيطًا لمراجعة الفئات الرئيسية: التكلس (الحثري مقابل النقيلي)، التراكمات (مثل الدهون)، والأصباغ (خارجية المنشأ مقابل داخلية المنشأ).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The key distinction for calcification is the state of the tissue and the level of serum calcium. Dystrophic = damaged tissue, normal calcium. Metastatic = normal tissue, high calcium.</div><div class="ar">التمييز الرئيسي للتكلس هو حالة النسيج ومستوى الكالسيوم في الدم. الحثري = نسيج تالف، كالسيوم طبيعي. النقيلي = نسيج طبيعي، كالسيوم مرتفع.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">These subcellular changes are visible microscopic and macroscopic signs of underlying disease processes, from local injury to systemic metabolic disorders.</div><div class="ar">هذه التغيرات تحت الخلوية هي علامات مجهرية وعيانية مرئية للعمليات المرضية الكامنة، من الإصابة الموضعية إلى الاضطرابات الاستقلابية الجهازية.</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Pathologic Calcification/التكلس المرضي</div><div class="content" hidden=""><div class="en">Deposition of calcium salts in tissues other than bone or enamel.</div><div class="ar">ترسب أملاح الكالسيوم في أنسجة أخرى غير العظام أو مينا الأسنان.</div></div></div>
+<div class="card"><div class="head">Dystrophic Calcification/التكلس الحثري</div><div class="content" hidden=""><div class="en">Calcium deposition in dead or damaged tissues, with normal serum calcium levels.</div><div class="ar">ترسب الكالسيوم في الأنسجة الميتة أو التالفة، مع مستويات طبيعية للكالسيوم في الدم.</div></div></div>
+<div class="card"><div class="head">Metastatic Calcification/التكلس النقيلي</div><div class="content" hidden=""><div class="en">Calcium deposition in normal tissues due to high serum calcium levels (hypercalcemia).</div><div class="ar">ترسب الكالسيوم في الأنسجة الطبيعية بسبب ارتفاع مستويات الكالسيوم في الدم (فرط كالسيوم الدم).</div></div></div>
+<div class="card"><div class="head">Hypercalcemia/فرط كالسيوم الدم</div><div class="content" hidden=""><div class="en">Abnormally high levels of calcium in the blood.</div><div class="ar">مستويات عالية بشكل غير طبيعي من الكالسيوم في الدم.</div></div></div>
+<div class="card"><div class="head">Steatosis/التنكس الدهني</div><div class="content" hidden=""><div class="en">Abnormal accumulation of triglycerides (fat) within parenchymal cells, especially the liver.</div><div class="ar">تراكم غير طبيعي للدهون الثلاثية (الدهون) داخل الخلايا الحشوية، وخاصة الكبد.</div></div></div>
+<div class="card"><div class="head">Anthracosis/تَفَحُّمُ الرِّئَة</div><div class="content" hidden=""><div class="en">Accumulation of carbon pigment in the lungs from inhaling air pollutants or smoke.</div><div class="ar">تراكم صبغة الكربون في الرئتين من استنشاق ملوثات الهواء أو الدخان.</div></div></div>
+<div class="card"><div class="head">Melanin/الميلانين</div><div class="content" hidden=""><div class="en">A brown-black endogenous pigment produced by melanocytes that provides skin and hair color.</div><div class="ar">صباغ بني-أسود داخلي المنشأ تنتجه الخلايا الصباغية ويعطي لون الجلد والشعر.</div></div></div>
+<div class="card"><div class="head">Hemosiderin/الهيموسيدرين</div><div class="content" hidden=""><div class="en">A golden-brown pigment derived from hemoglobin, representing stored iron in tissues.</div><div class="ar">صباغ بني-ذهبي مشتق من الهيموجلوبين، يمثل الحديد المخزن في الأنسجة.</div></div></div>
+<div class="card"><div class="head">Lipofuscin/الليبوفيوسين</div><div class="content" hidden=""><div class="en">A brownish-yellow "wear-and-tear" pigment that accumulates in cells with age or atrophy.</div><div class="ar">صباغ بني-أصفر "للهرم والاهتراء" يتراكم في الخلايا مع التقدم في العمر أو الضمور.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — What are the two types of pathologic calcification?</span><span class="ar">١ — ما هما نوعا التكلس المرضي؟</span></div><div class="content" hidden=""><span class="en">A: Dystrophic and Metastatic calcification.</span><span class="ar">ج: التكلس الحثري والنقيلي.</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — Which type of calcification is associated with normal serum calcium?</span><span class="ar">٢ — أي نوع من التكلس يرتبط بمستوى كالسيوم طبيعي في الدم؟</span></div><div class="content" hidden=""><span class="en">A: Dystrophic calcification.</span><span class="ar">ج: التكلس الحثري.</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — What is the main cause of metastatic calcification?</span><span class="ar">٣ — ما هو السبب الرئيسي للتكلس النقيلي؟</span></div><div class="content" hidden=""><span class="en">A: Hypercalcemia (high serum calcium).</span><span class="ar">ج: فرط كالسيوم الدم (ارتفاع الكالسيوم في الدم).</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — What is another name for fatty change?</span><span class="ar">٤ — ما هو الاسم الآخر للتغير الدهني؟</span></div><div class="content" hidden=""><span class="en">A: Steatosis.</span><span class="ar">ج: التنكس الدهني (Steatosis).</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — Where is steatosis most commonly seen?</span><span class="ar">٥ — أين يظهر التنكس الدهني بشكل أكثر شيوعًا؟</span></div><div class="content" hidden=""><span class="en">A: In the liver.</span><span class="ar">ج: في الكبد.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — Carbon accumulation in the lungs is called?</span><span class="ar">٦ — ماذا يسمى تراكم الكربون في الرئتين؟</span></div><div class="content" hidden=""><span class="en">A: Anthracosis.</span><span class="ar">ج: تفحم الرئة (Anthracosis).</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — What is the "wear-and-tear" pigment called?</span><span class="ar">٧ — ماذا يسمى صباغ "الهرم والاهتراء"؟</span></div><div class="content" hidden=""><span class="en">A: Lipofuscin.</span><span class="ar">ج: الليبوفيوسين.</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — What pigment is derived from hemoglobin?</span><span class="ar">٨ — ما هو الصباغ المشتق من الهيموجلوبين؟</span></div><div class="content" hidden=""><span class="en">A: Hemosiderin.</span><span class="ar">ج: الهيموسيدرين.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What is the macroscopic appearance of calcification?</span><span class="ar">٩ — ما هو المظهر العياني للتكلس؟</span></div><div class="content" hidden=""><span class="en">A: Fine, white, gritty deposits.</span><span class="ar">ج: رواسب دقيقة، بيضاء، وحبيبية.</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

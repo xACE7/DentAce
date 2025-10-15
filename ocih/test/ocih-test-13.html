@@ -92,7 +92,7 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
   /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
@@ -113,6 +113,11 @@
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer ol, .answer ul { padding-left: 20px; margin-top: 5px; }
+  .answer table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .answer th, .answer td { border: 1px solid var(--card-border); padding: 8px; text-align: left; }
+  .answer th { background-color: var(--glass); }
+
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -169,66 +174,263 @@
   </main>
 
 <script>
-// ----------- Data (from Lecture 13: Anatomy & Functions of Maxillary Sinus) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q: "Which paranasal sinus is the first to develop in the fetus?", opts:["Maxillary sinus","Frontal sinus","Sphenoidal sinus","Ethmoidal sinus"], correct:0, explain:"Maxillary sinus begins first in fetal life." },
-  { q: "Maxillary sinus development begins around which gestational month?", opts:["2nd month","3rd month","4th month","5th month"], correct:0, explain:"Development starts in the 2nd gestational month." },
-  { q: "Which sinus is present at birth?", opts:["Ethmoidal sinuses","Frontal sinuses","Sphenoidal sinus","None are present"], correct:0, explain:"Ethmoid cells begin in the 3rd month and are present at birth." },
-  { q: "The frontal sinus typically appears around:", opts:["4 months of age","At birth","3 years of age","8 years of age"], correct:0, explain:"Slides note appearance around 4 months and expansion by age 6." },
-  { q: "The sphenoid sinus can usually be seen on X‑rays by:", opts:["8 years","2 years","4 years","12 years"], correct:0, explain:"Radiographic visibility around 8 years." },
-  { q: "Most paranasal sinuses open into which meatus of the nasal cavity?", opts:["Middle meatus","Superior meatus","Inferior meatus","Common nasal meatus"], correct:0, explain:"They drain into the lateral wall—predominantly the middle meatus." },
-  { q: "Typical shape of the maxillary sinus is:", opts:["Tetrahedral (pyramidal)","Cuboidal","Spherical","Cylindrical"], correct:0, explain:"Described as tetrahedral/pyramidal." },
-  { q: "Approximate volume of an adult maxillary sinus is:", opts:["~15 mL","~5 mL","~30 mL","~50 mL"], correct:0, explain:"Average volume ≈ 15 mL." },
-  { q: "Which is the largest paranasal sinus?", opts:["Maxillary","Frontal","Ethmoidal","Sphenoidal"], correct:0, explain:"Maxillary is the largest." },
-  { q: "The base of the maxillary sinus corresponds to:", opts:["Lateral wall of nasal cavity","Zygomatic process","Floor of orbit","Alveolar process"], correct:0, explain:"Base faces the lateral nasal wall, forming the medial sinus wall." },
-  { q: "The apex of the maxillary sinus extends into the:", opts:["Zygomatic process of maxilla","Frontal process of maxilla","Palatine process","Nasal septum"], correct:0, explain:"Apex projects laterally into the zygomatic process." },
-  { q: "The roof of the maxillary sinus is formed by the:", opts:["Floor of the orbit","Hard palate","Frontal bone","Zygomatic arch"], correct:0, explain:"Superior wall is the orbital floor." },
-  { q: "Which statement about the roof of the maxillary sinus is TRUE?", opts:["It is the thinnest wall and transmits the infraorbital canal","It is the thickest wall with no canals","It contains the nasolacrimal duct","It bears the palatine canals"], correct:0, explain:"Roof is thin; infraorbital canal with nerve/vessels runs here." },
-  { q: "The floor of the maxillary sinus is chiefly formed by the:", opts:["Alveolar & palatal processes of maxilla","Zygomatic bone","Frontal bone","Lacrimal bone"], correct:0, explain:"Inferior wall derives from alveolar and palatal processes." },
-  { q: "Teeth closely related to the floor of the maxillary sinus are:", opts:["Upper molars and premolars","Mandibular molars","Lower premolars","Maxillary incisors"], correct:0, explain:"Roots of posterior maxillary teeth approximate the sinus floor." },
-  { q: "A potential complication of extracting upper molars due to sinus proximity is:", opts:["Oroantral communication","Dry socket in mandible","Lingual nerve injury","TMJ dislocation"], correct:0, explain:"Perforation may create an oroantral communication/fistula." },
-  { q: "The posterior wall of the maxillary sinus contains the canal transmitting:", opts:["Posterior superior alveolar nerves","Anterior ethmoidal nerve","Nasociliary nerve","Chorda tympani"], correct:0, explain:"Posterior superior alveolar canal traverses the posterior wall." },
-  { q: "Which artery is the primary source for branches supplying the maxillary sinus?", opts:["Maxillary artery","Facial artery","Ophthalmic artery","Lingual artery"], correct:0, explain:"Branches arise from the maxillary artery." },
-  { q: "Which of the following is NOT a branch supplying the maxillary sinus?", opts:["Superior labial artery","Infraorbital artery","Greater palatine artery","Posterior superior alveolar artery"], correct:0, explain:"Infraorbital, greater palatine, and PSA supply it; superior labial does not." },
-  { q: "Infections from the maxillary sinus may spread via venous connections to the:", opts:["Cavernous sinus","Sigmoid sinus","Straight sinus","Occipital sinus"], correct:0, explain:"Facial/plexus routes can communicate to the cavernous sinus." },
-  { q: "Nerve supply of the maxillary sinus includes:", opts:["Infraorbital and superior alveolar nerves","Nasopalatine and lingual nerves","Auriculotemporal and inferior alveolar","Olfactory and optic nerves"], correct:0, explain:"Branches of V2: infraorbital; ant/mid/post superior alveolar." },
-  { q: "Lymph from the ANTERIOR part of the maxillary sinus mainly drains to:", opts:["Submandibular nodes","Retropharyngeal nodes","Submental nodes","Occipital nodes"], correct:0, explain:"Anterior region → submandibular nodes." },
-  { q: "One respiratory function of paranasal sinuses is:", opts:["Warming and humidifying inspired air","Producing surfactant","Gas exchange","Filtering blood"], correct:0, explain:"Mucosa warms/humidifies inhaled air." },
-  { q: "Which function contributes to the resonance of the voice?", opts:["Air-filled sinus cavities","Thickened cranial vault","Closed Eustachian tube","Dense zygoma"], correct:0, explain:"Hollow sinuses enhance vocal resonance." },
-  { q: "Best radiographic view to assess paranasal sinuses (gold standard):",
-    opts:["Water's (occipitomental) view","Submentovertex view","Towne's view","Reverse Towne's view"], correct:0, explain:"Water's view is the classic paranasal sinus view." },
-  { q: "Radiographic view most useful for detecting fluid levels in maxillary sinusitis:", opts:["True lateral skull view","PA skull view","Periapical view","Reverse Towne's view"], correct:0, explain:"True lateral skull view shows air-fluid levels." },
-  { q: "Submentovertex (SMV) view is especially helpful to visualize the:", opts:["Sphenoidal sinus","Frontal sinus","Ethmoidal cells","Nasolacrimal duct"], correct:0, explain:"SMV projects sphenoidal sinus well." },
-  { q: "On panoramic radiographs (OPG), a common pitfall is that roots of maxillary posterior teeth can be misinterpreted as:", opts:["Maxillary sinus pathology","Nasal septal deviation","Zygomatic arch fracture","TMJ ankylosis"], correct:0, explain:"Roots may mimic sinus disease outlines on OPG." },
-  { q: "Standard radiographic appearance of the maxillary antrum is:", opts:["Radiolucent cavity with corticated radiopaque margins","Uniform radiopaque cavity","Honeycomb radiopacity","No clear borders"], correct:0, explain:"Antrum appears radiolucent with dense corticated walls." },
-  { q: "Maxillary sinus growth is biphasic, with spurts occurring at:", opts:["0–3 years and 7–12 years","Birth–1 year and 12–15 years","3–5 years and 13–15 years","5–7 years and 10–12 years"], correct:0, explain:"Two periods noted: early childhood and then 7–12 years." },
+  {
+    "q": "Which of the following paranasal sinuses is the first to develop?",
+    "opts": ["Maxillary Sinus", "Frontal Sinus", "Sphenoid Sinus", "Ethmoid Sinus"],
+    "correct": 0,
+    "explain": "The maxillary sinus begins its development in the 2nd gestational month, making it the first of the paranasal sinuses to develop."
+  },
+  {
+    "q": "The maxillary sinus is also known as:",
+    "opts": ["Antrum of Highmore", "Sphenoidal Cell", "Frontal Cell", "Ethmoidal Labyrinth"],
+    "correct": 0,
+    "explain": "The maxillary sinus, located in the maxillary bones under the eyes, is also referred to as the Antrum of Highmore."
+  },
+  {
+    "q": "What is the approximate volume of an adult maxillary sinus?",
+    "opts": ["15 ml", "5 ml", "25 ml", "35 ml"],
+    "correct": 0,
+    "explain": "The average volume of the maxillary sinus in an adult is approximately 15 ml."
+  },
+  {
+    "q": "The roof of the maxillary sinus is formed by the:",
+    "opts": ["Floor of the orbit", "Alveolar process of the maxilla", "Lateral wall of the nasal cavity", "Zygomatic process of the maxilla"],
+    "correct": 0,
+    "explain": "The roof (superior wall) of the maxillary sinus is formed by the floor of the orbit."
+  },
+  {
+    "q": "The floor of the maxillary sinus is formed by the:",
+    "opts": ["Alveolar process and palatal process of maxilla", "Floor of the orbit", "Infratemporal surface of maxilla", "Lateral wall of the nasal cavity"],
+    "correct": 0,
+    "explain": "The floor (inferior wall) of the maxillary sinus is formed by the alveolar and palatal processes of the maxilla."
+  },
+  {
+    "q": "Dental infections from which teeth are most likely to spread to the maxillary sinus?",
+    "opts": ["Upper premolars and molars", "Upper incisors and canines", "Lower molars", "Lower premolars"],
+    "correct": 0,
+    "explain": "The floor of the sinus is very close to the apices of the upper premolars and molars, making them the most likely source of sinus infections of dental origin."
+  },
+  {
+    "q": "Which structure runs along the superior wall of the maxillary sinus?",
+    "opts": ["Infraorbital canal", "Posterior superior alveolar canal", "Greater palatine foramen", "Nasal septum"],
+    "correct": 0,
+    "explain": "The infraorbital canal, containing the infraorbital nerve and vessels, runs along the roof (superior wall) of the maxillary sinus."
+  },
+  {
+    "q": "The main blood supply to the maxillary sinus comes from branches of the:",
+    "opts": ["Maxillary artery", "Facial artery", "Internal carotid artery", "Lingual artery"],
+    "correct": 0,
+    "explain": "The primary arterial supply to the maxillary sinus is from branches of the maxillary artery, including the infraorbital and superior alveolar arteries."
+  },
+  {
+    "q": "Venous drainage from the maxillary sinus primarily flows into the:",
+    "opts": ["Facial vein & Pterygoid plexus of veins", "Internal jugular vein", "Cavernous sinus directly", "Superior ophthalmic vein"],
+    "correct": 0,
+    "explain": "The veins draining the maxillary sinus lead into the facial vein and the pterygoid plexus of veins."
+  },
+  {
+    "q": "Lymphatic drainage from the anterior part of the maxillary sinus goes to which nodes?",
+    "opts": ["Submandibular lymph nodes", "Deep cervical nodes", "Preauricular nodes", "Parotid nodes"],
+    "correct": 0,
+    "explain": "The lymphatic vessels from the anterior portion of the sinus drain into the submandibular lymph nodes."
+  },
+  {
+    "q": "Which of the following is NOT a primary function of the paranasal sinuses?",
+    "opts": ["Aiding in mastication", "Warming and humidifying inhaled air", "Decreasing the weight of the skull", "Increasing voice resonance"],
+    "correct": 0,
+    "explain": "While sinuses contribute to air warming, skull weight reduction, and voice resonance, they do not play a direct role in mastication."
+  },
+  {
+    "q": "A surgical procedure to augment bone volume in the posterior maxilla for implant placement is called:",
+    "opts": ["Sinus lift", "Apicoectomy", "Gingivectomy", "Frenectomy"],
+    "correct": 0,
+    "explain": "A sinus lift procedure is performed when the maxillary sinus floor is too low, to increase the amount of bone available for dental implant placement."
+  },
+  {
+    "q": "What is a potential complication during the extraction of a maxillary molar, related to the sinus?",
+    "opts": ["Oroantral communication", "Mandibular fracture", "Nerve paresthesia", "Dry socket"],
+    "correct": 0,
+    "explain": "Due to the proximity of the molar roots to the sinus floor, a perforation can occur, creating an oroantral communication (fistula)."
+  },
+  {
+    "q": "Which radiographic view is considered the 'gold standard' for visualizing the maxillary sinuses, especially for fluid levels?",
+    "opts": ["Water's View", "Intraoral Periapical Radiograph (IOPAR)", "Orthopantograph (OPG)", "True Lateral Skull View"],
+    "correct": 0,
+    "explain": "The Water's View (Occipitomental view) is the standard and most effective radiographic projection for evaluating the maxillary sinuses for fluid and pathology."
+  },
+  {
+    "q": "On a radiograph, a healthy maxillary sinus appears as a:",
+    "opts": ["Radiolucent cavity with corticated borders", "Radiopaque mass", "Mixed density lesion", "Fractured space"],
+    "correct": 0,
+    "explain": "A healthy, air-filled sinus appears as a dark (radiolucent) area with a well-defined, white (radiopaque) cortical outline."
+  },
+  {
+    "q": "The apex of the pyramidal-shaped maxillary sinus extends into the:",
+    "opts": ["Zygomatic process of the maxilla", "Frontal process of the maxilla", "Alveolar process of the maxilla", "Palatine process of the maxilla"],
+    "correct": 1,
+    "explain": "The apex of the tetrahedral or pyramidal maxillary sinus points laterally, extending into the zygomatic process of the maxilla."
+  },
+  {
+    "q": "The base of the maxillary sinus forms which structure?",
+    "opts": ["Lateral wall of the nasal cavity", "Floor of the orbit", "Anterior wall of the face", "Roof of the mouth"],
+    "correct": 0,
+    "explain": "The base of the sinus is its medial wall, which is contiguous with the lateral wall of the nasal cavity."
+  },
+  {
+    "q": "At what age does the frontal sinus typically appear and begin to develop?",
+    "opts": ["Around 4 months gestation, visible by age 6", "At birth", "Around age 12", "In early adulthood"],
+    "correct": 0,
+    "explain": "The frontal sinus starts developing around the 4th month of gestation but doesn't become clinically significant or visible until around age 3-6."
+  },
+  {
+    "q": "Which nerves provide sensory innervation to the maxillary sinus?",
+    "opts": ["Infraorbital and superior alveolar nerves", "Nasopalatine nerve", "Mandibular nerve", "Glossopharyngeal nerve"],
+    "correct": 0,
+    "explain": "Innervation is provided by the infraorbital nerve and the anterior, middle, and posterior superior alveolar nerves, all branches of the maxillary nerve (V2)."
+  },
+  {
+    "q": "An infection spreading via venous connections from the maxillary sinus can potentially reach the:",
+    "opts": ["Cavernous sinus", "Superior sagittal sinus", "Sigmoid sinus", "Transverse sinus"],
+    "correct": 0,
+    "explain": "The pterygoid plexus of veins has connections to the cavernous sinus, creating a 'dangerous pathway' for infections to spread intracranially."
+  },
+  {
+    "q": "The growth of the maxillary sinus is described as biphasic, occurring during which age ranges?",
+    "opts": ["0-3 years & 7-12 years", "Birth to 1 year & 16-18 years", "4-6 years & 13-15 years", "It grows continuously until age 21"],
+    "correct": 0,
+    "explain": "The maxillary sinus has two main growth spurts: one from birth to age 3, and a second one from ages 7 to 12."
+  },
+  {
+    "q": "Which sinus group is described as numerous (6-12 per side) intercommunicating spaces?",
+    "opts": ["Ethmoidal air sinus", "Frontal sinus", "Sphenoidal sinus", "Maxillary sinus"],
+    "correct": 0,
+    "explain": "The ethmoid sinuses are not a single cavity but a collection of numerous small, interconnected air cells within the ethmoid bone."
+  },
+  {
+    "q": "The sphenoid sinus is located within the body of which bone?",
+    "opts": ["Sphenoid bone", "Frontal bone", "Maxilla", "Ethmoid bone"],
+    "correct": 0,
+    "explain": "The sphenoid sinus is located centrally in the skull, within the body of the sphenoid bone, behind the nasal cavity."
+  },
+  {
+    "q": "Pain in multiple posterior maxillary teeth can be a symptom of:",
+    "opts": ["Acute sinusitis", "Pericoronitis", "Temporomandibular disorder (TMD)", "A cracked lower molar"],
+    "correct": 0,
+    "explain": "Because the superior alveolar nerves that supply the maxillary molars pass through the walls of the sinus, inflammation (sinusitis) can cause referred pain to these teeth."
+  },
+  {
+    "q": "What is the primary purpose of transillumination in examining the maxillary sinus?",
+    "opts": ["As a screening tool for monitoring resolving sinusitis", "To diagnose sinus tumors", "To measure the exact sinus volume", "To replace all radiographic imaging"],
+    "correct": 0,
+    "explain": "Transillumination is a quick clinical test where a light is shone through the tissues. A sinus filled with fluid (like in sinusitis) will not illuminate as brightly as a healthy, air-filled one. It's used as a basic screening tool."
+  },
+  {
+    "q": "The posterior wall of the maxillary sinus is also known as the:",
+    "opts": ["Infratemporal surface", "Facial surface", "Orbital surface", "Nasal surface"],
+    "correct": 0,
+    "explain": "The posterior wall is formed by the infratemporal surface of the maxilla and is related to the pterygopalatine and infratemporal fossae."
+  },
+  {
+    "q": "Pneumatization of the maxillary sinus spreading inferiorly is associated with:",
+    "opts": ["Eruption of permanent teeth", "Loss of primary teeth", "Cranial base growth", "Adolescent growth spurt"],
+    "correct": 0,
+    "explain": "As permanent teeth erupt, the alveolar process remodels, allowing the sinus to expand downwards (pneumatize) into the space."
+  },
+  {
+    "q": "On an OPG, the roots of maxillary molars can sometimes be misinterpreted as:",
+    "opts": ["Maxillary sinus pathology", "Mandibular cysts", "Impacted canines", "Salivary stones"],
+    "correct": 0,
+    "explain": "The superimposition of molar roots over the sinus floor on a panoramic radiograph can mimic or be mistaken for sinus pathology like polyps or cysts."
+  },
+  {
+    "q": "Lymphatic drainage from the posterior part of the maxillary sinus primarily goes to the:",
+    "opts": ["Deep cervical nodes", "Submandibular nodes", "Submental nodes", "Parotid nodes"],
+    "correct": 0,
+    "explain": "While the anterior part drains to submandibular nodes, the posterior part of the sinus drains to the deep cervical lymph nodes."
+  },
+  {
+    "q": "The maxillary sinus drains into the nasal cavity through an opening in the:",
+    "opts": ["Middle meatus", "Superior meatus", "Inferior meatus", "Sphenoethmoidal recess"],
+    "correct": 0,
+    "explain": "All paranasal sinuses, including the maxillary sinus, drain into the nasal cavity. The maxillary sinus ostium opens into the middle meatus."
+  }
 ];
 
 const tfs = [
-  { q:"Paranasal air sinuses communicate and open into the lateral wall of the nasal cavity, draining mainly into the middle meatus.", answer:true, explain:"They ventilate via openings on the lateral wall—predominantly middle meatus." },
-  { q:"The roof of the maxillary sinus is the thickest wall.", answer:false, explain:"It is the thinnest wall and transmits the infraorbital canal." },
-  { q:"Acute maxillary sinusitis can present as pain in multiple posterior maxillary teeth due to nerve supply.", answer:true, explain:"Posterior superior alveolar nerves may refer pain to teeth." },
-  { q:"Venous drainage of the maxillary sinus is directly into the internal jugular vein.", answer:false, explain:"It drains to the facial vein and pterygoid plexus; spread can reach cavernous sinus." },
-  { q:"The sphenoid sinus is typically visible on X‑rays by around 8 years of age.", answer:true, explain:"Noted radiographic visibility at ~8 years." },
-  { q:"The frontal sinus appears around 4 months of age and expands past the supraorbital margin by age 6.", answer:true, explain:"As described in the slides." },
-  { q:"The apex of the maxillary sinus extends into the zygomatic process of the maxilla.", answer:true, explain:"That's the lateral (apical) projection of the sinus." },
-  { q:"Water’s (occipitomental) view is considered the gold‑standard projection for paranasal sinuses.", answer:true, explain:"Classic PNS view." },
-  { q:"Transillumination is a definitive diagnostic test for sinusitis.", answer:false, explain:"It is a screening/monitoring tool, not definitive." }
+  {
+    "q": "The maxillary sinuses are typically fluid-filled at birth.",
+    "answer": true,
+    "explain": "The maxillary sinuses are the first to develop and are indeed usually fluid-filled at birth, which clears shortly after."
+  },
+  {
+    "q": "The frontal sinus is the largest of all the paranasal sinuses.",
+    "answer": false,
+    "explain": "The maxillary sinus is the largest of the paranasal sinuses, with an average volume of 15 ml."
+  },
+  {
+    "q": "All paranasal sinuses drain into the middle meatus of the nasal cavity.",
+    "answer": false,
+    "explain": "While the maxillary, frontal, and anterior ethmoid sinuses drain into the middle meatus, the posterior ethmoid and sphenoid sinuses drain elsewhere."
+  },
+  {
+    "q": "An oroantral communication is a common complication associated with extracting mandibular molars.",
+    "answer": false,
+    "explain": "An oroantral communication is a risk when extracting maxillary (upper) posterior teeth, not mandibular (lower) teeth, due to the proximity of their roots to the sinus floor."
+  },
+  {
+    "q": "The walls of the maxillary sinus are supplied by a single, dedicated artery.",
+    "answer": false,
+    "explain": "The maxillary sinus receives a rich blood supply from multiple branches of the maxillary artery, including the infraorbital, greater palatine, and superior alveolar arteries."
+  },
+  {
+    "q": "Bilateral maxillary sinusitis is more likely to be caused by a bacterial infection than allergies.",
+    "answer": false,
+    "explain": "Bilateral findings are often associated with systemic causes like allergies, whereas unilateral sinusitis is more indicative of a localized bacterial infection or lesion."
+  },
+  {
+    "q": "The Submentovertex radiographic view is primarily used to evaluate the sphenoidal sinus.",
+    "answer": true,
+    "explain": "The Submentovertex (SMV) view is ideal for visualizing the base of the skull, including the sphenoidal sinuses."
+  },
+  {
+    "q": "The paranasal sinuses increase the relative weight of the skull.",
+    "answer": false,
+    "explain": "The air-filled sinuses actually decrease the relative weight of the skull, making it lighter than it would be if it were solid bone."
+  },
+  {
+    "q": "Maxillary sinusitis rarely produces visible soft-tissue swelling on the face.",
+    "answer": true,
+    "explain": "Unlike infections in other areas, maxillary sinusitis typically does not cause external, visible swelling of the cheek unless there is a significant complication."
+  }
 ];
 
 const saqs = [
-  // Direct answer
-  { q: "Define paranasal air sinuses.", a: "Air‑filled cavities in craniofacial bones around the nasal cavity that communicate with it." },
-  // List/enumeration (≥3)
-  { q: "Enumerate the paranasal sinuses.", a: "1) Frontal  2) Ethmoidal  3) Sphenoidal  4) Maxillary" },
-  // Comparison (numbered table)
-  { q: "Compare key imaging views for maxillary sinus assessment.", a: "<table style='width:100%;border-collapse:collapse'><thead><tr><th style='border:1px solid rgba(255,255,255,0.2);padding:6px'>#</th><th style='border:1px solid rgba(255,255,255,0.2);padding:6px'>View</th><th style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Primary use</th></tr></thead><tbody><tr><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>1</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Water’s (OM)</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Gold‑standard PNS view</td></tr><tr><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>2</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>True Lateral Skull</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Air‑fluid levels</td></tr><tr><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>3</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Submentovertex</td><td style='border:1px solid rgba(255,255,255,0.2);padding:6px'>Sphenoidal sinus</td></tr></tbody></table>" },
-  // Case‑based scenario
-  { q: "After extraction of the maxillary first molar, a patient notices air passage between mouth and nose during speech. What complication has likely occurred?", a: "Oroantral communication (possible fistula)." },
-  // Direct answer
-  { q: "State the main arterial source to the maxillary sinus.", a: "Branches of the maxillary artery (e.g., infraorbital, PSA, greater palatine)." },
-  // List (mapping lymph drainage)
-  { q: "Outline lymphatic drainage of the maxillary sinus (regions → nodes).", a: "1) Anterior → Submandibular  2) Posterior → Deep cervical  3) Floor → Submandibular  4) Roof/near orbit → Preauricular/Parotid (occasional)" }
+  {
+    "q": "Describe the shape of the maxillary sinus and list its four main walls or boundaries.",
+    "a": "The maxillary sinus is described as a tetrahedral or pyramidal structure. Its boundaries are:<br><ol><li><b>Roof (Superior Wall):</b> Formed by the floor of the orbit.</li><li><b>Floor (Inferior Wall):</b> Formed by the alveolar and palatal processes of the maxilla.</li><li><b>Medial Wall (Base):</b> Formed by the lateral wall of the nasal cavity.</li><li><b>Posterior Wall (Infratemporal Surface):</b> Formed by the infratemporal surface of the maxilla.</li></ol>"
+  },
+  {
+    "q": "List three distinct functions of the paranasal sinuses.",
+    "a": "The paranasal sinuses have several functions, including: <br><ol><li><b>Warming and humidifying inhaled air:</b> The mucosal lining moistens and warms air before it reaches the lungs.</li><li><b>Decreasing the relative weight of the skull:</b> The air-filled cavities make the skull lighter.</li><li><b>Increasing resonance of the voice:</b> They act as resonating chambers for sound production.</li></ol> (Other valid answers include acting as shock absorbers and immune defense)."
+  },
+  {
+    "q": "Compare the lymphatic drainage of the anterior and posterior parts of the maxillary sinus.",
+    "a": "The lymphatic drainage of the maxillary sinus differs based on the region:<table><tr><th>Sinus Region</th><th>Drains To</th></tr><tr><td>1. Anterior Part</td><td>Submandibular lymph nodes</td></tr><tr><td>2. Posterior Part</td><td>Deep cervical nodes</td></tr></table>"
+  },
+  {
+    "q": "A 45-year-old patient complains of a dull, aching pain in their upper left molars that worsens when they bend over. They had a cold last week. What is a likely diagnosis related to the maxillary sinus, and why does it cause dental pain?",
+    "a": "A likely diagnosis is <b>acute maxillary sinusitis</b>. The proximity of the maxillary molar roots to the sinus floor means that inflammation and pressure buildup within the sinus can irritate the superior alveolar nerves, which supply these teeth. This irritation is perceived as tooth pain (referred pain). The pain worsens on bending over due to the gravitational shift of sinus fluid, which increases pressure."
+  },
+  {
+    "q": "List the four main groups of paranasal air sinuses.",
+    "a": "The four groups of paranasal sinuses are:<br><ol><li>Frontal Sinuses</li><li>Ethmoidal Sinuses</li><li>Sphenoidal Sinus</li><li>Maxillary Sinuses</li></ol>"
+  },
+  {
+    "q": "Explain the clinical significance of the maxillary sinus in relation to dental implant placement in the posterior maxilla.",
+    "a": "The maxillary sinus is highly significant for posterior dental implants. After tooth loss, the sinus often expands downward (pneumatization) and the alveolar bone resorbs, reducing the available bone height. If the bone is insufficient to support an implant, a <b>sinus lift procedure</b> is required. This involves surgically elevating the sinus membrane and placing a bone graft to increase the bone volume, allowing for successful and stable implant placement without perforating the sinus."
+  }
 ];
 
 // ----------- State -----------
@@ -315,7 +517,7 @@ mcqs.forEach((item, idx)=>{
 
 // ----------- Render True/False -----------
 const tfGrid = document.getElementById('tfGrid');
- tfs.forEach((item, idx)=>{
+tfs.forEach((item, idx)=>{
   const card = document.createElement('article');
   card.className='card qcard';
   card.dataset.type='tf';
@@ -385,13 +587,14 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
   </div>
   <div class="answer" hidden>${item.a}</div>
 `;
+
 
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');
@@ -442,6 +645,9 @@ function recalc(){
 }
 
 document.getElementById('resetAll').addEventListener('click', ()=>{
+  if (!confirm("Are you sure you want to reset all your answers? Your scores will be cleared.")) {
+    return;
+  }
   document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
   document.querySelectorAll('.opt-btn').forEach(b=>{
     b.classList.remove('correct','wrong');

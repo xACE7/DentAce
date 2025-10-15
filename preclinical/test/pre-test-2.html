@@ -127,6 +127,20 @@
   }
   .score .part{color:var(--muted);font-weight:600}
   .score b{color:var(--text)}
+
+  .answer table{
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+  }
+  .answer th, .answer td{
+      border: 1px solid var(--card-border);
+      padding: 8px;
+      text-align: left;
+  }
+  .answer th {
+      background-color: var(--glass);
+  }
 </style>
 </head>
 <body>
@@ -169,155 +183,263 @@
   </main>
 
 <script>
-// ----------- Data (from Lecture 2: Hand Instruments in Operative Dentistry) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q:"Which material is mainly used for manufacturing hand cutting instruments?",
-    opts:["Stainless steel alloys","Carbon steel only","Titanium alloys are preferred","Both are equally preferred"],
-    correct:0,
-    explain:"Stainless steel alloys are mainly used; carbon steel is harder but prone to corrosion if unprotected." },
-  { q:"Compared with carbon steel, stainless steel typically:",
-    opts:["Loses a keen edge more quickly","Holds a sharper edge for longer","Corrodes faster when unprotected","Cannot be used for dental instruments"],
-    correct:0,
-    explain:"Stainless steel remains bright but loses sharpness faster than carbon steel." },
-  { q:"A key drawback of carbon steel instruments is that they:",
-    opts:["Corrode (rust) if unprotected","Are too soft for cutting","Cannot be sharpened","Are heavier than stainless steel"],
-    correct:0,
-    explain:"Carbon steel is harder but will corrode (rust) when unprotected." },
-  { q:"Which of the following is NOT part of Marzouk's classification?",
-    opts:["Sterilization instruments","Diagnostic instruments","Cutting instruments","Finishing and polishing instruments"],
-    correct:0,
-    explain:"Marzouk classified instruments into diagnostic, cutting, restoring, and finishing/polishing." },
-  { q:"Which is a diagnostic (exploring) instrument?",
-    opts:["Explorer","Condenser","Hollenbeck carver","Burnisher"],
-    correct:0,
-    explain:"Diagnostic instruments include mouth mirrors, explorers, periodontal probes, and tweezers." },
-  { q:"Cutting instruments are divided into:",
-    opts:["Hand cutting and rotary cutting","Restorative and finishing","Rotary and polishing","Exploring and restoring"],
-    correct:0,
-    explain:"Cutting instruments: (A) hand cutting (chisels, excavators) and (B) rotary cutting (handpieces, burs, abrasives)." },
-  { q:"Which of the following is a restoring instrument?",
-    opts:["Burnisher","Explorer","Bur","Mouth mirror"],
-    correct:0,
-    explain:"Restoring instruments include plastic instruments, amalgam carriers, condensers, burnishers, and carvers." },
-  { q:"Which instrument belongs to finishing and polishing?",
-    opts:["Rubber cups","Enamel hatchet","Amalgam carrier","Periodontal probe"],
-    correct:0,
-    explain:"Finishing/polishing instruments include finishing burs/strips, brushes, and rubber cups." },
-  { q:"Primary use of the mouth mirror is to:",
-    opts:["Provide indirect vision","Cut unsupported enamel","Condense amalgam","Detect soft caries by lateral action"],
-    correct:0,
-    explain:"Mouth mirrors aid indirect vision, light reflection, and soft tissue retraction." },
-  { q:"The tip of an explorer is called the:",
-    opts:["Tine","Nib","Bevel","Shank"],
-    correct:0,
-    explain:"Explorer tips are referred to as tines." },
-  { q:"In operative dentistry, periodontal probes are useful to:",
-    opts:["Measure dimensions of cavity preparations","Carry wedges","Condense restorative material","Finish margins"],
-    correct:0,
-    explain:"Probes help measure the dimensions of cavity preparations." },
-  { q:"Tweezers (pliers) are commonly used to:",
-    opts:["Place/remove cotton rolls and carry small items","Measure cavity depth","Carve amalgam anatomy","Check occlusion"],
-    correct:0,
-    explain:"Cotton tweezers place/remove cotton rolls, carry pellets, and place wedges." },
-  { q:"Hand instruments generally have how many parts?",
-    opts:["Three: handle, shank, blade","Two: handle and blade","Four: handle, shank, blade, guard","Two: blade and nib"],
-    correct:0,
-    explain:"Parts: handle, shank, and blade (or nib for non‑cutting instruments)." },
-  { q:"For non‑cutting (restoring) instruments, the functional end is called the:",
-    opts:["Nib","Blade","Bevel","Edge"],
-    correct:0,
-    explain:"Cutting instruments have a blade; non‑cutting instruments have a nib." },
-  { q:"Which description best defines a contra‑angled shank?",
-    opts:["Angled to bring the cutting edge closer to the handle","A shank with no angles","A single‑angle shank","A shank used only with rotary burs"],
-    correct:0,
-    explain:"Contra‑angulation brings the cutting edge near the handle for balance and access." },
-  { q:"For optimal anti‑rotational design, the cutting edge should be within how far of the handle’s long axis?",
-    opts:["Within 3 mm","Within 1 mm","Within 5 mm","Within 10 mm"],
-    correct:0,
-    explain:"Cutting edge must be within 3 mm of the handle’s axis." },
-  { q:"Instruments with blades on both ends of the handle are termed:",
-    opts:["Double‑ended","Bi‑beveled","Binangled","Circumferential"],
-    correct:0,
-    explain:"Many instruments are available as double‑ended (working ends on both sides)." },
-  { q:"Which instrument is typically bi‑beveled?",
-    opts:["Hatchet excavator","Straight chisel","Enamel hatchet","GMT"],
-    correct:0,
-    explain:"Hatchet excavators are bi‑beveled; chisels and enamel hatchets are single‑beveled at the edge." },
-  { q:"Spoon excavators are characterized by a blade that is:",
-    opts:["Slightly curved and circumferentially beveled","Straight and single‑beveled","Curved with edge at right angles","Flat and unsharpened"],
-    correct:0,
-    explain:"Spoon excavators have slightly curved, circumferentially beveled working ends." },
-  { q:"The straight chisel is primarily used to:",
-    opts:["Remove unsupported enamel","Condense amalgam","Measure cavity depth","Bevel gingival margins"],
-    correct:0,
-    explain:"Chisels are hand cutting instruments used chiefly for removing unsupported enamel." },
-  { q:"A key feature of the enamel hatchet is that the blade is:",
-    opts:["Single‑beveled","Bi‑beveled","Circumferentially beveled","Double‑curved"],
-    correct:0,
-    explain:"Enamel hatchet blades are single‑beveled." },
-  { q:"Orientation of the primary cutting edge of an enamel hatchet is:",
-    opts:["In a plane parallel with the handle’s long axis","Perpendicular to the handle’s long axis","At 45° to the blade","At right angles to the blade"],
-    correct:0,
-    explain:"The primary cutting edge lies in a plane parallel to the handle’s long axis." },
-  { q:"Common configuration of the enamel hatchet is:",
-    opts:["Double‑ended","Single‑ended only","Triple‑ended","Interchangeable tips"],
-    correct:0,
-    explain:"Enamel hatchets are most commonly double‑ended." },
-  { q:"Compared with the enamel hatchet, the GMT differs because its:",
-    opts:["Blade is curved and the cutting edge is not at a right angle","Blade is straight and single‑beveled","Cutting edge is parallel to the handle","Blade lacks any bevel"],
-    correct:0,
-    explain:"GMT has a curved blade and a cutting edge at an angle other than 90° to the blade." },
-  { q:"GMT instruments are supplied as:",
-    opts:["Mesial and distal pairs","Right and left with no edge angle","Universal single pattern","Short and long shank only"],
-    correct:0,
-    explain:"GMTs come in mesial and distal pairs." },
-  { q:"A principal use of the GMT is:",
-    opts:["Rounding/beveling the axiopulpal line angle","Condensing amalgam","Measuring cavity depths","Finishing occlusal anatomy"],
-    correct:0,
-    explain:"GMT is used to round/bevel the axiopulpal line angle and for gingival wall beveling in Class II." },
-  { q:"The cutting action of spoon excavators for caries removal is mainly:",
-    opts:["Lateral cutting","Axial drilling","Percussive tapping","Rotary abrasion"],
-    correct:0,
-    explain:"Spoon excavators remove soft caries primarily by lateral cutting action." },
-  { q:"In G.V. Black’s three‑unit instrument formula, the third unit denotes:",
-    opts:["Blade angle in centigrades","Blade length in mm","Blade width in tenths of mm","Cutting edge angle"],
-    correct:0,
-    explain:"Third unit = blade angle (angle between blade and handle axis), expressed in centigrades." },
-  { q:"The fourth unit (when present) in Black’s formula is the:",
-    opts:["Cutting edge angle placed second","Blade width placed first","Blade length placed second","Blade angle placed fourth"],
-    correct:0,
-    explain:"For instruments like GMT/angle former, a fourth unit (cutting edge angle) is added and placed second." },
-  { q:"The first unit in Black’s formula indicates:",
-    opts:["Blade width in tenths of a millimeter","Blade length in millimeters","Blade angle in centigrades","Cutting edge angle"],
-    correct:0,
-    explain:"First unit describes blade width in 1/10 mm." }
+    {
+        q: "What is a major disadvantage of using carbon steel for dental hand instruments?",
+        opts: ["It corrodes when unprotected.", "It loses its sharp edge very quickly.", "It is too flexible for effective cutting.", "It cannot be properly sterilized."],
+        correct: 0,
+        explain: "Carbon steel is harder than stainless steel but it will corrode (rust) if left unprotected."
+    },
+    {
+        q: "Which material used for hand instruments remains bright and resists corrosion but loses its sharpness more quickly during use?",
+        opts: ["Stainless steel", "Carbon steel", "Titanium alloy", "Tungsten carbide"],
+        correct: 0,
+        explain: "Stainless steel alloys resist corrosion and stay bright, but they dull faster than carbon steel instruments."
+    },
+    {
+        q: "According to Marzouk's classification, which category do instruments like chisels and excavators belong to?",
+        opts: ["Cutting instruments", "Diagnostic instruments", "Restoring instruments", "Finishing and polishing instruments"],
+        correct: 0,
+        explain: "Chisels and excavators are designed to cut tooth structure, placing them in the 'Cutting instruments' category."
+    },
+    {
+        q: "Which of the following is considered a 'Restoring instrument' under Marzouk's classification?",
+        opts: ["Amalgam carriers", "Mouth mirrors", "Finishing burs", "Spoon excavators"],
+        correct: 0,
+        explain: "Amalgam carriers are used to transport and place restorative material, classifying them as restoring instruments."
+    },
+    {
+        q: "Which of the following is NOT typically classified as a diagnostic instrument in operative dentistry?",
+        opts: ["Cement spatula", "Mouth mirror", "Explorer", "Periodontal probe"],
+        correct: 0,
+        explain: "A cement spatula is a restoring instrument used for mixing materials, not for diagnosis."
+    },
+    {
+        q: "Which of the following is NOT a primary use of the mouth mirror?",
+        opts: ["Measuring periodontal pocket depth", "Indirect vision", "Light reflection", "Retraction of soft tissues"],
+        correct: 0,
+        explain: "Measuring pocket depth is the function of a periodontal probe, not a mouth mirror."
+    },
+    {
+        q: "What is the sharp, pointed working end of a dental explorer called?",
+        opts: ["Tine", "Shank", "Blade", "Nib"],
+        correct: 0,
+        explain: "The term for the sharp, pointed tip of an explorer is the 'tine'."
+    },
+    {
+        q: "In operative dentistry, what is a primary use for the periodontal probe?",
+        opts: ["Measuring the dimensions of a cavity preparation", "Detecting soft carious lesions", "Retracting the tongue for better access", "Polishing the final restoration"],
+        correct: 0,
+        explain: "Periodontal probes are used in operative dentistry to accurately measure the dimensions of prepared cavities."
+    },
+    {
+        q: "What is the main function of cotton tweezers (pliers) in operative dentistry?",
+        opts: ["Placing and removing cotton rolls for isolation", "Carving amalgam anatomy", "Condensing composite material", "Measuring the depth of the cavity"],
+        correct: 0,
+        explain: "Cotton tweezers are specifically designed with angled tips to handle cotton rolls, pellets, and wedges."
+    },
+    {
+        q: "What are the three main parts of a typical dental hand instrument?",
+        opts: ["Handle, Shank, Blade", "Handle, Neck, Tip", "Shaft, Bevel, Tine", "Grip, Arm, Nib"],
+        correct: 0,
+        explain: "A hand instrument is composed of the handle (or shaft), the shank, and the working end, which is the blade for cutting instruments."
+    },
+    {
+        q: "The functional working end of a non-cutting or restoring instrument (like a condenser) is called the:",
+        opts: ["Nib", "Blade", "Cutting edge", "Tine"],
+        correct: 0,
+        explain: "For non-cutting instruments, the working end is referred to as the 'nib', whereas for cutting instruments, it is the 'blade'."
+    },
+    {
+        q: "An instrument with two angles in its shank is referred to as being:",
+        opts: ["Binangled", "Monoangled", "Triple angled", "Contra-angled"],
+        correct: 0,
+        explain: "Shank design is named by the number of angles it contains: one angle is monoangled, two is binangled, and three is triple angled."
+    },
+    {
+        q: "What is the primary purpose of contra-angling an instrument's shank?",
+        opts: ["To bring the cutting edge close to the handle's axis for balance", "To increase the instrument's cutting force", "To allow for better sterilization and cleaning", "To make the instrument longer for better reach"],
+        correct: 0,
+        explain: "Contra-angling provides balance by aligning the working end with the long axis of the handle, preventing rotation during use."
+    },
+    {
+        q: "A hatchet excavator is an example of which type of beveled instrument?",
+        opts: ["Bi-Beveled", "Single beveled", "Circumferentially Beveled", "Non-beveled"],
+        correct: 1,
+        explain: "Hatchet excavators have two bevels on their cutting edge, making them bi-beveled."
+    },
+    {
+        q: "Which instrument is characterized by a circumferentially beveled, spoon-shaped working end?",
+        opts: ["Spoon Excavator", "Straight Chisel", "Enamel Hatchet", "Gingival Marginal Trimmer"],
+        correct: 0,
+        explain: "The spoon excavator is unique for its spoon shape and a cutting edge that extends around the perimeter (circumferentially beveled)."
+    },
+    {
+        q: "What is the primary function of a straight chisel in cavity preparation?",
+        opts: ["Removal of unsupported enamel", "Removal of soft carious dentin", "Beveling of axiopulpal line angles", "Condensing amalgam restorations"],
+        correct: 0,
+        explain: "Chisels are primarily designed for cutting enamel and are used to plane away unsupported enamel rods."
+    },
+    {
+        q: "The primary cutting edge of an enamel hatchet is in a plane that is...",
+        opts: ["parallel with the long axis of the handle.", "perpendicular to the long axis of the handle.", "at a 45-degree angle to the handle.", "curved away from the handle."],
+        correct: 0,
+        explain: "The design of an enamel hatchet places its cutting edge parallel to the instrument's handle axis."
+    },
+    {
+        q: "An enamel hatchet is specifically used to remove unsupported enamel from which area in a Class II cavity preparation?",
+        opts: ["Proximal area", "Occlusal floor", "Pulpal wall", "Gingival margin"],
+        correct: 0,
+        explain: "The enamel hatchet is designed for use in the proximal box of a Class II preparation to cleave away weak, unsupported enamel."
+    },
+    {
+        q: "How does a Gingival Marginal Trimmer (GMT) primarily differ from an enamel hatchet in its design?",
+        opts: ["Its blade is curved.", "Its blade is perfectly straight.", "It is always a single-ended instrument.", "It has no bevel on its cutting edge."],
+        correct: 0,
+        explain: "The GMT is similar to an enamel hatchet, but its blade is curved, and the cutting edge is at an angle other than 90 degrees to the blade."
+    },
+    {
+        q: "A Gingival Marginal Trimmer (GMT) is specifically used for which of the following tasks?",
+        opts: ["Rounding or beveling of the axiopulpal line angles", "Removing soft carious dentin from the pulpal floor", "Condensing restorative material into the proximal box", "Polishing the final occlusal anatomy"],
+        correct: 0,
+        explain: "One of the key uses of a GMT is to bevel the axiopulpal line angle of a Class II preparation to reduce stress concentration."
+    },
+    {
+        q: "What is the primary use of a spoon excavator?",
+        opts: ["Removal of soft caries", "Planing of enamel walls", "Carving occlusal anatomy of amalgam", "Placing cotton pellets into the cavity"],
+        correct: 0,
+        explain: "The spoon excavator is the instrument of choice for the careful removal of soft, carious dentin."
+    },
+    {
+        q: "In G.V. Black's 3-unit instrument formula, what does the first unit represent?",
+        opts: ["Width of the blade in tenths of a millimeter", "Length of the blade in millimeters", "Angle of the blade in centigrades", "Length of the handle in centimeters"],
+        correct: 0,
+        explain: "The first number in Black's formula always indicates the blade width in 0.1 mm increments (e.g., '10' means 1.0 mm)."
+    },
+    {
+        q: "In G.V. Black's 3-unit instrument formula, what unit of measurement is used for the blade's angle (third unit)?",
+        opts: ["Centigrade degrees", "Millimeters", "Microns", "Standard degrees (360° circle)"],
+        correct: 0,
+        explain: "The angle of the blade relative to the handle is expressed in centigrades, where a circle is 100 centigrades."
+    },
+    {
+        q: "A fourth unit is added to Black's instrument formula for instruments like the GMT. What does this unit, placed in the second position, represent?",
+        opts: ["Cutting edge angle", "Blade sharpness index", "Shank curvature degree", "Handle diameter in millimeters"],
+        correct: 0,
+        explain: "For instruments where the cutting edge is not perpendicular to the blade, a fourth unit is added as the second number to denote the cutting edge angle."
+    },
+    {
+        q: "Which restoring instrument is specifically designed for mixing dental cements on a glass slab or paper pad?",
+        opts: ["Cement spatula", "Plastic filling instrument", "Amalgam condenser", "Amalgam carver"],
+        correct: 0,
+        explain: "The flat, wide nib of a cement spatula is designed for the spatulation and mixing of various dental cements."
+    },
+    {
+        q: "What is the primary use of a plastic filling instrument?",
+        opts: ["To carry and place mixed cements into the cavity preparation", "To condense amalgam firmly into the cavity", "To carve the final occlusal anatomy of a restoration", "To excavate soft carious dentin"],
+        correct: 0,
+        explain: "Plastic filling instruments have smooth, blunt nibs designed to carry and manipulate plastic materials like cements or composites."
+    },
+    {
+        q: "The primary function of an amalgam condenser is to:",
+        opts: ["Compact amalgam into the prepared cavity", "Smooth the surface of the final restoration", "Mix the alloy and mercury together", "Remove excess material from the margins"],
+        correct: 0,
+        explain: "Condensers are used to apply vertical pressure to compact the amalgam, ensuring adaptation and minimizing voids."
+    },
+    {
+        q: "Which instrument, often with a ball-shaped or egg-shaped nib, is used to make the surface of a restoration smooth before it sets?",
+        opts: ["Burnisher", "Carver", "Excavator", "Condenser"],
+        correct: 0,
+        explain: "Burnishers are used with a rubbing motion to smooth the surface of amalgam, beginning the condensation of the surface layer."
+    },
+    {
+        q: "Which of the following are examples of universally used amalgam carvers for shaping occlusal anatomy?",
+        opts: ["Hollenbeck and Cleoid-discoid", "Spoon excavator and Hatchet", "Straight chisel and Wedelstaedt chisel", "Ball and Egg-shaped burnishers"],
+        correct: 0,
+        explain: "The Hollenbeck carver and the Cleoid-discoid carver (with its pointed and circular ends) are the most common instruments for carving amalgam."
+    },
+    {
+        q: "Which instrument grasp is most commonly used in operative dentistry and involves the pads of the thumb, index, and middle fingers?",
+        opts: ["Modified Pen Grasp", "Inverted Pen Grasp", "Palm and Thumb Grasp", "Reverse Pen Grasp"],
+        correct: 0,
+        explain: "The Modified Pen Grasp offers the greatest control and is the most frequently used grasp for hand instruments."
+    }
 ];
 
 const tfs = [
-  { q:"Stainless steel remains bright but loses a keen edge faster than carbon steel.", answer:true, explain:"This trade‑off contrasts with harder but corrosion‑prone carbon steel." },
-  { q:"Carbon steel will not corrode when unprotected.", answer:false, explain:"Carbon steel corrodes (rusts) if unprotected." },
-  { q:"Tweezers are included among diagnostic (exploring) instruments.", answer:true, explain:"Exploring set: mouth mirror, explorer, periodontal probe, tweezers." },
-  { q:"Contra‑angled shanks are the same as mono‑angled shanks.", answer:false, explain:"Contra‑angulation uses multiple angles to bring the edge near the handle; mono‑angled has a single angle." },
-  { q:"Most hand instruments are available as double‑ended designs.", answer:true, explain:"Many instruments provide working ends on both sides of the handle." },
-  { q:"Spoon excavators are used for removal of soft caries.", answer:true, explain:"They feature circumferential bevels and lateral cutting action." },
-  { q:"GMTs are used for gingival wall beveling in Class II preparations.", answer:true, explain:"Also used to round/bevel the axiopulpal line angle." },
-  { q:"Modified pen grasp is most commonly used for mandibular teeth.", answer:true, explain:"It offers control, reduces fatigue, and increases tactile sense." },
-  { q:"Palm‑and‑thumb grasp is commonly used for most operative procedures.", answer:false, explain:"It has very limited use; e.g., some Class III preparations." }
+    {
+        q: "Stainless steel is harder than carbon steel and maintains a sharper edge for a longer period.",
+        answer: false,
+        explain: "This is false. Carbon steel is harder and holds a sharp edge longer, while stainless steel is softer but resists corrosion."
+    },
+    {
+        q: "The working end of a cutting instrument like a chisel is correctly referred to as a 'nib'.",
+        answer: false,
+        explain: "This is false. The working end of a cutting instrument is a 'blade'. A 'nib' refers to the end of a non-cutting instrument like a condenser."
+    },
+    {
+        q: "For optimal anti-rotational design and balance, an instrument's cutting edge should be kept within 3 mm of the handle's long axis.",
+        answer: true,
+        explain: "This is true. This principle of balance, achieved through contra-angling, is crucial for instrument control."
+    },
+    {
+        q: "A straight chisel is a classic example of a bi-beveled instrument.",
+        answer: false,
+        explain: "This is false. A chisel is single-beveled, meaning its cutting edge is formed by a bevel on only one side."
+    },
+    {
+        q: "A Gingival Marginal Trimmer (GMT) comes in a single, universal design suitable for both mesial and distal surfaces.",
+        answer: false,
+        explain: "This is false. GMTs come in pairs, with one specifically designed for mesial margins and another for distal margins."
+    },
+    {
+        q: "In G.V. Black's 3-unit formula, the second number describes the length of the blade in millimeters.",
+        answer: true,
+        explain: "This is true. The formula is (1) Blade Width, (2) Blade Length, (3) Blade Angle."
+    },
+    {
+        q: "The Inverted Pen Grasp is commonly used for accessing the buccal surfaces of mandibular teeth.",
+        answer: false,
+        explain: "This is false. The Inverted Pen Grasp is used when the palm is facing upward, typically for the palatal surfaces of maxillary teeth."
+    },
+    {
+        q: "The Palm-and-Thumb grasp offers the most precise control and is widely used for most delicate operative procedures.",
+        answer: false,
+        explain: "This is false. This grasp provides more power but has very limited use and less tactile sensitivity compared to the modified pen grasp."
+    },
+    {
+        q: "A finger rest is essential for steadying the hand, preventing instrument slippage, and improving control during a procedure.",
+        answer: true,
+        explain: "This is true. The finger rest acts as a fulcrum point, providing stability for precise and safe instrument use."
+    }
 ];
 
 const saqs = [
-  // 1. Direct Answer
-  { q:"Define the term ‘tine’ in the context of explorers.", a:"The delicate tip of an explorer used for tactile examination." },
-  // 2. List / Enumeration (3 or more)
-  { q:"List four diagnostic (exploring) instruments used in operative dentistry.", a:"1) Mouth mirror 2) Explorer 3) Periodontal probe 4) Tweezers" },
-  // 3. Comparison (numbered table)
-  { q:"Compare stainless steel and carbon steel for hand instruments (edge retention and corrosion).", a:`<table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">#</th><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">Property</th><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">Stainless steel</th><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">Carbon steel</th></tr></thead><tbody><tr><td>1</td><td>Edge retention</td><td>Loses keen edge faster</td><td>Holds sharp edge longer</td></tr><tr><td>2</td><td>Corrosion tendency</td><td>Resistant; remains bright</td><td>Corrodes (rusts) if unprotected</td></tr></tbody></table>` },
-  // 4. Case‑based Scenario
-  { q:"A Class II cavity needs gingival wall beveling and rounding of the axiopulpal line angle. Which hand instrument is most appropriate?", a:"Gingival marginal trimmer (mesial/distal pair as indicated)." },
-  // 5. Direct Answer
-  { q:"State the three units in G.V. Black’s instrument formula.", a:"1) Blade width (1/10 mm) 2) Blade length (mm) 3) Blade angle (centigrades)" },
-  // 6. Direct Answer (finger rest purpose)
-  { q:"What is the purpose of a finger rest during instrument use?", a:"To steady the hand, prevent slipping, and improve control/tactile sense." }
+    {
+        q: "According to Marzouk's classification, what are the four main categories of hand instruments used in operative dentistry?",
+        a: "The four main categories are: <br>1. Diagnostic instruments <br>2. Cutting instruments <br>3. Restoring instruments <br>4. Finishing and polishing instruments"
+    },
+    {
+        q: "List the four primary uses of a mouth mirror in dentistry.",
+        a: "The four primary uses are: <br>1. <strong>Indirect vision:</strong> To see tooth surfaces that cannot be seen directly. <br>2. <strong>Light reflection:</strong> To illuminate the operating area. <br>3. <strong>Retraction:</strong> To move soft tissues like the tongue, cheeks, or lips out of the way. <br>4. <strong>Tissue protection:</strong> To guard soft tissues against injury from rotary instruments."
+    },
+    {
+        q: "Compare Stainless Steel and Carbon Steel for manufacturing dental hand instruments, focusing on hardness and corrosion resistance.",
+        a: "<table><thead><tr><th>Feature</th><th>Stainless Steel</th><th>Carbon Steel</th></tr></thead><tbody><tr><td>1. Hardness</td><td>Softer</td><td>Harder</td></tr><tr><td>2. Edge Retention</td><td>Loses sharp edge more quickly</td><td>Maintains a keen edge longer</td></tr><tr><td>3. Corrosion Resistance</td><td>Remains bright (high resistance)</td><td>Will corrode (rust) if unprotected</td></tr></tbody></table>"
+    },
+    {
+        q: "Explain what each of the three units in G.V. Black's original instrument formula represents.",
+        a: "The three units represent: <br>• <strong>First Unit:</strong> The width of the blade in tenths of a millimeter (e.g., a '10' represents 1.0 mm). <br>• <strong>Second Unit:</strong> The length of the blade in millimeters. <br>• <strong>Third Unit:</strong> The angle the blade forms with the long axis of the handle, expressed in centigrade degrees (based on a 100-degree circle)."
+    },
+    {
+        q: "A patient presents with a deep carious lesion on a mandibular molar. The decayed tissue is soft and easily removable. Which hand cutting instrument is specifically designed for the bulk removal of such soft caries?",
+        a: "A <strong>spoon excavator</strong> is the correct instrument. Its spoon-shaped, circumferentially beveled blade is ideal for scooping out soft, decayed dentin with a lateral cutting action, minimizing the risk of pulp exposure."
+    },
+    {
+        q: "Describe the finger placement in the 'Modified Pen Grasp' and identify which fingers typically provide the 'rest'.",
+        a: "In the Modified Pen Grasp, the pads of the <strong>thumb, index finger, and middle finger</strong> contact the instrument's handle. The middle finger pad provides pressure and control. The 'rest' is provided by placing the tips of the <strong>ring and little fingers</strong> on a stable surface, such as an adjacent tooth in the same arch, to steady the hand."
+    }
 ];
 
 // ----------- State -----------
@@ -376,7 +498,8 @@ mcqs.forEach((item, idx)=>{
     btn.addEventListener('click', ()=>{
       if(card.dataset.locked === 'true') return; // one attempt
       const v = Number(btn.dataset.v);
-      state.mcq[idx] = v;
+      const originalSelection = visualToOriginal[v];
+      state.mcq[idx] = originalSelection; // Store the original index
 
       // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
@@ -404,7 +527,7 @@ mcqs.forEach((item, idx)=>{
 
 // ----------- Render True/False -----------
 const tfGrid = document.getElementById('tfGrid');
- tfs.forEach((item, idx)=>{
+tfs.forEach((item, idx)=>{
   const card = document.createElement('article');
   card.className='card qcard';
   card.dataset.type='tf';
@@ -505,20 +628,18 @@ saqs.forEach((item, idx)=>{
 
 // ----------- Score + Reset -----------
 function recalc(){
-  const mcqScore = state.mcq.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const tfScore = state.tf.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const saqScore = state.saq.filter(Boolean).length;
-  const total = mcqScore + tfScore + saqScore;
+    const mcqScore = state.mcq.reduce((score, selectedOriginalIndex, i) => {
+        if (selectedOriginalIndex === null) return score;
+        return score + (selectedOriginalIndex === mcqs[i].correct ? 1 : 0);
+    }, 0);
+
+    const tfScore = state.tf.reduce((score, selectedValue, i) => {
+        if (selectedValue === null) return score;
+        return score + (selectedValue === tfs[i].answer ? 1 : 0);
+    }, 0);
+
+    const saqScore = state.saq.filter(Boolean).length;
+    const total = mcqScore + tfScore + saqScore;
 
   const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
   ids.forEach(id=>{

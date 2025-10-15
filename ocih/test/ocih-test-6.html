@@ -92,7 +92,7 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
   /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
@@ -113,6 +113,10 @@
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .answer th, .answer td { border: 1px solid var(--card-border); padding: 8px; text-align: left; }
+  .answer th { background-color: var(--glass); }
+  .answer ol, .answer ul { padding-left: 20px; }
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -169,170 +173,59 @@
   </main>
 
 <script>
-// ----------- Data (filled from Lecture 6: Tooth development & Dental/Vestibular Lamina) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q:"Epithelial–mesenchymal interaction in odontogenesis best refers to:",
-    opts:[
-      "Programmed, sequential, reciprocal signaling between oral epithelium and ectomesenchyme",
-      "Passive diffusion of nutrients from enamel organ to dental papilla",
-      "Random contact between epithelial rests and bone marrow",
-      "Unidirectional control of epithelium over mesenchyme"
-    ], correct:0, explain:"Defined as programmed, sequential and reciprocal communications between epithelium and mesenchyme essential for tooth development." },
-
-  { q:"The primitive oral cavity (stomodeum) is lined by:",
-    opts:["Simple cuboidal endoderm","Stratified squamous oral ectoderm","Pseudostratified ciliated epithelium","Mesothelium"],
-    correct:1, explain:"Stomodeum is lined by oral ectoderm (stratified squamous)." },
-
-  { q:"The buccopharyngeal membrane ruptures approximately at:",
-    opts:["End of 2nd week (14th day)","4th week (≈27th day) of IUL","7th week (≈49th day)","At birth"],
-    correct:1, explain:"Rupture occurs in the 4th week, around day 27, establishing continuity with foregut." },
-
-  { q:"Which is the correct sequence of histophysiological stages?",
-    opts:["Initiation → Proliferation → Histo-differentiation → Morpho-differentiation → Apposition",
-          "Proliferation → Initiation → Morpho-differentiation → Apposition → Histo-differentiation",
-          "Initiation → Morpho-differentiation → Histo-differentiation → Proliferation → Apposition",
-          "Apposition → Initiation → Proliferation → Histo-differentiation → Morpho-differentiation"],
-    correct:0, explain:"The classic order is Initiation, Proliferation, Histo-differentiation, Morpho-differentiation, then Apposition." },
-
-  { q:"Which set lists the morphological stages correctly?",
-    opts:["Bud → Cap → Bell (early/late)","Cap → Bud → Bell","Bell → Bud → Cap","Initiation → Bud → Bell"],
-    correct:0, explain:"Morphological stages: bud, cap, and bell (early and late)." },
-
-  { q:"The ectomesenchyme involved in odontogenesis is primarily derived from:",
-    opts:["Somitic mesoderm","Neural crest cells","Lateral plate mesoderm","Endoderm"],
-    correct:1, explain:"Oral ectomesenchyme originates mainly from cranial neural crest cells." },
-
-  { q:"At 5–6 weeks in utero, the oral ectoderm typically shows:",
-    opts:["A single layer of cuboidal cells","Basal columnar and superficial flat layers (2–3 layers)","Keratinized stratified squamous epithelium","Transitional epithelium"],
-    correct:1, explain:"The primitive oral cavity is lined by ectoderm with 2–3 layers: basal columnar & superficial flat cells." },
-
-  { q:"The primary epithelial band first appears as:",
-    opts:["A circular collar around the tongue","Two horseshoe-shaped thickenings in maxillary and mandibular arches","Multiple isolated nodules in the palate","A sagittal ridge along the midline"],
-    correct:1, explain:"Primary epithelial band forms as horseshoe-shaped bands for future arches." },
-
-  { q:"The primary epithelial band gives rise to:",
-    opts:["Dental lamina and vestibular lamina","Enamel lamellae and enamel tufts","Hertwig’s epithelial root sheath and Malassez rests","Nasmyth’s membrane and reduced enamel epithelium"],
-    correct:0, explain:"It divides into dental and vestibular laminae." },
-
-  { q:"Main function of the vestibular lamina:",
-    opts:["Induce root formation","Form the oral vestibule by epithelial degeneration/clefting","Produce enamel","Give rise to permanent molars"],
-    correct:1, explain:"Degeneration within vestibular lamina forms the groove of the oral vestibule." },
-
-  { q:"How many primary tooth buds arise from the dental lamina?",
-    opts:["16","20","24","32"],
-    correct:1, explain:"Twenty tooth buds appear in positions of the primary teeth." },
-
-  { q:"The successional lamina is best described as:",
-    opts:["A buccal extension forming the oral vestibule","A lingual extension from primary tooth germs forming permanent successors","A distal extension forming molars","A cervical loop extension forming roots"],
-    correct:1, explain:"Successional lamina extends lingually and forms incisors, canines, and premolars." },
-
-  { q:"Permanent molars develop from:",
-    opts:["Successional lamina (lingual)","Distal extension of the main dental lamina (non-successional)","Vestibular lamina","Epithelial diaphragm"],
-    correct:1, explain:"Molars are non‑successional; they arise from distal extension of dental lamina." },
-
-  { q:"The connection between the developing tooth and dental lamina begins to break down during:",
-    opts:["Bud stage","Cap stage","Bell stage","Apposition stage"],
-    correct:2, explain:"As the tooth reaches the bell stage, its connection to dental lamina breaks down." },
-
-  { q:"Breakdown of the dental lamina proceeds:",
-    opts:["Posterior to anterior","Randomly","Simultaneously in all teeth","From anterior to posterior"],
-    correct:3, explain:"Breakdown starts in anterior regions and spreads posteriorly." },
-
-  { q:"Epithelial remnants left after dental lamina degeneration are called:",
-    opts:["Rests of Malassez","Rests of Serres","Rests of Nasmyth","Rests of Glands of Serous"],
-    correct:1, explain:"Degeneration leaves islands known as the cell rests of Serres within jaws/gingiva." },
-
-  { q:"Persistence of dental lamina in the third molar region is typically around:",
-    opts:["3 years","5 years","7 years","9 years"],
-    correct:1, explain:"Slides note ~5 years in the third molar region." },
-
-  { q:"Which histophysiological stage corresponds most closely with initial formation of the dental lamina?",
-    opts:["Apposition","Initiation","Morpho-differentiation","Histo-differentiation"],
-    correct:1, explain:"Initiation stage aligns with dental lamina formation." },
-
-  { q:"Which stage is dominated by cell multiplication without marked morphologic change?",
-    opts:["Proliferation (Bud stage)","Histo-differentiation","Morpho-differentiation","Apposition"],
-    correct:0, explain:"Proliferation corresponds to the bud stage with cell multiplication." },
-
-  { q:"Predominant event of histo-differentiation is:",
-    opts:["Shaping of crown outline","Deposition of enamel and dentin","Differentiation of ameloblasts and odontoblasts","Formation of oral vestibule"],
-    correct:2, explain:"During histo‑differentiation, cells specialize into enamel- and dentin-forming cells." },
-
-  { q:"Morpho-differentiation chiefly determines:",
-    opts:["Tissue types present","Crown shape and size","Root number","Eruption path"],
-    correct:1, explain:"Morpho‑differentiation establishes the crown form prior to hard tissue deposition." },
-
-  { q:"Apposition stage involves:",
-    opts:["Neural crest migration","Matrix deposition of enamel and dentin","Formation of buccopharyngeal membrane","Vestibular clefting"],
-    correct:1, explain:"Apposition is the deposition of dental hard tissue matrices." },
-
-  { q:"If epithelial–mesenchymal signaling is disrupted early, the most likely outcome is:",
-    opts:["Hypercementosis of roots","Tooth agenesis or severe malformation","Enamel lamellae formation only","Supernumerary roots in all teeth"],
-    correct:1, explain:"Failure of reciprocal signaling often yields missing teeth or abnormal morphogenesis." },
-
-  { q:"Which of the following is NON‑successional?",
-    opts:["Permanent lateral incisor","Permanent canine","First permanent molar","Second premolar"],
-    correct:2, explain:"Molars do not replace primary teeth; they arise from distal extension." },
-
-  { q:"Successional lamina extends in which direction relative to the primary tooth germ?",
-    opts:["Buccal","Lingual","Distal","Mesial"],
-    correct:1, explain:"It is a lingual extension from the primary enamel organ/dental lamina." },
-
-  { q:"Epithelial proliferation into underlying ectomesenchyme is initiated under the influence of:",
-    opts:["Endodermal signals","Ectomesenchymal (neural crest) signals","Hypophyseal hormones exclusively","Vascular invasion"],
-    correct:1, explain:"Signals from ectomesenchyme induce epithelial thickening and invagination." },
-
-  { q:"Number of horseshoe‑shaped epithelial thickenings of the primary band:",
-    opts:["One (maxillary only)","Two (maxillary and mandibular)","Three (adds palatal horseshoe)","Four (adds lateral ridges)"],
-    correct:1, explain:"Two bands correspond to future upper and lower arches." },
-
-  { q:"The term ‘lateral dental lamina’ refers to:",
-    opts:["Vestibular portion after clefting","Primary tooth lamina after separation from developing tooth, lying lateral to successional lamina","Distal extension forming molars","Lingual extension giving permanent successors"],
-    correct:1, explain:"As connection breaks at bell stage, the primary tooth lamina becomes the lateral lamina relative to the successional one." },
-
-  { q:"Which event creates the groove separating lips/cheeks from tooth-bearing areas?",
-    opts:["Degeneration within vestibular lamina","Fusion of palatal shelves","Breakdown of dental lamina","Eruption of first molars"],
-    correct:0, explain:"Clefting/degeneration in vestibular lamina forms the oral vestibule." },
-
-  { q:"Which membrane is formed where oral ectoderm contacts foregut endoderm?",
-    opts:["Pharyngeal arch membrane","Buccopharyngeal membrane","Basement membrane of enamel organ","Meckel’s membrane"],
-    correct:1, explain:"Oral ectoderm meets endoderm to form the buccopharyngeal membrane." }
+    { q: "What is the primitive oral cavity also known as?", opts: ["Stomodeum", "Buccopharyngeal membrane", "Foregut", "Oral ectoderm"], correct: 0, explain: "The primitive oral cavity, or stomodeum, is a key structure in early facial development." },
+    { q: "When does the buccopharyngeal membrane typically rupture?", opts: ["4th week (27th day) of gestation", "6th week of gestation", "8th week of gestation", "2nd week of gestation"], correct: 0, explain: "This rupture establishes a connection between the primitive oral cavity and the foregut." },
+    { q: "What is the origin of the cells that form the craniofacial skeleton and teeth?", opts: ["Cranial neural crest cells", "Vagal neural crest cells", "Trunk neural crest cells", "Sacral neural crest cells"], correct: 0, explain: "Neural crest cells are migratory and differentiate into various structures." },
+    { q: "Which structure gives rise to both the dental lamina and the vestibular lamina?", opts: ["Primary epithelial band", "Oral ectoderm", "Ectomesenchyme", "Stomodeum"], correct: 0, explain: "The primary epithelial band is a horseshoe-shaped thickening in the primitive oral cavity." },
+    { q: "What is the function of the vestibular lamina?", opts: ["Forms the oral vestibule", "Forms all deciduous teeth", "Forms permanent molars", "Degenerates into cell rests of Serres"], correct: 0, explain: "The oral vestibule is the space between the cheeks/lips and the teeth." },
+    { q: "What are the remnants of the dental lamina found in the jaws and gingiva called?", opts: ["Cell rests of Serres", "Enamel knots", "Odontoblasts", "Ameloblasts"], correct: 0, explain: "These epithelial remnants are typically dormant but can sometimes form cysts." },
+    { q: "The interaction between which two tissue types is essential for odontogenesis?", opts: ["Epithelium and mesenchyme", "Ectoderm and endoderm", "Mesoderm and ectoderm", "Neural crest and ectoderm"], correct: 0, explain: "This is known as epithelial-mesenchymal interaction." },
+    { q: "The dental lamina is responsible for the formation of which teeth?", opts: ["All deciduous teeth and permanent molars", "Only deciduous teeth", "Only permanent teeth", "Only incisors and canines"], correct: 0, explain: "The successional lamina, an extension of the dental lamina, forms the other permanent teeth." },
+    { q: "Which of the following is considered a morphological stage of tooth development?", opts: ["Bell stage", "Initiation", "Proliferation", "Apposition"], correct: 0, explain: "Morphological stages describe the changing shape of the developing tooth." },
+    { q: "The successional lamina gives rise to which group of permanent teeth?", opts: ["Incisors, canines, and premolars", "Only molars", "All permanent teeth", "Only deciduous successors"], correct: 0, explain: "Permanent molars arise from the distal extension of the dental lamina." },
+    { q: "At what stage of intrauterine life does the primary epithelial band form?", opts: ["5-6 weeks", "7 weeks", "4th week", "9 weeks"], correct: 0, explain: "This is a crucial early step in dental development." },
+    { q: "What is the tissue underlying the oral ectoderm, containing neural crest cells, called?", opts: ["Ectomesenchyme", "Mesoderm", "Endoderm", "Stellate reticulum"], correct: 0, explain: "Ectomesenchyme plays a vital role in inducing tooth development." },
+    { q: "The primary epithelial band divides into which two structures?", opts: ["Dental lamina and Vestibular lamina", "Enamel organ and Dental papilla", "Inner and Outer enamel epithelium", "Maxillary and Mandibular processes"], correct: 0, explain: "The dental lamina is lingual, and the vestibular lamina is buccal." },
+    { q: "What is the fate of the dental lamina after tooth development is initiated?", opts: ["It starts to degenerate", "It forms the cementum", "It becomes the periodontal ligament", "It remains active throughout life"], correct: 0, explain: "Its remnants are the cell rests of Serres." },
+    { q: "How many tooth buds initially appear on the dental lamina for primary teeth?", opts: ["20", "32", "10", "16"], correct: 0, explain: "This corresponds to the 20 primary (deciduous) teeth." },
+    { q: "Which histophysiological stage involves the multiplication of cells?", opts: ["Proliferation", "Histodifferentiation", "Morphodifferentiation", "Initiation"], correct: 0, explain: "This stage leads to the growth of the tooth bud." },
+    { q: "The term for the primitive oral cavity lined by stratified squamous epithelium is:", opts: ["Stomodeum", "Pharynx", "Oropharynx", "Cardiac bulge"], correct: 0, explain: "The lining is specifically called the oral ectoderm." },
+    { q: "A persistent buccopharyngeal membrane would result in what clinical condition?", opts: ["Failure of connection between oral cavity and foregut", "Cleft lip", "Cleft palate", "Anodontia"], correct: 0, explain: "This membrane normally ruptures to connect the two cavities." },
+    { q: "The dental lamina for permanent molars develops from the:", opts: ["Distal extension of the main dental lamina", "Successional lamina", "Lateral lamina", "Vestibular lamina"], correct: 0, explain: "This is why permanent molars are considered non-successional." },
+    { q: "In which region does the dental lamina persist the longest?", opts: ["Third molar region", "Anterior incisor region", "Canine region", "Premolar region"], correct: 0, explain: "It can persist for up to 5 years in this area." },
+    { q: "The formation of the tooth's shape and size occurs during which stage?", opts: ["Morphodifferentiation", "Histodifferentiation", "Apposition", "Proliferation"], correct: 0, explain: "This stage defines the final morphology of the crown." },
+    { q: "Neural crest cells are characterized by their high capacity for:", opts: ["Migration and differentiation", "Contraction", "Secretion of enamel", "Oxygen transport"], correct: 0, explain: "These cells travel extensively to form various tissues in the head and neck." },
+    { q: "The primary epithelial band appears as two horseshoe-shaped bands corresponding to the future:", opts: ["Dental arches", "Pharyngeal arches", "Nasal placodes", "Maxillary processes"], correct: 0, explain: "One band forms in the maxilla and one in the mandible." },
+    { q: "After a primary tooth reaches the bell stage, its connection to the dental lamina is known as the:", opts: ["Lateral lamina", "Successional lamina", "General lamina", "Distal extension"], correct: 0, explain: "This describes its position relative to the developing successional lamina." },
+    { q: "Which of the following is NOT a derivative of the primary epithelial band?", opts: ["Tongue muscles", "Dental lamina", "Vestibular lamina", "Deciduous teeth"], correct: 0, explain: "The tongue develops from the pharyngeal arches, not the primary epithelial band." },
+    { q: "The deposition of the dental hard tissues (enamel and dentin) is known as:", opts: ["Apposition", "Initiation", "Calcification", "Eruption"], correct: 0, explain: "This is the final histophysiological stage before root formation." },
+    { q: "What is the correct sequence of morphological stages in tooth development?", opts: ["Dental Lamina, Bud, Cap, Bell", "Bud, Cap, Bell, Dental Lamina", "Initiation, Proliferation, Histodifferentiation, Apposition", "Cap, Bud, Bell, Dental Lamina"], correct: 0, explain: "This sequence reflects the increasing complexity of the enamel organ's shape." },
+    { q: "The oral ectoderm is composed of how many layers at 5-6 weeks I.U.?", opts: ["2-3 layers", "1 layer", "4-5 layers", "More than 5 layers"], correct: 0, explain: "It consists of a basal columnar layer and superficial flat cells." },
+    { q: "The cells of the dental lamina are epithelial in origin, derived from the:", opts: ["Oral ectoderm", "Ectomesenchyme", "Neural crest", "Endoderm"], correct: 0, explain: "The oral ectoderm is the epithelial lining of the primitive mouth." },
+    { q: "Pathologies like cysts or tumors can arise from which dormant structures?", opts: ["Cell rests of Serres", "Odontoblasts", "Stellate reticulum", "Cementoblasts"], correct: 0, explain: "These epithelial remnants have the potential to proliferate under certain stimuli." }
 ];
 
 const tfs = [
-  { q:"Epithelial–mesenchymal interactions are reciprocal and essential in odontogenesis.", answer:true, explain:"They are sequential and reciprocal communications required for tooth development." },
-  { q:"The stomodeum is lined primarily by endoderm.", answer:false, explain:"It is lined by oral ectoderm (stratified squamous)." },
-  { q:"The buccopharyngeal membrane ruptures during the 8th week of development.", answer:false, explain:"It ruptures around the 4th week (~27th day)." },
-  { q:"Permanent molars are successional teeth.", answer:false, explain:"Molars are non‑successional; they arise from distal extension of dental lamina." },
-  { q:"The successional lamina arises lingual to the primary tooth germ.", answer:true, explain:"It is a lingual extension forming permanent successors." },
-  { q:"Degeneration of the dental lamina leaves epithelial rests of Serres in the jaws and gingiva.", answer:true, explain:"These are remnants after breakdown of the lamina." },
-  { q:"Breakdown of the dental lamina begins posteriorly and proceeds anteriorly.", answer:false, explain:"It begins in anterior teeth and spreads posteriorly." },
-  { q:"The primary epithelial band is evident around 6 weeks in utero.", answer:true, explain:"Slides indicate appearance at ~6 W.I.U." },
-  { q:"At 5–6 W.I.U., the oral ectoderm typically has basal columnar and superficial flat cell layers (2–3 layers).", answer:true, explain:"This is characteristic of the primitive oral epithelium." }
+    { q: "The primitive oral cavity is lined by endoderm.", answer: false, explain: "It's lined by oral ectoderm, which is a type of stratified squamous epithelium." },
+    { q: "Epithelial-mesenchymal interaction is not required for tooth development.", answer: false, explain: "It is an essential and fundamental process for odontogenesis." },
+    { q: "The vestibular lamina is located lingually to the dental lamina.", answer: false, explain: "It is located buccally (towards the cheek/lip) to the dental lamina." },
+    { q: "All permanent teeth are successional.", answer: false, explain: "Permanent molars are not successional; they arise from the distal extension of the dental lamina." },
+    { q: "The successional lamina forms the permanent molars.", answer: false, explain: "It forms the permanent incisors, canines, and premolars. Molars have a different origin." },
+    { q: "Neural crest cells contribute to the formation of odontoblasts.", answer: true, explain: "Odontoblasts, which form dentin, differentiate from the ectomesenchymal cells derived from the neural crest." },
+    { q: "The primary epithelial band divides into the dental lamina and the successional lamina.", answer: false, explain: "It divides into the dental lamina and the vestibular lamina." },
+    { q: "The dental lamina completely disappears after tooth formation.", answer: false, explain: "It degenerates but leaves behind remnants called the cell rests of Serres." },
+    { q: "The first stage of tooth development according to morphology is the Bud Stage.", answer: false, explain: "The first morphological stage is the Dental Lamina stage, which precedes the Bud Stage." }
 ];
 
 const saqs = [
-  // 1) Direct Answer
-  { q: "Define epithelial–mesenchymal interaction in tooth development.",
-    a: "Programmed, sequential, reciprocal signaling between oral epithelium and ectomesenchyme leading to cell differentiation." },
-  // 2) List / Enumeration (≥3)
-  { q: "List the histophysiological stages of tooth development.",
-    a: "1) Initiation  2) Proliferation  3) Histo-differentiation  4) Morpho-differentiation  5) Apposition" },
-  // 3) Comparison as a numbered table
-  { q: "Compare successional teeth with non‑successional teeth.",
-    a: `<table style="width:100%;border-collapse:collapse"><thead><tr><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">#</th><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">Successional teeth</th><th style="text-align:left;border-bottom:1px solid rgba(255,255,255,0.2)">Non‑successional teeth</th></tr></thead><tbody>
-      <tr><td>1</td><td>Arise from <b>successional lamina</b> (lingual extension)</td><td>Arise from <b>distal extension</b> of main dental lamina</td></tr>
-      <tr><td>2</td><td>Replace primary teeth (incisors, canines, premolars)</td><td>Do not replace any tooth (molars)</td></tr>
-    </tbody></table>` },
-  // 4) Case-based Scenario
-  { q: "A 10‑year‑old has missing permanent premolars while primary molars were present and normal. Which developmental structure most likely failed?",
-    a: "Successional lamina (lingual extension) failed during early stages (bud/cap)." },
-  // 5) Direct, factual
-  { q: "State when the buccopharyngeal membrane typically ruptures.",
-    a: "Around the 4th week (~27th day) of intrauterine life." },
-  // 6) Enumeration (≥3)
-  { q: "List the morphological stages of crown development.",
-    a: "1) Bud  2) Cap  3) Bell (early)  4) Bell (late)" }
+    { q: "Describe the process of epithelial-mesenchymal interaction in odontogenesis.", a: "It is a series of programmed, sequential, and reciprocal communications between the oral epithelium (ectoderm) and the underlying ectomesenchyme. This interaction is essential for initiating and guiding the development of teeth, leading to the differentiation of both cell populations into specific tooth structures like enamel and dentin." },
+    { q: "List the five histophysiological stages of tooth development.", a: "<ol><li>Initiation</li><li>Proliferation</li><li>Histo-differentiation</li><li>Morpho-differentiation</li><li>Apposition</li></ol>" },
+    { q: "Compare the derivatives of the Dental Lamina and the Vestibular Lamina.", a: "<table><thead><tr><th>Feature</th><th>Dental Lamina</th><th>Vestibular Lamina</th></tr></thead><tbody><tr><td>1. Primary Function</td><td>Gives rise to all teeth</td><td>Forms the oral vestibule</td></tr><tr><td>2. Derivatives</td><td>All deciduous teeth, permanent incisors, canines, premolars (via successional lamina), and permanent molars (via distal extension)</td><td>The groove/space between the lips/cheeks and the alveolar process</td></tr><tr><td>3. Fate</td><td>Degenerates, leaving behind epithelial remnants (cell rests of Serres)</td><td>Its central cells degenerate to create a cleft, forming the vestibule</td></tr></tbody></table>" },
+    { q: "A 10-year-old patient presents with a developing cyst in the mandible, posterior to their second molar. Histological examination reveals the cyst lining is composed of epithelial cells. What is the most likely origin of these cells?", a: "The epithelial cells most likely originate from the cell rests of Serres, which are remnants of the dental lamina that persisted in the jaw after tooth development was complete. Specifically, remnants of the distal extension of the dental lamina that forms the permanent molars could be the source." },
+    { q: "What is the stomodeum, and what important event happens to its posterior boundary during the 4th week of development?", a: "The stomodeum is the primitive oral cavity, lined by oral ectoderm. During the 4th week of gestation (around day 27), the buccopharyngeal membrane, which forms its posterior boundary and separates it from the foregut, ruptures. This establishes a connection between the oral cavity and the developing digestive tract." },
+    { q: "List the four morphological stages of tooth development.", a: "<ol><li>Dental Lamina Stage</li><li>Bud Stage</li><li>Cap Stage</li><li>Bell Stage (Early and Late)</li></ol>" }
 ];
 
 // ----------- State -----------
@@ -419,7 +312,7 @@ mcqs.forEach((item, idx)=>{
 
 // ----------- Render True/False -----------
 const tfGrid = document.getElementById('tfGrid');
- tfs.forEach((item, idx)=>{
+tfs.forEach((item, idx)=>{
   const card = document.createElement('article');
   card.className='card qcard';
   card.dataset.type='tf';
@@ -489,7 +382,7 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
@@ -547,6 +440,9 @@ function recalc(){
 }
 
 document.getElementById('resetAll').addEventListener('click', ()=>{
+  if (!confirm("Are you sure you want to reset all progress?")) {
+    return;
+  }
   document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
   document.querySelectorAll('.opt-btn').forEach(b=>{
     b.classList.remove('correct','wrong');

@@ -1,0 +1,933 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Two-Column Sections</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+  .lang-en th, .lang-en td { text-align: left; }
+  .lang-ar th, .lang-ar td { text-align: right; }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  strong { color: #8b5cf6; }
+</style>
+</head>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 5</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِنْ لِسَانِي يَفْقَهُوا قَوْلِي</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Irreversible Cell Injury: Necrosis, Apoptosis, and Gangrene</b></span>
+<span class="ar"><b>الموضوع: إصابة الخلية غير القابلة للعكس: النخر، الموت المبرمج، والغرغرينا</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Introduction to Necrosis</span><span class="ar">مقدمة عن النخر</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Necrosis</strong> is defined as the local death of a large group of cells within a living body. It is a major consequence of severe and progressive irreversible cell injury.</p>
+    <p>The process of necrosis typically involves several steps:</p>
+    <ul>
+        <li><strong>Cell Swelling:</strong> The cell and its organelles begin to swell.</li>
+        <li><strong>Membrane Rupture:</strong> The cell membrane breaks down, causing cellular contents to leak out.</li>
+        <li><strong>Inflammation:</strong> The leakage of contents induces an inflammatory response in the surrounding tissue.</li>
+        <li><strong>Enzymatic Digestion:</strong> The dead cells are digested by enzymes.</li>
+    </ul>
+    <p><strong>Microscopic Changes:</strong></p>
+    <ul>
+        <li><strong>Cytoplasm:</strong> Becomes more eosinophilic (stains red) and the cell membrane appears indistinct.</li>
+        <li><strong>Nucleus:</strong> Undergoes a sequence of changes:
+            <ol>
+                <li><strong>Pyknosis:</strong> The nucleus shrinks and chromatin becomes dense.</li>
+                <li><strong>Karyorrhexis:</strong> The nucleus fragments into multiple small pieces.</li>
+                <li><strong>Karyolysis:</strong> The nucleus completely dissolves.</li>
+            </ol>
+        </li>
+    </ul>
+</div>
+<div class="ar">
+    <p>يُعرَّف <strong>النخر</strong> بأنه الموت الموضعي لمجموعة كبيرة من الخلايا داخل الجسم الحي. وهو نتيجة رئيسية لإصابة الخلية الشديدة والمتقدمة وغير القابلة للعكس.</p>
+    <p>تتضمن عملية النخر عادةً عدة خطوات:</p>
+    <ul>
+        <li><strong>تورم الخلية:</strong> تبدأ الخلية وعضياتها في الانتفاخ.</li>
+        <li><strong>تمزق الغشاء:</strong> ينهار غشاء الخلية، مما يؤدي إلى تسرب المحتويات الخلوية إلى الخارج.</li>
+        <li><strong>الالتهاب:</strong> يؤدي تسرب المحتويات إلى إثارة استجابة التهابية في الأنسجة المحيطة.</li>
+        <li><strong>الهضم الإنزيمي:</strong> يتم هضم الخلايا الميتة بواسطة الإنزيمات.</li>
+    </ul>
+    <p><strong>التغيرات المجهرية:</strong></p>
+    <ul>
+        <li><strong>السيتوبلازم:</strong> يصبح أكثر يوزينيًا (يُصبغ باللون الأحمر) ويبدو غشاء الخلية غير واضح.</li>
+        <li><strong>النواة:</strong> تمر بسلسلة من التغيرات:
+            <ol>
+                <li><strong>التكنز (Pyknosis):</strong> تنكمش النواة ويصبح الكروماتين كثيفًا.</li>
+                <li><strong>تكسر النواة (Karyorrhexis):</strong> تتفتت النواة إلى أجزاء صغيرة متعددة.</li>
+                <li><strong>انحلال النواة (Karyolysis):</strong> تذوب النواة تمامًا.</li>
+            </ol>
+        </li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 3-4 of 20</span>
+<span class="ar">المصدر: الصفحات 3-4 من 20</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Necrosis always affects large groups of cells, not single cells, and is considered a pathological process.</div><div class="ar">يؤثر النخر دائمًا على مجموعات كبيرة من الخلايا، وليس على خلايا فردية، ويعتبر عملية مرضية.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The rupture of the cell membrane is a key event in necrosis because the leakage of cellular contents is what triggers the characteristic inflammatory response.</div><div class="ar">يعد تمزق غشاء الخلية حدثًا رئيسيًا في النخر لأن تسرب المحتويات الخلوية هو ما يثير الاستجابة الالتهابية المميزة.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember the 3 nuclear stages: <strong>P</strong>yknosis (<strong>P</strong>acks/Shrinks), <strong>K</strong>aryorrhexis (c<strong>K</strong>racks/Breaks), <strong>K</strong>aryolysis (<strong>L</strong>yses/Dissolves).</div><div class="ar">تذكر المراحل النووية الثلاث: <strong>التكنز</strong> (الانكماش)، <strong>تكسر النواة</strong> (التشقق)، <strong>انحلال النواة</strong> (الذوبان).</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Coagulative & Liquefactive Necrosis</span><span class="ar">النخر التخثري والتسييلي</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>1. Coagulative Necrosis:</strong></p>
+    <ul>
+        <li>This is the <strong>most common type</strong> of necrosis.</li>
+        <li><strong>Cause:</strong> It results from a sudden cut-off of blood supply, known as <strong>ischemia</strong>.</li>
+        <li><strong>Site:</strong> Can occur in all solid organs <strong>except the brain</strong>.</li>
+        <li><strong>Gross Appearance:</strong> The affected area appears firm and opaque white.</li>
+        <li><strong>Microscopic Appearance:</strong> The basic tissue architecture is preserved for several days, but the cellular details are lost.</li>
+    </ul>
+    <p><strong>2. Liquefactive Necrosis:</strong></p>
+    <ul>
+        <li><strong>Characteristic:</strong> Involves the digestion of dead cells, transforming the tissue into a liquid, viscous mass.</li>
+        <li><strong>Cause & Site:</strong>
+            <ul>
+                <li>Common in the Central Nervous System (<strong>brain and spinal cord</strong>) following ischemic injury.</li>
+                <li>Also occurs in <strong>bacterial or fungal infections</strong>, leading to the formation of an <strong>abscess</strong> (pus).</li>
+            </ul>
+        </li>
+        <li><strong>Gross Appearance:</strong> The area appears as a creamy yellow liquid, commonly known as pus.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><strong>١. النخر التخثري (Coagulative Necrosis):</strong></p>
+    <ul>
+        <li>هذا هو <strong>النوع الأكثر شيوعًا</strong> من النخر.</li>
+        <li><strong>السبب:</strong> ينتج عن انقطاع مفاجئ لإمداد الدم، المعروف باسم <strong>نقص التروية (الإقفار)</strong>.</li>
+        <li><strong>الموقع:</strong> يمكن أن يحدث في جميع الأعضاء الصلبة <strong>باستثناء الدماغ</strong>.</li>
+        <li><strong>المظهر العياني:</strong> تبدو المنطقة المصابة صلبة وبيضاء معتمة.</li>
+        <li><strong>المظهر المجهري:</strong> يتم الحفاظ على البنية الأساسية للنسيج لعدة أيام، ولكن تفاصيل الخلايا تُفقد.</li>
+    </ul>
+    <p><strong>٢. النخر التسييلي (Liquefactive Necrosis):</strong></p>
+    <ul>
+        <li><strong>الخاصية:</strong> يتضمن هضم الخلايا الميتة، مما يحول النسيج إلى كتلة سائلة لزجة.</li>
+        <li><strong>السبب والموقع:</strong>
+            <ul>
+                <li>شائع في الجهاز العصبي المركزي (<strong>الدماغ والحبل الشوكي</strong>) بعد الإصابة بنقص التروية.</li>
+                <li>يحدث أيضًا في <strong>العدوى البكتيرية أو الفطرية</strong>، مما يؤدي إلى تكوين <strong>خراج</strong> (قيح).</li>
+            </ul>
+        </li>
+        <li><strong>المظهر العياني:</strong> تظهر المنطقة كسائل أصفر كريمي، يُعرف بالقيح.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 5-6 of 20</span>
+<span class="ar">المصدر: الصفحات 5-6 من 20</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Coagulative necrosis is the default pattern of necrosis in most tissues, but the brain is a major exception.</div><div class="ar">النخر التخثري هو النمط الافتراضي للنخر في معظم الأنسجة، ولكن الدماغ هو استثناء رئيسي.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">A heart attack (myocardial infarction) is a classic example of coagulative necrosis due to blockage of a coronary artery.</div><div class="ar">النوبة القلبية (احتشاء عضلة القلب) هي مثال كلاسيكي للنخر التخثري بسبب انسداد شريان تاجي.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Liquefactive necrosis in the brain results in the formation of a cyst, leading to permanent loss of brain tissue and function.</div><div class="ar">يؤدي النخر التسييلي في الدماغ إلى تكوين كيس، مما يؤدي إلى فقدان دائم لأنسجة المخ ووظائفه.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Other Types of Necrosis</span><span class="ar">أنواع أخرى من النخر</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>3. Caseous Necrosis:</strong></p>
+    <ul>
+        <li>The term "caseous" means <strong>"cheese-like"</strong>.</li>
+        <li><strong>Cause:</strong> It is characteristic of <strong>tuberculosis (TB) infections</strong>.</li>
+        <li><strong>Gross Appearance:</strong> The necrotic tissue is friable and white, resembling cottage cheese.</li>
+        <li><strong>Microscopic Appearance:</strong> There is a complete loss of tissue architecture and cellular details. The tissue appears as a pink, structureless, homogenous mass.</li>
+    </ul>
+    <p><strong>4. Fat Necrosis:</strong></p>
+    <ul>
+        <li>This refers to a localized area of fat destruction.</li>
+        <li><strong>Traumatic Fat Necrosis:</strong> Caused by trauma to adipose tissue, such as in the breast, leading to the rupture of fat cells.</li>
+        <li><strong>Enzymatic Fat Necrosis:</strong> Occurs in <strong>acute pancreatitis</strong> when released pancreatic enzymes liquefy fat cells in the peritoneal cavity.</li>
+    </ul>
+     <p><strong>5. Fibrinoid Necrosis:</strong></p>
+    <ul>
+        <li><strong>Site:</strong> Typically seen in the walls of <strong>blood vessels</strong> (vasculitis).</li>
+        <li><strong>Cause:</strong> Often associated with <strong>autoimmune diseases</strong>.</li>
+        <li><strong>Microscopic Appearance:</strong> Characterized by the deposition of a pink, fibrin-like material in the artery walls.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><strong>٣. النخر التجبني (Caseous Necrosis):</strong></p>
+    <ul>
+        <li>مصطلح "تجبني" يعني <strong>"شبيه بالجبن"</strong>.</li>
+        <li><strong>السبب:</strong> هو سمة مميزة لعدوى <strong>السل (TB)</strong>.</li>
+        <li><strong>المظهر العياني:</strong> يكون النسيج النخري هشًا وأبيض، يشبه الجبن القريش.</li>
+        <li><strong>المظهر المجهري:</strong> هناك فقدان كامل لبنية النسيج والتفاصيل الخلوية. يظهر النسيج ككتلة وردية، عديمة البنية، ومتجانسة.</li>
+    </ul>
+    <p><strong>٤. نخر الدهون (Fat Necrosis):</strong></p>
+    <ul>
+        <li>يشير إلى منطقة موضعية من تدمير الدهون.</li>
+        <li><strong>نخر الدهون الرضي:</strong> يحدث بسبب صدمة للأنسجة الدهنية، كما في الثدي، مما يؤدي إلى تمزق الخلايا الدهنية.</li>
+        <li><strong>نخر الدهون الإنزيمي:</strong> يحدث في <strong>التهاب البنكرياس الحاد</strong> عندما تقوم إنزيمات البنكرياس المُفرَزة بتسييل الخلايا الدهنية في التجويف البريتوني.</li>
+    </ul>
+    <p><strong>٥. النخر الفبريني (Fibrinoid Necrosis):</strong></p>
+    <ul>
+        <li><strong>الموقع:</strong> يُرى عادة في جدران <strong>الأوعية الدموية</strong> (التهاب الأوعية الدموية).</li>
+        <li><strong>السبب:</strong> غالبًا ما يرتبط بأمراض <strong>المناعة الذاتية</strong>.</li>
+        <li><strong>المظهر المجهري:</strong> يتميز بترسب مادة وردية شبيهة بالفيبرين في جدران الشرايين.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 7-9 of 20</span>
+<span class="ar">المصدر: الصفحات 7-9 من 20</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Caseous necrosis is a hallmark finding in the center of a granuloma caused by tuberculosis.</div><div class="ar">النخر التجبني هو علامة مميزة في مركز الورم الحبيبي الناجم عن مرض السل.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Enzymatic fat necrosis around the pancreas is a significant complication of severe acute pancreatitis and can be seen on imaging scans.</div><div class="ar">يعتبر نخر الدهون الإنزيمي حول البنكرياس من المضاعفات الخطيرة لالتهاب البنكرياس الحاد ويمكن رؤيته في فحوصات التصوير.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Fibrinoid necrosis is a special type that is only visible microscopically and indicates severe vessel wall injury.</div><div class="ar">النخر الفبريني هو نوع خاص لا يمكن رؤيته إلا مجهريًا ويشير إلى إصابة شديدة في جدار الوعاء الدموي.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Introduction to Apoptosis</span><span class="ar">مقدمة عن الموت المبرمج للخلية</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Apoptosis</strong> is a form of <strong>programmed cell death</strong> designed to eliminate unwanted or damaged cells. Unlike necrosis, it typically affects single cells or small groups of cells and does not trigger an inflammatory response.</p>
+    <p>The process of apoptosis is highly organized and involves the following morphological steps:</p>
+    <ul>
+        <li><strong>Cell Shrinkage:</strong> The cell becomes smaller and more compact.</li>
+        <li><strong>Nuclear Fragmentation:</strong> The nucleus breaks down into fragments.</li>
+        <li><strong>Formation of Apoptotic Bodies:</strong> The cell breaks up into small, membrane-bound fragments called apoptotic bodies. These bodies contain portions of the cytoplasm and nucleus.</li>
+        <li><strong>Phagocytosis:</strong> These apoptotic bodies are quickly engulfed and cleared by phagocytes, such as macrophages, preventing the leakage of cellular contents.</li>
+    </ul>
+    <p>A key feature is that apoptosis is a "clean" process. Because the cell membrane remains intact until the very end, there is <strong>no inflammation</strong>, which distinguishes it from the "messy" process of necrosis.</p>
+</div>
+<div class="ar">
+    <p><strong>الموت المبرمج للخلية (Apoptosis)</strong> هو شكل من أشكال <strong>الموت الخلوي المبرمج</strong> المصمم للتخلص من الخلايا غير المرغوب فيها أو التالفة. على عكس النخر، فإنه يؤثر عادةً على خلايا فردية أو مجموعات صغيرة من الخلايا ولا يثير استجابة التهابية.</p>
+    <p>عملية الموت المبرمج منظمة للغاية وتتضمن الخطوات الشكلية التالية:</p>
+    <ul>
+        <li><strong>انكماش الخلية:</strong> تصبح الخلية أصغر وأكثر اكتنازًا.</li>
+        <li><strong>تجزئة النواة:</strong> تتكسر النواة إلى أجزاء.</li>
+        <li><strong>تكوين الأجسام المبرمجة:</strong> تتفكك الخلية إلى شظايا صغيرة محاطة بغشاء تسمى الأجسام المبرمجة. تحتوي هذه الأجسام على أجزاء من السيتوبلازم والنواة.</li>
+        <li><strong>البلعمة:</strong> يتم ابتلاع هذه الأجسام المبرمجة بسرعة وإزالتها بواسطة الخلايا البلعمية، مثل البلاعم الكبيرة، مما يمنع تسرب محتويات الخلية.</li>
+    </ul>
+    <p>السمة الرئيسية هي أن الموت المبرمج عملية "نظيفة". نظرًا لأن غشاء الخلية يظل سليمًا حتى النهاية، <strong>لا يوجد التهاب</strong>، وهو ما يميزه عن عملية النخر "الفوضوية".</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 10, 12 of 20</span>
+<span class="ar">المصدر: الصفحات 10, 12 من 20</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Apoptosis affects single cells or small clusters, whereas necrosis affects large areas of tissue.</div><div class="ar">يؤثر الموت المبرمج على خلايا فردية أو مجموعات صغيرة، بينما يؤثر النخر على مناطق واسعة من الأنسجة.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">This process is often called "cell suicide" because it is an active, energy-dependent, and tightly regulated process initiated by the cell itself.</div><div class="ar">غالبًا ما تسمى هذه العملية "انتحار الخلية" لأنها عملية نشطة تعتمد على الطاقة ومنظمة بإحكام تبدأها الخلية بنفسها.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong>A</strong>poptosis = <strong>A</strong>way (cleanly removed).<br><strong>N</strong>ecrosis = <strong>N</strong>asty (messy and inflamed).</div><div class="ar"><strong>الموت المبرمج</strong> = <strong>إزالة</strong> (بشكل نظيف).<br><strong>النخر</strong> = <strong>نتن</strong> (فوضوي وملتهب).</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Causes & Mechanism of Apoptosis</span><span class="ar">أسباب وآلية الموت المبرمج</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Apoptosis can be triggered by both normal physiological processes and pathological conditions.</p>
+    <p><strong>A. Physiological Causes:</strong></p>
+    <ul>
+        <li><strong>Embryogenesis:</strong> Shaping organs and removing structures like the webbing between fingers.</li>
+        <li><strong>Removing Old Cells:</strong> For example, neutrophils in an acute inflammatory response die via apoptosis after their job is done.</li>
+        <li><strong>Eliminating Harmful Cells:</strong> Removing self-reactive lymphocytes to prevent autoimmune diseases.</li>
+    </ul>
+    <p><strong>B. Pathological Causes:</strong></p>
+    <ul>
+        <li><strong>DNA Damage:</strong> Caused by radiation or cytotoxic anticancer drugs, which triggers apoptosis if the damage is beyond repair.</li>
+        <li><strong>Abnormal Cells:</strong> Eliminating cells infected by viruses (like HIV) or transplanted cells that are rejected.</li>
+    </ul>
+    <p><strong>Molecular Mechanism:</strong></p>
+    <p>Apoptosis is controlled by two main pathways:</p>
+    <ol>
+        <li><strong>Intrinsic (Mitochondrial) Pathway:</strong> This is the <strong>major pathway</strong>. Lack of survival signals or DNA damage leads to the activation of pro-apoptotic proteins (<strong>Bax, Bak</strong>), which punch holes in the mitochondrial membrane. This allows <strong>cytochrome c</strong> to leak out, activating enzymes called <strong>caspases</strong> that execute cell death. In healthy cells, anti-apoptotic proteins like <strong>Bcl-2</strong> prevent this leakage.</li>
+        <li><strong>Extrinsic (Death Receptor) Pathway:</strong> Activated by external signals binding to "death receptors" on the cell surface.</li>
+    </ol>
+</div>
+<div class="ar">
+    <p>يمكن أن ينشأ الموت المبرمج بسبب عمليات فسيولوجية طبيعية وحالات مرضية.</p>
+    <p><strong>أ. الأسباب الفسيولوجية:</strong></p>
+    <ul>
+        <li><strong>التكون الجنيني:</strong> تشكيل الأعضاء وإزالة الهياكل مثل الأغشية بين الأصابع.</li>
+        <li><strong>إزالة الخلايا القديمة:</strong> على سبيل المثال، تموت الخلايا المتعادلة (النيتروفيل) في الاستجابة الالتهابية الحادة عن طريق الموت المبرمج بعد انتهاء وظيفتها.</li>
+        <li><strong>التخلص من الخلايا الضارة:</strong> إزالة الخلايا اللمفاوية ذاتية التفاعل لمنع أمراض المناعة الذاتية.</li>
+    </ul>
+    <p><strong>ب. الأسباب المرضية:</strong></p>
+    <ul>
+        <li><strong>تلف الحمض النووي:</strong> ناتج عن الإشعاع أو الأدوية المضادة للسرطان السامة للخلايا، والتي تحفز الموت المبرمج إذا كان الضرر لا يمكن إصلاحه.</li>
+        <li><strong>الخلايا غير الطبيعية:</strong> التخلص من الخلايا المصابة بالفيروسات (مثل فيروس نقص المناعة البشرية) أو الخلايا المزروعة التي يتم رفضها.</li>
+    </ul>
+    <p><strong>الآلية الجزيئية:</strong></p>
+    <p>يتم التحكم في الموت المبرمج عن طريق مسارين رئيسيين:</p>
+    <ol>
+        <li><strong>المسار الداخلي (الميتوكوندري):</strong> هذا هو <strong>المسار الرئيسي</strong>. يؤدي نقص إشارات البقاء أو تلف الحمض النووي إلى تنشيط البروتينات المحفزة للموت المبرمج (<strong>Bax, Bak</strong>)، التي تثقب غشاء الميتوكوندريا. هذا يسمح بتسرب <strong>السيتوكروم سي</strong>، مما ينشط إنزيمات تسمى <strong>الكاسبيسات</strong> التي تنفذ موت الخلية. في الخلايا السليمة، تمنع البروتينات المضادة للموت المبرمج مثل <strong>Bcl-2</strong> هذا التسرب.</li>
+        <li><strong>المسار الخارجي (مستقبلات الموت):</strong> يتم تنشيطه بواسطة إشارات خارجية ترتبط بـ "مستقبلات الموت" على سطح الخلية.</li>
+    </ol>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 11, 13-14 of 20</span>
+<span class="ar">المصدر: الصفحات 11, 13-14 من 20</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">During fetal development, apoptosis carves out the spaces between fingers and toes by eliminating the cells in the webbing.</div><div class="ar">أثناء التطور الجنيني، يقوم الموت المبرمج بنحت الفراغات بين أصابع اليدين والقدمين عن طريق التخلص من الخلايا في الأغشية.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Many chemotherapy drugs are designed to cause extensive DNA damage in rapidly dividing cancer cells, pushing them into apoptosis.</div><div class="ar">تم تصميم العديد من أدوية العلاج الكيميائي لإحداث أضرار جسيمة في الحمض النووي للخلايا السرطانية سريعة الانقسام، مما يدفعها إلى الموت المبرمج.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The intrinsic (mitochondrial) pathway is the most common mechanism of apoptosis in mammalian cells.</div><div class="ar">المسار الداخلي (الميتوكوندري) هو الآلية الأكثر شيوعًا للموت المبرمج في خلايا الثدييات.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Necrosis vs. Apoptosis: A Comparison</span><span class="ar">مقارنة بين النخر والموت المبرمج</span></h2>
+<div class="sec-body">
+<div class="en"><p>Understanding the key differences between necrosis and apoptosis is fundamental to pathology.</p></div>
+<div class="ar"><p>فهم الفروق الرئيسية بين النخر والموت المبرمج أمر أساسي في علم الأمراض.</p></div>
+<div aria-label="Scrollable table" class="table-wrap">
+<table>
+<thead>
+<tr>
+<th><span class="en">Feature</span><span class="ar">الخاصية</span></th>
+<th><span class="en">Necrosis</span><span class="ar">النخر</span></th>
+<th><span class="en">Apoptosis</span><span class="ar">الموت المبرمج</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="en">Cell Size</span><span class="ar">حجم الخلية</span></td>
+<td><span class="en">Enlarged (swelling)</span><span class="ar">متضخمة (تورم)</span></td>
+<td><span class="en">Reduced (shrinkage)</span><span class="ar">متقلصة (انكماش)</span></td>
+</tr>
+<tr>
+<td><span class="en">Nucleus</span><span class="ar">النواة</span></td>
+<td><span class="en">Pyknosis, karyorrhexis, karyolysis</span><span class="ar">تكنز، تكسر، انحلال</span></td>
+<td><span class="en">Fragmentation</span><span class="ar">تجزئة</span></td>
+</tr>
+<tr>
+<td><span class="en">Plasma Membrane</span><span class="ar">غشاء البلازما</span></td>
+<td><span class="en">Disrupted (ruptured)</span><span class="ar">متمزق (منفجر)</span></td>
+<td><span class="en">Intact</span><span class="ar">سليم</span></td>
+</tr>
+<tr>
+<td><span class="en">Cellular Contents</span><span class="ar">المحتويات الخلوية</span></td>
+<td><span class="en">Leak out of cell (enzymatic digestion)</span><span class="ar">تتسرب من الخلية (هضم إنزيمي)</span></td>
+<td><span class="en">Intact; released in apoptotic bodies</span><span class="ar">سليمة؛ تُطلق في أجسام مبرمجة</span></td>
+</tr>
+<tr>
+<td><span class="en">Inflammation</span><span class="ar">الالتهاب</span></td>
+<td><span class="en">Inflammatory response present</span><span class="ar">توجد استجابة التهابية</span></td>
+<td><span class="en">No inflammatory response</span><span class="ar">لا توجد استجابة التهابية</span></td>
+</tr>
+<tr>
+<td><span class="en">Physiologic/Pathologic Role</span><span class="ar">الدور الفسيولوجي/المرضي</span></td>
+<td><span class="en">Always Pathologic</span><span class="ar">دائماً مرضي</span></td>
+<td><span class="en">Can be physiologic or pathologic</span><span class="ar">يمكن أن يكون فسيولوجياً أو مرضياً</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 15 of 20</span>
+<span class="ar">المصدر: الصفحة 15 من 20</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Focus on two key distinctions for exams: cell size (swelling in necrosis vs. shrinkage in apoptosis) and inflammation (present in necrosis vs. absent in apoptosis).</div><div class="ar">ركز على فرقين رئيسيين للامتحانات: حجم الخلية (تورم في النخر مقابل انكماش في الموت المبرمج) والالتهاب (موجود في النخر مقابل غائب في الموت المبرمج).</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Necrosis = Swelling.<br>Apoptosis = Shrinkage.</div><div class="ar">النخر = تورم.<br>الموت المبرمج = انكماش.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Distinguishing between these two forms of cell death is crucial for diagnosing diseases. For example, inflammation from necrosis can cause further tissue damage.</div><div class="ar">التمييز بين هذين الشكلين من موت الخلايا أمر حاسم لتشخيص الأمراض. على سبيل المثال، يمكن أن يسبب الالتهاب الناتج عن النخر المزيد من تلف الأنسجة.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Gangrene: Pathogenesis and Types</span><span class="ar">الغرغرينا: الآلية المرضية والأنواع</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Gangrene</strong> is defined as massive tissue necrosis that is followed by <strong>putrefaction</strong> (decomposition).</p>
+    <p><strong>Pathogenesis:</strong> Putrefaction is caused by saprophytic bacteria that break down proteins in the necrotic tissue. This process liberates <strong>hydrogen sulphide (H₂S)</strong>, which gives the tissue a foul odor. The hydrogen sulphide then combines with iron from hemoglobin to form <strong>iron sulphide</strong>, which stains the gangrenous tissue black.</p>
+    <p>There are two main types based on appearance and cause:</p>
+    <div aria-label="Scrollable table" class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th><span class="en">Feature</span><span class="ar">الخاصية</span></th>
+                    <th><span class="en">Dry Gangrene</span><span class="ar">الغرغرينا الجافة</span></th>
+                    <th><span class="en">Moist (Wet) Gangrene</span><span class="ar">الغرغرينا الرطبة</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="en">Cause</span><span class="ar">السبب</span></td>
+                    <td><span class="en">Gradual arterial occlusion</span><span class="ar">انسداد شرياني تدريجي</span></td>
+                    <td><span class="en">Sudden arterial AND venous occlusion</span><span class="ar">انسداد شرياني ووريدي مفاجئ</span></td>
+                </tr>
+                <tr>
+                    <td><span class="en">Site</span><span class="ar">الموقع</span></td>
+                    <td><span class="en">Exposed parts, limbs (e.g., foot)</span><span class="ar">الأجزاء المكشوفة، الأطراف (مثل القدم)</span></td>
+                    <td><span class="en">Internal organs (e.g., intestine)</span><span class="ar">الأعضاء الداخلية (مثل الأمعاء)</span></td>
+                </tr>
+                <tr>
+                    <td><span class="en">Appearance</span><span class="ar">المظهر</span></td>
+                    <td><span class="en">Black, dry, mummified</span><span class="ar">سوداء، جافة، محنطة</span></td>
+                    <td><span class="en">Black, swollen, congested, edematous</span><span class="ar">سوداء، متورمة، محتقنة، وذمية</span></td>
+                </tr>
+                <tr>
+                    <td><span class="en">Line of Demarcation</span><span class="ar">خط الفصل</span></td>
+                    <td><span class="en">Clearly marked red line separating healthy and dead tissue</span><span class="ar">خط أحمر واضح يفصل بين النسيج السليم والميت</span></td>
+                    <td><span class="en">Absent or masked by congestion</span><span class="ar">غائب أو محجوب بالاحتقان</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="ar">
+    <p>تُعرَّف <strong>الغرغرينا</strong> بأنها نخر نسيجي هائل يتبعه <strong>تعفن</strong> (تحلل).</p>
+    <p><strong>الآلية المرضية:</strong> يحدث التعفن بسبب البكتيريا الرمية التي تحلل البروتينات في النسيج النخري. هذه العملية تطلق <strong>كبريتيد الهيدروجين (H₂S)</strong>، الذي يعطي النسيج رائحة كريهة. يتحد كبريتيد الهيدروجين بعد ذلك مع الحديد من الهيموغلوبين لتكوين <strong>كبريتيد الحديد</strong>، الذي يصبغ النسيج الغنغريني باللون الأسود.</p>
+    <p>هناك نوعان رئيسيان بناءً على المظهر والسبب:</p>
+    <div aria-label="Scrollable table" class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th><span class="ar">الخاصية</span><span class="en">Feature</span></th>
+                    <th><span class="ar">الغرغرينا الجافة</span><span class="en">Dry Gangrene</span></th>
+                    <th><span class="ar">الغرغرينا الرطبة</span><span class="en">Moist (Wet) Gangrene</span></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><span class="ar">السبب</span><span class="en">Cause</span></td>
+                    <td><span class="ar">انسداد شرياني تدريجي</span><span class="en">Gradual arterial occlusion</span></td>
+                    <td><span class="ar">انسداد شرياني ووريدي مفاجئ</span><span class="en">Sudden arterial AND venous occlusion</span></td>
+                </tr>
+                <tr>
+                    <td><span class="ar">الموقع</span><span class="en">Site</span></td>
+                    <td><span class="ar">الأجزاء المكشوفة، الأطراف (مثل القدم)</span><span class="en">Exposed parts, limbs (e.g., foot)</span></td>
+                    <td><span class="ar">الأعضاء الداخلية (مثل الأمعاء)</span><span class="en">Internal organs (e.g., intestine)</span></td>
+                </tr>
+                <tr>
+                    <td><span class="ar">المظهر</span><span class="en">Appearance</span></td>
+                    <td><span class="ar">سوداء، جافة، محنطة</span><span class="en">Black, dry, mummified</span></td>
+                    <td><span class="ar">سوداء، متورمة، محتقنة، وذمية</span><span class="en">Black, swollen, congested, edematous</span></td>
+                </tr>
+                <tr>
+                    <td><span class="ar">خط الفصل</span><span class="en">Line of Demarcation</span></td>
+                    <td><span class="ar">خط أحمر واضح يفصل بين النسيج السليم والميت</span><span class="en">Clearly marked red line separating healthy and dead tissue</span></td>
+                    <td><span class="ar">غائب أو محجوب بالاحتقان</span><span class="en">Absent or masked by congestion</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 16-18 of 20</span>
+<span class="ar">المصدر: الصفحات 16-18 من 20</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The foul smell of gangrene is due to hydrogen sulphide (H₂S) gas produced by decomposing bacteria. The black color comes from iron sulphide.</div><div class="ar">الرائحة الكريهة للغرغرينا ناتجة عن غاز كبريتيد الهيدروجين (H₂S) الذي تنتجه البكتيريا المتحللة. أما اللون الأسود فيأتي من كبريتيد الحديد.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Dry gangrene is often seen in patients with severe peripheral artery disease or uncontrolled diabetes, affecting the toes and feet.</div><div class="ar">تُرى الغرغرينا الجافة غالبًا في المرضى الذين يعانون من مرض الشرايين المحيطية الشديد أو مرض السكري غير المنضبط، وتؤثر على أصابع القدمين والقدمين.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Moist gangrene is a medical emergency because the infection and toxins can spread quickly through the bloodstream, leading to sepsis and death.</div><div class="ar">تعتبر الغرغرينا الرطبة حالة طبية طارئة لأن العدوى والسموم يمكن أن تنتشر بسرعة عبر مجرى الدم، مما يؤدي إلى تعفن الدم والوفاة.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Specialized Types of Gangrene</span><span class="ar">أنواع متخصصة من الغرغرينا</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Infective Gangrene:</strong></p>
+    <ul>
+        <li>In this type, bacteria are the cause of both the initial tissue necrosis (via toxins) and the subsequent putrefaction.</li>
+        <li><strong>Examples:</strong>
+            <ul>
+                <li><strong>Bed sores:</strong> Necrosis in pressure areas in debilitated patients.</li>
+                <li><strong>Cancrum oris (Noma):</strong> A severe infective gangrene of the cheeks, typically seen in malnourished children. It is caused by bacteria like <em>Treponema vincenti</em> and <em>Bacillus fusiformis</em>.</li>
+            </ul>
+        </li>
+    </ul>
+    <p><strong>Gas Gangrene:</strong></p>
+    <ul>
+        <li>This is a deadly form of gangrene where a bacterial infection produces <strong>gas within the tissues</strong>.</li>
+        <li><strong>Cause:</strong> It is usually caused by the bacterium <strong><em>Clostridium perfringens</em></strong>, which thrives in low-oxygen environments.</li>
+        <li>It is most common after severe trauma, especially <strong>crush accidents</strong>, where deep muscle tissue is damaged and contaminated.</li>
+        <li>This is considered the <strong>most dangerous</strong> type due to rapid spread and severe toxemia.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><strong>الغرغرينا الإنتانية:</strong></p>
+    <ul>
+        <li>في هذا النوع، تكون البكتيريا هي سبب كل من النخر النسيجي الأولي (عبر السموم) والتعفن اللاحق.</li>
+        <li><strong>أمثلة:</strong>
+            <ul>
+                <li><strong>قرح الفراش:</strong> نخر في مناطق الضغط لدى المرضى الضعفاء.</li>
+                <li><strong>آكلة الفم (Cancrum oris):</strong> غرغرينا إنتانية شديدة في الخدين، تُرى عادةً في الأطفال الذين يعانون من سوء التغذية. تسببها بكتيريا مثل <em>Treponema vincenti</em> و <em>Bacillus fusiformis</em>.</li>
+            </ul>
+        </li>
+    </ul>
+    <p><strong>الغرغرينا الغازية:</strong></p>
+    <ul>
+        <li>هذا شكل مميت من الغرغرينا حيث تنتج عدوى بكتيرية <strong>غازًا داخل الأنسجة</strong>.</li>
+        <li><strong>السبب:</strong> تسببها عادةً بكتيريا <strong><em>Clostridium perfringens</em></strong>، التي تزدهر في البيئات منخفضة الأكسجين.</li>
+        <li>هي الأكثر شيوعًا بعد الصدمات الشديدة، خاصة <strong>حوادث السحق</strong>، حيث تتضرر الأنسجة العضلية العميقة وتتلوث.</li>
+        <li>تعتبر هذه النوعية <strong>الأكثر خطورة</strong> بسبب الانتشار السريع والتسمم الشديد.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 19 of 20</span>
+<span class="ar">المصدر: الصفحة 19 من 20</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Cancrum oris (Noma) is a devastating infective gangrene that can destroy the soft and hard tissues of the face in malnourished children.</div><div class="ar">آكلة الفم (Noma) هي غرغرينا إنتانية مدمرة يمكن أن تدمر الأنسجة الرخوة والصلبة في الوجه لدى الأطفال الذين يعانون من سوء التغذية.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Gas gangrene is a life-threatening emergency. The gas production can be felt as a crackling sensation under the skin (crepitus) and requires immediate surgical debridement and antibiotics.</div><div class="ar">الغرغرينا الغازية هي حالة طارئة تهدد الحياة. يمكن الشعور بإنتاج الغاز كإحساس فرقعة تحت الجلد (فرقعة) ويتطلب تنضيرًا جراحيًا فوريًا ومضادات حيوية.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en"><em>Clostridium perfringens</em>, the cause of gas gangrene, is an anaerobic bacterium, meaning it grows best in the absence of oxygen.</div><div class="ar">بكتيريا <em>Clostridium perfringens</em>، المسببة للغرغرينا الغازية، هي بكتيريا لا هوائية، مما يعني أنها تنمو بشكل أفضل في غياب الأكسجين.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Summary of Key Concepts</span><span class="ar">ملخص المفاهيم الرئيسية</span></h2>
+<div class="sec-body">
+<div class="en">
+    <ul>
+        <li>Irreversible cell death occurs in two main forms: <strong>necrosis</strong> and <strong>apoptosis</strong>.</li>
+        <li><strong>Necrosis</strong> is a "messy" pathological process involving cell swelling, membrane rupture, and inflammation. It has several distinct types:
+            <ul>
+                <li><strong>Coagulative:</strong> Most common, due to ischemia (e.g., heart attack).</li>
+                <li><strong>Liquefactive:</strong> In the brain or in abscesses.</li>
+                <li><strong>Caseous:</strong> "Cheese-like" appearance, characteristic of TB.</li>
+                <li><strong>Fat:</strong> Can be traumatic or enzymatic (e.g., pancreatitis).</li>
+                <li><strong>Fibrinoid:</strong> In blood vessels, associated with autoimmune disease.</li>
+            </ul>
+        </li>
+        <li><strong>Apoptosis</strong> is a "clean," programmed cell death involving cell shrinkage and the formation of apoptotic bodies, with no inflammation. It serves both physiological and pathological roles.</li>
+        <li><strong>Gangrene</strong> is necrosis complicated by bacterial putrefaction, leading to a foul smell and black discoloration. Key types include Dry (arterial occlusion) and Moist (arterial/venous occlusion), with Moist Gangrene being a medical emergency.</li>
+    </ul>
+</div>
+<div class="ar">
+    <ul>
+        <li>يحدث موت الخلية غير القابل للعكس في شكلين رئيسيين: <strong>النخر</strong> و<strong>الموت المبرمج</strong>.</li>
+        <li><strong>النخر</strong> هو عملية مرضية "فوضوية" تتضمن تورم الخلية، تمزق الغشاء، والالتهاب. له عدة أنواع مميزة:
+            <ul>
+                <li><strong>التخثري:</strong> الأكثر شيوعًا، بسبب نقص التروية (مثل النوبة القلبية).</li>
+                <li><strong>التسييلي:</strong> في الدماغ أو في الخراجات.</li>
+                <li><strong>التجبني:</strong> مظهر "شبيه بالجبن"، مميز لمرض السل.</li>
+                <li><strong>الدهني:</strong> يمكن أن يكون رضياً أو إنزيمياً (مثل التهاب البنكرياس).</li>
+                <li><strong>الفبريني:</strong> في الأوعية الدموية، مرتبط بأمراض المناعة الذاتية.</li>
+            </ul>
+        </li>
+        <li><strong>الموت المبرمج</strong> هو موت خلوي "نظيف" ومبرمج يتضمن انكماش الخلية وتكوين أجسام مبرمجة، بدون التهاب. يخدم أدوارًا فسيولوجية ومرضية.</li>
+        <li><strong>الغرغرينا</strong> هي نخر معقد بالتعفن البكتيري، مما يؤدي إلى رائحة كريهة وتلون أسود. تشمل الأنواع الرئيسية الغرغرينا الجافة (انسداد شرياني) والرطبة (انسداد شرياني/وريدي)، وتعتبر الغرغرينا الرطبة حالة طبية طارئة.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 2-19 of 20</span>
+<span class="ar">المصدر: الصفحات 2-19 من 20</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">For exams, focus on the defining characteristics of each type of necrosis (e.g., Coagulative -> Ischemia; Caseous -> TB) and the core differences between necrosis and apoptosis.</div><div class="ar">للاختبارات، ركز على الخصائص المميزة لكل نوع من أنواع النخر (مثل: التخثري -> نقص التروية؛ التجبني -> السل) والفروق الأساسية بين النخر والموت المبرمج.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding the different pathways of cell death is fundamental to pathology, as these processes are the basis for a vast number of human diseases, from heart attacks to cancer to infections.</div><div class="ar">فهم المسارات المختلفة لموت الخلايا هو أساس علم الأمراض، حيث أن هذه العمليات هي أساس لعدد كبير من الأمراض البشرية، من النوبات القلبية إلى السرطان والعدوى.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Recognizing the different types of gangrene is critical for prompt and appropriate treatment. Dry gangrene may be managed conservatively, while moist and gas gangrene require urgent surgical intervention.</div><div class="ar">التعرف على الأنواع المختلفة من الغرغرينا أمر حاسم للعلاج الفوري والمناسب. يمكن إدارة الغرغرينا الجافة بشكل متحفظ، بينما تتطلب الغرغرينا الرطبة والغازية تدخلاً جراحياً عاجلاً.</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Necrosis / النخر</div><div class="content" hidden=""><div class="en">The death of a large group of cells within a living body, caused by injury and always accompanied by inflammation.</div><div class="ar">موت مجموعة كبيرة من الخلايا داخل جسم حي، ناتج عن إصابة ودائماً ما يكون مصحوبًا بالتهاب.</div></div></div>
+<div class="card"><div class="head">Apoptosis / الموت المبرمج</div><div class="content" hidden=""><div class="en">Programmed, controlled cell death of single cells that avoids inflammation. Often called "cell suicide".</div><div class="ar">موت خلوي مبرمج ومنظم لخلايا فردية يتجنب الالتهاب. غالبًا ما يطلق عليه "انتحار الخلية".</div></div></div>
+<div class="card"><div class="head">Pyknosis / التكنز</div><div class="content" hidden=""><div class="en">The irreversible condensation and shrinking of the nucleus in a cell undergoing necrosis.</div><div class="ar">التكثف والانكماش غير القابل للعكس للنواة في خلية تخضع للنخر.</div></div></div>
+<div class="card"><div class="head">Karyorrhexis / تكسر النواة</div><div class="content" hidden=""><div class="en">The fragmentation of the nucleus into smaller pieces during necrosis.</div><div class="ar">تفتت النواة إلى قطع أصغر أثناء عملية النخر.</div></div></div>
+<div class="card"><div class="head">Karyolysis / انحلال النواة</div><div class="content" hidden=""><div class="en">The complete dissolution of the nucleus, which is the final stage of nuclear destruction in necrosis.</div><div class="ar">الذوبان الكامل للنواة، وهي المرحلة النهائية لتدمير النواة في النخر.</div></div></div>
+<div class="card"><div class="head">Coagulative Necrosis / النخر التخثري</div><div class="content" hidden=""><div class="en">The most common type of necrosis, caused by ischemia, where tissue architecture is preserved but cells are dead.</div><div class="ar">النوع الأكثر شيوعًا من النخر، ناتج عن نقص التروية، حيث يتم الحفاظ على بنية النسيج ولكن الخلايا ميتة.</div></div></div>
+<div class="card"><div class="head">Liquefactive Necrosis / النخر التسييلي</div><div class="content" hidden=""><div class="en">Necrosis where dead tissue is digested into a liquid mass. Typical in the brain and in bacterial abscesses.</div><div class="ar">نخر يتم فيه هضم النسيج الميت إلى كتلة سائلة. نموذجي في الدماغ وفي الخراجات البكتيرية.</div></div></div>
+<div class="card"><div class="head">Gangrene / الغرغرينا</div><div class="content" hidden=""><div class="en">Massive tissue necrosis followed by putrefaction (decomposition by bacteria).</div><div class="ar">نخر نسيجي هائل يتبعه تعفن (تحلل بواسطة البكتيريا).</div></div></div>
+<div class="card"><div class="head">Putrefaction / التعفن</div><div class="content" hidden=""><div class="en">The decomposition of necrotic tissue by saprophytic bacteria, producing a foul smell and black discoloration.</div><div class="ar">تحلل النسيج النخري بواسطة البكتيريا الرمية، مما ينتج عنه رائحة كريهة وتلون أسود.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — What are the two main forms of irreversible cell death?</span><span class="ar">١ — ما هما الشكلان الرئيسيان لموت الخلية غير القابل للعكس؟</span></div><div class="content" hidden=""><span class="en">A: Necrosis and Apoptosis.</span><span class="ar">ج: النخر والموت المبرمج.</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — Name the three nuclear changes seen in necrosis.</span><span class="ar">٢ — اذكر التغيرات النووية الثلاث التي تُرى في النخر.</span></div><div class="content" hidden=""><span class="en">A: Pyknosis (shrinkage), Karyorrhexis (fragmentation), and Karyolysis (dissolution).</span><span class="ar">ج: التكنز (الانكماش)، تكسر النواة (التفتت)، وانحلال النواة (الذوبان).</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — What type of necrosis is most common and caused by ischemia?</span><span class="ar">٣ — ما هو نوع النخر الأكثر شيوعًا والناتج عن نقص التروية؟</span></div><div class="content" hidden=""><span class="en">A: Coagulative necrosis.</span><span class="ar">ج: النخر التخثري.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — Which type of necrosis characteristically occurs in the brain?</span><span class="ar">٤ — أي نوع من النخر يحدث بشكل مميز في الدماغ؟</span></div><div class="content" hidden=""><span class="en">A: Liquefactive necrosis.</span><span class="ar">ج: النخر التسييلي.</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — Tuberculosis infection is associated with which type of necrosis?</span><span class="ar">٥ — ترتبط عدوى السل بأي نوع من النخر؟</span></div><div class="content" hidden=""><span class="en">A: Caseous necrosis.</span><span class="ar">ج: النخر التجبني.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — Is an inflammatory response present in apoptosis?</span><span class="ar">٦ — هل توجد استجابة التهابية في الموت المبرمج؟</span></div><div class="content" hidden=""><span class="en">A: No, apoptosis is a "clean" process without inflammation.</span><span class="ar">ج: لا، الموت المبرمج عملية "نظيفة" بدون التهاب.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — What is the major molecular pathway for apoptosis?</span><span class="ar">٧ — ما هو المسار الجزيئي الرئيسي للموت المبرمج؟</span></div><div class="content" hidden=""><span class="en">A: The Intrinsic (Mitochondrial) pathway.</span><span class="ar">ج: المسار الداخلي (الميتوكوندري).</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — What causes the characteristic black color in gangrene?</span><span class="ar">٨ — ما الذي يسبب اللون الأسود المميز في الغرغرينا؟</span></div><div class="content" hidden=""><span class="en">A: Iron sulphide, formed when hydrogen sulphide from bacteria reacts with iron from hemoglobin.</span><span class="ar">ج: كبريتيد الحديد، الذي يتكون عندما يتفاعل كبريتيد الهيدروجين من البكتيريا مع الحديد من الهيموغلوبين.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What bacterium is commonly associated with gas gangrene?</span><span class="ar">٩ — ما هي البكتيريا التي ترتبط عادة بالغرغرينا الغازية؟</span></div><div class="content" hidden=""><span class="en">A: <em>Clostridium perfringens</em>.</span><span class="ar">ج: بكتيريا <em>المطثية الحاطمة</em> (Clostridium perfringens).</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

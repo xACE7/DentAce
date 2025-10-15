@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .answer table {width:100%; border-collapse:collapse; margin-top:10px;}
+  .answer th, .answer td { border:1px solid var(--card-border); padding:8px; text-align:left;}
+  .answer th { font-weight:bold; background-color: rgba(255,255,255,0.05);}
+  .answer ol { padding-left:20px; margin:0;}
+  
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 11</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+  {
+    q: "What is the most common causative agent of pyogenic osteomyelitis, accounting for about 80% of cases?",
+    opts: ["Staphylococcus aureus", "Hemophilus influenzae", "Salmonella", "Group B streptococci"],
+    correct: 0,
+    explain: "Staphylococcus aureus is the most frequent cause of pyogenic osteomyelitis in the majority of clinical settings."
+  },
+  {
+    q: "In children, which part of the long bone is most commonly affected by osteomyelitis due to its vascular characteristics?",
+    opts: ["Epiphysis", "Diaphysis", "Metaphysis", "Articular cartilage"],
+    correct: 2,
+    explain: "The metaphysis is the most common site due to its high blood supply and the presence of slow-flowing sinusoidal vascular loops, which trap bacteria."
+  },
+  {
+    q: "A fragment of necrotic bone that has become separated from living bone in osteomyelitis is known as:",
+    opts: ["Involucrum", "Sequestrum", "Cloaca", "Brodie's abscess"],
+    correct: 1,
+    explain: "A sequestrum is a piece of dead bone that has become walled off by the inflammatory process."
+  },
+  {
+    q: "The reactive new bone that forms around a site of bone infection is called:",
+    opts: ["Sequestrum", "Periosteal reaction", "Involucrum", "Callus"],
+    correct: 2,
+    explain: "The involucrum is a sheath of new bone that forms from the stripped periosteum around the necrotic sequestrum."
+  },
+  {
+    q: "In patients with sickle cell anemia, which organism is a characteristic cause of osteomyelitis?",
+    opts: ["Coliforms", "Staphylococcus aureus", "Group B streptococci", "Salmonella"],
+    correct: 3,
+    explain: "While Staph. aureus is still common, Salmonella infection is classically associated with osteomyelitis in patients with sickle cell disease."
+  },
+  {
+    q: "Which of the following is NOT a typical lab finding in acute osteomyelitis?",
+    opts: ["Leukocytosis (high WBC)", "Increased ESR", "Increased CRP", "Decreased hemoglobin (anemia)"],
+    correct: 3,
+    explain: "While anemia can develop in chronic cases, leukocytosis, elevated ESR, and elevated CRP are the classic acute-phase reactant findings in acute osteomyelitis."
+  },
+  {
+    q: "Vertebral tuberculosis is commonly known as:",
+    opts: ["Garré's disease", "Brodie's disease", "Pott's disease", "Scheuermann's disease"],
+    correct: 2,
+    explain: "Pott's disease is the specific term for tuberculosis of the vertebrae, which often leads to vertebral destruction."
+  },
+  {
+    q: "What is the characteristic histological feature of tuberculous osteomyelitis?",
+    opts: ["Suppurative inflammation with neutrophils", "Dense bone sclerosis", "Caseating granuloma with giant cells", "Lymphocytic infiltration only"],
+    correct: 2,
+    explain: "Tuberculosis characteristically elicits a granulomatous inflammatory response, featuring caseating necrosis, epithelioid macrophages, and Langhans giant cells."
+  },
+  {
+    q: "A 'Brodie's abscess' is best described as:",
+    opts: ["An acute, rapidly spreading bone infection", "A subacute or chronic bone abscess with a fibrous wall", "Diffuse non-suppurative bone sclerosis", "A draining sinus tract from bone to skin"],
+    correct: 1,
+    explain: "Brodie's abscess is a small, walled-off intraosseous abscess that is typically seen in the metaphysis of long bones in children."
+  },
+  {
+    q: "Which of the following complications arises from the spread of bacteria into the bloodstream from a site of osteomyelitis?",
+    opts: ["Septicemia", "Pathological fracture", "Amyloidosis", "Squamous cell carcinoma"],
+    correct: 0,
+    explain: "Septicemia (sepsis) is a life-threatening condition caused by the body's response to an infection spreading through the bloodstream."
+  },
+  {
+    q: "In neonates, which two organisms are common causes of acute osteomyelitis?",
+    opts: ["Staph aureus and Salmonella", "Hemophilus influenzae and Group B streptococci", "Coliforms and Pseudomonas", "Anaerobes and Fungi"],
+    correct: 1,
+    explain: "Hemophilus influenzae and Group B streptococci are particularly common pathogens causing osteomyelitis in the neonatal period."
+  },
+  {
+    q: "The term 'cloaca' in the context of osteomyelitis refers to:",
+    opts: ["The necrotic bone fragment", "The newly formed reactive bone", "An opening in the involucrum for pus drainage", "A walled-off chronic abscess"],
+    correct: 2,
+    explain: "A cloaca is an opening in the involucrum through which pus and sequestra can be discharged, often leading to a draining sinus."
+  },
+  {
+    q: "Pott's disease can lead to severe spinal deformities such as:",
+    opts: ["Lordosis and Spondylosis", "Kyphosis and Scoliosis", "Osteoporosis and Osteopetrosis", "Ankylosis and Discitis"],
+    correct: 1,
+    explain: "Destruction of vertebral bodies in Pott's disease causes collapse, leading to an anterior angulation (kyphosis) and lateral curvature (scoliosis)."
+  },
+  {
+    q: "Chronic sclerosing non-suppurative osteomyelitis, characterized by bone sclerosis without pus formation, is known as:",
+    opts: ["Brodie's Abscess", "Garré's Osteomyelitis", "Tuberculous Osteomyelitis", "Post-traumatic Osteomyelitis"],
+    correct: 1,
+    explain: "Garré's osteomyelitis is a specific type of chronic osteomyelitis where the primary feature is bone thickening and sclerosis rather than suppuration."
+  },
+  {
+    q: "Which route of infection is most common for bacteria to reach the bone in pyogenic osteomyelitis?",
+    opts: ["Direct implantation from trauma", "Spread from an adjacent soft tissue infection", "Hematogenous (bloodstream) spread", "Iatrogenic (surgical) introduction"],
+    correct: 2,
+    explain: "Hematogenous spread from a distant focus of infection is the most common pathway for developing osteomyelitis, especially in children."
+  },
+  {
+    q: "A serious, long-term complication of a chronic draining sinus from osteomyelitis is the development of:",
+    opts: ["Amyloidosis", "Septic arthritis", "Osteosarcoma", "Squamous cell carcinoma"],
+    correct: 3,
+    explain: "Chronic irritation and inflammation at the sinus tract opening on the skin can lead to malignant transformation into squamous cell carcinoma."
+  },
+  {
+    q: "What is the primary cell type seen in the inflammatory infiltrate of acute pyogenic osteomyelitis?",
+    opts: ["Lymphocytes", "Plasma cells", "Neutrophils", "Macrophages"],
+    correct: 2,
+    explain: "Acute pyogenic (pus-forming) infections are characterized by a massive infiltration of neutrophils, which are the primary components of pus."
+  },
+  {
+    q: "In infants (<2 years old), why is osteomyelitis particularly dangerous and can spread to the epiphysis?",
+    opts: ["Their immune system is immature", "The periosteum is loosely attached", "Trans-epiphyseal blood vessels are still open", "The epiphyseal plate is made of cartilage"],
+    correct: 2,
+    explain: "In infants, blood vessels cross the epiphyseal growth plate, allowing infection to spread from the metaphysis directly into the epiphysis and joint space."
+  },
+  {
+    q: "Which of the following is a potential cause of ischemic necrosis in acute osteomyelitis?",
+    opts: ["Bacterial toxins destroying bone cells", "Compression of blood vessels by periosteal elevation and abscess formation", "Immune system cytokine release", "Reactive new bone formation cutting off blood supply"],
+    correct: 1,
+    explain: "As pus accumulates, it lifts the periosteum and increases intraosseous pressure, compressing blood vessels and leading to ischemic death (necrosis) of the bone."
+  },
+  {
+    q: "The pathology of Pott's disease involves destruction of the intervertebral disc and adjacent vertebrae. What is a major neurological risk?",
+    opts: ["Psoas abscess formation", "Development of kyphosis", "Compression of the spinal cord", "Chronic draining sinus"],
+    correct: 2,
+    explain: "Vertebral collapse and the extension of caseous, inflammatory material can compress the spinal cord, leading to neurological deficits like paraplegia."
+  },
+  {
+    q: "Osteomyelitis is defined as inflammation of the:",
+    opts: ["Periosteum and cortex", "Bone and bone marrow", "Joint capsule and synovium", "Epiphyseal plate only"],
+    correct: 1,
+    explain: "The term osteomyelitis specifically refers to inflammation involving both the bone (osteo-) and the marrow (-myelitis)."
+  },
+  {
+    q: "Which type of osteomyelitis typically arises after a compound fracture?",
+    opts: ["Hematogenous osteomyelitis", "Tuberculous osteomyelitis", "Post-traumatic osteomyelitis with mixed bacteria", "Garré's osteomyelitis"],
+    correct: 2,
+    explain: "A compound (open) fracture directly exposes the bone to the external environment, often leading to a mixed bacterial infection."
+  },
+  {
+    q: "In chronic osteomyelitis, the inflammatory infiltrate shifts from neutrophils to primarily:",
+    opts: ["Eosinophils and basophils", "Mast cells and giant cells", "Lymphocytes and plasma cells", "Red blood cells and platelets"],
+    correct: 2,
+    explain: "As the infection transitions from acute to chronic, the cellular response changes to one dominated by mononuclear cells like lymphocytes and plasma cells."
+  },
+  {
+    q: "A Psoas abscess is a potential complication specifically associated with:",
+    opts: ["Osteomyelitis of the tibia", "Brodie's abscess", "Vertebral tuberculosis (Pott's disease)", "Osteomyelitis of the jaw"],
+    correct: 2,
+    explain: "In Pott's disease affecting the lower thoracic or lumbar spine, caseous material can track down along the psoas muscle sheath, forming a 'cold' abscess."
+  },
+  {
+    q: "What is the primary mechanism of bone destruction in tuberculous osteomyelitis?",
+    opts: ["Direct bacterial lysis of bone", "Neutrophil-mediated enzymatic digestion", "Immune response involving cytokines and macrophage activation", "Ischemic necrosis from periosteal stripping"],
+    correct: 2,
+    explain: "In TB, the immune response itself, via cytokines like TNF released from activated macrophages, drives the formation of granulomas and subsequent bone destruction."
+  },
+  {
+    q: "Which of the following is NOT a typical clinical feature of acute osteomyelitis?",
+    opts: ["High fever and malaise", "Localized pain and swelling", "Joint stiffness and crepitus", "Redness and warmth over the affected area"],
+    correct: 2,
+    explain: "Joint stiffness and crepitus are more characteristic of arthritis. Osteomyelitis presents with signs of infection and inflammation of the bone itself."
+  },
+  {
+    q: "Amyloidosis is a potential systemic complication of which condition?",
+    opts: ["Acute osteomyelitis", "Brodie's abscess", "Chronic nonspecific osteomyelitis", "Garré's osteomyelitis"],
+    correct: 2,
+    explain: "Chronic, long-standing inflammatory conditions like chronic osteomyelitis can lead to secondary (AA) amyloidosis due to persistent production of acute-phase reactants."
+  },
+  {
+    q: "In vertebral acute osteomyelitis (pyogenic), the infection often starts as:",
+    opts: ["Vertebral body collapse", "Spinal cord compression", "Disc infection (discitis)", "Psoas abscess"],
+    correct: 2,
+    explain: "Unlike TB, pyogenic vertebral osteomyelitis often begins in the intervertebral disc and then spreads to the adjacent vertebral bodies."
+  },
+  {
+    q: "The main difference between pyogenic vertebral osteomyelitis and Pott's disease is that Pott's disease more commonly causes:",
+    opts: ["Rapid onset of high fever", "Leukocytosis", "Vertebral collapse and deformity", "Elevated CRP"],
+    correct: 2,
+    explain: "Tuberculous infection is highly destructive to the bone structure, frequently leading to vertebral collapse, which is less common in acute pyogenic cases."
+  },
+  {
+    q: "Which cytokine is mentioned as playing a key role in the pathogenesis of bone tuberculosis?",
+    opts: ["Interleukin-10 (IL-10)", "Transforming Growth Factor-beta (TGF-β)", "Tumor Necrosis Factor (TNF)", "Interferon-gamma (IFN-γ)"],
+    correct: 2,
+    explain: "The slides specifically list IL-1, IL-6, and TNF as key cytokines released by activated macrophages that contribute to bone destruction in TB."
+  }
+];
+
+const tfs = [
+  {
+    q: "Osteomyelitis is almost always a primary infection, originating within the bone itself.",
+    answer: false,
+    explain: "Osteomyelitis is almost always secondary to an infection elsewhere, reaching the bone via the bloodstream, direct spread, or trauma."
+  },
+  {
+    q: "In acute osteomyelitis, a sequestrum is composed of living, reactive new bone.",
+    answer: false,
+    explain: "A sequestrum is dead, necrotic bone. The involucrum is the living, reactive new bone that forms around it."
+  },
+  {
+    q: "Vertebral pyogenic osteomyelitis typically spares the intervertebral discs.",
+    answer: false,
+    explain: "Pyogenic osteomyelitis of the spine often starts as a discitis (disc infection) and then spreads to the vertebral bodies."
+  },
+  {
+    q: "The presence of caseating granulomas is the hallmark of acute pyogenic osteomyelitis.",
+    answer: false,
+    explain: "Caseating granulomas are the characteristic feature of tuberculous osteomyelitis. Acute pyogenic osteomyelitis is marked by neutrophils and suppuration (pus)."
+  },
+  {
+    q: "An elevated Erythrocyte Sedimentation Rate (ESR) is a common laboratory finding in acute osteomyelitis.",
+    answer: true,
+    explain: "ESR and C-reactive protein (CRP) are inflammatory markers that are typically elevated during acute osteomyelitis."
+  },
+  {
+    q: "Pott's disease frequently leads to vertebral collapse, causing deformities like kyphosis.",
+    answer: true,
+    explain: "The destructive nature of tuberculosis on the vertebral bodies leads to structural failure and collapse, resulting in spinal deformities."
+  },
+  {
+    q: "Garré's osteomyelitis is characterized by extensive pus formation and draining sinuses.",
+    answer: false,
+    explain: "Garré's osteomyelitis is a non-suppurative form characterized by bone sclerosis and thickening, with little to no pus formation."
+  },
+  {
+    q: "In adults, after the epiphyseal plate closes, infection in a long bone is typically confined to the metaphysis.",
+    answer: true,
+    explain: "The closure of the growth plate creates a barrier, preventing the easy spread of infection from the metaphysis to the epiphysis."
+  },
+  {
+    q: "A long-term risk of chronic osteomyelitis includes the development of amyloidosis and squamous cell carcinoma in sinus tracts.",
+    answer: true,
+    explain: "Both are recognized complications. Amyloidosis results from chronic inflammation, and squamous cell carcinoma can arise from chronic irritation of the skin at a sinus opening."
+  }
+];
+
+const saqs = [
+  {
+    q: "Define osteomyelitis and list the three main ways bacteria can reach the bone to cause infection.",
+    a: "Osteomyelitis is the inflammation of bone and bone marrow, almost always secondary to an infection.<br><br>The three main routes of infection are:<br><ol><li><b>Bloodstream (hematogenous) spread:</b> Bacteria from an infection elsewhere in the body travel through the blood to lodge in a bone.</li><li><b>Direct spread:</b> Infection from adjacent soft tissues or skin, such as a diabetic foot ulcer, spreads directly to the underlying bone.</li><li><b>Direct implantation:</b> Bacteria are introduced directly into the bone, for example, during a compound fracture or surgery.</li></ol>"
+  },
+  {
+    q: "A 9-year-old boy presents with a two-week history of severe pain in his lower leg, fever, and malaise. An X-ray reveals a lytic lesion in the tibial metaphysis. What is the most likely diagnosis, and which bacterium is the most probable cause?",
+    a: "The most likely diagnosis is <b>acute pyogenic osteomyelitis</b>.<br><br>Given his age and the classic presentation of fever and localized bone pain in the metaphysis of a long bone, the most probable causative bacterium is <b>Staphylococcus aureus</b>, which accounts for the vast majority of cases in this demographic."
+  },
+  {
+    q: "List and briefly describe the four key pathological features of established acute pyogenic osteomyelitis.",
+    a: "<ol><li><b>Suppuration & Abscess Formation:</b> A massive influx of neutrophils leads to pus formation and the creation of an abscess, which increases intraosseous pressure.</li><li><b>Ischemic Necrosis (Sequestrum):</b> The pressure from the abscess and stripping of the periosteum compromises blood supply, leading to the death of bone fragments. This dead bone is called a sequestrum.</li><li><b>Reactive New Bone (Involucrum):</b> The elevated periosteum remains viable and begins to lay down a shell of new bone around the infected area. This is called an involucrum.</li><li><b>Sinus Tract Formation:</b> The abscess can rupture through the cortex and involucrum to create a draining sinus (cloaca) that extends to the skin surface.</li></ol>"
+  },
+  {
+    q: "Compare and contrast vertebral pyogenic osteomyelitis and vertebral tuberculosis (Pott's Disease) in terms of their typical site of onset and key pathological outcomes.",
+    a: `<table>
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>Pyogenic Vertebral Osteomyelitis</th>
+                <th>Tuberculous Osteomyelitis (Pott's)</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><b>Site of Onset</b></td>
+                <td>Typically begins in the intervertebral disc (discitis) and then spreads to adjacent vertebral bodies.</td>
+                <td>Typically begins in the anterior part of the vertebral body and then spreads to destroy the disc and adjacent vertebrae.</td>
+            </tr>
+            <tr>
+                <td><b>Key Outcome</b></td>
+                <td>Leads to pus formation and inflammation, but significant vertebral collapse is less common.</td>
+                <td>Causes extensive caseous necrosis and bone destruction, frequently leading to vertebral collapse, spinal deformity (kyphosis), and potential spinal cord compression.</td>
+            </tr>
+        </tbody>
+       </table>`
+  },
+  {
+    q: "What are three potential long-term complications of chronic non-specific osteomyelitis?",
+    a: "Three potential complications of chronic osteomyelitis are:<br><ol><li><b>Pathological Fracture:</b> The bone can be structurally weakened by the chronic infection, necrosis, and reactive changes, making it susceptible to fracturing under normal stress.</li><li><b>Squamous Cell Carcinoma:</b> Chronic irritation from a draining sinus tract can cause the skin epithelium at the sinus opening to undergo malignant transformation.</li><li><b>Systemic Amyloidosis:</b> Persistent, long-term inflammation can lead to the deposition of AA amyloid in organs like the kidneys, potentially causing organ failure.</li></ol>"
+  },
+  {
+    q: "Describe the characteristic histological finding in bone tuberculosis.",
+    a: "The characteristic histological finding is a <b>caseating granuloma</b>. This is an aggregate of epithelioid macrophages, often fused to form multinucleated Langhans giant cells, surrounded by a cuff of lymphocytes and plasma cells. The center of the granuloma exhibits acellular, eosinophilic, caseous necrosis."
+  }
+];
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').innerHTML;
+    return s + (feedback.startsWith("<b>Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').innerHTML;
+    return s + (feedback.startsWith("<b>Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

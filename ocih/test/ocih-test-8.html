@@ -92,7 +92,7 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
   /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
@@ -113,6 +113,10 @@
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer table{width:100%;border-collapse:collapse;margin-top:8px;}
+  .answer th, .answer td{border:1px solid var(--glass-border);padding:8px;text-align:left;}
+  .answer th{background-color:var(--glass);}
+  
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -169,65 +173,263 @@
   </main>
 
 <script>
-// ----------- Data (from ocih-8.pdf) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q: "Which morphological stage immediately follows the dental lamina stage?", opts:["Bud stage","Cap stage","Early bell stage","Advanced bell stage"], correct:0, explain:"Morphological sequence: dental lamina → bud → cap → early bell → advanced bell → matrix formation." },
-  { q: "During which morphological stage does the tooth crown assume its final shape?", opts:["Bud stage","Cap stage","Early bell stage","Advanced bell stage"], correct:2, explain:"In the bell stage, morphodifferentiation gives the crown its definitive shape; this begins in the early bell stage." },
-  { q: "The advanced (late) bell stage begins with the formation of the first layer of which tissue?", opts:["Predentin","Mineralized tissue","Enamel matrix only","Cementum"], correct:1, explain:"Advanced bell stage is defined by the appearance of the first mineralized tissue (initial dentin/enamel)." },
-  { q: "Which of the following correctly lists the four layers of the enamel organ in early bell stage?", opts:["Outer enamel epithelium, Inner enamel epithelium, Stellate reticulum, Stratum intermedium","Outer enamel epithelium, Dental sac, Stellate reticulum, Inner enamel epithelium","Inner enamel epithelium, Odontoblasts, Stellate reticulum, Dental papilla","Outer enamel epithelium, Inner enamel epithelium, Dental papilla, Stratum intermedium"], correct:0, explain:"Early bell stage: OEE, IEE, stellate reticulum, and stratum intermedium." },
-  { q: "Preameloblasts are another name used for which cells?", opts:["Outer enamel epithelium cells","Inner enamel epithelium cells","Stratum intermedium cells","Odontoblasts"], correct:1, explain:"IEE cells elongate to tall columnar cells termed preameloblasts before secreting enamel." },
-  { q: "Stratum intermedium is typically composed of:", opts:["2–3 layers of flat/squamous cells","Single layer of cuboidal cells","Numerous polygonal cells with star-shaped processes","Tall columnar cells"], correct:0, explain:"Slides note 2–3 layers of flat cells connected by desmosomes between IEE and stellate reticulum." },
-  { q: "Which enzyme is abundant in the stratum intermedium and is essential for enamel mineralization?", opts:["Amylase","Alkaline phosphatase","Acid phosphatase","Carbonic anhydrase"], correct:1, explain:"Stratum intermedium cells are rich in alkaline phosphatase, supporting enamel mineralization." },
-  { q: "Functional role of stratum intermedium includes:", opts:["Collagen secretion for dentin","Controlling fluid diffusion into and out of ameloblasts","Initiating cementum formation","Forming Hertwig's epithelial root sheath"], correct:1, explain:"They act with IEE in enamel formation and regulate fluid movement for ameloblasts." },
-  { q: "The stellate reticulum expands mainly due to:", opts:["Increase in intercellular fluid","Proliferation of odontoblasts","Deposition of enamel proteins","Invasion by blood vessels"], correct:0, explain:"It expands as intercellular fluid increases; cells connected by desmosomes." },
-  { q: "Just before enamel formation, the stellate reticulum:", opts:["Thickens to support ameloblasts","Collapses to reduce distance to capillaries","Becomes vascular","Transforms into stratum intermedium"], correct:1, explain:"It collapses, bringing ameloblasts closer to nutrient capillaries near OEE." },
-  { q: "In late bell stage, the surface of outer enamel epithelium becomes:", opts:["Thicker and smoother","Folded, allowing papillary capillary loops","Keratinized","Discontinuous"], correct:1, explain:"OEE develops folds; dental sac mesenchyme forms papillae with capillary loops for nutrition." },
-  { q: "The dental sac papillae forming between OEE folds primarily provide:", opts:["Vascular supply to avascular enamel organ","Innervation to dental papilla","Mechanical attachment to bone","Matrix for dentin"], correct:0, explain:"Capillary loops in papillae deliver nutrition for the metabolic activity of the enamel organ." },
-  { q: "Which structure is enclosed within the invaginated portion of the enamel organ?", opts:["Dental sac","Dental papilla","Cervical loop","Reduced enamel epithelium"], correct:1, explain:"Dental papilla lies inside the enamel organ invagination and will form dentin and pulp." },
-  { q: "Before enamel formation, peripheral cells of the dental papilla differentiate under epithelial influence into:", opts:["Ameloblasts","Cementoblasts","Odontoblasts","Fibroblasts"], correct:2, explain:"IEE induces mesenchymal papilla cells to become odontoblasts that secrete dentin." },
-  { q: "The basement membrane separating enamel organ from dental papilla prior to dentin formation is called:", opts:["Membrana limitans","Membrana preformativa","Lamina densa","Primary cuticle"], correct:1, explain:"That basement membrane later becomes the dentino-enamel junction (DEJ)." },
-  { q: "Future fate of the membrana preformativa is to form the:", opts:["Cemento-dentinal junction","Dentino-enamel junction","Alveolar crest","Secondary enamel cuticle"], correct:1, explain:"Slides explicitly state it forms the DEJ." },
-  { q: "Cervical loop is characterized by the presence of:", opts:["Only outer and inner enamel epithelium","All four enamel organ layers","Odontoblasts and IEE","Stratum intermedium only"], correct:0, explain:"Cervical loop consists of OEE and IEE only in the advanced bell stage." },
-  { q: "Cells in the cervical loop give rise to:", opts:["Successional dental lamina","Hertwig's epithelial root sheath","Reduced enamel epithelium","Epithelial rests of Malassez directly"], correct:1, explain:"HERS arises from the apical proliferation of OEE and IEE at the cervical loop." },
-  { q: "Which process best matches morphodifferentiation?", opts:["Determination of tooth shape and size","Cell type specification into ameloblasts/odontoblasts","Matrix secretion","Initiation of tooth germs"], correct:0, explain:"Morphodifferentiation concerns form (shape and size); histodifferentiation is cell specialization." },
-  { q: "Histodifferentiation primarily refers to:", opts:["Hard tissue mineralization","Cellular specialization into functional cell types","Elongation of dental lamina","Root lengthening"], correct:1, explain:"It is the physiological stage of differentiation of cells (eg, IEE→preameloblast)." },
-  { q: "Apposition stage is characterized by:", opts:["Establishment of tooth position","Shape determination","Matrix deposition of enamel and dentin","Crown eruption"], correct:2, explain:"Apposition = secretion of enamel and dentin matrices prior to mineralization." },
-  { q: "Which of the following is a defect of initiation?", opts:["Anodontia","Hypocalcified enamel","Microdontia from morphodifferentiation defect","Taurodontism"], correct:0, explain:"Slides list anodontia and supernumerary teeth under abnormal initiation." },
-  { q: "Supernumerary teeth are primarily associated with a problem in:", opts:["Apposition","Initiation","Eruption","Resorption"], correct:1, explain:"They result from abnormal initiation of tooth development." },
-  { q: "A defect in morphodifferentiation would most likely affect:", opts:["Tooth shape/size","Enamel mineralization only","Number of teeth","Jaw growth"], correct:0, explain:"Morphodifferentiation determines shape and size; defects alter crown morphology." },
-  { q: "Hypocalcified teeth mainly reflect a disturbance in:", opts:["Initiation","Morphodifferentiation","Apposition/mineralization","Eruption path"], correct:2, explain:"Slides list defect in apposition leading to hypocalcified teeth (mineralization problem)." },
-  { q: "Which pairing is CORRECT?", opts:["Bud stage – DEJ formation","Cap stage – HERS formation","Early bell – four-layered enamel organ","Advanced bell – disappearance of IEE"], correct:2, explain:"Early bell has OEE, IEE, stellate reticulum, stratum intermedium." },
-  { q: "Which cell layer is directly adjacent to inner enamel epithelium on its outer side?", opts:["Dental papilla","Stratum intermedium","Stellate reticulum","Outer enamel epithelium"], correct:1, explain:"Stratum intermedium lies between IEE and stellate reticulum." },
-  { q: "Desmosomal junctions in the enamel organ are prominently observed in:", opts:["Stratum intermedium only","Stellate reticulum","Outer enamel epithelium","Hertwig's epithelial root sheath"], correct:1, explain:"Stellate reticulum cells interconnect via desmosomes while maintaining intercellular spaces." },
-  { q: "Which structure ultimately gives rise to dentin and dental pulp?", opts:["Dental sac","Dental papilla","Outer enamel epithelium","Reduced enamel epithelium"], correct:1, explain:"Dental papilla differentiates into odontoblasts (dentin) and forms the dental pulp." },
-  { q: "At the end of bell stage, increased folding of OEE is most closely related to:", opts:["Anchoring the tooth germ","Compensating for reduced papillary nutrition through dentin formation","Creating space for stellate reticulum expansion","Initiating eruption"], correct:1, explain:"Folds allow mesenchymal papillae with capillaries to enhance nutrition as dentin mineralizes." }
+    {
+        q: "Which two physiological processes are most characteristic of the Bell Stage of tooth development?",
+        opts: ["Histodifferentiation & Morphodifferentiation", "Initiation & Proliferation", "Apposition & Calcification", "Eruption & Attrition"],
+        correct: 0,
+        explain: "The Bell Stage is defined by cell differentiation (histodifferentiation) and the establishment of the tooth's final shape (morphodifferentiation)."
+    },
+    {
+        q: "How many distinct cell layers are present in the enamel organ during the Early Bell Stage?",
+        opts: ["Two", "Three", "Four", "Five"],
+        correct: 2,
+        explain: "The Early Bell Stage features four layers: Outer Enamel Epithelium, Stellate Reticulum, Stratum Intermedium, and Inner Enamel Epithelium."
+    },
+    {
+        q: "Which layer appears between the inner enamel epithelium and the stellate reticulum during the Bell Stage?",
+        opts: ["Stratum Intermedium", "Dental Papilla", "Outer Enamel Epithelium", "Odontoblast Layer"],
+        correct: 0,
+        explain: "The Stratum Intermedium is a new layer of squamous cells that forms between the IEE and the stellate reticulum."
+    },
+    {
+        q: "The Stratum Intermedium is particularly rich in which enzyme, crucial for enamel mineralization?",
+        opts: ["Acid Phosphatase", "Alkaline Phosphatase", "Amylase", "DNA Polymerase"],
+        correct: 1,
+        explain: "This layer is rich in alkaline phosphatase, which plays a vital role in the mineralization of enamel."
+    },
+    {
+        q: "What happens to the Stellate Reticulum just before enamel formation begins?",
+        opts: ["It collapses", "It expands rapidly", "It transforms into cementum", "It merges with the dental papilla"],
+        correct: 0,
+        explain: "The Stellate Reticulum collapses to reduce the distance between the ameloblasts and the nutrient-supplying capillaries of the dental sac."
+    },
+    {
+        q: "The final shape of the tooth's crown is determined by the folding of which cell layer?",
+        opts: ["Inner Enamel Epithelium", "Outer Enamel Epithelium", "Dental Follicle", "Stellate Reticulum"],
+        correct: 0,
+        explain: "The folding of the Inner Enamel Epithelium maps out the future pattern of cusps and fossae of the crown."
+    },
+    {
+        q: "During the Advanced Bell Stage, which hard tissue is deposited first?",
+        opts: ["Enamel", "Cementum", "Dentin", "Bone"],
+        correct: 2,
+        explain: "Dentinogenesis (dentin formation) always precedes Amelogenesis (enamel formation)."
+    },
+    {
+        q: "Remnants of the dental lamina that persist in the jaw after it degenerates are known as:",
+        opts: ["Epithelial Rests of Malassez", "Enamel Pearls", "Cell Rests of Serre", "Denticles"],
+        correct: 2,
+        explain: "Cell Rests of Serre are the epithelial remnants of the dental lamina."
+    },
+    {
+        q: "Once hard tissue formation begins, the primary nutritional source for the ameloblasts shifts from the dental papilla to the:",
+        opts: ["Oral Epithelium", "Stellate Reticulum", "Dental Sac", "Inner Enamel Epithelium"],
+        correct: 2,
+        explain: "The newly formed dentin cuts off the supply from the dental papilla, so the ameloblasts rely on blood vessels in the adjacent dental sac."
+    },
+    {
+        q: "The structure responsible for forming Hertwig's Epithelial Root Sheath (HERS) is the:",
+        opts: ["Dental Lamina", "Enamel Knot", "Cervical Loop", "Stratum Intermedium"],
+        correct: 2,
+        explain: "The Cervical Loop, the junction of the IEE and OEE, proliferates apically to form HERS, which guides root development."
+    },
+    {
+        q: "The Membrana Preformativa, which separates the enamel organ from the dental papilla, will eventually become the:",
+        opts: ["Dentin-Enamel Junction (DEJ)", "Cemento-Enamel Junction (CEJ)", "Pulp Chamber", "Periodontal Ligament"],
+        correct: 0,
+        explain: "The Membrana Preformativa is the basement membrane that becomes the future Dentin-Enamel Junction."
+    },
+    {
+        q: "The complete congenital absence of teeth is known as:",
+        opts: ["Anodontia", "Hypodontia", "Supernumerary", "Microdontia"],
+        correct: 0,
+        explain: "Anodontia is a clinical condition characterized by the failure of all teeth to develop, stemming from a defect in the initiation stage."
+    },
+    {
+        q: "Development of extra teeth, or supernumerary teeth, is a clinical anomaly of which physiological stage?",
+        opts: ["Initiation", "Apposition", "Histodifferentiation", "Morphodifferentiation"],
+        correct: 0,
+        explain: "Abnormal activity during the initiation stage can lead to the formation of additional tooth germs, resulting in supernumerary teeth."
+    },
+    {
+        q: "Abnormalities in tooth size and shape, such as peg laterals or macrodontia, are caused by defects in:",
+        opts: ["Morphodifferentiation", "Histodifferentiation", "Initiation", "Calcification"],
+        correct: 0,
+        explain: "Morphodifferentiation is the stage that defines the tooth's size and shape; defects here lead to morphological anomalies."
+    },
+    {
+        q: "Enamel hypocalcification, which results in soft and weak enamel, is a disturbance in which stage?",
+        opts: ["Apposition", "Proliferation", "Initiation", "Histodifferentiation"],
+        correct: 0,
+        explain: "Apposition is the deposition of the enamel matrix. A defect in the quality of this matrix results in hypocalcification."
+    },
+    {
+        q: "The dental papilla is the formative organ for which two tooth structures?",
+        opts: ["Dentin and Pulp", "Enamel and Dentin", "Cementum and PDL", "Enamel and Pulp"],
+        correct: 0,
+        explain: "The dental papilla differentiates to form the odontoblasts (which produce dentin) and the core of the papilla develops into the dental pulp."
+    },
+    {
+        q: "Which cells are characterized by 'Reverse Polarity' during their differentiation in the advanced bell stage?",
+        opts: ["Fibroblasts and Cementoblasts", "Ameloblasts and Odontoblasts", "Osteoclasts and Osteoblasts", "Epithelial cells and Mesenchymal cells"],
+        correct: 1,
+        explain: "Both Ameloblasts and Odontoblasts exhibit reverse polarity, where the nucleus shifts away from the basement membrane (future DEJ) to facilitate secretion."
+    },
+    {
+        q: "What is the main function of the folding of the Outer Enamel Epithelium during the late bell stage?",
+        opts: ["To provide a rich nutritional supply", "To determine the number of roots", "To secrete a protective layer", "To initiate nerve formation"],
+        correct: 0,
+        explain: "The OEE folds to bring capillaries from the dental sac closer to the enamel organ, increasing the surface area for nutrient exchange for the active ameloblasts."
+    },
+    {
+        q: "The deposition of enamel and dentin matrices always begins at the:",
+        opts: ["Cervical Loop", "Cusp tips or Incisal edges", "Center of the dental papilla", "Root apex"],
+        correct: 1,
+        explain: "Hard tissue formation starts at the areas of the future cusps or incisal edges and progresses cervically."
+    },
+    {
+        q: "Which layer of the enamel organ acts as a single functional unit with the inner enamel epithelium for enamel formation?",
+        opts: ["Stellate Reticulum", "Outer Enamel Epithelium", "Dental Follicle", "Stratum Intermedium"],
+        correct: 3,
+        explain: "The Stratum Intermedium works closely with the IEE (ameloblasts) to support the process of enamel formation and mineralization."
+    },
+    {
+        q: "Amelogenesis is the process of depositing:",
+        opts: ["Dentin matrix by Odontoblasts", "Enamel matrix by Ameloblasts", "Cementum matrix by Cementoblasts", "Pulp tissue by Fibroblasts"],
+        correct: 1,
+        explain: "Amelogenesis specifically refers to the formation of enamel matrix by the ameloblasts."
+    },
+    {
+        q: "What triggers the peripheral cells of the dental papilla to differentiate into odontoblasts?",
+        opts: ["An organizing influence from the IEE", "A signal from the dental lamina", "Increased vascular supply", "The collapse of the stellate reticulum"],
+        correct: 0,
+        explain: "The inner enamel epithelium exerts an organizing influence that induces the underlying mesenchymal cells of the dental papilla to become odontoblasts."
+    },
+    {
+        q: "After Hertwig's epithelial root sheath guides root formation, it begins to break down into a network of cells called:",
+        opts: ["Cell Rests of Serre", "Epithelial Rests of Malassez", "Enamel Pearls", "Cementicles"],
+        correct: 1,
+        explain: "The fragmentation of HERS leaves behind clusters of epithelial cells in the periodontal ligament known as the Epithelial Rests of Malassez."
+    },
+    {
+        q: "The cervical loop is an area of intense mitotic activity composed of which two layers?",
+        opts: ["IEE and Stratum Intermedium", "OEE and Stellate Reticulum", "IEE and OEE", "Stellate Reticulum and Stratum Intermedium"],
+        correct: 2,
+        explain: "The cervical loop is found at the growing rim of the enamel organ and consists only of the inner and outer enamel epithelium."
+    },
+    {
+        q: "Which of the following structures is considered avascular (lacking its own blood supply)?",
+        opts: ["Dental Papilla", "Dental Sac", "Enamel Organ", "Periodontal Ligament"],
+        correct: 2,
+        explain: "The enamel organ is of epithelial origin and is avascular; it relies on surrounding vascularized tissues like the dental papilla and dental sac for nutrients."
+    },
+    {
+        q: "The physiological process responsible for the deposition of enamel and dentin matrix is called:",
+        opts: ["Histodifferentiation", "Proliferation", "Apposition", "Initiation"],
+        correct: 2,
+        explain: "Apposition is the stage of laying down the extracellular matrix for hard tissues in an incremental, layered fashion."
+    },
+    {
+        q: "Which cell loses its functional activity completely after the tooth crown is fully formed?",
+        opts: ["Odontoblast", "Cementoblast", "Fibroblast", "Ameloblast"],
+        correct: 3,
+        explain: "After enamel formation is complete, the ameloblasts become part of the reduced enamel epithelium and are lost upon tooth eruption, meaning enamel cannot regenerate."
+    },
+    {
+        q: "The inner enamel epithelium (IEE) cells differentiate into what functional cells?",
+        opts: ["Odontoblasts", "Ameloblasts", "Cementoblasts", "Preameloblasts"],
+        correct: 1,
+        explain: "The tall columnar cells of the inner enamel epithelium differentiate into ameloblasts, the cells responsible for producing enamel."
+    },
+    {
+        q: "The dental follicle (or dental sac) will give rise to which of the following structures?",
+        opts: ["Enamel and Dentin", "Pulp and Dentin", "Cementum, PDL, and Alveolar Bone", "Enamel and Gingiva"],
+        correct: 2,
+        explain: "The ectomesenchymal cells of the dental follicle (sac) form the primary supporting tissues of the tooth: cementum, periodontal ligament, and some of the alveolar bone."
+    },
+    {
+        q: "Which stage is characterized by the tooth crown assuming its final shape, but before any hard tissue formation has begun?",
+        opts: ["Advanced Bell Stage", "Cap Stage", "Early Bell Stage", "Bud Stage"],
+        correct: 2,
+        explain: "The Early Bell Stage involves histodifferentiation and morphodifferentiation to finalize the crown shape, but mineralization (hard tissue formation) does not start until the Advanced Bell Stage."
+    }
 ];
 
 const tfs = [
-  { q:"Morphological stages include dental lamina, bud, cap, early bell, advanced bell, and matrix formation.", answer:true, explain:"These are the six morphological stages described in the slides." },
-  { q:"Histodifferentiation determines the final shape and size of the tooth.", answer:false, explain:"Morphodifferentiation determines shape/size; histodifferentiation = cell specialization." },
-  { q:"The enamel organ is avascular and relies on surrounding capillaries for nutrition.", answer:true, explain:"Capillary loops approach near the OEE to nourish the avascular enamel organ." },
-  { q:"Stellate reticulum thickens and persists throughout enamel formation to support ameloblasts.", answer:false, explain:"It collapses before enamel formation to reduce distance to nutrient capillaries." },
-  { q:"Stratum intermedium works as a functional unit with IEE during enamel formation.", answer:true, explain:"They coordinate enamel production and mineralization." },
-  { q:"Membrana preformativa later becomes the cemento-dentinal junction (CDJ).", answer:false, explain:"It becomes the dentino-enamel junction (DEJ)." },
-  { q:"Cervical loop contains only OEE and IEE cells.", answer:true, explain:"By definition, cervical loop is composed of OEE and IEE." },
-  { q:"Anodontia represents a defect of the apposition stage.", answer:false, explain:"Anodontia is a failure of initiation, not apposition." },
-  { q:"Dental papilla cells differentiate into odontoblasts under the influence of inner enamel epithelium.", answer:true, explain:"Epithelial-mesenchymal interaction induces odontoblast differentiation." }
+    {
+        q: "Enamel formation begins before dentin formation.",
+        answer: false,
+        explain: "This is false. Dentinogenesis (dentin formation) always precedes amelogenesis (enamel formation)."
+    },
+    {
+        q: "The Stratum Intermedium is essential for dentin mineralization due to its high concentration of alkaline phosphatase.",
+        answer: false,
+        explain: "This is false. The Stratum Intermedium and its enzymes are essential for ENAMEL mineralization, not dentin."
+    },
+    {
+        q: "Ameloblasts can continue to produce new enamel if the tooth is damaged later in life.",
+        answer: false,
+        explain: "This is false. Ameloblasts are lost after crown formation is complete, so enamel cannot regenerate."
+    },
+    {
+        q: "The final shape of the tooth's crown is determined by the folding of the inner enamel epithelium.",
+        answer: true,
+        explain: "This is true. The folding of the IEE during the bell stage establishes the pattern of cusps and fissures."
+    },
+    {
+        q: "The cervical loop is composed of only the inner enamel epithelium and the outer enamel epithelium.",
+        answer: true,
+        explain: "This is true. It is the junction of these two layers at the most cervical part of the enamel organ."
+    },
+    {
+        q: "Cell Rests of Serre are remnants of Hertwig's epithelial root sheath.",
+        answer: false,
+        explain: "This is false. Cell Rests of Serre are remnants of the dental lamina. Remnants of HERS are called Epithelial Rests of Malassez."
+    },
+    {
+        q: "The nutritional supply for ameloblasts shifts from the dental papilla to the dental sac during the advanced bell stage.",
+        answer: true,
+        explain: "This is true. The formation of dentin cuts off the papillary supply, forcing reliance on the vascular dental sac."
+    },
+    {
+        q: "Morphodifferentiation is the process where undifferentiated cells become specialized, such as becoming ameloblasts.",
+        answer: false,
+        explain: "This is false. That process is histodifferentiation. Morphodifferentiation is the process that determines the shape and size of the tooth."
+    },
+    {
+        q: "The Membrana Preformativa is the future Cemento-Enamel Junction (CEJ).",
+        answer: false,
+        explain: "This is false. The Membrana Preformativa is the future Dentino-Enamel Junction (DEJ)."
+    }
 ];
 
 const saqs = [
-  // 1. Direct Answer
-  { q: "Define morphodifferentiation in tooth development.", a: "Determination of tooth crown shape and size during bell stage." },
-  // 2. List / Enumeration (3 or more)
-  { q: "List the four cell layers present in the early bell stage.", a: "1) Outer enamel epithelium 2) Inner enamel epithelium (preameloblasts) 3) Stellate reticulum 4) Stratum intermedium" },
-  // 3. Comparison (numbered table)
-  { q: "Compare histodifferentiation and morphodifferentiation.", a: `<table style="width:100%;border-collapse:collapse"><thead><tr><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">#</th><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">Histodifferentiation</th><th style="border:1px solid rgba(255,255,255,0.2);padding:6px">Morphodifferentiation</th></tr></thead><tbody><tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">1</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Cell specialization</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Shape/size determination</td></tr><tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">2</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">IEE→preameloblasts; papilla→odontoblasts</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Crown form established (bell stage)</td></tr><tr><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">3</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Precedes matrix secretion</td><td style="border:1px solid rgba(255,255,255,0.2);padding:6px">Guides cusp/outline features</td></tr></tbody></table>` },
-  // 4. Case-based Scenario
-  { q: "A child presents with several additional erupted teeth beyond the normal count. Which developmental process is most likely abnormal, and at which physiological stage?", a: "Abnormal initiation—physiological Initiation stage (supernumerary teeth)." },
-  // 5. Short direct
-  { q: "What is the fate of the membrana preformativa?", a: "Forms the dentino–enamel junction (DEJ)." },
-  // 6. Short direct
-  { q: "Name the root-forming epithelial structure derived from the cervical loop.", a: "Hertwig's epithelial root sheath (HERS)." }
+    {
+        q: "Describe the primary function of the Stellate Reticulum and explain what happens to this layer just before enamel formation commences.",
+        a: "The Stellate Reticulum's primary function is to act as a protective cushion for the developing enamel organ and to support it by synthesizing and holding glycosaminoglycans. Just before enamel formation begins, this layer collapses, reducing the distance between the ameloblasts and the blood vessels in the dental sac to facilitate nutrient supply."
+    },
+    {
+        q: "List the four distinct cell layers of the enamel organ that are present in the Early Bell Stage, from outermost to innermost.",
+        a: "The four layers are:<br><ol><li>Outer Enamel Epithelium</li><li>Stellate Reticulum</li><li>Stratum Intermedium</li><li>Inner Enamel Epithelium</li></ol>"
+    },
+    {
+        q: "Compare Amelogenesis and Dentinogenesis based on the responsible cell, the tissue formed, and the tissue's ability to regenerate.",
+        a: "<table><thead><tr><th>Feature</th><th>Amelogenesis</th><th>Dentinogenesis</th></tr></thead><tbody><tr><td><b>Responsible Cell</b></td><td>Ameloblast</td><td>Odontoblast</td></tr><tr><td><b>Tissue Formed</b></td><td>Enamel</td><td>Dentin</td></tr><tr><td><b>Regenerative Potential</b></td><td>None (Ameloblasts are lost)</td><td>Yes (Odontoblasts persist)</td></tr></tbody></table>"
+    },
+    {
+        q: "A patient presents with teeth that have a chalky, opaque appearance and are structurally weak, leading to easy chipping. This condition affects multiple teeth. A defect in which physiological stage of tooth development is the most likely cause? Explain your reasoning.",
+        a: "The most likely cause is a defect in the <b>Apposition</b> stage. This stage involves the deposition of the enamel and dentin matrices. A qualitative defect here, specifically in enamel matrix mineralization, leads to <b>Enamel Hypocalcification</b>. This results in enamel that is of normal thickness but is soft, weak, and chalky, matching the clinical description."
+    },
+    {
+        q: "What is the Membrana Preformativa, and what critical anatomical landmark does it become in a fully formed tooth?",
+        a: "The Membrana Preformativa is the acellular basement membrane that separates the inner enamel epithelium (pre-ameloblasts) from the dental papilla (pre-odontoblasts) before hard tissue formation begins. In the mature tooth, it becomes the <b>Dentino-Enamel Junction (DEJ)</b>."
+    },
+    {
+        q: "Identify three distinct clinical anomalies that can result from disturbances in tooth development, and name the specific physiological stage associated with each.",
+        a: "<ol><li><b>Anodontia or Supernumerary Teeth:</b> A total lack or an excess number of teeth, caused by a defect in the <b>Initiation</b> stage.</li><li><b>Macrodontia or Microdontia:</b> Abnormally large or small teeth, caused by a defect in the <b>Morphodifferentiation</b> stage.</li><li><b>Amelogenesis Imperfecta (Hypoplasia/Hypocalcification):</b> Defective enamel formation (quality or quantity), caused by a defect in the <b>Apposition</b> stage.</li></ol>"
+    }
 ];
 
 // ----------- State -----------
@@ -286,7 +488,8 @@ mcqs.forEach((item, idx)=>{
     btn.addEventListener('click', ()=>{
       if(card.dataset.locked === 'true') return; // one attempt
       const v = Number(btn.dataset.v);
-      state.mcq[idx] = v;
+      const originalV = visualToOriginal[v];
+      state.mcq[idx] = originalV; // Store original index for scoring logic
 
       // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
@@ -384,7 +587,7 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
@@ -414,31 +617,31 @@ saqs.forEach((item, idx)=>{
 
 // ----------- Score + Reset -----------
 function recalc(){
-  const mcqScore = state.mcq.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const tfScore = state.tf.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const saqScore = state.saq.filter(Boolean).length;
-  const total = mcqScore + tfScore + saqScore;
+    const mcqScore = state.mcq.reduce((s, v, i) => {
+        if (v === null) return s;
+        // Re-find the correct answer using original data, not shuffled display
+        return s + (v === mcqs[i].correct ? 1 : 0);
+    }, 0);
 
-  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
-  ids.forEach(id=>{
-    const el = document.getElementById(id);
-    if(!el) return;
-    if(id.includes('Mcq')) el.textContent = mcqScore;
-    if(id.includes('Tf')) el.textContent = tfScore;
-    if(id.includes('Saq')) el.textContent = saqScore;
-    if(id.includes('Total')) el.textContent = total;
-  });
+    const tfScore = state.tf.reduce((s, v, i) => {
+        if (v === null) return s;
+        return s + (v === tfs[i].answer ? 1 : 0);
+    }, 0);
+
+    const saqScore = state.saq.filter(Boolean).length;
+    const total = mcqScore + tfScore + saqScore;
+
+    const ids = ["sMcq", "sTf", "sSaq", "sTotal", "sMcq2", "sTf2", "sSaq2", "sTotal2"];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (id.includes('Mcq')) el.textContent = mcqScore;
+        if (id.includes('Tf')) el.textContent = tfScore;
+        if (id.includes('Saq')) el.textContent = saqScore;
+        if (id.includes('Total')) el.textContent = total;
+    });
 }
+
 
 document.getElementById('resetAll').addEventListener('click', ()=>{
   document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});

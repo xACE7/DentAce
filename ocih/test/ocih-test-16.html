@@ -92,7 +92,7 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
   /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
@@ -107,7 +107,7 @@
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
@@ -127,6 +127,9 @@
   }
   .score .part{color:var(--muted);font-weight:600}
   .score b{color:var(--text)}
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid var(--card-border); padding: 8px; text-align: left; }
+  th { background-color: var(--glass); }
 </style>
 </head>
 <body>
@@ -169,65 +172,285 @@
   </main>
 
 <script>
-// ----------- Data (from ocih-16.pdf: Enamel Part-1 & 2) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q: "In ground sections, the incremental lines of Retzius appear as:", opts:["Brownish bands showing successive enamel deposition","Dark radial cracks extending from the surface","Alternating light/dark Hunter–Schreger bands","Straight lines parallel to the DEJ"], correct:0, explain:"They are brownish bands illustrating successive deposition during crown formation." },
-  { q: "In longitudinal sections, incremental lines of Retzius run:", opts:["As a series of oblique lines from DEJ toward the surface","Perpendicular to the tooth axis from surface to DEJ","As concentric rings","Only within dentin"], correct:0, explain:"They extend obliquely from the DEJ toward the enamel surface." },
-  { q: "In cross‑section, incremental lines of Retzius are seen as:", opts:["Concentric rings","Vertical striations","Random spots","Horizontal fissures"], correct:0, explain:"Cross sections show the same growth rhythm as concentric rings." },
-  { q: "Perikymata are best described as:", opts:["External manifestations of lines of Retzius on enamel surface","Accentuated neonatal lines","Mineralized rod sheaths","Surface cracks caused by dehydration"], correct:0, explain:"Perikymata are transverse, wave‑like grooves representing the external expression of lines of Retzius." },
-  { q: "Which statement about prismless enamel at the surface is correct?", opts:["It is 20–40 µm thick and highly mineralized","It contains abundant enamel proteins","Its crystals run parallel to the surface","It is hypomineralized compared to inner enamel"], correct:0, explain:"Surface prismless enamel is ~20–40 µm thick and hyper‑mineralized." },
-  { q: "Crystal orientation in the surface prismless layer is:", opts:["Almost at right angles to the surface","Parallel to the surface","Randomly oriented","Spiral around rod cores"], correct:0, explain:"Slides note crystals arranged almost at right angles to the surface." },
-  { q: "Enamel rod ends on the surface are:", opts:["Concave depressions, shallow cervically and deeper near incisal/occlusal","Convex pits deeper cervically","Uniformly deep over the crown","Invisible without etching"], correct:0, explain:"They vary in depth—shallow cervically and deeper toward incisal/occlusal." },
-  { q: "The delicate membrane covering newly erupted crowns is:", opts:["Nasmyth’s membrane (enamel cuticle)","Enamel pellicle","Rod sheath","Developmental line"], correct:0, explain:"The enamel cuticle (Nasmyth’s membrane) covers newly erupted teeth and is soon removed by mastication." },
-  { q: "The enamel pellicle is:", opts:["A salivary protein precipitate that reforms within hours","A remnant of reduced enamel epithelium","A bacterial biofilm that never reforms","A mineralized cuticle"], correct:0, explain:"Pellicle is a salivary protein precipitate that rapidly reforms and can host plaque." },
-  { q: "Cracks seen on enamel surfaces represent:", opts:["Outer edges of enamel lamellae","Fractures through dentin","Rod end imprints","Post‑mortem dehydration only"], correct:0, explain:"Slides identify cracks as the outer edge of enamel lamellae." },
-  { q: "Which structure is hypocalcified and branched, with more enamel proteins?", opts:["Enamel tufts","Perikymata","Rod ends","Prisms"], correct:0, explain:"Enamel tufts are hypocalcified, branched, and protein‑rich." },
-  { q: "Enamel tufts arise due to:", opts:["Abrupt directional changes of rod groups at scalloped DEJ","External abrasion","Post‑eruptive caries","Thermal cycling"], correct:0, explain:"They relate to abrupt changes in rod direction from different regions of the scalloped DEJ." },
-  { q: "Functional significance of enamel tufts:", opts:["Help prevent enamel fracture","Serve as pathways for caries","Anchor periodontal fibers","Supply nutrients to enamel"], correct:0, explain:"Slides state tufts prevent enamel fracture." },
-  { q: "Enamel lamellae are clinically significant because they can:", opts:["Act as roads of entry for bacteria leading to caries","Form periodontal pockets","Cause dentin hypersensitivity","Stimulate secondary dentin"], correct:0, explain:"They can serve as pathways for bacteria." },
-  { q: "At the dentinoenamel junction (DEJ), the shape is:", opts:["Scalloped","Flat","Convex toward dentin uniformly","Irregularly perforated"], correct:0, explain:"DEJ is scalloped in shape." },
-  { q: "The scalloped DEJ provides:", opts:["A firm mechanical hold of enamel to dentin","A site for cementum deposition","Nutrient channels into enamel","A smooth optical interface"], correct:0, explain:"Its scallops ensure firm attachment of enamel to dentin." },
-  { q: "Which of the following is NOT listed among hypocalcified structures of enamel?", opts:["Perikymata","Enamel tufts","Enamel lamellae","Incremental lines of Retzius"], correct:0, explain:"The slide’s hypocalcified list includes rod sheaths, striations, DEJ, incremental lines, neonatal line, lamellae, tufts, spindles — perikymata are surface manifestations, not listed as hypocalcified structures." },
-  { q: "Which pair correctly matches structure and description?", opts:["Cracks – outer edges of lamellae","Perikymata – internal bands in ground sections","Rod ends – convex pits deeper cervically","Tufts – hypermineralized, protein‑poor"], correct:0, explain:"Cracks correspond to lamellae edges; other options are incorrect." },
-  { q: "Enamel appears radiographically:", opts:["More radiopaque than other dental tissues","More radiolucent than dentin","Similar in radiodensity to pulp","Invisible in bitewings"], correct:0, explain:"Slides state enamel appears more radiopaque than other tissues." },
-  { q: "Aging of enamel commonly shows:", opts:["Attrition with loss of vertical dimension and flattened proximal contours","Increased cusp height","Wider pulp chambers","Greater fluid permeability"], correct:0, explain:"Attrition and flattening are noted age changes; permeability is reduced, not increased." },
-  { q: "With age, teeth tend to:", opts:["Become darker and often more resistant to decay","Lighten in color","Show increased permeability","Lose all perikymata"], correct:0, explain:"Slides mention darker color and possibly increased resistance to decay; fluid permeability is reduced." },
-  { q: "Neonatal line indicates:", opts:["An accentuated incremental line associated with birth","A craze line formed after eruption","Start of secondary dentin","DEJ scalloping"], correct:0, explain:"Neonatal line is a special incremental line marking birth." },
-  { q: "Hunter–Schreger bands are:", opts:["Alternating light/dark bands in enamel under reflected light","Cross‑sectional rings of growth","Surface grooves on enamel","Laminae within dentin"], correct:0, explain:"Though only titled in slides, HS bands are recognized as alternating bands within enamel." },
-  { q: "Which structure is the external correlate of internal growth rhythm?", opts:["Perikymata","Enamel spindles","Rod sheaths","Cracks"], correct:0, explain:"Perikymata reflect internal Retzius lines at the surface." },
-  { q: "Enamel spindles are best associated with:", opts:["Extensions of odontoblastic processes into enamel","Salivary pellicle deposits","Lamellar cracks","Surface prismless zones"], correct:0, explain:"Spindles represent trapped odontoblastic processes at/near DEJ." },
-  { q: "Which statement about enamel pellicle is TRUE?", opts:["It provides sites for microbial accumulation that can form plaque","It is a permanent mineralized layer","It originates from ameloblasts","It is removed once and never reforms"], correct:0, explain:"Pellicle provides adhesion sites and reforms within hours." },
-  { q: "Which BEST explains why DEJ scalloping is important?", opts:["Increases surface area for mechanical interlocking","Allows diffusion of nutrients into enamel","Prevents perikymata formation","Causes neonatal line"], correct:0, explain:"Scallops increase interfacial area for a stronger bond." },
-  { q: "Which term pairs correctly with location/appearance?", opts:["Lines of Retzius – oblique from DEJ toward surface","Perikymata – internal concentric bands","Rod ends – convex elevations throughout","Lamellae – circular rings in cross section"], correct:0, explain:"Retzius lines run obliquely from DEJ toward surface; the other pairings are mismatched." },
-  { q: "Which surface feature is removed by mastication soon after eruption?", opts:["Enamel cuticle (Nasmyth's membrane)","Enamel pellicle","Perikymata","Cracks"], correct:0, explain:"The enamel cuticle is lost with function; pellicle reforms quickly." },
-  { q: "Which finding is MOST consistent with early occlusal wear in aging enamel?", opts:["Flattened contact points and reduced crown height","Increased vertical dimension","Enlarged enamel rods","Newly formed neonatal line"], correct:0, explain:"Attrition produces flattening and a loss of vertical dimension." }
+    {
+        q: "Which of the following is NOT listed as a hypocalcified structure of enamel?",
+        opts: ["Rod sheaths", "Enamel spindles", "Odontoblasts", "Enamel tufts"],
+        correct: 2,
+        explain: "Odontoblasts are cells that form dentin, not a structure within enamel. The others are all listed as hypocalcified structures."
+    },
+    {
+        q: "What do the Incremental Lines of Retzius represent?",
+        opts: ["Cracks in the enamel surface", "Successive deposition of enamel layers", "The junction between enamel and dentin", "Bundles of enamel rods"],
+        correct: 1,
+        explain: "These lines illustrate the successive deposition of enamel layers during the formation of the crown."
+    },
+    {
+        q: "How do the Incremental Lines of Retzius appear in a cross-section of a tooth?",
+        opts: ["As oblique lines", "As concentric rings", "As dark and light bands", "As small tufts"],
+        correct: 1,
+        explain: "In a cross-section, the Striae of Retzius appear as concentric rings, similar to the growth rings of a tree."
+    },
+    {
+        q: "What does a broadening of the Incremental Lines of Retzius suggest?",
+        opts: ["Rapid enamel formation", "A metabolic disturbance during matrix formation", "High mineral content", "Normal tooth development"],
+        correct: 1,
+        explain: "A broadening of these lines can reflect a metabolic disturbance that occurred while the enamel matrix was being formed."
+    },
+    {
+        q: "The Neonatal Line is an accentuated form of which other enamel structure?",
+        opts: ["Enamel Lamellae", "Hunter-Schreger Bands", "Incremental line of Retzius", "Enamel Tufts"],
+        correct: 2,
+        explain: "The Neonatal Line is a particularly pronounced Incremental Line of Retzius, marking the boundary between enamel formed before and after birth."
+    },
+    {
+        q: "Why is prenatal enamel generally better developed than postnatal enamel?",
+        opts: ["It contains more organic material.", "It is formed at a faster rate.", "The fetus is in a well-protected environment with adequate essential materials.", "Postnatal enamel is subject to wear and tear immediately."],
+        correct: 2,
+        explain: "The fetal environment is stable and provides a consistent supply of nutrients, leading to higher quality enamel formation compared to the period after birth."
+    },
+    {
+        q: "What causes the appearance of Hunter-Schreger bands in enamel?",
+        opts: ["Variations in calcification", "Presence of enamel proteins", "Cracks extending from the surface", "Regular changes in the direction of enamel rods"],
+        correct: 3,
+        explain: "Hunter-Schreger bands are an optical phenomenon caused by the alternating orientation of groups of enamel rods."
+    },
+    {
+        q: "Where do Hunter-Schreger bands typically originate?",
+        opts: ["At the outer enamel surface", "At the Dentinoenamel junction (DEJ)", "Within the enamel spindles", "Along the neonatal line"],
+        correct: 1,
+        explain: "These bands originate at the DEJ and extend outwards, usually ending some distance from the enamel surface."
+    },
+    {
+        q: "What is the primary composition of Enamel Tufts?",
+        opts: ["Highly mineralized enamel rods", "Greater concentrations of enamel proteins", "Entrapped odontoblast processes", "Salivary proteins"],
+        correct: 1,
+        explain: "Enamel tufts are hypocalcified, containing a higher concentration of enamel proteins compared to the surrounding enamel."
+    },
+    {
+        q: "What is the clinical significance of Enamel Tufts?",
+        opts: ["They increase the risk of caries.", "They are pathways for bacteria.", "They help prevent enamel fracture.", "They cause tooth discoloration."],
+        correct: 2,
+        explain: "Enamel tufts are believed to play a role in preventing the propagation of fractures through the enamel."
+    },
+    {
+        q: "Which structure is described as a thin organic layer that can extend from the enamel surface towards the DEJ and sometimes into dentin?",
+        opts: ["Enamel Spindle", "Enamel Lamella", "Perikymata", "Neonatal Line"],
+        correct: 1,
+        explain: "Enamel lamellae are crack-like structures that fit this description and can be a pathway for bacteria."
+    },
+    {
+        q: "Which type of Enamel Lamellae is most commonly found in erupted teeth and contains organic matter from saliva?",
+        opts: ["Type A", "Type B", "Type C", "Type D"],
+        correct: 2,
+        explain: "Type C lamellae are found in erupted teeth, reach into the dentin, and are filled with organic matter from the oral cavity."
+    },
+    {
+        q: "What is the primary significance of the scalloped shape of the Dentinoenamel Junction (DEJ)?",
+        opts: ["It increases the surface area for nutrient exchange.", "It allows for the passage of nerve endings.", "It ensures a firm hold of enamel to dentin.", "It marks the rate of enamel deposition."],
+        correct: 2,
+        explain: "The scalloped interface provides a strong mechanical lock between the enamel and the underlying dentin, preventing them from separating under load."
+    },
+    {
+        q: "What are Enamel Spindles?",
+        opts: ["Groups of hypocalcified enamel rods", "Cracks filled with organic debris", "Terminal ends of odontoblast processes trapped in enamel", "External manifestations of incremental lines"],
+        correct: 2,
+        explain: "Enamel spindles are formed when the terminal ends of odontoblast processes become trapped in the enamel matrix during development."
+    },
+    {
+        q: "Which surface structure is a highly mineralized, 20-40 µm thick layer containing crystals arranged at right angles to the surface?",
+        opts: ["Perikymata", "Enamel cuticle", "Prismless enamel", "Enamel rod ends"],
+        correct: 2,
+        explain: "Prismless enamel is a distinct surface layer that is more heavily mineralized than the rest of the enamel."
+    },
+    {
+        q: "What are Perikymata?",
+        opts: ["The concave depressions where enamel rods end", "A delicate membrane on newly erupted teeth", "The external manifestation of the incremental lines of Retzius", "Precipitates of salivary protein"],
+        correct: 2,
+        explain: "Perikymata are the wave-like grooves on the enamel surface that correspond to the underlying incremental lines of Retzius."
+    },
+    {
+        q: "The concavities on the enamel surface known as 'Enamel Rod Ends' are typically deepest near which area of the tooth?",
+        opts: ["The cervical region", "The mid-coronal area", "The Dentinoenamel junction", "The incisal or occlusal surface"],
+        correct: 3,
+        explain: "The depressions of the enamel rod ends are shallowest at the cervical region and deepen towards the chewing surfaces (incisal or occlusal)."
+    },
+    {
+        q: "What is another name for the Enamel Cuticle?",
+        opts: ["Pellicle", "Nasmyth's membrane", "Prismless layer", "Striae of Retzius"],
+        correct: 1,
+        explain: "The Enamel Cuticle is also known as Nasmyth's membrane, a delicate layer covering a newly erupted tooth."
+    },
+    {
+        q: "What is the Enamel Pellicle composed of?",
+        opts: ["Degenerated cells from tooth development", "A precipitate of salivary protein", "Hypocalcified enamel rods", "Bacteria and food debris"],
+        correct: 1,
+        explain: "The enamel pellicle is an acellular layer formed by the precipitation of proteins from saliva onto the tooth surface."
+    },
+    {
+        q: "Why does enamel appear more radiopaque on an X-ray than other tooth tissues?",
+        opts: ["It has a higher water content.", "It has a higher organic content.", "It has the highest mineral content.", "It is the outermost layer."],
+        correct: 2,
+        explain: "Enamel's high degree of mineralization (highest in the body) makes it very dense, which blocks x-rays more effectively, causing it to appear whiter (more radiopaque)."
+    },
+    {
+        q: "Which of the following is a common age change observed in enamel?",
+        opts: ["Increased permeability", "Lightening of tooth color", "Attrition or wear", "Formation of new enamel layers"],
+        correct: 2,
+        explain: "Attrition, the wear of occlusal and proximal surfaces due to mastication, is the most apparent age-related change in enamel."
+    },
+    {
+        q: "What causes the Incremental Lines of Retzius to appear as brownish bands in a ground section?",
+        opts: ["They are hypercalcified.", "They contain trapped air.", "They represent a slight change in rod direction and mineralization.", "They are artifacts of slide preparation."],
+        correct: 2,
+        explain: "These lines are believed to result from periodic variations in the secretory activity of ameloblasts, leading to slight changes in rod orientation and mineralization."
+    },
+    {
+        q: "Enamel lamellae that are restricted to the enamel of an unerupted tooth and consist of poorly calcified rod segments are classified as:",
+        opts: ["Type A", "Type B", "Type C", "Not a valid classification"],
+        correct: 0,
+        explain: "Type A lamellae are composed of poorly calcified rod segments and are found within the enamel of unerupted teeth."
+    },
+    {
+        q: "The structure that helps prevent fracture propagation and arises from the scalloped DEJ is the:",
+        opts: ["Enamel Lamella", "Enamel Spindle", "Enamel Rod Sheath", "Enamel Tuft"],
+        correct: 3,
+        explain: "Enamel tufts, which are hypomineralized, branched structures, are thought to act as crack arrestors within the enamel."
+    },
+    {
+        q: "Which of these structures is visible to the naked eye on the surface of a tooth?",
+        opts: ["Hunter-Schreger Bands", "Perikymata", "Enamel Spindles", "Striae of Retzius"],
+        correct: 1,
+        explain: "Perikymata are the only structures listed that are surface features (wave-like grooves) and can be seen clinically without magnification."
+    },
+    {
+        q: "The dental plaque biofilm initially forms on what structure?",
+        opts: ["The prismless enamel layer", "The enamel cuticle", "The enamel pellicle", "The enamel rod ends"],
+        correct: 2,
+        explain: "The enamel pellicle, a layer of salivary proteins, forms on the tooth surface first and provides a site for bacteria to attach and form plaque."
+    },
+    {
+        q: "A key difference between Enamel Tufts and Enamel Spindles is that:",
+        opts: ["Tufts are hypocalcified, while Spindles are hypercalcified.", "Tufts contain enamel protein, while Spindles contain parts of dentin-forming cells.", "Tufts run horizontally, while Spindles run vertically.", "Tufts are found on the surface, while Spindles are deep in enamel."],
+        correct: 1,
+        explain: "Enamel Tufts are areas with more enamel protein (hypocalcified), whereas Enamel Spindles are the trapped ends of odontoblast (dentin-forming cell) processes."
+    },
+    {
+        q: "The neonatal line is found in which teeth?",
+        opts: ["All permanent teeth", "All deciduous teeth and first permanent molars", "Only deciduous incisors", "Only permanent molars"],
+        correct: 1,
+        explain: "The neonatal line is present in all deciduous (primary) teeth and the cusps of the first permanent molars, as their development straddles the time of birth."
+    },
+    {
+        q: "What happens to the Enamel Cuticle (Nasmyth's membrane) after tooth eruption?",
+        opts: ["It calcifies and becomes part of the enamel.", "It is soon removed by mastication.", "It transforms into the enamel pellicle.", "It remains for life unless professionally removed."],
+        correct: 1,
+        explain: "The enamel cuticle is a very delicate membrane that is quickly worn away by the abrasive action of chewing."
+    },
+    {
+        q: "Which of the following is NOT an effect of aging on enamel?",
+        opts: ["It becomes darker.", "Its fluid permeability is reduced.", "Its resistance to decay may increase.", "Its thickness increases due to continuous deposition."],
+        correct: 3,
+        explain: "Enamel is acellular and does not regenerate or get thicker with age. The other options are recognized age-related changes."
+    }
 ];
 
 const tfs = [
-  { q:"In cross section, lines of Retzius appear as concentric rings.", answer:true, explain:"This is the characteristic cross‑sectional appearance." },
-  { q:"Surface prismless enamel is hypomineralized compared to inner enamel.", answer:false, explain:"It is hyper‑mineralized, not hypo." },
-  { q:"Perikymata are transverse grooves representing the external expression of growth lines.", answer:true, explain:"They are the surface expression of lines of Retzius." },
-  { q:"Cracks seen on enamel are unrelated to enamel lamellae.", answer:false, explain:"They are actually the outer edges of lamellae." },
-  { q:"Enamel tufts are hypocalcified and help resist fracture propagation.", answer:true, explain:"They are protein‑rich and can prevent fracture." },
-  { q:"The dentinoenamel junction is flat to maximize bonding.", answer:false, explain:"It is scalloped, enhancing mechanical interlock." },
-  { q:"The enamel pellicle reforms within hours after removal.", answer:true, explain:"It is a salivary protein film that quickly reappears." },
-  { q:"With age, enamel becomes lighter and more permeable.", answer:false, explain:"Slides indicate darker color and reduced permeability." },
-  { q:"Enamel is the most radiopaque of the tooth hard tissues.", answer:true, explain:"Enamel appears more radiopaque than other tissues." }
+    {
+        q: "The Incremental Lines of Retzius appear as oblique lines in a cross-section of enamel.",
+        answer: false,
+        explain: "This is false. In a cross-section, they appear as concentric rings. They appear as oblique lines in a longitudinal section."
+    },
+    {
+        q: "The neonatal line separates enamel formed before birth from enamel formed after birth.",
+        answer: true,
+        explain: "This is true. It's an accentuated incremental line that marks the physiological trauma of birth."
+    },
+    {
+        q: "Hunter-Schreger bands are visible due to varying degrees of mineralization in the enamel.",
+        answer: false,
+        explain: "This is false. They are an optical phenomenon caused by changes in the direction of enamel rods, not by differences in mineralization."
+    },
+    {
+        q: "Enamel tufts are hypocalcified structures that extend from the DEJ into the enamel.",
+        answer: true,
+        explain: "This is true. They are rich in enamel protein and are considered hypocalcified."
+    },
+    {
+        q: "Enamel lamellae are always confined to the enamel layer and never reach the dentin.",
+        answer: false,
+        explain: "This is false. Type B and Type C lamellae can extend from the surface and penetrate into the dentin."
+    },
+    {
+        q: "The scalloped shape of the DEJ serves to weaken the bond between enamel and dentin.",
+        answer: false,
+        explain: "This is false. The scalloped shape creates a strong mechanical interlock, strengthening the bond between enamel and dentin."
+    },
+    {
+        q: "Perikymata are the surface manifestations of the Hunter-Schreger bands.",
+        answer: false,
+        explain: "This is false. Perikymata are the surface manifestations of the Incremental Lines of Retzius."
+    },
+    {
+        q: "Prismless enamel is a layer found on the enamel surface that is less mineralized than the underlying enamel.",
+        answer: false,
+        explain: "This is false. The prismless layer is described as being 'hyper-mineralized' or more highly mineralized than the rest of the enamel."
+    },
+    {
+        q: "With age, enamel tends to become lighter in color and more permeable to fluids.",
+        answer: false,
+        explain: "This is false. Due to changes in the organic matrix and accumulation of stains, enamel becomes darker and less permeable with age."
+    }
 ];
 
 const saqs = [
-  // 1) Direct answer
-  { q: "Define perikymata on enamel.", a: "Transverse, wave‑like surface grooves representing the external expression of incremental lines of Retzius." },
-  // 2) List / Enumeration (3 or more)
-  { q: "List five hypocalcified enamel structures mentioned in the lecture.", a: "<ol><li>Rod sheaths</li><li>Striations</li><li>Dentinoenamel junction</li><li>Incremental lines of Retzius</li><li>Neonatal line</li><li>Enamel lamellae</li><li>Enamel tufts</li><li>Enamel spindles</li></ol>" },
-  // 3) Comparison as a numbered table
-  { q: "Compare enamel tufts, lamellae, and spindles (key point each).", a: "<table style=\"width:100%;border-collapse:collapse\"><thead><tr><th style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">#</th><th style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Structure</th><th style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Key Point</th></tr></thead><tbody><tr><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">1</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Tufts</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Hypocalcified, branched, arise at scalloped DEJ; help resist fracture.</td></tr><tr><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">2</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Lamellae</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Leaf‑like hypocalcified lines/planes that can act as pathways for bacteria.</td></tr><tr><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">3</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Spindles</td><td style=\"border:1px solid rgba(255,255,255,0.2);padding:6px\">Short extensions of odontoblastic processes into enamel near the DEJ.</td></tr></tbody></table>" },
-  // 4) Case‑based scenario
-  { q: "A newly erupted maxillary incisor has a delicate membrane that soon disappears with mastication. What is this layer and what typically replaces the surface coating?", a: "Nasmyth’s membrane (enamel cuticle); after loss, a salivary pellicle quickly reforms." },
-  // 5) Direct answer (structureless enamel)
-  { q: "State the thickness and crystal orientation of the surface prismless enamel.", a: "Approximately 20–40 µm thick; crystals arranged almost at right angles to the surface." },
-  // 6) Direct answer (cracks)
-  { q: "What are enamel ‘cracks’ on the surface in relation to internal structures?", a: "They correspond to the outer edge of enamel lamellae." }
+    {
+        q: "A patient who is a heavy bruxer (grinds their teeth) presents with significant wear on their molars, exposing the yellowish layer beneath the white outer layer. Based on the lecture, what is this phenomenon called and what are two other age-related changes that might be occurring in their enamel?",
+        a: "The phenomenon is **attrition**. Two other age-related changes are: 1. The teeth becoming **darker** in color. 2. A **reduction in fluid permeability**, which might increase resistance to decay."
+    },
+    {
+        q: "Define Enamel Lamellae and list the three types, specifying where each is found (erupted or unerupted tooth).",
+        a: "Enamel lamellae are thin, leaf-like structures that extend from the enamel surface toward the DEJ, sometimes penetrating dentin. They are often sites of weakness.<br>1. <strong>Type A:</strong> Composed of poorly calcified rod segments. Found in unerupted teeth.<br>2. <strong>Type B:</strong> Consist of degenerated cells. Found in unerupted teeth.<br>3. <strong>Type C:</strong> Contain organic matter from saliva. Found in erupted teeth."
+    },
+    {
+        q: "Explain what the Neonatal Line is, why it forms, and in which teeth it is typically found.",
+        a: "The Neonatal Line is an accentuated Incremental Line of Retzius that marks the boundary between enamel formed before birth (prenatal) and after birth (postnatal). It forms due to the abrupt change in environment and nutrition the infant experiences at birth. It is found in all deciduous (primary) teeth and the first permanent molars."
+    },
+    {
+        q: "Compare and contrast Enamel Tufts and Enamel Spindles using a numbered table, covering their origin and composition.",
+        a: `<table>
+                <thead>
+                    <tr>
+                        <th>Feature</th>
+                        <th>Enamel Tufts</th>
+                        <th>Enamel Spindles</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>1. <strong>Origin</strong></td>
+                        <td>Arise at the DEJ due to abrupt changes in enamel rod direction.</td>
+                        <td>Formed by the entrapment of odontoblast processes within the enamel matrix.</td>
+                    </tr>
+                    <tr>
+                        <td>2. <strong>Composition</strong></td>
+                        <td>Hypocalcified areas with a higher concentration of enamel proteins.</td>
+                        <td>Contain the remnants of dentinal tubules and odontoblast processes.</td>
+                    </tr>
+                </tbody>
+            </table>`
+    },
+    {
+        q: "Describe three distinct structures found on the surface of enamel.",
+        a: `1. <strong>Perikymata:</strong> These are transverse, wave-like grooves on the enamel surface that are the external manifestations of the Incremental Lines of Retzius.
+           <br>2. <strong>Prismless Enamel:</strong> A highly mineralized outer layer (20-40 µm thick) where crystals are arranged at right angles to the surface.
+           <br>3. <strong>Enamel Rod Ends:</strong> Concave depressions on the surface where the enamel rods terminate.`
+    },
+    {
+        q: "Explain the formation and significance of the Enamel Pellicle.",
+        a: "The Enamel Pellicle is a thin, acellular layer formed from the precipitation of salivary proteins onto the enamel surface after the original enamel cuticle (Nasmyth's membrane) wears away. It reforms within hours of being removed. Its significance is that it acts as the initial site for the attachment and accumulation of microorganisms, which can lead to the formation of dental plaque and subsequently, caries."
+    }
 ];
 
 // ----------- State -----------
@@ -384,13 +607,14 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
   </div>
   <div class="answer" hidden>${item.a}</div>
 `;
+
 
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');

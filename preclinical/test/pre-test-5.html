@@ -67,7 +67,6 @@
     .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
   }
 
-  /* Cards (no accent on the card itself) */
   .card{
     background:var(--card);
     border:1px solid var(--card-border);
@@ -94,7 +93,6 @@
   }
   .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
-  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
     border-left:6px solid var(--ok);
     outline:none;
@@ -107,7 +105,7 @@
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
@@ -127,10 +125,9 @@
   }
   .score .part{color:var(--muted);font-weight:600}
   .score b{color:var(--text)}
-
-  table.min{width:100%;border-collapse:collapse;font-size:0.95rem}
-  table.min th, table.min td{border:1px solid rgba(255,255,255,0.18);padding:6px 8px}
-  table.min th{background:rgba(255,255,255,0.06)}
+  .answer table {width: 100%; border-collapse: collapse; margin-top: 10px;}
+  .answer th, .answer td {border: 1px solid var(--card-border); padding: 8px; text-align: left;}
+  .answer th {background-color: var(--glass);}
 </style>
 </head>
 <body>
@@ -173,72 +170,129 @@
   </main>
 
 <script>
-// ----------- Data (filled from Lecture 5: General considerations in Composite restoration & Restorative technique) -----------
+// ----------- Data -----------
 const mcqs = [
-  { q:"Which property primarily retains composite restorations to tooth structure?", opts:["Macromechanical undercuts","Micromechanical adhesion","Chemical bonding to calcium hydroxide","Thermal expansion matching"], correct:1, explain:"Composites are primarily retained by micromechanical adhesion via resin tags in etched enamel/dentin." },
-  { q:"A mandatory requirement for successful composite bonding is:", opts:["Use of a metallic matrix","Rubber dam isolation","Use of calcium hydroxide liner in all cases","Cavity walls with uniform 2mm depth"], correct:1, explain:"Moisture control is critical; rubber dam isolation prevents salivary contamination." },
-  { q:"Which class of cavities is NOT an indication for composite according to general uses?", opts:["Class II","Class VI","Class III","Class V"], correct:1, explain:"Indications include Class I–V; Class VI is not listed in the provided indications." },
-  { q:"Composite is CONTRAINDICATED when:", opts:["A proximal box is present","Occlusal contacts are entirely on the restoration in a heavy bruxer","There is a small Class III lesion","Shade matching is difficult"], correct:1, explain:"High occlusal loading (heavy occlusion/bruxism) with all contacts on composite favors amalgam due to wear." },
-  { q:"A composite margin extending onto the root is at risk primarily due to:", opts:["Thermal expansion","Polymerization shrinkage gap formation","Fluoride release","Galvanic corrosion"], correct:1, explain:"Root-surface margins often show gaps from polymerization shrinkage; consider RMGI liner." },
-  { q:"An appropriate liner at root-surface extensions to reduce microleakage is:", opts:["Zinc phosphate cement","Resin-modified glass ionomer","ZOE","Silicate cement"], correct:1, explain:"An RMGI liner below composite at root areas can reduce gap formation and recurrent caries." },
-  { q:"A key esthetic/handling advantage of composites over amalgam is:", opts:["Anticariogenic fluoride release","Low thermal conductivity and conservative prep","Self-sealing corrosion products","Complete immunity to wear"], correct:1, explain:"Advantages include low thermal conductivity and conservative preparations." },
-  { q:"Which is a listed disadvantage of composites?", opts:["One-step placement with no finishing","Technique sensitivity to isolation","Immediate anticariogenic action","No polymerization shrinkage"], correct:1, explain:"Composites are technique sensitive and require excellent isolation and multi-step bonding." },
-  { q:"In etch-and-rinse (two-step) systems, the two bottled steps are:", opts:["Acid then primer; bonding included in primer","Primer and bonding; no acid","Acid; combined primer+bond","Self-etch primer only"], correct:2, explain:"Two-step E&R uses separate acid etch followed by a combined primer+adhesive bottle." },
-  { q:"Self-etch ONE-step adhesives combine:", opts:["Primer + bonding only","Acid + primer + bonding in one","Acid + bonding only","Acid only"], correct:1, explain:"One-step self-etch = all-in-one (acid, primer, and bonding)." },
-  { q:"First clinical step in composite restoration is:", opts:["Acid etching","Rubber dam placement","Shade selection on moist tooth","Matrix placement"], correct:2, explain:"Shade selection comes first and must be done before dehydration by rubber dam." },
-  { q:"During shade selection, why avoid prolonged drying?", opts:["Teeth become darker","Teeth become lighter due to decreased translucency","It increases surface energy","It removes smear layer"], correct:1, explain:"Dehydration lightens tooth shade; select shade rapidly on moist tooth in natural light." },
-  { q:"Most commonly used etchant for enamel/dentin in E&R is:", opts:["10% citric acid","37% phosphoric acid","Polyacrylic acid 20%","Maleic acid 5%"], correct:1, explain:"37% phosphoric acid is the standard etchant." },
-  { q:"Primary enamel effect of acid etching is:", opts:["Formation of smear layer","Selective dissolution creating microporosities","Demineralization limited to dentin only","Immediate fluoride uptake"], correct:1, explain:"Etching dissolves interprismatic enamel, creating microporosities and increasing surface energy." },
-  { q:"Total-etch protocol typically uses an etch time of:", opts:["5 s for enamel and dentin","15 s for both enamel and dentin","30 s for dentin only","60 s for enamel"], correct:1, explain:"Total etch commonly 15 s, then thorough rinse for 15 s." },
-  { q:"Selective-etch protocol commonly uses times of:", opts:["Enamel 30 s; dentin 15 s","Enamel 10 s; dentin 30 s","Enamel 15 s; dentin 30 s","Both 30 s"], correct:0, explain:"Selective enamel (≈30 s) then dentin (≈15 s)." },
-  { q:"Excessive air-drying of etched dentin risks:", opts:["Collagen collapse preventing resin infiltration","Hypermineralization","Increased smear layer thickness","Bond strength increase"], correct:0, explain:"Over-drying collapses the collagen network and hinders primer penetration." },
-  { q:"Adhesive handling after application generally includes:", opts:["Immediate thick air blast for 10 s","Light gentle air to evaporate solvent then light cure ~20 s","No light cure when using composite","Rinse off adhesive then cure"], correct:1, explain:"Apply 1–2 coats, gently air-thin to remove solvent, then light cure about 20 s." },
-  { q:"Maximum recommended thickness for each composite increment is about:", opts:["0.5 mm","1.0 mm","≤2.0 mm","3–4 mm regardless of shade"], correct:2, explain:"Place increments ~1–2 mm (max 2 mm) to ensure depth of cure and reduce shrinkage stress." },
-  { q:"First composite increment is especially critical because:", opts:["It sets chemically only","It is farthest from the curing light and seals the floor","It determines final shade only","It must contain glass ionomer"], correct:1, explain:"The deepest increment is farthest from light; curing and seal are critical (≈20 s)." },
-  { q:"Horizontal layering technique tends to:", opts:["Reduce polymerization shrinkage","Increase polymerization shrinkage","Be identical to oblique layering","Be contraindicated in small Class III"], correct:1, explain:"Horizontal bulk across the floor increases overall shrinkage vectors." },
-  { q:"Oblique layering technique mainly aims to:", opts:["Increase C-factor","Reduce polymerization shrinkage","Eliminate need for etching","Speed curing by half"], correct:1, explain:"Wedge-shaped oblique increments reduce shrinkage stress by directing vectors." },
-  { q:"Successive cusp build-up technique is characterized by:", opts:["Building all cusps simultaneously","Restoring one cusp at a time to near final morphology","No need for finishing","Use only in anterior teeth"], correct:1, explain:"Cusps are rebuilt one at a time, aiding morphology and reducing finishing time." },
-  { q:"Polychromatic layering is particularly useful for:", opts:["Posterior occlusal anatomy only","Anterior esthetics replicating enamel/dentin/translucency","Reducing polymerization shrinkage","Bonding to metal"], correct:1, explain:"Uses multiple shades to mimic palatal enamel, dentin body, features, and translucency in anteriors." },
-  { q:"Which statement on finishing/polishing is MOST accurate?", opts:["Finishing must be delayed 24 h","Microfilled composites can achieve highest gloss","Only tungsten carbide burs are used; no diamonds","Always finish dry with heavy pressure"], correct:1, explain:"Microfilled composites polish to the highest gloss; use water and light pressure." },
-  { q:"Instrument recommended for gross contouring of concave occlusal surfaces includes:", opts:["Round bur with no water","12-fluted carbide or finishing diamond with water","Stainless steel hand scaler","Acrylic trimming bur"], correct:1, explain:"Use 12-fluted carbide/finishing diamond under water spray and light pressure." },
-  { q:"An esthetic enhancement procedure appropriately done with composite is:", opts:["Full metal veneer","Diastema closure","Amalgam onlay","Cast gold veneer"], correct:1, explain:"Diastema closure and veneers are listed esthetic uses of composite." },
-  { q:"Which is a valid additional use of composite?", opts:["Periodontal splinting","Pulp capping medicament","Endodontic sealer only","Crown lengthening"], correct:0, explain:"Composite can be used for periodontal splinting." },
-  { q:"When the operating area cannot be fully isolated even with rubber dam, the material of choice often becomes:", opts:["Composite with extra etching","Amalgam restoration","Glass ionomer solely","Temporary ZOE"], correct:1, explain:"In poor isolation scenarios, amalgam may be preferable to composite." },
-  { q:"Which statement about cost/steps is correct?", opts:["Composite is cheaper and one-step compared with amalgam","Composite is costlier due to multi-step bonding and finishing","Amalgam requires more steps for bonding","Both have identical steps"], correct:1, explain:"Composite involves etching, bonding, incremental placement, finishing, and polishing." }
+    {q: "What is the primary mechanism by which composite restorations are retained in the tooth structure?", opts: ["Macromechanical interlocking", "Chemical bonding to collagen", "Micromechanical adhesion", "Frictional resistance"], correct: 2, explain: "Composites are primarily retained by micromechanical adhesion, created by etching the tooth surface."},
+    {q: "Which of the following is NOT a primary indication for composite restorations?", opts: ["Class V restorations", "Full metal crown foundations", "Diastema closures", "Sealants and preventive resin restorations"], correct: 1, explain: "While composites are used for core buildups, they are not the material of choice for full metal crown foundations. They are indicated for Classes I-V, esthetic enhancements, and sealants."},
+    {q: "What is the most critical contraindication for placing a composite restoration?", opts: ["Heavy occlusal forces", "Inability to achieve adequate isolation", "Deep subgingival margins", "Patient allergy to acrylic resin"], correct: 1, explain: "Successful bonding of composite requires an environment completely isolated from oral fluids. If the site cannot be isolated, another material should be chosen."},
+    {q: "In a patient with bruxism, which restorative material is generally preferred over composite for posterior restorations?", opts: ["Glass ionomer", "Resin-modified glass ionomer", "Amalgam", "Porcelain"], correct: 2, explain: "Amalgam has better wear resistance and is usually the material of choice for patients with heavy occlusion or bruxism."},
+    {q: "The phenomenon of polymerization shrinkage in composites is most likely to cause gap formation on which surface?", opts: ["Occlusal surface", "Enamel margins", "Root surface", "Axial wall"], correct: 2, explain: "Polymerization shrinkage forces can lead to gap formation, especially at the junction of the composite and the root surface, where bonding is less predictable."},
+    {q: "Which of the following is considered the main esthetic advantage of composite restorations?", opts: ["Low thermal conductivity", "Ability to be repaired", "Natural tooth-like appearance", "Conservative tooth preparation"], correct: 2, explain: "The most common advantage of composites is their excellent esthetics, allowing them to match the color and translucency of natural teeth."},
+    {q: "What is the recommended concentration of phosphoric acid for etching tooth structure?", opts: ["10%", "25%", "37%", "50%"], correct: 2, explain: "37% phosphoric acid is the most commonly used agent for acid etching enamel and dentin."},
+    {q: "What is the ideal clinical appearance of enamel after proper acid etching and drying?", opts: ["Shiny and glossy", "Slightly yellow and moist", "Chalky or frosty white", "Smooth and translucent"], correct: 2, explain: "A properly etched and dried enamel surface should have a characteristic frosty white appearance, indicating successful creation of microporosities."},
+    {q: "What happens if dentin is over-dried after etching and rinsing?", opts: ["The smear layer reforms", "It prevents the adhesive from penetrating", "It increases the bond strength", "It causes immediate post-operative sensitivity"], correct: 1, explain: "Over-drying the dentin can cause the exposed collagen network to collapse, forming a dense film that prevents the adhesive agent from penetrating effectively."},
+    {q: "The layer formed by the penetration of adhesive resin into the exposed collagen network of dentin is called:", opts: ["Resin tag layer", "Oxygen-inhibited layer", "Hybrid layer", "Smear layer"], correct: 2, explain: "The hybrid layer is an interlocking of resin and decalcified dentin (collagen fibers), which is crucial for bonding."},
+    {q: "What is the maximum recommended thickness for each increment of composite placement?", opts: ["0.5 mm", "2 mm", "4 mm", "5 mm"], correct: 1, explain: "Increments should not exceed 2 mm in thickness to ensure complete polymerization (curing) and to minimize the effects of polymerization shrinkage."},
+    {q: "Which incremental layering technique is specifically designed to reduce the effects of polymerization shrinkage?", opts: ["Horizontal layering", "Bulk fill technique", "Oblique layering", "Vertical layering"], correct: 2, explain: "The oblique technique, which uses wedge-shaped increments, directs shrinkage forces more favorably and reduces overall stress on the restoration."},
+    {q: "When should shade selection for a composite restoration be performed?", opts: ["After cavity preparation", "After rubber dam placement", "Before the tooth dehydrates", "Under the dental operating light"], correct: 2, explain: "Shade selection should be done at the beginning of the appointment, before the tooth dehydrates and becomes lighter in shade."},
+    {q: "A 'Three-Step Etch-and-Rinse' adhesive system involves which sequence of components?", opts: ["Etchant, Primer, Adhesive", "Etchant, All-in-one Adhesive", "Self-etching primer, Adhesive", "Etchant, Primer + Adhesive"], correct: 0, explain: "The three-step system (IV Generation) uses three separate components: an acid etchant, a primer, and an adhesive resin."},
+    {q: "A 'Two-Step Self-Etch' adhesive system combines which two components?", opts: ["Etchant and Primer", "Primer and Adhesive", "Etchant and Adhesive", "All three in one bottle"], correct: 0, explain: "In a two-step self-etch system (VI Generation), the etchant and primer are combined into a 'self-etching primer', followed by a separate adhesive resin."},
+    {q: "What is the primary purpose of applying a primer to etched dentin?", opts: ["To remove the smear layer", "To disinfect the dentin surface", "To facilitate wetting and adhesive penetration", "To initiate polymerization"], correct: 2, explain: "The primer contains hydrophilic monomers that displace water from the moist collagen network, allowing the hydrophobic adhesive resin to penetrate."},
+    {q: "Which of the following is a primary disadvantage of composite restorations compared to amalgam?", opts: ["Poor esthetics", "Higher thermal conductivity", "More technique-sensitive", "Requires more tooth structure removal"], correct: 2, explain: "Composite restorations are more technique-sensitive, primarily because they require meticulous isolation and multiple steps for bonding."},
+    {q: "Which property of composite materials allows for fixing minor defects without replacing the entire restoration?", opts: ["Low thermal conductivity", "Repairability", "High flexural strength", "Radiopacity"], correct: 1, explain: "Composites can be repaired by bonding new material to the existing restoration, which is a significant advantage."},
+    {q: "What is the recommended rinsing time after applying 37% phosphoric acid for 15 seconds?", opts: ["5 seconds", "10 seconds", "15 seconds", "30 seconds"], correct: 2, explain: "The etchant should be thoroughly rinsed for the same amount of time it was applied, which is typically 15 seconds."},
+    {q: "The 'Successive Cusp Buildup' technique is primarily aimed at:", opts: ["Speeding up the procedure", "Maximizing polymerization shrinkage", "Recreating natural tooth morphology", "Improving the material's color stability"], correct: 2, explain: "This technique focuses on reconstructing individual cusps to replicate the natural anatomy, which can reduce finishing time."},
+    {q: "Which composite type is known to polish to the highest gloss, making it esthetically superior?", opts: ["Macrofilled", "Microfilled", "Hybrid", "Nanofilled"], correct: 1, explain: "Microfilled composites have smaller particles that allow them to be polished to a very high, long-lasting gloss."},
+    {q: "A 'white line' seen at the margin of a composite restoration is often an indication of:", opts: ["Incomplete curing", "Microfractures from polymerization stress", "Excessive adhesive application", "Staining from oral fluids"], correct: 1, explain: "A white line can indicate enamel microfractures at the margin, caused by the stress of polymerization shrinkage."},
+    {q: "What does the term 'Polychromatic layering' refer to in composite restorations?", opts: ["Using a single-shade composite throughout", "Using different shades to mimic natural tooth layers", "Layering different types of composite (e.g., flowable and packable)", "Curing each layer with a different wavelength of light"], correct: 1, explain: "Polychromatic layering uses different composite opacities and shades (e.g., for dentin and enamel) to replicate the appearance of a natural tooth."},
+    {q: "A 'Two-Step Etch-and-Rinse' system (V Generation) combines which components into one bottle?", opts: ["Etchant and Primer", "Primer and Adhesive", "Etchant and Adhesive", "All three components"], correct: 1, explain: "In this system, the primer and adhesive are combined into one bottle, which is applied after a separate etching step."},
+    {q: "Which of the following is NOT an effect of acid etching on enamel?", opts: ["Dissolution of interprismatic substance", "Creation of microporosities", "Removal of the smear layer", "Exposure of collagen fibrils"], correct: 3, explain: "Exposure of collagen fibrils occurs in dentin, not enamel. Etching enamel increases surface area and energy by dissolving the mineral structure."},
+    {q: "The use of a rubber dam is mandatory for composite restorations primarily to:", opts: ["Protect the patient's soft tissues", "Improve visibility for the operator", "Prevent contamination by oral fluids", "Retract the tongue and cheeks effectively"], correct: 2, explain: "While it does all of these things, its most critical role for composites is ensuring absolute isolation to prevent moisture contamination, which would compromise the bond."},
+    {q: "For a Class V restoration extending onto the root surface, what might be used under the composite to improve the marginal seal?", opts: ["A varnish", "A calcium hydroxide liner", "A resin-modified glass ionomer (RMGI)", "A thicker layer of adhesive"], correct: 2, explain: "An RMGI liner (in a 'sandwich' technique) can reduce microleakage and gap formation at the root surface margin due to its chemical bond and fluoride release."},
+    {q: "Finishing and polishing of a composite restoration should be done:", opts: ["24 hours after placement", "Immediately after the final increment is cured", "Before the final increment is cured", "Only if the patient complains about roughness"], correct: 1, explain: "Unlike amalgam, light-cured composites are fully set once cured, so finishing and polishing can be initiated immediately."},
+    {q: "Which is an example of an esthetic enhancement procedure using composite?", opts: ["Core buildup for a PFM crown", "Splinting of periodontally involved teeth", "Closing a diastema", "A Class I occlusal restoration"], correct: 2, explain: "Closing a diastema (a gap between teeth) is a purely esthetic procedure where composite is added to change the shape and size of the teeth."},
+    {q: "What is the main reason composites are considered a 'conservative' restorative material?", opts: ["They are inexpensive", "The preparation requires less removal of healthy tooth structure", "They can be placed in a single visit", "They contain no metal"], correct: 1, explain: "Composite preparations don't require mechanical retention features like undercuts, so less healthy tooth structure needs to be removed compared to amalgam preparations."}
 ];
 
 const tfs = [
-  { q:"Composite restorations inherently provide anticariogenic fluoride release.", answer:false, explain:"They lack anticariogenic property compared with some glass ionomers." },
-  { q:"Rubber dam isolation is considered mandatory for composite procedures.", answer:true, explain:"Prevents contamination by oral fluids during bonding." },
-  { q:"All occlusal contacts on a composite in a heavy bruxer is a favorable indication for composite.", answer:false, explain:"High occlusal load and all contacts on composite increase wear; consider amalgam." },
-  { q:"Etching produces a frosty white enamel appearance clinically when done properly.", answer:true, explain:"After etch and dry, enamel shows a frosty appearance." },
-  { q:"Over-drying etched dentin can collapse the collagen network and reduce bond strength.", answer:true, explain:"Keep dentin moist to avoid collagen collapse and allow primer infiltration." },
-  { q:"Oblique layering typically reduces polymerization shrinkage effects compared with horizontal layering.", answer:true, explain:"Wedge increments direct shrinkage and lower stress." },
-  { q:"Microfilled composites are the least polishable and should not be used when esthetics matter.", answer:false, explain:"They polish to the highest gloss and are very esthetic." },
-  { q:"37% phosphoric acid is commonly used for etching in etch-and-rinse techniques.", answer:true, explain:"Standard concentration for enamel/dentin etching." },
-  { q:"Polychromatic layering is irrelevant for anterior esthetics.", answer:false, explain:"It is especially useful to replicate natural enamel and dentin layers in anterior teeth." }
+    {q: "Composites have completely replaced silicate cement and acrylic resin as tooth-colored restorative materials.", answer: true, explain: "The lecture states that composites are the most popular tooth-colored materials, having completely replaced older options like silicate cement."},
+    {q: "The use of a rubber dam is recommended but not mandatory for successful composite bonding.", answer: false, explain: "The lecture explicitly states that the use of a rubber dam is mandatory for all composite restoration procedures to ensure proper isolation."},
+    {q: "Composite restorations are more resistant to occlusal wear than amalgam restorations.", answer: false, explain: "Composites generally have less wear resistance than amalgam, making amalgam a better choice in areas of high occlusal stress."},
+    {q: "Shade selection should be done after placing the rubber dam to ensure a dry field.", answer: false, explain: "Shade selection must be done before rubber dam placement, as a dehydrated tooth appears lighter in shade, leading to a color mismatch."},
+    {q: "The primary disadvantage of composites is their high thermal conductivity.", answer: false, explain: "Composites have low thermal conductivity, similar to dentin, which is an advantage. Their primary disadvantage is polymerization shrinkage."},
+    {q: "Acid etching increases the surface energy of the enamel, making it easier to wet with adhesive.", answer: true, explain: "Besides creating microporosities, acid etching removes contaminants and increases surface energy, which promotes wetting by the adhesive resin."},
+    {q: "A 'One-Step Self-Etch' adhesive combines the etchant, primer, and bonding agent into a single application.", answer: true, explain: "This system, also known as an 'all-in-one' adhesive, simplifies the procedure by combining all three components into one bottle."},
+    {q: "It is acceptable to place composite in increments of up to 4 mm in deep cavities.", answer: false, explain: "The maximum recommended thickness for an increment is 2 mm to ensure adequate light curing and to minimize shrinkage stress."},
+    {q: "Composite restorations are not repairable and must be completely replaced if they fracture.", answer: false, explain: "A key advantage of composites is that they are repairable; new composite can be bonded to an existing restoration."}
 ];
 
 const saqs = [
-  // 1 Direct answer
-  { q:"Define the primary retention mechanism of composite restorations.", a:"Micromechanical adhesion via resin tags in etched enamel/dentin." },
-  // 2 List/enumeration (3 or more)
-  { q:"List three general indications/uses for composite restorations.", a:"1) Class I–V restorations 2) Esthetic veneers/diastema closure 3) Sealants/PRR (also cores, splinting)." },
-  // 3 Comparison (must be a numbered table in the answer)
-  { q:"Compare horizontal vs oblique layering techniques (focus: shrinkage).", a:`<table class="min"><thead><tr><th>#</th><th>Technique</th><th>Key point</th></tr></thead><tbody><tr><td>1</td><td>Horizontal</td><td>Tends to increase overall polymerization shrinkage vectors.</td></tr><tr><td>2</td><td>Oblique</td><td>Wedge increments reduce shrinkage stress by directing vectors.</td></tr></tbody></table>` },
-  // 4 Case-based scenario
-  { q:"A patient with heavy bruxism needs a large restoration where all occlusal contacts would be on the material. What restorative material is generally preferred?", a:"Amalgam is preferred due to better wear resistance under high occlusal load." },
-  // 5 Short factual process
-  { q:"State typical etching times for selective-etch enamel and dentin.", a:"Enamel ≈30 s; dentin ≈15 s." },
-  // 6 Short procedural step
-  { q:"What is the recommended maximum thickness for each composite increment and typical curing time for the first increment?", a:"≤2.0 mm per increment; ~20 s light cure for the first increment." }
+  {
+    q: "A patient presents with a deep Class II carious lesion on a maxillary first molar. The distal margin of the cavity preparation is subgingival and difficult to keep dry. What restorative material would be a better choice than composite in this specific situation, and why?",
+    a: "Amalgam would be a better choice. The primary reason is the inability to achieve adequate isolation from oral fluids at the subgingival margin. Successful composite bonding is highly technique-sensitive and requires a completely dry field, which is not possible here. Amalgam is less sensitive to moisture contamination."
+  },
+  {
+    q: "List three distinct contraindications for the use of direct composite restorations.",
+    a: `
+      <ol>
+        <li><b>Inability to Isolate:</b> When the operating site cannot be properly isolated from contamination by saliva or other oral fluids.</li>
+        <li><b>Heavy Occlusion:</b> In patients with bruxism or when all of a tooth's occlusal contacts would be solely on the composite material.</li>
+        <li><b>Root Surface Extensions:</b> Restorations with margins on the root surface can be problematic due to polymerization shrinkage and a weaker bond, potentially leading to gap formation.</li>
+      </ol>
+    `
+  },
+  {
+    q: "Describe the seven main steps of the restorative technique for a direct composite restoration using a two-step etch-and-rinse system.",
+    a: `
+      <ol>
+        <li><b>Shade selection:</b> Choosing the correct composite shade before tooth isolation and dehydration.</li>
+        <li><b>Isolation:</b> Isolating the operating site, typically with a rubber dam.</li>
+        <li><b>Cavity preparation:</b> Removing caries and preparing the tooth conservatively.</li>
+        <li><b>Acid etching and rinsing:</b> Applying phosphoric acid to enamel and dentin, then thoroughly rinsing and gently drying.</li>
+        <li><b>Adhesive application:</b> Applying the bonding agent and light curing it.</li>
+        <li><b>Incremental composite placement:</b> Placing and curing the composite in small layers (max 2mm).</li>
+        <li><b>Finishing and polishing:</b> Contouring, finishing, and polishing the restoration.</li>
+      </ol>
+    `
+  },
+  {
+    q: "Explain the main purpose of acid etching on both enamel and dentin.",
+    a: "On <b>enamel</b>, acid etching selectively dissolves the mineral structure (interprismatic substance) to create microscopic pores, which increases the surface area and surface energy. This allows the adhesive resin to flow in and create micromechanical retention (resin tags). On <b>dentin</b>, etching removes the smear layer, demineralizes the top layer to expose the network of collagen fibrils, and opens the dentinal tubules. This allows the primer and adhesive to penetrate and form a 'hybrid layer' for bonding."
+  },
+  {
+    q: "Compare the Horizontal and Oblique incremental layering techniques for placing composite. Which one is considered superior and why?",
+    a: `
+      <table>
+        <thead>
+          <tr>
+            <th>Technique</th>
+            <th>Description</th>
+            <th>Effect on Shrinkage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Horizontal Layering</b></td>
+            <td>Composite is placed in flat layers that connect opposing cavity walls (e.g., buccal and lingual).</td>
+            <td>This can increase polymerization shrinkage stress because the shrinking composite pulls the walls towards each other.</td>
+          </tr>
+          <tr>
+            <td><b>Oblique Layering</b></td>
+            <td>Composite is placed in wedge-shaped increments, touching only two or three walls at a time.</td>
+            <td>This technique is superior because it directs shrinkage forces more favorably and reduces the overall stress on the tooth and the bonded interfaces.</td>
+          </tr>
+        </tbody>
+      </table>
+    `
+  },
+  {
+    q: "List four main advantages of using composite resin for dental restorations.",
+    a: `
+      <ol>
+        <li><b>Esthetics:</b> They can match the natural color, translucency, and texture of teeth.</li>
+        <li><b>Conservative Preparation:</b> Less healthy tooth structure needs to be removed because bonding provides retention, eliminating the need for mechanical undercuts.</li>
+        <li><b>Low Thermal Conductivity:</b> They insulate the pulp from temperature changes, similar to natural dentin.</li>
+        <li><b>Bonding to Tooth Structure:</b> This results in good retention, reduced microleakage, and increased strength of the remaining tooth structure.</li>
+      </ol>
+    `
+  }
 ];
 
 // ----------- State -----------
 const state = {
-  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
-  tf: Array(tfs.length).fill(null),   // null | boolean
-  saq: Array(saqs.length).fill(false) // self-marked
+  mcq: Array(mcqs.length).fill(null),
+  tf: Array(tfs.length).fill(null),
+  saq: Array(saqs.length).fill(false)
 };
 
 function shuffleIndices(n){
@@ -288,19 +342,16 @@ mcqs.forEach((item, idx)=>{
 
   buttons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      if(card.dataset.locked === 'true') return; // one attempt
+      if(card.dataset.locked === 'true') return;
       const v = Number(btn.dataset.v);
       state.mcq[idx] = v;
 
-      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
-      // Always mark the correct option (green)
       const correctBtn = buttons[correctVisualIndex];
       correctBtn.classList.add('correct');
 
       if(v !== correctVisualIndex){
-        // Mark chosen wrong option (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
@@ -318,7 +369,7 @@ mcqs.forEach((item, idx)=>{
 
 // ----------- Render True/False -----------
 const tfGrid = document.getElementById('tfGrid');
- tfs.forEach((item, idx)=>{
+tfs.forEach((item, idx)=>{
   const card = document.createElement('article');
   card.className='card qcard';
   card.dataset.type='tf';
@@ -348,20 +399,17 @@ const tfGrid = document.getElementById('tfGrid');
 
   buttons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      if(card.dataset.locked === 'true') return; // one attempt
+      if(card.dataset.locked === 'true') return;
       const val = btn.dataset.v === "true";
       state.tf[idx] = val;
 
-      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
-      // Always mark the correct button (green)
       const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
       correctBtn.classList.add('correct');
 
       const isCorrect = (val === item.answer);
       if(!isCorrect){
-        // mark chosen wrong (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
@@ -388,14 +436,13 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
   </div>
   <div class="answer" hidden>${item.a}</div>
 `;
-
 
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');
@@ -419,31 +466,43 @@ saqs.forEach((item, idx)=>{
 
 // ----------- Score + Reset -----------
 function recalc(){
-  const mcqScore = state.mcq.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const tfScore = state.tf.reduce((s,v,i)=>{
-    if(v===null) return s;
-    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
-  },0);
-  const saqScore = state.saq.filter(Boolean).length;
-  const total = mcqScore + tfScore + saqScore;
+    const mcqScore = state.mcq.reduce((s, selectedVisualIndex, i) => {
+        if (selectedVisualIndex === null) return s;
+        const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+        if (card) {
+            const feedback = card.querySelector('.feedback').innerHTML;
+            if (feedback.includes("<b>Correct ✔</b>")) {
+                return s + 1;
+            }
+        }
+        return s;
+    }, 0);
 
-  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
-  ids.forEach(id=>{
-    const el = document.getElementById(id);
-    if(!el) return;
-    if(id.includes('Mcq')) el.textContent = mcqScore;
-    if(id.includes('Tf')) el.textContent = tfScore;
-    if(id.includes('Saq')) el.textContent = saqScore;
-    if(id.includes('Total')) el.textContent = total;
-  });
+    const tfScore = state.tf.reduce((s, val, i) => {
+        if (val === null) return s;
+         const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+        if (card) {
+            const feedback = card.querySelector('.feedback').innerHTML;
+            if (feedback.includes("<b>Correct ✔</b>")) {
+                return s + 1;
+            }
+        }
+        return s;
+    }, 0);
+    const saqScore = state.saq.filter(Boolean).length;
+    const total = mcqScore + tfScore + saqScore;
+
+    const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+    ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (!el) return;
+        if (id.includes('Mcq')) el.textContent = mcqScore;
+        if (id.includes('Tf')) el.textContent = tfScore;
+        if (id.includes('Saq')) el.textContent = saqScore;
+        if (id.includes('Total')) el.textContent = total;
+    });
 }
+
 
 document.getElementById('resetAll').addEventListener('click', ()=>{
   document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
@@ -461,7 +520,9 @@ document.getElementById('resetAll').addEventListener('click', ()=>{
   recalc();
 });
 
+// Initial calculation
 recalc();
 </script>
 </body>
 </html>
+

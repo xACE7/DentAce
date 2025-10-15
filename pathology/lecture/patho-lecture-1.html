@@ -1,94 +1,751 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" style="direction:ltr;">
+<html lang="en" style="direction:ltr;">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>🦷 Dentistry 3rd year — Nothing</title>
-<meta name="color-scheme" content="dark" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Two-Column Sections</title>
+<meta content="dark" name="color-scheme"/>
 <style>
   :root{
-    --radius:20px; --gap:32px;
-    --title-size: clamp(1.6rem, 1.1rem + 1.6vw, 2.2rem);
-    --h2-size: clamp(1.2rem, 1rem + .7vw, 1.4rem);
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
 
-    --bg:#0b0b12; --fg:#f6f7fb; --muted:#a6afc6;
-    --panel:#0f1221; --elev:#151834; --border:rgba(255,255,255,.12);
-    --shadow:0 14px 34px rgba(0,0,0,.42);
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
 
-    --purple:#8b5cf6; --cyan:#06b6d4; --pink:#ec4899; --lime:#84cc16;
-    --blue:#3b82f6; --yellow:#facc15; --green:#22c55e;
-
-    --glow-purple: rgba(139,92,246,.25);
-    --glow-cyan:   rgba(6,182,212,.25);
-    --glow-pink:   rgba(236,72,153,.25);
-    --glow-lime:   rgba(132,204,22,.25);
-    --glow-blue:   rgba(59,130,246,.28);
-    --glow-yellow: rgba(250,204,21,.30);
-    --glow-green:  rgba(34,197,94,.28);
-
-    --title-a: var(--cyan);
-    --title-b: var(--purple);
-
-    --card-width: 650px;
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
   }
 
-  html,body{
-    margin:0;min-height:100%;color:var(--fg);
-    font-family: Inter, ui-sans-serif, system-ui, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-    background:
-      radial-gradient(1200px 800px at 8% -10%, var(--glow-purple) 0%, rgba(0,0,0,0) 60%),
-      radial-gradient(1100px 700px at 110% 0%, var(--glow-cyan) 0%, rgba(0,0,0,0) 55%),
-      radial-gradient(1000px 800px at 50% 120%, var(--glow-pink) 0%, rgba(0,0,0,0) 55%),
-      radial-gradient(900px 700px at -10% 110%, var(--glow-lime) 0%, rgba(0,0,0,0) 55%),
-      var(--bg);
-    background-repeat:no-repeat; background-attachment:fixed;
-    display:flex;flex-direction:column;
-  }
-  *{box-sizing:border-box}
-  .container{max-width:2000px;margin:0 auto;padding: clamp(16px, 2.5vw, 32px)}
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
 
-  header{position:sticky;top:0;z-index:50;
-    background:linear-gradient(180deg, color-mix(in oklab, var(--bg) 92%, transparent), color-mix(in oklab, var(--bg) 70%, transparent));
-    backdrop-filter: blur(6px);border-bottom:1px solid var(--border)}
-  .hdr{display:flex;align-items:center;justify-content:center;flex-wrap:wrap;padding:14px 0}
-  .title{font-size:var(--title-size);font-weight:900;letter-spacing:.2px;
-    background:linear-gradient(135deg,var(--title-a), var(--title-b));
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+  
+  strong { color: #8b5cf6; font-weight: 800; }
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
     -webkit-background-clip:text;background-clip:text;color:transparent;
-    text-shadow: 0 0 20px rgba(6,182,212,.22), 0 0 20px rgba(139,92,246,.18); text-align:center;}
-  .subtitle{font-size:1rem;color:var(--muted);margin-top:-2px;text-align:center;}
-
-  .section{margin-top: clamp(40px, 5vw, 60px)}
-
-  .section-head.bar{
-    display:block;
-    width: calc(var(--card-width) * 2 + var(--gap));
-    margin:0 auto;
-    padding:24px 28px;
-    border-radius:18px;
-    background:linear-gradient(135deg, rgba(255,255,255,.045), rgba(255,255,255,.02));
-    border:1px solid var(--border);
-    box-shadow:0 0 0 1px rgba(255,255,255,.08) inset,0 8px 24px rgba(255,255,255,.06);
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
     text-align:center;
   }
-  .section-head h2{margin:0;font-size:var(--h2-size);font-weight:900;text-align:center;}
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p, .sec-body ul, .sec-body ol {margin:0}
+  .sec-body ul, .sec-body ol { padding-inline-start: 25px; }
+
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+  
+  .lang-ar .sec-body ul, .lang-ar .sec-body ol {
+    padding-inline-start: 0;
+    padding-inline-end: 25px;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
 </style>
 </head>
-<body>
-
+<body class="lang-en">
 <header>
-  <div class="hdr container">
-    <div style="text-align:center;">
-      <div class="title">🦷 Dentistry 3rd year</div>
-      <div class="subtitle"></div>
-    </div>
-  </div>
-</header>
-
-<main class="container">
-  <section class="section">
-    <div class="section-head bar"><h2>Nothing</h2></div>
-  </section>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 1</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِنْ لِسَانِي يَفْقَهُوا قَوْلِي</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Introduction to Pathology</b></span>
+<span class="ar"><b>الموضوع: مقدمة في علم الأمراض</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">What is Pathology?</span><span class="ar">ما هو علم الأمراض؟</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Pathology</strong> is the scientific study of disease. The word comes from two Greek roots: <strong>"pathos,"</strong> meaning suffering, and <strong>"logos,"</strong> meaning study.</p>
+<p>It focuses on understanding the <strong>structural, biochemical, and functional changes</strong> that occur in cells, tissues, and organs during a disease state. While physiology studies the normal functions of the body, pathology studies the altered functions of a diseased or damaged body.</p>
+</div>
+<div class="ar">
+<p><strong>علم الأمراض (Pathology)</strong> هو الدراسة العلمية للمرض. تأتي الكلمة من أصلين يونانيين: <strong>"pathos"</strong> وتعني المعاناة، و<strong>"logos"</strong> وتعني الدراسة.</p>
+<p>يركز هذا العلم على فهم <strong>التغيرات الهيكلية والكيميائية الحيوية والوظيفية</strong> التي تحدث في الخلايا والأنسجة والأعضاء أثناء حالة المرض. بينما يدرس علم وظائف الأعضاء (الفسيولوجيا) الوظائف الطبيعية للجسم، يدرس علم الأمراض الوظائف المتغيرة للجسم المريض أو المتضرر.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 6-8 of 38</span>
+<span class="ar">المصدر: الصفحات ٦-٨ من ٣٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Pathology is built on two Greek words: 'pathos' (suffering) and 'logos' (study).</div><div class="ar">يتكون مصطلح "Pathology" من كلمتين يونانيتين: "pathos" (معاناة) و "logos" (دراسة).</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">"Your practice of medicine (dentistry) will be as good as your understanding of pathology." - Sir William Osler. A strong foundation is crucial.</div><div class="ar">"ستكون ممارستك للطب (طب الأسنان) جيدة بقدر فهمك لعلم الأمراض." - السير ويليام أوسلر. الأساس القوي أمر حاسم.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Physiology is the study of normal cell function, while Pathology is the study of diseased or damaged cell function.</div><div class="ar">علم وظائف الأعضاء (الفسيولوجيا) هو دراسة وظائف الخلية الطبيعية، بينما علم الأمراض هو دراسة وظائف الخلية المريضة أو المتضررة.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Core Concepts of Disease</span><span class="ar">المفاهيم الأساسية للمرض</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Health</strong> is a state where an individual is normal and in complete balance with their surroundings. <strong>Disease</strong> is the opposite, representing any anatomical, physiological, or biochemical deviation from the normal state.</p>
+<p>The study of any disease in pathology is based on four main aspects:</p>
+<ul>
+    <li><strong>Etiology:</strong> The cause or origin of the disease.</li>
+    <li><strong>Pathogenesis:</strong> The mechanism or sequence of events that lead to the disease.</li>
+    <li><strong>Morphologic Changes:</strong> The structural alterations in cells and tissues.</li>
+    <li><strong>Clinical Features & Prognosis:</strong> The signs, symptoms, and predicted outcome of the disease.</li>
+</ul>
+</div>
+<div class="ar">
+<p><strong>الصحة</strong> هي حالة يكون فيها الفرد طبيعياً وفي توازن كامل مع محيطه. أما <strong>المرض</strong> فهو العكس، ويمثل أي انحراف تشريحي أو فسيولوجي أو كيميائي حيوي عن الحالة الطبيعية.</p>
+<p>تعتمد دراسة أي مرض في علم الأمراض على أربعة جوانب رئيسية:</p>
+<ul>
+    <li><strong>علم الأسباب (Etiology):</strong> سبب أو أصل المرض.</li>
+    <li><strong>الإمراضية (Pathogenesis):</strong> آلية أو تسلسل الأحداث التي تؤدي إلى المرض.</li>
+    <li><strong>التغيرات المورفولوجية:</strong> التغيرات الهيكلية في الخلايا والأنسجة.</li>
+    <li><strong>السمات السريرية والمآل:</strong> العلامات والأعراض والنتيجة المتوقعة للمرض.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 9-11 of 38</span>
+<span class="ar">المصدر: الصفحات ٩-١١ من ٣٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Health is defined as a state of complete harmony with the surroundings. Disease is any deviation from this normal state.</div><div class="ar">تُعرَّف الصحة بأنها حالة من الانسجام التام مع المحيط. المرض هو أي انحراف عن هذه الحالة الطبيعية.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember the four pillars of pathology for any disease: Cause (Etiology), Mechanism (Pathogenesis), Appearance (Morphology), and Outcome (Clinical Features).</div><div class="ar">تذكر الأركان الأربعة لعلم الأمراض لأي مرض: السبب (Etiology)، الآلية (Pathogenesis)، المظهر (Morphology)، والنتيجة (Clinical Features).</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Think of these four aspects as the 'biography' of a disease: who started it (Etiology), how it developed (Pathogenesis), what it looked like (Morphology), and how it ended (Prognosis).</div><div class="ar">فكر في هذه الجوانب الأربعة على أنها "السيرة الذاتية" للمرض: من بدأه (السبب)، كيف تطور (الآلية)، كيف بدا (المظهر)، وكيف انتهى (المآل).</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Etiology and Pathogenesis</span><span class="ar">علم الأسباب والإمراضية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Etiology</strong> is simply the <strong>cause</strong> of a disease. It answers the question "what started this?". The causes can be broadly categorized into two types:</p>
+<ul>
+    <li><strong>Genetic (Intrinsic):</strong> These are inherited factors, such as mutations or chromosomal abnormalities.</li>
+    <li><strong>Acquired (Extrinsic):</strong> These are external factors, such as infections, chemical exposure, trauma, or nutritional imbalances.</li>
+</ul>
+<p><strong>Pathogenesis</strong> describes <strong>how</strong> the cause leads to the disease. It is the sequence of events from the initial stimulus to the final expression of the disease. It explains the mechanisms involved.</p>
+</div>
+<div class="ar">
+<p><strong>علم الأسباب (Etiology)</strong> هو ببساطة <strong>سبب</strong> المرض. يجيب على سؤال "ما الذي بدأ هذا؟". يمكن تصنيف الأسباب بشكل عام إلى نوعين:</p>
+<ul>
+    <li><strong>وراثية (داخلية):</strong> هي عوامل موروثة، مثل الطفرات أو التشوهات الكروموسومية.</li>
+    <li><strong>مكتسبة (خارجية):</strong> هي عوامل خارجية، مثل العدوى، التعرض للمواد الكيميائية، الرضوض، أو اختلال التوازن الغذائي.</li>
+</ul>
+<p>أما <strong>الإمراضية (Pathogenesis)</strong> فتصف <strong>كيف</strong> يؤدي السبب إلى المرض. هي تسلسل الأحداث من المحفز الأولي إلى التعبير النهائي للمرض. تشرح الآليات المتضمنة.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 11 of 38</span>
+<span class="ar">المصدر: الصفحة ١١ من ٣٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Etiology is the 'what' (the cause), while Pathogenesis is the 'how' (the mechanism).</div><div class="ar">علم الأسباب هو "ماذا" (السبب)، بينما الإمراضية هي "كيف" (الآلية).</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">The pathogenesis of Tuberculosis (TB) infection involves: inhalation of bacilli → colonization in the alveoli → granuloma formation.</div><div class="ar">تتضمن إمراضية عدوى السل (TB): استنشاق العصيات ← استعمارها في الحويصلات الهوائية ← تكوين الورم الحبيبي.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Understanding the etiology of a disease is crucial for prevention. For example, knowing that smoking is an etiological factor for lung cancer allows for public health campaigns to reduce smoking rates.</div><div class="ar">فهم سبب المرض أمر حاسم للوقاية. على سبيل المثال، معرفة أن التدخين هو عامل مسبب لسرطان الرئة يسمح بحملات صحية عامة لتقليل معدلات التدخين.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Morphological Changes and Lesions</span><span class="ar">التغيرات المورفولوجية والآفات</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>A <strong>lesion</strong> is defined as any structural alteration in tissues that is caused by disease. Examples include an ulcer on the oral mucosa, a white patch (leukoplakia), or a tumor mass.</p>
+<p><strong>Morphological changes</strong> refer to these structural alterations in cells or tissues. They can be observed at two levels:</p>
+<ul>
+    <li><strong>Macroscopic (Gross) Changes:</strong> These are alterations that are visible to the naked eye, such as swelling or an ulcer.</li>
+    <li><strong>Microscopic Changes:</strong> These alterations can only be seen under a light or electron microscope.</li>
+</ul>
+</div>
+<div class="ar">
+<p>تُعرَّف <strong>الآفة (Lesion)</strong> بأنها أي تغيير هيكلي في الأنسجة ناتج عن مرض. من الأمثلة على ذلك قرحة في الغشاء المخاطي للفم، أو بقعة بيضاء (طلاوة)، أو كتلة ورمية.</p>
+<p>تشير <strong>التغيرات المورفولوجية</strong> إلى هذه التغيرات الهيكلية في الخلايا أو الأنسجة. يمكن ملاحظتها على مستويين:</p>
+<ul>
+    <li><strong>التغيرات العيانية (الإجمالية):</strong> هي التغيرات التي يمكن رؤيتها بالعين المجردة، مثل التورم أو القرحة.</li>
+    <li><strong>التغيرات المجهرية:</strong> هي التغيرات التي لا يمكن رؤيتها إلا تحت المجهر الضوئي أو الإلكتروني.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 12-14 of 38</span>
+<span class="ar">المصدر: الصفحات ١٢-١٤ من ٣٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">An oral ulcer is a type of lesion. Its macroscopic (gross) appearance is a visible break in the mucosa. Its microscopic appearance would show loss of epithelium and inflammatory cells.</div><div class="ar">قرحة الفم هي نوع من الآفات. مظهرها العياني هو انقطاع مرئي في الغشاء المخاطي. أما مظهرها المجهري فيُظهر فقدان النسيج الطلائي ووجود خلايا التهابية.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Gross changes, like a visible tumor, are often what prompt a patient to seek medical care. Microscopic examination of a tissue sample (biopsy) is then required to confirm the diagnosis.</div><div class="ar">التغيرات العيانية، مثل ورم مرئي، هي التي تدفع المريض غالبًا لطلب الرعاية الطبية. بعد ذلك، يكون الفحص المجهري لعينة من النسيج (خزعة) ضروريًا لتأكيد التشخيص.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Gross changes are visible to the naked eye, while microscopic changes require magnification to be seen.</div><div class="ar">التغيرات العيانية يمكن رؤيتها بالعين المجردة، بينما تتطلب التغيرات المجهرية تكبيرًا لرؤيتها.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Clinical Manifestations and Diagnosis</span><span class="ar">المظاهر السريرية والتشخيص</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>The clinical effects of a disease are described by signs, symptoms, and syndromes.</p>
+<ul>
+    <li><strong>Signs:</strong> Objective evidence of disease observed by a doctor (e.g., swelling, redness).</li>
+    <li><strong>Symptoms:</strong> Subjective experiences reported by the patient (e.g., pain, burning sensation).</li>
+    <li><strong>Syndrome:</strong> A group of signs and symptoms that consistently occur together.</li>
+</ul>
+<p><strong>Diagnosis</strong> is the identification of a disease. There are several types:</p>
+<ul>
+    <li><strong>Clinical Diagnosis:</strong> Based on patient history and physical examination.</li>
+    <li><strong>Provisional Diagnosis:</strong> A likely "working" diagnosis made before all tests are complete.</li>
+    <li><strong>Differential Diagnosis:</strong> A list of possible diseases that could cause the patient's signs and symptoms.</li>
+    <li><strong>Histopathological Diagnosis:</strong> Based on the microscopic examination of a biopsy.</li>
+    <li><strong>Final Diagnosis:</strong> The confirmed diagnosis after correlating all findings.</li>
+</ul>
+</div>
+<div class="ar">
+<p>يتم وصف التأثيرات السريرية للمرض من خلال العلامات والأعراض والمتلازمات.</p>
+<ul>
+    <li><strong>العلامات (Signs):</strong> دليل موضوعي للمرض يلاحظه الطبيب (مثل التورم، الاحمرار).</li>
+    <li><strong>الأعراض (Symptoms):</strong> تجارب ذاتية يبلغ عنها المريض (مثل الألم، الإحساس بالحرقان).</li>
+    <li><strong>المتلازمة (Syndrome):</strong> مجموعة من العلامات والأعراض التي تحدث معًا باستمرار.</li>
+</ul>
+<p><strong>التشخيص</strong> هو تحديد المرض. هناك عدة أنواع:</p>
+<ul>
+    <li><strong>التشخيص السريري:</strong> يعتمد على تاريخ المريض والفحص البدني.</li>
+    <li><strong>التشخيص المبدئي:</strong> تشخيص "عملي" محتمل يتم وضعه قبل اكتمال جميع الفحوصات.</li>
+    <li><strong>التشخيص التفريقي:</strong> قائمة بالأمراض المحتملة التي يمكن أن تسبب علامات وأعراض المريض.</li>
+    <li><strong>التشخيص النسيجي المرضي:</strong> يعتمد على الفحص المجهري للخزعة.</li>
+    <li><strong>التشخيص النهائي:</strong> التشخيص المؤكد بعد ربط جميع النتائج.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 15-16 of 38</span>
+<span class="ar">المصدر: الصفحات ١٥-١٦ من ٣٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong>S</strong>igns are what the doctor <strong>S</strong>ees. <strong>S</strong>ymptoms are what the patient <strong>S</strong>ays.</div><div class="ar">ال<strong>ع</strong>لامات هي ما يراها ال<strong>ط</strong>بيب. الأ<strong>ع</strong>راض هي ما ي<strong>ق</strong>وله المريض. (تذكر: علامات مرئية، أعراض محسوسة).</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">For a patient with a jaw infection, swelling is a sign, pain is a symptom. If they had a specific genetic condition causing this along with other features, it would be a syndrome.</div><div class="ar">لمريض يعاني من عدوى في الفك، التورم هو علامة، والألم هو عرض. إذا كان لديهم حالة وراثية معينة تسبب هذا مع سمات أخرى، فستكون متلازمة.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Creating a differential diagnosis is a critical skill. It ensures that a clinician considers all possibilities before settling on a final diagnosis, which prevents misdiagnosis.</div><div class="ar">يعد وضع التشخيص التفريقي مهارة حاسمة. فهو يضمن أن الطبيب يفكر في جميع الاحتمالات قبل الاستقرار على التشخيص النهائي، مما يمنع التشخيص الخاطئ.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Major Branches of Pathology</span><span class="ar">الفروع الرئيسية لعلم الأمراض</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Pathology is divided into several branches, each with a specific focus:</p>
+<ul>
+    <li><strong>General Pathology:</strong> Studies the basic mechanisms of disease that are common to all tissues, like inflammation, necrosis, and healing.</li>
+    <li><strong>Systemic Pathology:</strong> Applies the principles of general pathology to study diseases affecting specific organs or body systems (e.g., cardiovascular or respiratory system).</li>
+    <li><strong>Oral Pathology:</strong> A specialized branch focusing on diseases of the oral cavity, jaws, salivary glands, and related structures.</li>
+    <li><strong>Clinical Pathology (Laboratory Medicine):</strong> Involves the laboratory investigation of body fluids and tissues to diagnose disease. Subdivisions include hematology, clinical chemistry, and microbiology.</li>
+    <li><strong>Forensic Pathology:</strong> Deals with the medico-legal investigation of death and injury, often for legal proceedings.</li>
+</ul>
+</div>
+<div class="ar">
+<p>ينقسم علم الأمراض إلى عدة فروع، لكل منها تركيز محدد:</p>
+<ul>
+    <li><strong>علم الأمراض العام:</strong> يدرس الآليات الأساسية للمرض الشائعة في جميع الأنسجة، مثل الالتهاب، والنخر، والشفاء.</li>
+    <li><strong>علم الأمراض الجهازي:</strong> يطبق مبادئ علم الأمراض العام لدراسة الأمراض التي تؤثر على أعضاء أو أجهزة معينة في الجسم (مثل الجهاز القلبي الوعائي أو الجهاز التنفسي).</li>
+    <li><strong>علم أمراض الفم:</strong> فرع متخصص يركز على أمراض تجويف الفم والفكين والغدد اللعابية والهياكل ذات الصلة.</li>
+    <li><strong>علم الأمراض السريري (الطب المخبري):</strong> يشمل الفحص المخبري لسوائل وأنسجة الجسم لتشخيص المرض. تشمل أقسامه الفرعية أمراض الدم والكيمياء السريرية وعلم الأحياء الدقيقة.</li>
+    <li><strong>علم الأمراض الشرعي:</strong> يتعامل مع التحقيق الطبي القانوني في الوفاة والإصابات، غالبًا للإجراءات القانونية.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 21-26 of 38</span>
+<span class="ar">المصدر: الصفحات ٢١-٢٦ من ٣٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">General Pathology provides the foundational principles that are then applied in Systemic Pathology to specific organ systems.</div><div class="ar">يوفر علم الأمراض العام المبادئ الأساسية التي يتم تطبيقها بعد ذلك في علم الأمراض الجهازي على أجهزة أعضاء معينة.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">As a dentist, Oral Pathology is the most directly relevant branch. It helps in diagnosing, preventing, and treating diseases specific to the oral and maxillofacial region.</div><div class="ar">كطبيب أسنان، يعد علم أمراض الفم هو الفرع الأكثر صلة بشكل مباشر. فهو يساعد في تشخيص والوقاية من وعلاج الأمراض الخاصة بمنطقة الفم والوجه والفكين.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Forensic Pathology is the bridge between medical science and the law, playing a crucial role in criminal investigations.</div><div class="ar">علم الأمراض الشرعي هو الجسر بين العلوم الطبية والقانون، ويلعب دورًا حاسمًا في التحقيقات الجنائية.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Autopsy and Diagnostic Techniques</span><span class="ar">تشريح الجثة والتقنيات التشخيصية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>An <strong>autopsy</strong> is a specialized surgical examination of a deceased person to determine the cause and manner of death. Main types include:</p>
+<ul>
+    <li><strong>Medico-Legal (Forensic):</strong> Performed for legal reasons in cases of suspicious, violent, or sudden death.</li>
+    <li><strong>Clinical (Pathological):</strong> Done to confirm or clarify medical diagnoses that were unclear before death.</li>
+    <li><strong>Anatomical (Academic):</strong> Performed by students for study purposes.</li>
+</ul>
+<p>Key diagnostic techniques for living patients include:</p>
+<ul>
+    <li><strong>Histopathology:</strong> The microscopic study of tissues from a <strong>biopsy</strong> to diagnose disease. It is the "gold standard" for cancer diagnosis. The most common stain used is Hematoxylin & Eosin (H&E).</li>
+    <li><strong>Cytology:</strong> The microscopic evaluation of individual cells. It is less invasive than a biopsy. Techniques include <strong>Exfoliative Cytology</strong> (scraping cells) and <strong>Fine-Needle Aspiration Cytology (FNAC)</strong> (using a needle to draw cells from a swelling).</li>
+</ul>
+</div>
+<div class="ar">
+<p><strong>تشريح الجثة (Autopsy)</strong> هو فحص جراحي متخصص لشخص متوفى لتحديد سبب وطريقة الوفاة. تشمل الأنواع الرئيسية:</p>
+<ul>
+    <li><strong>طبي شرعي (Forensic):</strong> يُجرى لأسباب قانونية في حالات الوفاة المشبوهة أو العنيفة أو المفاجئة.</li>
+    <li><strong>سريري (مرضي):</strong> يُجرى لتأكيد أو توضيح التشخيصات الطبية التي لم تكن واضحة قبل الوفاة.</li>
+    <li><strong>تشريحي (أكاديمي):</strong> يقوم به الطلاب لأغراض الدراسة.</li>
+</ul>
+<p>تشمل التقنيات التشخيصية الرئيسية للمرضى الأحياء:</p>
+<ul>
+    <li><strong>علم أمراض الأنسجة (Histopathology):</strong> الدراسة المجهرية للأنسجة من <strong>الخزعة (biopsy)</strong> لتشخيص المرض. يعتبر "المعيار الذهبي" لتشخيص السرطان. الصبغة الأكثر استخدامًا هي الهيماتوكسيلين والإيوسين (H&E).</li>
+    <li><strong>علم الخلايا (Cytology):</strong> التقييم المجهري للخلايا الفردية. وهو أقل توغلاً من الخزعة. تشمل التقنيات <strong>علم الخلايا التقشري</strong> (كشط الخلايا) و<strong>سحب الخلايا بالإبرة الدقيقة (FNAC)</strong> (استخدام إبرة لسحب الخلايا من تورم).</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 27, 28, 30, 31 of 38</span>
+<span class="ar">المصدر: الصفحات ٢٧، ٢٨، ٣٠، ٣١ من ٣٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Histopathology, the study of tissue biopsies, is considered the "gold standard" for diagnosing most cancers.</div><div class="ar">يعتبر علم أمراض الأنسجة، أي دراسة خزعات الأنسجة، "المعيار الذهبي" لتشخيص معظم أنواع السرطان.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Cytology techniques like FNAC are minimally invasive, quick, and inexpensive. They are often the first step in investigating lumps or swellings in areas like the neck or salivary glands.</div><div class="ar">تقنيات علم الخلايا مثل FNAC هي طفيفة التوغل وسريعة وغير مكلفة. غالبًا ما تكون الخطوة الأولى في فحص الكتل أو التورمات في مناطق مثل الرقبة أو الغدد اللعابية.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Clinical autopsies are vital for quality assurance in medicine. They help confirm diagnoses, reveal unexpected findings, and provide valuable information for medical education and research.</div><div class="ar">تعتبر عمليات تشريح الجثث السريرية حيوية لضمان الجودة في الطب. فهي تساعد على تأكيد التشخيصات، وكشف النتائج غير المتوقعة، وتوفير معلومات قيمة للتعليم الطبي والبحث.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Advanced Pathological Techniques</span><span class="ar">التقنيات المرضية المتقدمة</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Molecular Pathology</strong> is an advanced field that applies molecular biology techniques to study disease at the level of DNA, RNA, and proteins. It helps us understand the fundamental mechanisms of disease and identify specific markers.</p>
+<p>Common methods used in molecular pathology include:</p>
+<ul>
+    <li><strong>PCR (Polymerase Chain Reaction):</strong> To amplify small amounts of DNA for analysis.</li>
+    <li><strong>FISH (Fluorescence In Situ Hybridization):</strong> To visualize specific DNA sequences on chromosomes.</li>
+    <li><strong>Immunohistochemistry (IHC):</strong> To detect specific proteins in tissue samples using antibodies.</li>
+    <li><strong>Next-Generation Sequencing (NGS):</strong> To rapidly sequence large amounts of DNA.</li>
+</ul>
+<p>The main importance of this field is its ability to detect specific genetic mutations and biomarkers, which is essential for personalized medicine and targeted therapies.</p>
+</div>
+<div class="ar">
+<p><strong>علم الأمراض الجزيئي</strong> هو مجال متقدم يطبق تقنيات البيولوجيا الجزيئية لدراسة المرض على مستوى الحمض النووي (DNA) والحمض النووي الريبوزي (RNA) والبروتينات. يساعدنا على فهم الآليات الأساسية للمرض وتحديد علامات محددة.</p>
+<p>تشمل الطرق الشائعة المستخدمة في علم الأمراض الجزيئي ما يلي:</p>
+<ul>
+    <li><strong>PCR (تفاعل البوليميراز المتسلسل):</strong> لتضخيم كميات صغيرة من الحمض النووي لتحليلها.</li>
+    <li><strong>FISH (التهجين الموضعي المتألق):</strong> لتصوير تسلسلات معينة من الحمض النووي على الكروموسومات.</li>
+    <li><strong>الكيمياء النسيجية المناعية (IHC):</strong> للكشف عن بروتينات معينة في عينات الأنسجة باستخدام الأجسام المضادة.</li>
+    <li><strong>تسلسل الجيل التالي (NGS):</strong> لتحديد تسلسل كميات كبيرة من الحمض النووي بسرعة.</li>
+</ul>
+<p>تكمن الأهمية الرئيسية لهذا المجال في قدرته على الكشف عن طفرات وراثية وعلامات بيولوجية محددة، وهو أمر ضروري للطب الشخصي والعلاجات الموجهة.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 34 of 38</span>
+<span class="ar">المصدر: الصفحة ٣٤ من ٣٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Molecular pathology examines the molecules within cells (DNA, RNA, protein) to understand and diagnose disease.</div><div class="ar">يفحص علم الأمراض الجزيئي الجزيئات داخل الخلايا (DNA, RNA, البروتين) لفهم وتشخيص المرض.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">This field is the key to personalized medicine. By identifying specific genetic mutations in a patient's tumor, doctors can choose targeted therapies that are more effective and have fewer side effects.</div><div class="ar">هذا المجال هو مفتاح الطب الشخصي. من خلال تحديد طفرات وراثية معينة في ورم المريض، يمكن للأطباء اختيار علاجات موجهة تكون أكثر فعالية ولها آثار جانبية أقل.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Immunohistochemistry (IHC) can be used to detect the presence of HER2 protein on breast cancer cells. If present, the patient can be treated with drugs that specifically target HER2.</div><div class="ar">يمكن استخدام الكيمياء النسيجية المناعية (IHC) للكشف عن وجود بروتين HER2 على خلايا سرطان الثدي. إذا كان موجودًا، يمكن علاج المريضة بأدوية تستهدف HER2 على وجه التحديد.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Summary</span><span class="ar">ملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+<ul>
+    <li><strong>Pathology</strong> is the scientific study of disease, focusing on its causes, mechanisms, and structural/functional effects.</li>
+    <li>The four core aspects of studying a disease are <strong>Etiology</strong> (cause), <strong>Pathogenesis</strong> (mechanism), <strong>Morphology</strong> (changes), and <strong>Clinical Features</strong> (outcome).</li>
+    <li>Key branches include <strong>General Pathology</strong> (basic principles), <strong>Systemic Pathology</strong> (organ-specific diseases), <strong>Oral Pathology</strong> (dental focus), and <strong>Forensic Pathology</strong> (medico-legal cases).</li>
+    <li>Diagnostic tools range from <strong>autopsy</strong> for post-mortem examination to microscopic techniques like <strong>Histopathology</strong> (tissue study) and <strong>Cytology</strong> (cell study).</li>
+    <li><strong>Molecular Pathology</strong> provides advanced diagnostics by analyzing DNA, RNA, and proteins, paving the way for personalized medicine.</li>
+</ul>
+</div>
+<div class="ar">
+<ul>
+    <li><strong>علم الأمراض</strong> هو الدراسة العلمية للمرض، ويركز على أسبابه وآلياته وتأثيراته الهيكلية والوظيفية.</li>
+    <li>الجوانب الأربعة الأساسية لدراسة المرض هي <strong>علم الأسباب</strong> (السبب)، <strong>الإمراضية</strong> (الآلية)، <strong>المورفولوجيا</strong> (التغيرات)، و<strong>السمات السريرية</strong> (النتيجة).</li>
+    <li>تشمل الفروع الرئيسية <strong>علم الأمراض العام</strong> (المبادئ الأساسية)، <strong>علم الأمراض الجهازي</strong> (الأمراض الخاصة بالأعضاء)، <strong>علم أمراض الفم</strong> (التركيز على الأسنان)، و<strong>علم الأمراض الشرعي</strong> (الحالات الطبية القانونية).</li>
+    <li>تتراوح الأدوات التشخيصية من <strong>تشريح الجثة</strong> للفحص بعد الوفاة إلى التقنيات المجهرية مثل <strong>علم أمراض الأنسجة</strong> (دراسة الأنسجة) و<strong>علم الخلايا</strong> (دراسة الخلايا).</li>
+    <li>يوفر <strong>علم الأمراض الجزيئي</strong> تشخيصات متقدمة من خلال تحليل الحمض النووي (DNA) والحمض النووي الريبوزي (RNA) والبروتينات، مما يمهد الطريق للطب الشخصي.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: All pages of 38</span>
+<span class="ar">المصدر: جميع الصفحات من ٣٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Review the glossary and flashcards to solidify your understanding of the key terms introduced in this lecture.</div><div class="ar">راجع قائمة المصطلحات وبطاقات المراجعة لترسيخ فهمك للمصطلحات الرئيسية التي تم تقديمها في هذه المحاضرة.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember the four pillars: Cause (Etiology), Mechanism (Pathogenesis), Appearance (Morphology), and Outcome (Clinical Features).</div><div class="ar">تذكر الأركان الأربعة: السبب (Etiology)، الآلية (Pathogenesis)، المظهر (Morphology)، والنتيجة (Clinical Features).</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">A strong grasp of these fundamental concepts is essential for diagnosing and managing diseases throughout your dental career.</div><div class="ar">إن الفهم القوي لهذه المفاهيم الأساسية ضروري لتشخيص وإدارة الأمراض طوال حياتك المهنية في طب الأسنان.</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Pathology / علم الأمراض</div><div class="content" hidden=""><div class="en">The scientific study of disease, its causes, processes, development, and consequences.</div><div class="ar">الدراسة العلمية للمرض وأسبابه وعملياته وتطوره ونتائجه.</div></div></div>
+<div class="card"><div class="head">Etiology / علم الأسباب</div><div class="content" hidden=""><div class="en">The cause, set of causes, or manner of causation of a disease or condition.</div><div class="ar">سبب أو مجموعة أسباب أو طريقة تسبب مرض أو حالة ما.</div></div></div>
+<div class="card"><div class="head">Pathogenesis / الإمراضية</div><div class="content" hidden=""><div class="en">The mechanism and sequence of events by which a disease develops.</div><div class="ar">الآلية وتسلسل الأحداث التي يتطور بها المرض.</div></div></div>
+<div class="card"><div class="head">Morphology / المورفولوجيا</div><div class="content" hidden=""><div class="en">The study of the form and structure of organisms and their specific structural features. In pathology, it refers to structural changes in tissues/cells.</div><div class="ar">دراسة شكل وبنية الكائنات الحية وخصائصها الهيكلية المحددة. في علم الأمراض، يشير إلى التغيرات الهيكلية في الأنسجة/الخلايا.</div></div></div>
+<div class="card"><div class="head">Lesion / آفة</div><div class="content" hidden=""><div class="en">A region in an organ or tissue which has suffered damage through injury or disease, such as a wound, ulcer, abscess, or tumor.</div><div class="ar">منطقة في عضو أو نسيج تعرضت للتلف بسبب إصابة أو مرض، مثل جرح أو قرحة أو خراج أو ورم.</div></div></div>
+<div class="card"><div class="head">Prognosis / مآل المرض</div><div class="content" hidden=""><div class="en">The likely course or outcome of a disease or ailment.</div><div class="ar">المسار أو النتيجة المحتملة لمرض أو علة.</div></div></div>
+<div class="card"><div class="head">Autopsy / تشريح الجثة</div><div class="content" hidden=""><div class="en">A post-mortem examination to discover the cause of death or the extent of disease.</div><div class="ar">فحص بعد الوفاة لاكتشاف سبب الوفاة أو مدى المرض.</div></div></div>
+<div class="card"><div class="head">Histopathology / علم أمراض الأنسجة</div><div class="content" hidden=""><div class="en">The diagnosis and study of diseases of the tissues, involving microscopic examination of a biopsy or surgical specimen.</div><div class="ar">تشخيص ودراسة أمراض الأنسجة، ويتضمن الفحص المجهري لخزعة أو عينة جراحية.</div></div></div>
+<div class="card"><div class="head">Cytology / علم الخلايا</div><div class="content" hidden=""><div class="en">The branch of biology concerned with the structure and function of plant and animal cells, often used for diagnosis by examining individual cells.</div><div class="ar">فرع من علم الأحياء يهتم ببنية ووظيفة الخلايا النباتية والحيوانية، وغالبًا ما يستخدم للتشخيص عن طريق فحص الخلايا الفردية.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — What is the literal meaning of "Pathology"?</span><span class="ar">١ — ما المعنى الحرفي لـ "Pathology"؟</span></div><div class="content" hidden=""><span class="en">A: The study (logos) of suffering/disease (pathos).</span><span class="ar">ج: دراسة (logos) المعاناة/المرض (pathos).</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — What is the difference between a sign and a symptom?</span><span class="ar">٢ — ما الفرق بين العلامة والعرض؟</span></div><div class="content" hidden=""><span class="en">A: A sign is objective (observed by a doctor); a symptom is subjective (felt by the patient).</span><span class="ar">ج: العلامة موضوعية (يلاحظها الطبيب)؛ العرض ذاتي (يشعر به المريض).</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — What is Etiology?</span><span class="ar">٣ — ما هو علم الأسباب (Etiology)؟</span></div><div class="content" hidden=""><span class="en">A: The cause or origin of a disease.</span><span class="ar">ج: سبب أو أصل المرض.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — Name the two main types of etiology.</span><span class="ar">٤ — اذكر النوعين الرئيسيين لعلم الأسباب.</span></div><div class="content" hidden=""><span class="en">A: Genetic (intrinsic) and Acquired (extrinsic).</span><span class="ar">ج: وراثي (داخلي) ومكتسب (خارجي).</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — What does Pathogenesis describe?</span><span class="ar">٥ — ماذا تصف الإمراضية (Pathogenesis)؟</span></div><div class="content" hidden=""><span class="en">A: The sequence of events or mechanism by which a disease develops.</span><span class="ar">ج: تسلسل الأحداث أو الآلية التي يتطور بها المرض.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — What is the "gold standard" for diagnosing tumors?</span><span class="ar">٦ — ما هو "المعيار الذهبي" لتشخيص الأورام؟</span></div><div class="content" hidden=""><span class="en">A: Histopathology (microscopic examination of tissue).</span><span class="ar">ج: علم أمراض الأنسجة (الفحص المجهري للنسيج).</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — Name two common cytology techniques.</span><span class="ar">٧ — اذكر تقنيتين شائعتين في علم الخلايا.</span></div><div class="content" hidden=""><span class="en">A: Exfoliative cytology and Fine-Needle Aspiration Cytology (FNAC).</span><span class="ar">ج: علم الخلايا التقشري وسحب الخلايا بالإبرة الدقيقة (FNAC).</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — Which branch of pathology deals with medico-legal cases?</span><span class="ar">٨ — أي فرع من علم الأمراض يتعامل مع الحالات الطبية القانونية؟</span></div><div class="content" hidden=""><span class="en">A: Forensic Pathology.</span><span class="ar">ج: علم الأمراض الشرعي.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What is a differential diagnosis?</span><span class="ar">٩ — ما هو التشخيص التفريقي؟</span></div><div class="content" hidden=""><span class="en">A: A list of possible diseases that could be causing a patient's signs and symptoms.</span><span class="ar">ج: قائمة بالأمراض المحتملة التي يمكن أن تسبب علامات وأعراض المريض.</span></div></div>
+</div>
 </main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
 
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
 </body>
 </html>

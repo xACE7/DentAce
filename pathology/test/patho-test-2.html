@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+  table{width:100%;border-collapse:collapse;margin-top:10px;}
+  th,td{border:1px solid var(--card-border);padding:8px;text-align:left;}
+  th{background:var(--glass);}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 2</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+    { q: "What is the primary definition of homeostasis?", opts: ["A state of cellular growth", "The 'steady state' where cells function optimally", "The process of cell death", "A response to severe injury"], correct: 1, explain: "Homeostasis is the equilibrium of cells with their environment for adequate function." },
+    { q: "Which of the following is NOT a primary type of cellular adaptation?", opts: ["Atrophy", "Hyperplasia", "Necrosis", "Metaplasia"], correct: 2, explain: "Necrosis is a form of cell death, not a cellular adaptation. The main adaptations are Atrophy, Hyperplasia, Hypertrophy, and Metaplasia." },
+    { q: "Hypertrophy is defined as an increase in:", opts: ["The number of cells", "The size of cells", "The rate of cell division", "The metabolic activity of cells"], correct: 1, explain: "Hypertrophy is the increase in the size of cells, leading to an enlargement of the organ or tissue." },
+    { q: "Which cell type is most likely to undergo hypertrophy but not hyperplasia?", opts: ["Liver cells", "Skin epithelial cells", "Cardiac muscle cells", "Gastrointestinal lining cells"], correct: 2, explain: "Cardiac muscle cells are permanent cells that cannot divide, so they undergo hypertrophy in response to increased workload, but not hyperplasia." },
+    { q: "A bodybuilder's increased muscle mass is an example of:", opts: ["Pathologic hyperplasia", "Physiologic hypertrophy", "Pathologic hypertrophy", "Physiologic hyperplasia"], correct: 1, explain: "The increase in muscle size due to exercise is a classic example of physiologic hypertrophy, a response to a normal stimulus (increased workload)." },
+    { q: "What is the definition of atrophy?", opts: ["Increase in cell size", "Increase in cell number", "Reduction in the size and/or number of cells", "Change from one cell type to another"], correct: 2, explain: "Atrophy is the reduction in the number and/or size of cells, leading to a shrunken organ or tissue." },
+    { q: "A patient's leg was in a cast for 6 weeks. After removal, the leg muscle is smaller. This is an example of:", opts: ["Ischemic atrophy", "Starvation atrophy", "Disuse atrophy", "Senile atrophy"], correct: 2, explain: "Disuse atrophy occurs when a limb is immobilized, leading to a decrease in muscle size due to lack of use." },
+    { q: "Metaplasia in the bronchi of a chronic smoker involves the change of pseudostratified ciliated columnar epithelium to what cell type?", opts: ["Glandular epithelium", "Transitional epithelium", "Simple cuboidal epithelium", "Stratified squamous epithelium"], correct: 3, explain: "In smokers, the respiratory epithelium changes to a more resistant stratified squamous type to withstand the noxious chemicals, which is an example of squamous metaplasia." },
+    { q: "Which cellular adaptation can be a precursor to cancer if the stimulus persists?", opts: ["Atrophy", "Hypertrophy", "Physiologic hyperplasia", "Metaplasia and Dysplasia"], correct: 3, explain: "If the abnormal stimulus is persistent, metaplasia can progress to dysplasia, which is a precancerous condition." },
+    { q: "Pathologic adaptations are responses that allow cells to escape injury but at the expense of what?", opts: ["Energy production", "Normal function", "Cell size", "Cell number"], correct: 1, explain: "Pathologic adaptations modify cell structure and function to escape injury, but this often leads to a loss of the cell's normal function." },
+    { q: "An enlarged prostate in an elderly man is typically an example of:", opts: ["Hormonal hyperplasia", "Compensatory hyperplasia", "Pathologic atrophy", "Physiologic hypertrophy"], correct: 0, explain: "Benign Prostatic Hyperplasia (BPH) is an example of pathologic hyperplasia, often driven by hormonal changes." },
+    { q: "What happens to the gyri and sulci in brain atrophy?", opts: ["Gyri widen, sulci narrow", "Gyri narrow, sulci widen", "Both widen", "Both narrow"], correct: 1, explain: "In brain atrophy, the gyri (folds) become narrower and the sulci (grooves) become wider as the brain tissue shrinks." },
+    { q: "Which term describes cells that are constantly moving through the cell cycle, like skin or GIT lining?", opts: ["Permanent cells", "Stable cells", "Labile cells", "Differentiated cells"], correct: 2, explain: "Labile cells are those that are continuously dividing and replacing old cells." },
+    { q: "What is the mechanism behind hypertrophy?", opts: ["Increased cell division", "Decreased protein degradation", "Increased production of cellular proteins", "Failure of apoptosis"], correct: 2, explain: "Hypertrophy is caused by an increased production of cellular proteins and organelles, leading to larger cells." },
+    { q: "Barrett's esophagus is an example of what type of metaplasia?", opts: ["Squamous metaplasia", "Mesenchymal metaplasia", "Columnar metaplasia", "Osseous metaplasia"], correct: 2, explain: "In Barrett's esophagus, the normal squamous epithelium of the lower esophagus is replaced by columnar epithelium in response to chronic acid reflux." },
+    { q: "What is the main difference between hyperplasia and neoplasia (cancer)?", opts: ["Hyperplasia is an increase in size, neoplasia is an increase in number", "Hyperplasia is reversible if the stimulus is removed", "Neoplasia is always physiologic", "Hyperplasia involves cell mutation"], correct: 1, explain: "Hyperplasia is a controlled process that typically regresses when the stimulus is removed, whereas neoplasia is uncontrolled, irreversible proliferation." },
+    { q: "A decreased blood supply to an organ, causing it to shrink, is known as:", opts: ["Disuse atrophy", "Ischemic atrophy", "Pressure atrophy", "Starvation atrophy"], correct: 1, explain: "Ischemic atrophy is the result of reduced blood flow (ischemia), which deprives the tissue of oxygen and nutrients, causing cells to shrink." },
+    { q: "Which of the following is an example of physiologic hyperplasia?", opts: ["Enlarged prostate", "Skin warts from HPV", "Enlargement of the uterus during pregnancy", "Thickened bladder wall from obstruction"], correct: 2, explain: "The growth of the uterus during pregnancy is a hormonal, physiologic hyperplasia to accommodate the developing fetus." },
+    { q: "Cellular adaptations are generally:", opts: ["Irreversible changes leading to cell death", "Reversible changes in response to environmental shifts", "Always pathologic processes", "A form of cellular injury"], correct: 1, explain: "Adaptations are reversible changes in cell size, number, or phenotype that allow the cell to achieve a new steady state and survive." },
+    { q: "Compensatory hypertrophy occurs when:", opts: ["A muscle is overused", "There is a hormonal imbalance", "One of a pair of organs is removed or damaged", "The body is in a state of starvation"], correct: 2, explain: "Compensatory hypertrophy (and hyperplasia) occurs, for example, in a kidney when the other is removed, as it has to handle the entire workload." },
+    { q: "The process by which a cell becomes specialized is called:", opts: ["Proliferation", "Adaptation", "Differentiation", "Homeostasis"], correct: 2, explain: "Differentiation is the process where an unspecialized cell acquires specific features to perform a particular function." },
+    { q: "Which cells are considered 'stable' in terms of proliferation?", opts: ["Cardiac myocytes", "Neurons", "Liver cells (hepatocytes)", "Skin keratinocytes"], correct: 2, explain: "Stable cells, like those in the liver, kidney, and pancreas, have a low rate of division but can be stimulated to enter the cell cycle when needed." },
+    { q: "Which cellular adaptation involves an increase in the number of parenchymal cells?", opts: ["Atrophy", "Hypertrophy", "Hyperplasia", "Metaplasia"], correct: 2, explain: "Hyperplasia is specifically defined as an increase in the number of cells." },
+    { q: "What is the primary trigger for pathologic hypertrophy of the left ventricle?", opts: ["Increased exercise", "Chronic hypertension or aortic valve disease", "High cholesterol", "Pregnancy"], correct: 1, explain: "Long-standing hypertension increases the workload on the left ventricle, causing it to undergo pathologic hypertrophy." },
+    { q: "The formation of skin warts due to HPV is an example of:", opts: ["Physiologic hyperplasia", "Pathologic hyperplasia", "Physiologic metaplasia", "Pathologic atrophy"], correct: 1, explain: "Warts are caused by viruses (like HPV) that stimulate excessive cell division, which is a form of pathologic hyperplasia." },
+    { q: "What is a major downside of metaplasia in the respiratory tract?", opts: ["Increased mucus production", "Loss of protective mechanisms like mucus secretion and ciliary clearance", "Increased oxygen exchange", "Decreased cell strength"], correct: 1, explain: "While the new squamous cells are tougher, they lack the cilia and mucus-secreting capabilities of the original epithelium, impairing the removal of debris from the airways." },
+    { q: "Starvation atrophy is a result of:", opts: ["Lack of physical use", "Inadequate nutrition", "Reduced blood supply", "Hormonal deficiency"], correct: 1, explain: "Inadequate nutrition forces the body to use its own tissues, like muscle, as a source of energy, leading to atrophy." },
+    { q: "Cellular adaptations can be classified as either:", opts: ["Acute or Chronic", "Reversible or Irreversible", "Physiologic or Pathologic", "Internal or External"], correct: 2, explain: "Adaptations are categorized based on their cause: physiologic (normal stimuli) or pathologic (abnormal stimuli to escape injury)." },
+    { q: "In which of these conditions can hypertrophy and hyperplasia co-exist?", opts: ["Enlarged uterus in pregnancy", "Bodybuilder's muscles", "Hypertrophic cardiomyopathy", "Brain atrophy"], correct: 0, explain: "In tissues with cells capable of dividing, like the smooth muscle of the uterus, both an increase in cell size (hypertrophy) and cell number (hyperplasia) can occur simultaneously." },
+    { q: "When a cell is unable to adapt to stress, what is the next likely outcome?", opts: ["Return to homeostasis", "Cellular differentiation", "Cell injury and potentially cell death", "Increased proliferation"], correct: 2, explain: "If the stress is too severe or prolonged for adaptation, the cell will progress to a state of injury, which can be reversible or irreversible, leading to death." }
+];
+
+const tfs = [
+    { q: "Homeostasis is an irreversible state of cellular balance.", answer: false, explain: "Homeostasis is a dynamic and reversible 'steady state'. Cells constantly adjust to maintain it." },
+    { q: "Hypertrophy involves an increase in cell number.", answer: false, explain: "Hypertrophy is an increase in cell SIZE, not number. Hyperplasia is an increase in cell number." },
+    { q: "Atrophy can be either physiologic or pathologic.", answer: true, explain: "Atrophy of the brain with aging is physiologic, while disuse or ischemic atrophy are pathologic examples." },
+    { q: "Metaplasia is a reversible change from one adult cell type to another.", answer: true, explain: "Metaplasia is a reversible adaptation where one cell type is replaced by another, often in response to chronic irritation." },
+    { q: "Permanent cells, like neurons, can readily undergo hyperplasia.", answer: false, explain: "Permanent cells cannot divide, so they cannot undergo hyperplasia. They can, however, undergo hypertrophy (though less common in neurons) or atrophy." },
+    { q: "All cellular adaptations are ultimately harmful to the body.", answer: false, explain: "Adaptations are survival mechanisms. While pathologic adaptations can have negative consequences (like loss of function), their primary purpose is to protect the cell from injury." },
+    { q: "An increase in functional demand is a common stimulus for hypertrophy.", answer: true, explain: "Increased workload, such as in muscles or the heart, is the most common stimulus for hypertrophy." },
+    { q: "Hyperplasia always progresses to cancer.", answer: false, explain: "While some pathologic hyperplasias can create a fertile ground for cancer (e.g., endometrial hyperplasia), it is a controlled process and does not always lead to cancer. It's reversible if the stimulus is removed." },
+    { q: "Squamous metaplasia in the bronchi helps smokers clear mucus more effectively.", answer: false, explain: "The metaplastic squamous cells lack cilia, which are essential for clearing mucus. This leads to impaired clearance and increased risk of infection." }
+];
+
+const saqs = [
+    { q: "Define cellular adaptation and list its four main types.", a: "Cellular adaptation refers to reversible changes in the size, number, phenotype, metabolic activity, or functions of cells in response to changes in their environment. The four main types are: <br>1. Atrophy <br>2. Hypertrophy <br>3. Hyperplasia <br>4. Metaplasia" },
+    { q: "Explain the difference between physiologic and pathologic adaptations, providing one example for each.", a: "<b>Physiologic adaptations</b> are responses to normal stimulation, such as hormones or mechanical stress. Example: The enlargement of the uterus during pregnancy (hyperplasia and hypertrophy). <br><b>Pathologic adaptations</b> are responses to abnormal stress where cells modify themselves to escape injury, often at the expense of normal function. Example: Left ventricular hypertrophy due to chronic hypertension." },
+    { q: "Describe three distinct causes of pathologic atrophy.", a: "Three causes of pathologic atrophy are: <br>1. <b>Disuse atrophy:</b> Occurs from lack of use, such as in the muscles of an immobilized limb. <br>2. <b>Ischemic atrophy:</b> Results from a reduced blood supply to a tissue or organ, depriving it of oxygen and nutrients. <br>3. <b>Starvation atrophy:</b> A general atrophy of muscle and fat tissue due to inadequate nutrition, forcing the body to catabolize its own proteins for energy." },
+    { q: "Compare and contrast hypertrophy and hyperplasia using the table format.", a: `<table>
+        <thead>
+            <tr>
+                <th>Feature</th>
+                <th>Hypertrophy</th>
+                <th>Hyperplasia</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><b>1. Definition</b></td>
+                <td>Increase in cell size</td>
+                <td>Increase in cell number</td>
+            </tr>
+            <tr>
+                <td><b>2. Mechanism</b></td>
+                <td>Increased production of cellular proteins</td>
+                <td>Increased cell division (proliferation)</td>
+            </tr>
+            <tr>
+                <td><b>3. Cell Types Affected</b></td>
+                <td>Mainly non-dividing cells (e.g., cardiac muscle)</td>
+                <td>Cells capable of division (e.g., epithelium, glandular tissue)</td>
+            </tr>
+             <tr>
+                <td><b>4. Example</b></td>
+                <td>Skeletal muscle in bodybuilders</td>
+                <td>Enlarged prostate (BPH)</td>
+            </tr>
+        </tbody>
+        </table>`
+    },
+    { q: "A 60-year-old man with a long history of heavy smoking complains of a persistent cough. A biopsy of his bronchial lining reveals that the normal ciliated columnar cells have been replaced by stratified squamous cells. What is this cellular adaptation called, and why is it both beneficial and detrimental for the patient?", a: "This adaptation is called <b>squamous metaplasia</b>. <br><b>Benefit:</b> The stratified squamous epithelium is more robust and can better withstand the chronic irritation from cigarette smoke compared to the fragile original ciliated epithelium. <br><b>Detriment:</b> The new cells lack cilia and the ability to secrete mucus. This impairs the essential protective function of clearing debris and pathogens from the airway, leading to a persistent cough and increased risk of infection." },
+    { q: "What is the clinical significance of metaplasia, particularly if the irritating stimulus is not removed?", a: "The clinical significance of metaplasia is twofold: <br>1. <b>Loss of Function:</b> It leads to the loss of the original tissue's specialized functions (e.g., loss of ciliary clearance in the bronchi). <br>2. <b>Increased Cancer Risk:</b> If the stimulus that causes metaplasia persists, it can induce cancerous transformation in the metaplastic epithelium. For example, squamous metaplasia in the bronchi from smoking is a known risk factor for developing lung cancer." }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

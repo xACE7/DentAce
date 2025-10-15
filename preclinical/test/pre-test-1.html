@@ -67,7 +67,6 @@
     .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
   }
 
-  /* Cards (no accent on the card itself) */
   .card{
     background:var(--card);
     border:1px solid var(--card-border);
@@ -92,9 +91,8 @@
     background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
     box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
   }
-  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);} 
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
-  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
     border-left:6px solid var(--ok);
     outline:none;
@@ -107,12 +105,17 @@
   }
   .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
 
-  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);} 
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
   .feedback[hidden]{display:none;}
   .feedback b{color:var(--text)}
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer ol, .answer ul { padding-left: 20px; }
+  .answer table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .answer th, .answer td { border: 1px solid var(--card-border); padding: 8px; text-align: left; }
+  .answer th { background-color: rgba(255,255,255,0.05); }
+
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -169,384 +172,265 @@
   </main>
 
 <script>
-// ----------- Data (from Lecture 1: Terminology of Dental Caries & Tooth Preparation) -----------
+// ----------- Data -----------
 const mcqs = [
   {
-    q: "Dental caries is best defined as:",
-    opts: [
-      "An infectious microbial disease causing demineralization of inorganic and destruction of organic tooth tissues.",
-      "A non-infectious age-related wear of enamel only.",
-      "A purely chemical erosion of enamel by acidic foods.",
-      "A reversible discoloration of enamel without structural change."
-    ],
+    q: "According to the lecture, dental caries is defined as an infectious microbial disease characterized by demineralization of the inorganic portion and destruction of what?",
+    opts: ["The organic portion of teeth", "The pulp tissue", "The gingival margin", "The periodontal ligament"],
     correct: 0,
-    explain: "Caries is an infectious process affecting both inorganic and organic portions of calcified tooth tissues."
+    explain: "Dental caries involves the destruction of both the inorganic (demineralization) and organic portions of the calcified tissues of teeth."
   },
   {
-    q: "According to the lecture, caries can be classified based on three aspects. Which set is correct?",
-    opts: [
-      "Location, Extent, Rate",
-      "Etiology, Color, Pain",
-      "Diet, Saliva, Age",
-      "Tooth type, Arch, Occlusion"
-    ],
-    correct: 0,
-    explain: "The three bases were Location, Extent, and Rate (speed) of caries."
+    q: "Which of the following is NOT one of the primary classifications of caries based on its location?",
+    opts: ["Primary caries", "Secondary caries", "Incipient caries", "Root caries"],
+    correct: 2,
+    explain: "Incipient caries is a classification based on the *extent* of the lesion, not its location. Primary, secondary, and root caries are location-based classifications."
   },
   {
-    q: "Primary caries refers to:",
-    opts: [
-      "The original (first) carious lesion of a tooth.",
-      "Caries adjacent to an existing restoration.",
-      "Caries limited to enamel only.",
-      "Caries occurring only in children."
-    ],
+    q: "A carious lesion that occurs at the junction of an existing restoration and the tooth is known as:",
+    opts: ["Recurrent caries", "Primary caries", "Arrested caries", "Rampant caries"],
     correct: 0,
-    explain: "Primary caries is the initial lesion; secondary caries occurs next to restorations."
+    explain: "Secondary caries, also termed recurrent caries, occurs at the margin of a restoration, often due to microleakage."
   },
   {
-    q: "Secondary (recurrent) caries most commonly occurs:",
-    opts: [
-      "At the junction of a restoration and tooth due to microleakage.",
-      "On smooth enamel surfaces of un-restored teeth.",
-      "Only on occlusal pits of molars.",
-      "At the CEJ exclusively."
-    ],
+    q: "Which type of primary caries forms due to the imperfect coalescence of developmental enamel lobes?",
+    opts: ["Pit and fissure caries", "Smooth surface caries", "Root surface caries", "Incipient caries"],
     correct: 0,
-    explain: "Microleakage at restoration margins predisposes to secondary caries."
+    explain: "Pit and fissure caries develop in the natural grooves and pits on tooth surfaces where enamel lobes did not perfectly fuse."
   },
   {
-    q: "Which of the following are the three morphologic types of primary caries noted in clinical observation?",
-    opts: [
-      "Pit and fissure, Smooth surface, Root surface",
-      "Occlusal, Proximal, Cervical",
-      "Acute, Chronic, Arrested",
-      "Incipient, Cavitated, Recurrent"
-    ],
+    q: "Root surface caries is typically more rapid than other forms because:",
+    opts: ["The cementum is thin and offers little resistance", "Saliva does not reach the root surface", "It is always associated with rampant caries", "The root surface has more organic content than enamel"],
     correct: 0,
-    explain: "Primary caries types are pit and fissure; smooth surface; and root surface."
+    explain: "The cementum covering the root is very thin and less mineralized than enamel, making it more susceptible to rapid demineralization."
   },
   {
-    q: "Pit and fissure caries most commonly form due to:",
-    opts: [
-      "Imperfect coalescence of developmental enamel lobes.",
-      "Traumatic occlusal overload.",
-      "Hypersalivation causing mineral loss.",
-      "Fluorosis-related porosity alone."
-    ],
+    q: "An early carious lesion that appears as an opaque white spot when air-dried but seems to disappear when wetted is called:",
+    opts: ["Incipient caries", "Cavitated caries", "Chronic caries", "Residual caries"],
     correct: 0,
-    explain: "Developmental pits/fissures arise from imperfect lobe coalescence and can retain plaque."
+    explain: "This describes the classic appearance of an incipient lesion, which is the first sign of caries and is potentially reversible."
   },
   {
-    q: "Once caries reaches the dentino-enamel junction (DEJ), it typically:",
-    opts: [
-      "Spreads laterally along the DEJ.",
-      "Stops progressing.",
-      "Becomes self-cleansing.",
-      "Remineralizes completely without intervention."
-    ],
+    q: "A G.V. Black Class II preparation involves which surfaces?",
+    opts: ["Proximal surfaces of posterior teeth", "Pit and fissures of any tooth", "Proximal surfaces of anterior teeth", "Gingival third of facial or lingual surfaces"],
     correct: 0,
-    explain: "At the DEJ, the lesion often spreads laterally before advancing deeper."
+    explain: "Class II specifically refers to preparations on the mesial or distal surfaces of premolars and molars."
   },
   {
-    q: "Smooth surface caries begins in:",
-    opts: [
-      "Habitually unclean smooth enamel surfaces covered by plaque.",
-      "Developmental pits and fissures only.",
-      "Exposed dentin without plaque.",
-      "Areas protected by constant mastication."
-    ],
+    q: "A cavity preparation involving the proximal surface of an anterior tooth that also includes the incisal angle is classified as:",
+    opts: ["Class IV", "Class II", "Class III", "Class V"],
     correct: 0,
-    explain: "Plaque-retentive, unclean smooth surfaces initiate smooth surface caries."
+    explain: "Class IV is a progression of a Class III lesion that undermines and includes the incisal angle."
   },
   {
-    q: "Why is root surface caries generally faster than enamel caries?",
-    opts: [
-      "Root cementum is extremely thin and offers little resistance to caries attack.",
-      "Root surfaces are naturally fluoridated.",
-      "Dentin is avascular.",
-      "Pulpal pressure prevents progression."
-    ],
+    q: "In tooth preparation terminology, what is an axial wall?",
+    opts: ["An internal wall parallel to the long axis of the tooth", "An internal wall perpendicular to the long axis of the tooth", "Any external wall of the preparation", "The junction of a prepared wall and the external surface"],
     correct: 0,
-    explain: "Thin cementum over root dentin demineralizes more readily than enamel."
+    explain: "The axial wall is an internal wall that runs parallel to the tooth's long axis, whereas the pulpal wall is perpendicular to it."
   },
   {
-    q: "Root surface caries is more common in which group?",
-    opts: [
-      "Older patients with gingival recession.",
-      "Children with mixed dentition only.",
-      "Adults with intact gingival margins.",
-      "Patients with high salivary flow."
-    ],
+    q: "The junction of two planar surfaces of different orientation along a line within a cavity preparation is called a:",
+    opts: ["Line angle", "Point angle", "Cavosurface margin", "Pulpal floor"],
     correct: 0,
-    explain: "Gingival recession exposes root surfaces in older patients."
+    explain: "A line angle is formed by the meeting of two surfaces. A point angle is formed by the meeting of three surfaces."
   },
   {
-    q: "A typical clinical feature of an incipient smooth-surface lesion is:",
-    opts: [
-      "Opaque white when air dried, fading when wetted.",
-      "Dark brown and hard to the explorer.",
-      "A cavitated hole into dentin.",
-      "A glossy, hypermineralized surface."
-    ],
+    q: "According to Sturdevant's classification, a tooth preparation involving three surfaces (e.g., mesial-occlusal-distal) is termed:",
+    opts: ["Complex", "Compound", "Simple", "Combined"],
     correct: 0,
-    explain: "Incipient lesions show a white spot that often disappears when wet."
+    explain: "A simple preparation is one surface, a compound is two surfaces, and a complex preparation involves three or more surfaces."
   },
   {
-    q: "Management of incipient caries primarily includes:",
-    opts: [
-      "Fluoride use and professional plaque removal.",
-      "Immediate Class II amalgam restoration.",
-      "Crown preparation.",
-      "Orthodontic repositioning."
-    ],
+    q: "G.V. Black's Class I classification applies to which of the following locations?",
+    opts: ["Occlusal pits and fissures of molars", "Proximal surfaces of anterior teeth", "Incisal edges of canines", "Gingival third of all teeth"],
     correct: 0,
-    explain: "Early lesions can remineralize with fluoride and plaque control."
+    explain: "Class I includes all pit and fissure lesions, most commonly on the occlusal surfaces of posterior teeth."
   },
   {
-    q: "Cavitated caries is generally:",
-    opts: [
-      "Non-reversible and often into dentin; usually requires restoration.",
-      "A purely esthetic concern that resolves spontaneously.",
-      "Reversible with saliva alone.",
-      "Limited to enamel and needs no treatment."
-    ],
+    q: "Which type of caries is characterized as being rapidly progressing, soft, and light-colored?",
+    opts: ["Acute (Rampant) caries", "Chronic caries", "Arrested caries", "Secondary caries"],
     correct: 0,
-    explain: "Once cavitated, remineralization is unlikely; operative care is indicated."
+    explain: "Acute or rampant caries describes a rapidly spreading disease process, often seen in individuals with high sugar intake or xerostomia."
   },
   {
-    q: "Acute (rampant) caries typically presents as:",
-    opts: [
-      "Rapidly progressing, soft, light-colored lesions; infectious in nature.",
-      "Slow, dark, hard lesions that are self-arresting.",
-      "Only root-surface lesions in elderly patients.",
-      "Non-infectious erosion from acidic beverages."
-    ],
+    q: "An arrested enamel caries lesion often appears:",
+    opts: ["Hard and dark brown or black", "Soft and opaque white", "Chalky and fragile", "Undetectable clinically"],
     correct: 0,
-    explain: "Rampant caries progresses quickly and lesions are soft and light-colored."
+    explain: "Chronic or arrested lesions are typically hard and discolored (brown/black) due to mineral uptake and staining over a long period."
   },
   {
-    q: "Arrested enamel caries is often:",
-    opts: [
-      "Hard, brown to black and can be more caries-resistant than adjacent enamel.",
-      "Soft, chalky white and rapidly cavitates.",
-      "Translucent and friable.",
-      "Radiolucent and mushy to probing."
-    ],
+    q: "What is the term for caries that remains in a completed cavity preparation, either by accident or intention?",
+    opts: ["Residual caries", "Backward caries", "Forward caries", "Secondary caries"],
     correct: 0,
-    explain: "Arrested lesions are hard and discolored; fluoride contributes to resistance."
+    explain: "Residual caries is the term for carious tissue left behind after preparation. It may be intentional if it's affected dentin near the pulp."
   },
   {
-    q: "Forward caries describes progression that:",
-    opts: [
-      "Proceeds from enamel pits/fissures toward the DEJ and into dentin.",
-      "Starts at the DEJ and moves back to enamel.",
-      "Occurs only on root surfaces.",
-      "Is synonymous with arrested caries."
-    ],
+    q: "A G.V. Black Class V lesion is found on the:",
+    opts: ["Gingival third of the facial or lingual surface", "Occlusal cusp tips", "Proximal surface of a premolar", "Lingual pit of a maxillary incisor"],
     correct: 0,
-    explain: "Forward caries extends from enamel into dentin."
+    explain: "Class V lesions are specifically located on the cervical (gingival) third of any tooth, both anterior and posterior."
   },
   {
-    q: "Backward caries refers to a pattern where caries:",
-    opts: [
-      "Reaches the DEJ, spreads laterally, then extends back toward enamel.",
-      "Moves from dentin to pulp without lateral spread.",
-      "Occurs exclusively in primary teeth.",
-      "Is stopped by topical fluoride."
-    ],
+    q: "The cavosurface angle is the junction between:",
+    opts: ["A prepared wall and the external tooth surface", "The axial wall and the pulpal wall", "Two external walls", "The enamel and the dentin"],
     correct: 0,
-    explain: "Backward spread after lateral progression at the DEJ is characteristic."
+    explain: "The cavosurface angle (or margin) is the line or angle formed where the prepared cavity meets the original, unprepared tooth surface."
   },
   {
-    q: "Residual caries is:",
-    opts: [
-      "Caries remaining in a completed preparation; not acceptable on prepared enamel walls.",
-      "Always acceptable if sealed.",
-      "Another term for secondary caries.",
-      "The stain left after polishing."
-    ],
+    q: "A Class VI preparation, an addition to Black's original classification, is located on the:",
+    opts: ["Incisal edge of anterior teeth or occlusal cusp heights", "Root surface of any tooth", "The distal surface of the last molar", "Any smooth surface"],
     correct: 0,
-    explain: "Residual caries may be tolerated only as affected dentin near pulp, never on prepared enamel walls."
+    explain: "Class VI was added to describe lesions on incisal edges or cusp tips, often caused by attrition or erosion combined with caries."
   },
   {
-    q: "A simple tooth preparation involves:",
-    opts: [
-      "One tooth surface involved.",
-      "Two surfaces involved.",
-      "Three or more surfaces involved.",
-      "Only occlusal surface involvement."
-    ],
+    q: "In a typical pit and fissure lesion, how does the decay spread upon reaching the dentino-enamel junction (DEJ)?",
+    opts: ["It spreads laterally", "It stops progressing", "It narrows towards the pulp", "It remineralizes immediately"],
     correct: 0,
-    explain: "Simple = one surface; compound = two; complex = three or more."
+    explain: "Once caries penetrates the enamel and reaches the softer dentin at the DEJ, it spreads laterally much more quickly than it did through the enamel."
   },
   {
-    q: "A compound preparation is defined as involving:",
-    opts: [
-      "Two surfaces.",
-      "One surface.",
-      "Three or more surfaces.",
-      "Only proximal surfaces."
-    ],
+    q: "A Class III preparation would be found on which tooth?",
+    opts: ["Maxillary central incisor", "Mandibular first molar", "Maxillary first premolar", "Mandibular second molar"],
     correct: 0,
-    explain: "Compound = two surfaces."
+    explain: "Class III lesions are on the proximal surfaces of anterior teeth (incisors and canines) that do not involve the incisal angle."
   },
   {
-    q: "A complex preparation involves:",
-    opts: [
-      "Three or more surfaces.",
-      "Only occlusal and one proximal.",
-      "Only enamel tissue.",
-      "One surface only."
-    ],
+    q: "The internal wall of a preparation that is perpendicular to the long axis of the tooth is the:",
+    opts: ["Pulpal wall", "Axial wall", "Gingival wall", "Facial wall"],
     correct: 0,
-    explain: "Complex = three or more surfaces."
+    explain: "The pulpal wall, or floor, is the internal wall overlying the pulp and is oriented perpendicular to the long axis of the tooth."
   },
   {
-    q: "Which of the following is NOT a Class I lesion/preparation example?",
-    opts: [
-      "Proximal surface of a maxillary first molar.",
-      "Occlusal surface of premolars and molars.",
-      "Facial/lingual pit of molars.",
-      "Lingual pit on maxillary incisors."
-    ],
+    q: "Which of the following is considered a smooth surface carious lesion?",
+    opts: ["Class II", "Class I", "Forward caries", "Pit and Fissure caries"],
     correct: 0,
-    explain: "Proximal surfaces are not Class I; they are Class II (posteriors) or III/IV (anteriors)."
+    explain: "All classes except Class I (pit-and-fissure) are considered smooth-surface lesions. Class II occurs on the smooth proximal surfaces."
   },
   {
-    q: "Class II preparations are placed on:",
-    opts: [
-      "Proximal surfaces of posterior teeth.",
-      "Incisal edges of anterior teeth.",
-      "Gingival third of all teeth.",
-      "Facial pits of molars only."
-    ],
+    q: "What is the primary factor that makes root caries more common in older patients?",
+    opts: ["Increased incidence of gingival recession", "Changes in salivary pH with age", "Hardening of the enamel", "A diet higher in sugars"],
     correct: 0,
-    explain: "Class II = proximal of posterior teeth."
+    explain: "Gingival recession, which is more prevalent in older populations, exposes the softer root surface to the oral environment, making it susceptible to caries."
   },
   {
-    q: "Class III preparations involve:",
-    opts: [
-      "Proximal surfaces of anterior teeth not involving the incisal angle.",
-      "Proximal surfaces of posterior teeth.",
-      "Gingival third on facial/lingual surfaces.",
-      "Incisal edge of anterior teeth."
-    ],
+    q: "Caries that extends from the DEJ back towards the enamel surface is known as:",
+    opts: ["Backward caries", "Forward caries", "Incipient caries", "Residual caries"],
     correct: 0,
-    explain: "Class III excludes the incisal angle; Class IV includes it."
+    explain: "Backward caries describes the process where decay spreads laterally at the DEJ and undermines the adjacent enamel from below."
   },
   {
-    q: "Class IV preparations are defined as:",
-    opts: [
-      "Proximal surfaces of anterior teeth involving the incisal angle.",
-      "Gingival third of all teeth.",
-      "Pit and fissure lesions of molars.",
-      "Proximal surfaces of posterior teeth."
-    ],
+    q: "A preparation on the lingual pit of a maxillary lateral incisor would be classified as:",
+    opts: ["Class I", "Class III", "Class IV", "Class V"],
     correct: 0,
-    explain: "Class IV includes the incisal angle."
+    explain: "Class I includes pit and fissure lesions, which encompasses the lingual pits of maxillary incisors."
   },
   {
-    q: "Class V preparations are located:",
-    opts: [
-      "On the gingival third of the facial or lingual surface of all teeth.",
-      "On proximal surfaces of anterior teeth.",
-      "On occlusal pits and fissures.",
-      "On incisal edges only."
-    ],
+    q: "The junction of three surfaces within a prepared cavity, such as the disto-facio-pulpal junction, is called a:",
+    opts: ["Point angle", "Line angle", "Cavosurface angle", "Tripod junction"],
     correct: 0,
-    explain: "Class V = cervical third on facial/lingual."
+    explain: "The junction of three prepared surfaces forms a point angle."
   },
   {
-    q: "Class VI preparations are placed:",
-    opts: [
-      "On incisal edges of anteriors or cusp tips of posteriors.",
-      "On proximal posteriors.",
-      "On gingival thirds only.",
-      "Within pits and fissures exclusively."
-    ],
+    q: "A preparation that only involves the occlusal surface of a molar is described as:",
+    opts: ["Simple", "Compound", "Complex", "Primary"],
     correct: 0,
-    explain: "Class VI covers incisal edges/cusp tips."
+    explain: "A preparation involving only one tooth surface is termed a simple preparation."
   },
   {
-    q: "An internal wall in a tooth preparation is:",
-    opts: [
-      "A prepared surface that does not extend to the external tooth surface.",
-      "Any surface that meets the external enamel at 90°.",
-      "The cavosurface angle.",
-      "Only the gingival wall in Class II."
-    ],
+    q: "Remineralization is a possible treatment for which type of caries?",
+    opts: ["Incipient caries", "Cavitated caries", "Secondary caries", "Acute caries"],
     correct: 0,
-    explain: "Internal walls are confined within the preparation."
+    explain: "Incipient caries is a non-cavitated lesion where the surface is intact. It can be reversed or arrested through measures like fluoride application and plaque control."
   },
   {
-    q: "The pulpal wall is oriented:",
-    opts: [
-      "Perpendicular to the long axis of the tooth.",
-      "Parallel to the long axis of the tooth.",
-      "Oblique to the long axis by 45°.",
-      "Coincident with the external enamel surface."
-    ],
+    q: "In a Class I cavity preparation on a mandibular molar, which wall is NOT an external wall?",
+    opts: ["Pulpal wall", "Facial wall", "Lingual wall", "Distal wall"],
     correct: 0,
-    explain: "Pulpal wall/floor is perpendicular to the tooth's long axis."
+    explain: "The pulpal wall is an internal wall. The facial, lingual, mesial, and distal walls extend to the external tooth surface."
   },
   {
-    q: "The axial wall is oriented:",
-    opts: [
-      "Parallel to the long axis of the tooth.",
-      "Perpendicular to the long axis of the tooth.",
-      "At a right angle to the DEJ only.",
-      "Parallel to the occlusal table regardless of tooth."
-    ],
+    q: "Which classification of caries is based on the rate of progression?",
+    opts: ["Acute and Chronic", "Primary and Secondary", "Simple and Complex", "Class I and Class II"],
     correct: 0,
-    explain: "Axial wall runs parallel to the long axis."
-  },
+    explain: "The rate or speed of caries is described as either acute (rapid) or chronic (slow/arrested)."
+  }
 ];
 
 const tfs = [
-  { q: "Dental caries is a non-infectious process.", answer: false, explain: "It is infectious and microbial in nature." },
-  { q: "Secondary caries is also termed recurrent caries.", answer: true, explain: "These occur adjacent to restorations." },
-  { q: "Root surface caries generally progresses more slowly than enamel caries.", answer: false, explain: "Cementum is thin; root caries often progresses faster." },
-  { q: "Incipient lesions always require operative intervention.", answer: false, explain: "They can remineralize with fluoride and plaque control." },
-  { q: "Acute caries lesions are often soft and light-colored.", answer: true, explain: "A classic feature of rapidly progressing lesions." },
-  { q: "Arrested enamel lesions are hard and brown to black.", answer: true, explain: "Characteristic appearance and feel." },
-  { q: "Residual caries is acceptable on prepared enamel walls if sealed.", answer: false, explain: "Not acceptable on prepared enamel; only affected dentin near pulp may be tolerated." },
-  { q: "Cavosurface angle is the junction of a prepared wall and the external tooth surface.", answer: true, explain: "Correct per terminology." },
-  { q: "Class II preparations are on proximal surfaces of anterior teeth.", answer: false, explain: "Class II = proximal of posterior teeth." }
+  {
+    q: "Primary caries is the first carious lesion to occur on a tooth surface.",
+    answer: true,
+    explain: "This is the definition of primary caries, which is the original lesion."
+  },
+  {
+    q: "Root caries progresses more slowly than enamel caries due to the higher mineral content of cementum.",
+    answer: false,
+    explain: "Root caries is usually more rapid because cementum is thin and less mineralized than enamel."
+  },
+  {
+    q: "A cavitated carious lesion can be reversed through the application of fluoride.",
+    answer: false,
+    explain: "Once the enamel surface is broken (cavitated), remineralization is generally not possible, and a restoration is required."
+  },
+  {
+    q: "G.V. Black's Class I refers to all smooth-surface lesions.",
+    answer: false,
+    explain: "Class I refers to pit-and-fissure lesions. Classes II, III, IV, V, and VI are smooth-surface lesions."
+  },
+  {
+    q: "An axial wall in a tooth preparation is parallel to the long axis of the tooth.",
+    answer: true,
+    explain: "This is the correct definition. The pulpal wall is perpendicular to the long axis."
+  },
+  {
+    q: "A tooth preparation involving two surfaces is called a 'complex' preparation.",
+    answer: false,
+    explain: "A two-surface preparation is termed 'compound.' A 'complex' preparation involves three or more surfaces."
+  },
+  {
+    q: "Secondary caries is also known as incipient caries.",
+    answer: false,
+    explain: "Secondary caries is also known as recurrent caries. Incipient caries refers to the earliest stage of a lesion."
+  },
+  {
+    q: "A Class IV preparation involves the proximal surface of a posterior tooth.",
+    answer: false,
+    explain: "A Class IV preparation involves the proximal surface and incisal angle of an *anterior* tooth."
+  },
+  {
+    q: "A point angle is formed by the junction of two prepared surfaces.",
+    answer: false,
+    explain: "A point angle is formed by the junction of three prepared surfaces. A line angle is formed by two."
+  }
 ];
 
 const saqs = [
-  // 1. Direct Answer
   {
-    q: "Define cavosurface angle.",
-    a: "Angle formed at the junction of a prepared cavity wall and the external surface of the tooth."
+    q: "Define 'Dental Caries' as described in the lecture.",
+    a: "It is an infectious microbial disease of the calcified tissues of teeth, characterized by demineralization of the inorganic portion and destruction of the organic portion of the tooth."
   },
-  // 2. List / Enumeration
   {
-    q: "List the three morphologic types of primary caries.",
+    q: "List the three primary morphologic types of primary caries.",
     a: "<ol><li>Pit and fissure caries</li><li>Smooth surface caries</li><li>Root surface caries</li></ol>"
   },
-  // 3. Comparison (numbered table)
   {
-    q: "Compare Class III and Class IV preparations in anterior teeth.",
-    a: "<table style=\"width:100%;border-collapse:collapse\"><thead><tr><th style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">#</th><th style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">Class III</th><th style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">Class IV</th></tr></thead><tbody><tr><td style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">1</td><td style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">Proximal surface of anterior</td><td style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">Proximal surface of anterior</td></tr><tr><td style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">2</td><td style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">Incisal angle <b>not</b> involved</td><td style=\"border:1px solid rgba(255,255,255,0.25);padding:6px\">Incisal angle <b>involved</b></td></tr></tbody></table>"
+    q: "Present a comparison between Acute (Rampant) Caries and Chronic (Arrested) Caries in a table format, covering their appearance and rate of progression.",
+    a: "<table><thead><tr><th>Feature</th><th>Acute (Rampant) Caries</th><th>Chronic (Arrested) Caries</th></tr></thead><tbody><tr><td><strong>Rate</strong></td><td>Rapidly progressing</td><td>Slowly progressing or stopped</td></tr><tr><td><strong>Appearance</strong></td><td>Soft, light-colored (whitish/yellowish)</td><td>Hard, dark-colored (brown/black)</td></tr></tbody></table>"
   },
-  // 4. Case-based Scenario
   {
-    q: "A 68-year-old with gingival recession presents with a soft, quickly progressing lesion on an exposed root surface covered by plaque. What type of caries is most likely and why is it fast?",
-    a: "Root surface caries; cementum is very thin and offers little resistance, so demineralization advances rapidly."
+    q: "A 19-year-old patient presents with a fractured mesio-incisal corner of their maxillary right central incisor. The fracture was caused by an underlying carious lesion on the mesial surface. According to G.V. Black's classification, what class of preparation would be required to restore this tooth?",
+    a: "This would require a Class IV preparation. The lesion involves the proximal surface (mesial) of an anterior tooth and also involves the incisal angle."
   },
-  // 5. Direct Answer
   {
-    q: "Define residual caries and state when, if ever, it may be accepted.",
-    a: "Caries remaining in a completed preparation; never acceptable on prepared enamel walls, but affected dentin near the pulp may occasionally be left."
+    q: "Explain the difference between an internal wall and an external wall in a tooth preparation, and provide one example of each.",
+    a: "An <strong>external wall</strong> is a prepared surface that extends to the external tooth surface (e.g., Facial, Lingual, Mesial, Distal, Gingival wall). An <strong>internal wall</strong> is a prepared surface that does not extend to the external tooth surface (e.g., Axial wall, Pulpal wall)."
   },
-  // 6. List / Enumeration
   {
-    q: "Name the three categories of tooth preparation by number of surfaces involved.",
-    a: "<ol><li>Simple (one surface)</li><li>Compound (two surfaces)</li><li>Complex (three or more surfaces)</li></ol>"
+    q: "List the six classes of tooth preparations according to G.V. Black's classification.",
+    a: "<ul><li><strong>Class I:</strong> Pit and fissure lesions.</li><li><strong>Class II:</strong> Lesions on the proximal surfaces of posterior teeth.</li><li><strong>Class III:</strong> Lesions on the proximal surfaces of anterior teeth, not involving the incisal angle.</li><li><strong>Class IV:</strong> Lesions on the proximal surfaces of anterior teeth that do involve the incisal angle.</li><li><strong>Class V:</strong> Lesions on the gingival third of the facial or lingual surfaces of any tooth.</li><li><strong>Class VI:</strong> Lesions on the incisal edge of anterior teeth or occlusal cusp tips of posterior teeth.</li></ul>"
   }
 ];
+
 
 // ----------- State -----------
 const state = {
@@ -606,15 +490,12 @@ mcqs.forEach((item, idx)=>{
       const v = Number(btn.dataset.v);
       state.mcq[idx] = v;
 
-      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
-      // Always mark the correct option (green)
       const correctBtn = buttons[correctVisualIndex];
       correctBtn.classList.add('correct');
 
       if(v !== correctVisualIndex){
-        // Mark chosen wrong option (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
@@ -662,20 +543,17 @@ tfs.forEach((item, idx)=>{
 
   buttons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      if(card.dataset.locked === 'true') return; // one attempt
+      if(card.dataset.locked === 'true') return;
       const val = btn.dataset.v === "true";
       state.tf[idx] = val;
 
-      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
 
-      // Always mark the correct button (green)
       const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
       correctBtn.classList.add('correct');
 
       const isCorrect = (val === item.answer);
       if(!isCorrect){
-        // mark chosen wrong (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
@@ -702,14 +580,13 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
   <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
   </div>
   <div class="answer" hidden>${item.a}</div>
 `;
-
 
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');
@@ -736,14 +613,14 @@ function recalc(){
   const mcqScore = state.mcq.reduce((s,v,i)=>{
     if(v===null) return s;
     const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
+    const feedback = card.querySelector('.feedback').innerHTML;
+    return s + (feedback.startsWith("<b>Correct") ? 1 : 0);
   },0);
   const tfScore = state.tf.reduce((s,v,i)=>{
     if(v===null) return s;
     const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
-    const feedback = card.querySelector('.feedback').textContent;
-    return s + (feedback.startsWith("Correct") ? 1 : 0);
+    const feedback = card.querySelector('.feedback').innerHTML;
+    return s + (feedback.startsWith("<b>Correct") ? 1 : 0);
   },0);
   const saqScore = state.saq.filter(Boolean).length;
   const total = mcqScore + tfScore + saqScore;
@@ -779,3 +656,4 @@ recalc();
 </script>
 </body>
 </html>
+

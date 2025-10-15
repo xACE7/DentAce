@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Two-Column Sections</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+</style>
+</head>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 9</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">رَبِّ اشْرَحْ لِي صَدْرِي، وَيَسِّرْ لِي أَمْرِي، وَاحْلُلْ عُقْدَةً مِنْ لِسَانِي، يَفْقَهُوا قَوْلِي</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Tissue Healing & Repair</b></span>
+<span class="ar"><b>الموضوع: التئام وإصلاح الأنسجة</b></span>
+</span>
+</div>
+<div class="sections">
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Introduction to Healing Processes</span><span class="ar">مقدمة في عمليات الالتئام</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Healing is the body's response to injury, aiming to restore normal structure and function. It involves two main processes: <strong>Regeneration</strong> and <strong>Repair by Scar Formation</strong>.</p>
+    <ul>
+        <li><strong>Regeneration:</strong> The ideal outcome where damaged tissue is replaced by specialized (parenchymal) cells of the same type. It results in complete restoration and occurs after small injuries in tissues with proliferating cells.</li>
+        <li><strong>Repair by Scar Formation:</strong> Occurs when damaged tissue is replaced by connective tissue (fibrosis), resulting in a scar. This happens after large injuries or in tissues where cells cannot proliferate.</li>
+    </ul>
+    <p><strong>Cell Proliferative Capacity:</strong></p>
+    <ul>
+        <li><strong>Labile cells:</strong> Continuously proliferate throughout life (e.g., skin, GI tract mucosa).</li>
+        <li><strong>Stable cells:</strong> Have a low level of replication but can proliferate in response to injury (e.g., liver, kidney).</li>
+        <li><strong>Permanent cells:</strong> Cannot proliferate after birth (e.g., nerves, cardiac muscle).</li>
+    </ul>
+</div>
+<div class="ar">
+    <p>الالتئام هو استجابة الجسم للإصابة، ويهدف إلى استعادة التركيب والوظيفة الطبيعية. ويشمل عمليتين رئيسيتين: <strong>التجدد (Regeneration)</strong> و <strong>الإصلاح بتكوين الندبات (Repair by Scar Formation)</strong>.</p>
+    <ul>
+        <li><strong>التجدد:</strong> النتيجة المثالية حيث يتم استبدال النسيج التالف بخلايا متخصصة (حشوية) من نفس النوع. يؤدي ذلك إلى استعادة كاملة ويحدث بعد الإصابات الصغيرة في الأنسجة ذات الخلايا المتكاثرة.</li>
+        <li><strong>الإصلاح بتكوين الندبات:</strong> يحدث عندما يتم استبدال النسيج التالف بنسيج ضام (تليف)، مما ينتج عنه ندبة. يحدث هذا بعد الإصابات الكبيرة أو في الأنسجة التي لا تستطيع خلاياها التكاثر.</li>
+    </ul>
+    <p><strong>قدرة الخلايا على التكاثر:</strong></p>
+    <ul>
+        <li><strong>الخلايا المتجددة (Labile):</strong> تتكاثر باستمرار طوال الحياة (مثل الجلد، الغشاء المخاطي للجهاز الهضمي).</li>
+        <li><strong>الخلايا المستقرة (Stable):</strong> لديها مستوى منخفض من التكاثر ولكن يمكنها التكاثر استجابةً للإصابة (مثل الكبد، الكلى).</li>
+        <li><strong>الخلايا الدائمة (Permanent):</strong> لا يمكنها التكاثر بعد الولادة (مثل الأعصاب، عضلات القلب).</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 4 of 18</span>
+<span class="ar">المصدر: صفحة 4 من 18</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Regeneration restores the original tissue, while repair leads to a scar.</div><div class="ar">التجدد يعيد النسيج الأصلي، بينما الإصلاح يؤدي إلى ندبة.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Skin cuts heal by regeneration, but a severe heart attack heals by scarring.</div><div class="ar">تلتئم جروح الجلد عن طريق التجدد، لكن نوبة قلبية حادة تلتئم عن طريق التندب.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding cell types (labile, stable, permanent) is crucial to predict the healing outcome in different organs.</div><div class="ar">فهم أنواع الخلايا (المتجددة، المستقرة، الدائمة) ضروري للتنبؤ بنتيجة الشفاء في الأعضاء المختلفة.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Mechanisms of Tissue Regeneration</span><span class="ar">آليات تجدد الأنسجة</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Tissue regeneration is the process of replacing damaged components to return the tissue to a normal state. It involves four key mechanisms:</p>
+    <ul>
+        <li><strong>Cell Migration:</strong> Epithelial and inflammatory cells move into the injured area.</li>
+        <li><strong>Differentiation:</strong> Stem cells develop into the specialized cells needed to replace damaged ones.</li>
+        <li><strong>Proliferation:</strong> The number of specialized and stem cells increases through cell division.</li>
+        <li><strong>Matrix Formation:</strong> A new extracellular matrix (ECM) is laid down, including:
+            <ul>
+                <li><strong>Interstitial substances:</strong> Collagen (Type I), elastin, and integrins.</li>
+                <li><strong>Basement membrane:</strong> Primarily composed of Collagen Type IV.</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<div class="ar">
+    <p>تجدد الأنسجة هو عملية استبدال المكونات التالفة لإعادة النسيج إلى حالته الطبيعية. ويشمل أربع آليات رئيسية:</p>
+    <ul>
+        <li><strong>هجرة الخلايا:</strong> تنتقل الخلايا الظهارية والالتهابية إلى المنطقة المصابة.</li>
+        <li><strong>التمايز:</strong> تتطور الخلايا الجذعية إلى الخلايا المتخصصة اللازمة لاستبدال الخلايا التالفة.</li>
+        <li><strong>التكاثر:</strong> يزداد عدد الخلايا المتخصصة والخلايا الجذعية من خلال الانقسام الخلوي.</li>
+        <li><strong>تكوين المصفوفة:</strong> يتم وضع مصفوفة خارج خلوية جديدة (ECM)، تشمل:
+            <ul>
+                <li><strong>المواد الخلالية:</strong> الكولاجين (النوع الأول)، الإيلاستين، والإنتغرينات.</li>
+                <li><strong>الغشاء القاعدي:</strong> يتكون بشكل أساسي من الكولاجين من النوع الرابع.</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 6 of 18</span>
+<span class="ar">المصدر: صفحة 6 من 18</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Both specialized cells and stem cells are involved in proliferation during regeneration.</div><div class="ar">تشارك كل من الخلايا المتخصصة والخلايا الجذعية في عملية التكاثر أثناء التجدد.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember the 4 stages as "MD-PM": Migration, Differentiation, Proliferation, Matrix Formation.</div><div class="ar">تذكر المراحل الأربع كـ "هـ ت ت م": هجرة، تمايز، تكاثر، مصفوفة.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Collagen Type I provides tensile strength to tissues like skin and bone, while Type IV is essential for the basement membrane's filtering function.</div><div class="ar">الكولاجين من النوع الأول يوفر قوة الشد للأنسجة مثل الجلد والعظام، بينما النوع الرابع ضروري لوظيفة الترشيح للغشاء القاعدي.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Scar Formation & Granulation Tissue</span><span class="ar">تكوين الندبات والنسيج الحبيبي</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>When an injury is severe, regeneration cannot fully replace the lost tissue, leading to scar formation. A key component of this process is <strong>granulation tissue</strong>.</p>
+    <ul>
+        <li><strong>Granulation Tissue:</strong> This is a hallmark of healing by repair. It consists of two main processes:
+            <ul>
+                <li><strong>Fibrosis:</strong> Fibroblasts lay down extracellular matrix (ECM), primarily collagen. This process is stimulated by mediators from macrophages, such as <strong>TGF-β</strong>.</li>
+                <li><strong>Angiogenesis:</strong> The formation of new blood vessels. This is regulated by factors like <strong>VEGF</strong> and extracellular matrix proteins like MMPs.</li>
+            </ul>
+        </li>
+        <li>The process begins with hemorrhage and infiltration of inflammatory cells (PMNs, macrophages). This is followed by the formation of granulation tissue, which eventually matures into a collagen scar.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p>عندما تكون الإصابة شديدة، لا يمكن للتجدد أن يحل محل النسيج المفقود بالكامل، مما يؤدي إلى تكوين الندبات. والمكون الرئيسي في هذه العملية هو <strong>النسيج الحبيبي (granulation tissue)</strong>.</p>
+    <ul>
+        <li><strong>النسيج الحبيبي:</strong> هو علامة مميزة للشفاء عن طريق الإصلاح. ويتكون من عمليتين رئيسيتين:
+            <ul>
+                <li><strong>التليف (Fibrosis):</strong> تقوم الخلايا الليفية (Fibroblasts) بترسيب المصفوفة خارج الخلية (ECM)، وبشكل أساسي الكولاجين. يتم تحفيز هذه العملية بواسطة وسائط من الخلايا البلعمية الكبيرة، مثل <strong>TGF-β</strong>.</li>
+                <li><strong>تكوين الأوعية الدموية (Angiogenesis):</strong> تكوين أوعية دموية جديدة. يتم تنظيم هذه العملية بواسطة عوامل مثل <strong>VEGF</strong> وبروتينات المصفوفة خارج الخلية مثل MMPs.</li>
+            </ul>
+        </li>
+        <li>تبدأ العملية بالنزف وتسلل الخلايا الالتهابية (PMNs، البلاعم). ويلي ذلك تكوين النسيج الحبيبي، الذي ينضج في النهاية ليصبح ندبة كولاجينية.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 7 of 18</span>
+<span class="ar">المصدر: صفحة 7 من 18</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Granulation tissue is named for its pink, soft, granular appearance on the surface of wounds.</div><div class="ar">سمي النسيج الحبيبي بهذا الاسم لمظهره الوردي والناعم والحبيبي على سطح الجروح.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">TGF-β is a key cytokine that promotes fibrosis. Excessive TGF-β activity can lead to pathological scarring in organs like the liver (cirrhosis) or lungs (pulmonary fibrosis).</div><div class="ar">عامل النمو المحول بيتا (TGF-β) هو سيتوكين رئيسي يعزز التليف. يمكن أن يؤدي النشاط المفرط له إلى تندب مرضي في أعضاء مثل الكبد (تليف الكبد) أو الرئتين (التليف الرئوي).</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Granulation Tissue = Fibrosis (Fibroblasts) + Angiogenesis (Vessels).</div><div class="ar">النسيج الحبيبي = تليف (خلايا ليفية) + تكوين أوعية (أوعية دموية).</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">General Phases of Wound Healing</span><span class="ar">المراحل العامة لالتئام الجروح</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Wound healing is a dynamic process that follows a predictable timeline through four overlapping phases:</p>
+    <ol>
+        <li><strong>Hemostasis (Immediate):</strong> Platelets aggregate at the injury site to form a fibrin clot. This stops the bleeding and provides a temporary matrix for cell migration.</li>
+        <li><strong>Inflammatory Phase (Day 1-4):</strong> Neutrophils arrive first to clear debris and bacteria. They are followed by macrophages, which continue debridement and release crucial cytokines and growth factors to orchestrate the next phase.</li>
+        <li><strong>Proliferative Phase (Day 4-21):</strong> This phase is characterized by the formation of granulation tissue. Key events include angiogenesis (new blood vessel formation), collagen deposition by fibroblasts, and epithelialization (regrowth of the epidermis).</li>
+        <li><strong>Maturation / Remodeling (Day 21 - 2 years):</strong> The collagen is reorganized and cross-linked, and the wound contracts. The scar tissue strengthens, eventually reaching about 80% of the original tissue's tensile strength.</li>
+    </ol>
+</div>
+<div class="ar">
+    <p>التئام الجروح هو عملية ديناميكية تتبع جدولاً زمنياً متوقعاً عبر أربع مراحل متداخلة:</p>
+    <ol>
+        <li><strong>الإرقاء (Hemostasis) (فوري):</strong> تتجمع الصفائح الدموية في موقع الإصابة لتكوين جلطة فايبرين. هذا يوقف النزيف ويوفر مصفوفة مؤقتة لهجرة الخلايا.</li>
+        <li><strong>المرحلة الالتهابية (Inflammatory) (يوم 1-4):</strong> تصل العدلات (Neutrophils) أولاً لتنظيف الحطام والبكتيريا. وتتبعها الخلايا البلعمية الكبيرة (Macrophages)، التي تواصل التنضير وتطلق السيتوكينات وعوامل النمو الحاسمة لتنسيق المرحلة التالية.</li>
+        <li><strong>المرحلة التكاثرية (Proliferative) (يوم 4-21):</strong> تتميز هذه المرحلة بتكوين النسيج الحبيبي. تشمل الأحداث الرئيسية تكوين الأوعية الدموية الجديدة، وترسيب الكولاجين بواسطة الخلايا الليفية، وإعادة التظهير (نمو البشرة من جديد).</li>
+        <li><strong>مرحلة النضج / إعادة التشكيل (Maturation / Remodeling) (يوم 21 - سنتان):</strong> يتم إعادة تنظيم الكولاجين وربطه، وينكمش الجرح. تزداد قوة نسيج الندبة، لتصل في النهاية إلى حوالي 80٪ من قوة الشد الأصلية للنسيج.</li>
+    </ol>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 9 of 18</span>
+<span class="ar">المصدر: صفحة 9 من 18</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">The timing of each phase is a high-yield topic for exams. A biopsy showing collagen and new vessels with minimal inflammation points to the proliferative phase (around 2 weeks).</div><div class="ar">توقيت كل مرحلة هو موضوع مهم للاختبارات. الخزعة التي تظهر كولاجين وأوعية دموية جديدة مع التهاب ضئيل تشير إلى المرحلة التكاثرية (حوالي أسبوعين).</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Chronic wounds, like diabetic foot ulcers, are often "stuck" in the inflammatory phase due to persistent infection, poor perfusion, and dysfunctional immune cells.</div><div class="ar">الجروح المزمنة، مثل قرحة القدم السكرية، غالباً ما تكون "عصية" في المرحلة الالتهابية بسبب العدوى المستمرة، وضعف التروية الدموية، وخلل في وظائف الخلايا المناعية.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">"I P M R" - Inflammatory, Proliferative, Maturation, Remodeling. (Hemostasis is the instant first step).</div><div class="ar">"ا ت ن إ" - التهابية، تكاثرية، نضج، إعادة تشكيل. (الإرقاء هو الخطوة الفورية الأولى).</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Healing by Primary Intention</span><span class="ar">الالتئام بالنية الأولية</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Healing by <strong>primary intention</strong> (or primary union) occurs in small, clean, uninfected wounds where the edges are brought together, such as a surgical incision.</p>
+    <p><strong>Characteristics:</strong></p>
+    <ul>
+        <li><strong>Wound Type:</strong> Clean, small wound.</li>
+        <li><strong>Edges:</strong> Opposed (close together).</li>
+        <li><strong>Gap:</strong> Minimal or no gap.</li>
+        <li><strong>Damage:</strong> Little tissue damage.</li>
+        <li><strong>Process:</strong> The healing process is rapid, with minimal granulation tissue and scarring.
+            <ol>
+                <li>A small clot forms.</li>
+                <li>Inflammation is minimal.</li>
+                <li>Epithelial cells quickly grow across the small gap.</li>
+                <li>A small amount of granulation tissue forms and matures.</li>
+                <li>The scar eventually fades (scar off / resolution).</li>
+            </ol>
+        </li>
+        <li><strong>Outcome:</strong> Complete return to normal structure and function with a fine-line scar.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p>يحدث الالتئام بـ <strong>النية الأولية</strong> (أو الاتحاد الأولي) في الجروح الصغيرة والنظيفة وغير المصابة حيث يتم تقريب الحواف من بعضها، مثل الشق الجراحي.</p>
+    <p><strong>الخصائص:</strong></p>
+    <ul>
+        <li><strong>نوع الجرح:</strong> نظيف، جرح صغير.</li>
+        <li><strong>الحواف:</strong> متقابلة (قريبة من بعضها).</li>
+        <li><strong>الفجوة:</strong> فجوة صغيرة أو معدومة.</li>
+        <li><strong>الضرر:</strong> ضرر نسيجي قليل.</li>
+        <li><strong>العملية:</strong> عملية الشفاء سريعة، مع الحد الأدنى من النسيج الحبيبي والتندب.
+            <ol>
+                <li>تتشكل جلطة صغيرة.</li>
+                <li>الالتهاب يكون في حده الأدنى.</li>
+                <li>تنمو الخلايا الظهارية بسرعة عبر الفجوة الصغيرة.</li>
+                <li>تتكون كمية صغيرة من النسيج الحبيبي وتنضج.</li>
+                <li>تتلاشى الندبة في النهاية (تلاشي الندبة / الشفاء التام).</li>
+            </ol>
+        </li>
+        <li><strong>النتيجة:</strong> عودة كاملة إلى التركيب والوظيفة الطبيعية مع ندبة خطية دقيقة.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 8, 11 of 18</span>
+<span class="ar">المصدر: الصفحات 8, 11 من 18</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">A sutured surgical wound or a clean paper cut.</div><div class="ar">جرح جراحي مخيط أو جرح نظيف من ورقة.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The key to primary intention is the approximation of wound edges, which minimizes the space that needs to be filled by new tissue.</div><div class="ar">المفتاح في الالتئام بالنية الأولية هو تقريب حواف الجرح، مما يقلل من المساحة التي تحتاج إلى ملئها بنسيج جديد.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Surgeons aim for primary intention healing by carefully closing wounds with sutures, staples, or adhesives to ensure the best cosmetic outcome and fastest recovery.</div><div class="ar">يهدف الجراحون إلى الشفاء بالنية الأولية عن طريق إغلاق الجروح بعناية بالخيوط الجراحية أو الدبابيس أو المواد اللاصقة لضمان أفضل نتيجة تجميلية وأسرع شفاء.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Healing by Secondary Intention</span><span class="ar">الالتئام بالنية الثانوية</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Healing by <strong>secondary intention</strong> occurs in large, contaminated, or gaping wounds where the edges are not opposed.</p>
+    <p><strong>Characteristics:</strong></p>
+    <ul>
+        <li><strong>Wound Type:</strong> Large, often contaminated wound.</li>
+        <li><strong>Edges:</strong> Separated.</li>
+        <li><strong>Gap:</strong> A wide gap that must be filled.</li>
+        <li><strong>Damage:</strong> More extensive tissue damage.</li>
+        <li><strong>Process:</strong> The healing process is slower and more complex.
+            <ul>
+                <li>A large clot forms, and inflammation is more intense.</li>
+                <li>A large amount of granulation tissue is needed to fill the defect.</li>
+                <li>Epithelial migration is slow and often incomplete.</li>
+                <li><strong>Wound contraction</strong> occurs, where specialized cells called <strong>myofibroblasts</strong> pull the edges of the wound together, reducing its size.</li>
+            </ul>
+        </li>
+        <li><strong>Outcome:</strong> A permanent, often large, and contracted scar.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p>يحدث الالتئام بـ <strong>النية الثانوية</strong> في الجروح الكبيرة أو الملوثة أو المفتوحة حيث تكون الحواف غير متقابلة.</p>
+    <p><strong>الخصائص:</strong></p>
+    <ul>
+        <li><strong>نوع الجرح:</strong> كبير، وغالباً ما يكون ملوثاً.</li>
+        <li><strong>الحواف:</strong> منفصلة.</li>
+        <li><strong>الفجوة:</strong> فجوة واسعة يجب ملؤها.</li>
+        <li><strong>الضرر:</strong> ضرر نسيجي أكثر اتساعاً.</li>
+        <li><strong>العملية:</strong> عملية الشفاء أبطأ وأكثر تعقيداً.
+            <ul>
+                <li>تتشكل جلطة كبيرة، ويكون الالتهاب أكثر شدة.</li>
+                <li>هناك حاجة لكمية كبيرة من النسيج الحبيبي لملء الفجوة.</li>
+                <li>تكون هجرة الخلايا الظهارية بطيئة وغير مكتملة في كثير من الأحيان.</li>
+                <li>يحدث <strong>انكماش الجرح (Wound contraction)</strong>، حيث تقوم خلايا متخصصة تسمى <strong>الخلايا الليفية العضلية (myofibroblasts)</strong> بسحب حواف الجرح معاً، مما يقلل من حجمه.</li>
+            </ul>
+        </li>
+        <li><strong>النتيجة:</strong> ندبة دائمة، وغالباً ما تكون كبيرة ومنكمشة.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 8, 12 of 18</span>
+<span class="ar">المصدر: الصفحات 8, 12 من 18</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Large burns, pressure sores (bedsores), or tooth extraction sockets.</div><div class="ar">الحروق الكبيرة، قرح الفراش، أو مكان خلع السن.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Wound contraction is a key feature of secondary intention and is absent in primary intention healing. It can reduce the wound size by up to 80%.</div><div class="ar">انكماش الجرح هو سمة رئيسية للالتئام بالنية الثانوية وهو غائب في الالتئام بالنية الأولية. يمكن أن يقلل من حجم الجرح بنسبة تصل إلى 80٪.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">While wound contraction is beneficial, excessive contraction (contracture) over joints can lead to severe limitation of movement.</div><div class="ar">على الرغم من أن انكماش الجرح مفيد، إلا أن الانكماش المفرط (التقفع) فوق المفاصل يمكن أن يؤدي إلى تحديد شديد للحركة.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Comparison of Healing Intentions</span><span class="ar">مقارنة بين أنواع الالتئام</span></h2>
+<div class="sec-body">
+<div class="en"><p>Understanding the key differences between primary and secondary intention is crucial for predicting healing outcomes.</p></div>
+<div class="ar"><p>فهم الفروق الرئيسية بين الالتئام بالنية الأولية والثانوية أمر بالغ الأهمية للتنبؤ بنتائج الشفاء.</p></div>
+<div aria-label="Scrollable table" class="table-wrap">
+<table>
+<thead>
+<tr>
+<th><span class="en">Feature</span><span class="ar">الميزة</span></th>
+<th><span class="en">Primary Intention</span><span class="ar">النية الأولية</span></th>
+<th><span class="en">Secondary Intention</span><span class="ar">النية الثانوية</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="en">Edges</span><span class="ar">الحواف</span></td>
+<td><span class="en">Opposed</span><span class="ar">متقابلة</span></td>
+<td><span class="en">Separated</span><span class="ar">منفصلة</span></td>
+</tr>
+<tr>
+<td><span class="en">Size / Gap</span><span class="ar">الحجم / الفجوة</span></td>
+<td><span class="en">Small</span><span class="ar">صغير</span></td>
+<td><span class="en">Large</span><span class="ar">كبير</span></td>
+</tr>
+<tr>
+<td><span class="en">Cleanness</span><span class="ar">النظافة</span></td>
+<td><span class="en">Clean</span><span class="ar">نظيف</span></td>
+<td><span class="en">Contaminated</span><span class="ar">ملوث</span></td>
+</tr>
+<tr>
+<td><span class="en">Granulation Tissue</span><span class="ar">النسيج الحبيبي</span></td>
+<td><span class="en">Less</span><span class="ar">أقل</span></td>
+<td><span class="en">More</span><span class="ar">أكثر</span></td>
+</tr>
+<tr>
+<td><span class="en">Scar</span><span class="ar">الندبة</span></td>
+<td><span class="en">Minimal / Fades</span><span class="ar">صغيرة / تتلاشى</span></td>
+<td><span class="en">Permanent</span><span class="ar">دائمة</span></td>
+</tr>
+<tr>
+<td><span class="en">Wound Contraction</span><span class="ar">انكماش الجرح</span></td>
+<td><span class="en">No</span><span class="ar">لا يوجد</span></td>
+<td><span class="en">Yes</span><span class="ar">يوجد</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 13 of 18</span>
+<span class="ar">المصدر: صفحة 13 من 18</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Focus on the three main differences: gap size, amount of granulation tissue, and the presence of wound contraction. These are frequent exam questions.</div><div class="ar">ركز على الفروق الثلاثة الرئيسية: حجم الفجوة، كمية النسيج الحبيبي، ووجود انكماش الجرح. هذه أسئلة متكررة في الامتحانات.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Clinicians choose wound management strategies (e.g., suturing vs. leaving open) based on whether the goal is primary or secondary intention healing.</div><div class="ar">يختار الأطباء استراتيجيات إدارة الجروح (مثل الخياطة مقابل تركها مفتوحة) بناءً على ما إذا كان الهدف هو الشفاء بالنية الأولية أو الثانوية.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Primary = "Perfect" healing (clean, closed). Secondary = "Slow & Scarred" (open, contracts).</div><div class="ar">أولي = شفاء "مثالي" (نظيف، مغلق). ثانوي = "بطيء ومُندّب" (مفتوح، ينكمش).</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Factors Delaying Wound Healing</span><span class="ar">العوامل التي تؤخر التئام الجروح</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Both systemic (affecting the whole body) and local (at the wound site) factors can impair the healing process.</p>
+    <p><strong>Systemic Factors:</strong></p>
+    <div aria-label="Scrollable table" class="table-wrap">
+        <table>
+            <thead><tr><th>Factor</th><th>Effect on Healing</th></tr></thead>
+            <tbody>
+                <tr><td>Protein Deficiency</td><td>Reduced fibroblast growth and granulation tissue formation.</td></tr>
+                <tr><td>Vitamin C Deficiency</td><td>Impaired collagen synthesis and maturation, fragile blood vessels.</td></tr>
+                <tr><td>Vitamin A Deficiency</td><td>Reduced collagen stability.</td></tr>
+                <tr><td>Zinc Deficiency</td><td>Reduced epithelial growth, angiogenesis, and immune cell function.</td></tr>
+                <tr><td>Steroids</td><td>Anti-inflammatory effect reduces phagocytosis and chemotaxis.</td></tr>
+                <tr><td>Diabetes</td><td>Neutrophil/macrophage dysfunction, decreased vascular perfusion.</td></tr>
+                <tr><td>Smoking</td><td>Nicotine causes vasoconstriction and microvascular occlusion.</td></tr>
+                <tr><td>Old Age</td><td>Decreased cell proliferation capacity.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p><strong>Local Factors:</strong></p>
+    <ul>
+        <li><strong>Infection:</strong> The most common cause of delayed healing.</li>
+        <li><strong>Ischemia:</strong> Inadequate blood supply.</li>
+        <li><strong>Foreign Bodies:</strong> Sutures, debris, or glass can cause persistent inflammation.</li>
+        <li><strong>Movement:</strong> Motion at the wound site can disrupt healing.</li>
+        <li><strong>Type, size, and location of the wound.</strong></li>
+        <li><strong>Radiation.</strong></li>
+    </ul>
+</div>
+<div class="ar">
+    <p>يمكن للعوامل الجهازية (التي تؤثر على الجسم بأكمله) والمحلية (في موقع الجرح) أن تعيق عملية الشفاء.</p>
+    <p><strong>العوامل الجهازية:</strong></p>
+    <div aria-label="Scrollable table" class="table-wrap">
+        <table>
+            <thead><tr><th>العامل</th><th>التأثير على الشفاء</th></tr></thead>
+            <tbody>
+                <tr><td>نقص البروتين</td><td>انخفاض نمو الخلايا الليفية وتكوين النسيج الحبيبي.</td></tr>
+                <tr><td>نقص فيتامين C</td><td>ضعف في تصنيع ونضج الكولاجين، هشاشة الأوعية الدموية.</td></tr>
+                <tr><td>نقص فيتامين A</td><td>انخفاض استقرار الكولاجين.</td></tr>
+                <tr><td>نقص الزنك</td><td>انخفاض النمو الظهاري، وتكوين الأوعية، ووظيفة الخلايا المناعية.</td></tr>
+                <tr><td>الستيرويدات</td><td>التأثير المضاد للالتهاب يقلل من البلعمة والانجذاب الكيميائي.</td></tr>
+                <tr><td>مرض السكري</td><td>خلل في وظيفة العدلات/البلاعم، انخفاض التروية الدموية.</td></tr>
+                <tr><td>التدخين</td><td>النيكوتين يسبب تضيق الأوعية وانسداد الأوعية الدموية الدقيقة.</td></tr>
+                <tr><td>الشيخوخة</td><td>انخفاض قدرة الخلايا على التكاثر.</td></tr>
+            </tbody>
+        </table>
+    </div>
+    <p><strong>العوامل المحلية:</strong></p>
+    <ul>
+        <li><strong>العدوى:</strong> السبب الأكثر شيوعاً لتأخر الشفاء.</li>
+        <li><strong>نقص التروية (Ischemia):</strong> عدم كفاية إمدادات الدم.</li>
+        <li><strong>الأجسام الغريبة:</strong> الخيوط الجراحية، الحطام، أو الزجاج يمكن أن تسبب التهاباً مستمراً.</li>
+        <li><strong>الحركة:</strong> الحركة في موقع الجرح يمكن أن تعطل الشفاء.</li>
+        <li><strong>نوع وحجم وموقع الجرح.</strong></li>
+        <li><strong>الإشعاع.</strong></li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 14, 15 of 18</span>
+<span class="ar">المصدر: الصفحات 14, 15 من 18</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">In patients with uncontrolled diabetes, delayed wound healing is common after oral surgery. The primary mechanism is decreased neutrophil function (impaired chemotaxis and phagocytosis).</div><div class="ar">في مرضى السكري غير المنضبط، يكون تأخر التئام الجروح شائعاً بعد جراحة الفم. الآلية الأساسية هي انخفاض وظيفة العدلات (ضعف الانجذاب الكيميائي والبلعمة).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Vitamin C (ascorbic acid) is a critical co-factor for the enzymes that hydroxylate proline and lysine, which is essential for stable collagen formation.</div><div class="ar">فيتامين C (حمض الأسكوربيك) هو عامل مساعد حاسم للإنزيمات التي تقوم بهيدروكسيل البرولين واللايسين، وهو أمر ضروري لتكوين كولاجين مستقر.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Before any surgery, clinicians assess for these risk factors to optimize healing. This might include improving nutritional status, ensuring good blood sugar control, and advising smoking cessation.</div><div class="ar">قبل أي عملية جراحية، يقوم الأطباء بتقييم عوامل الخطر هذه لتحسين الشفاء. قد يشمل ذلك تحسين الحالة الغذائية، وضمان التحكم الجيد في سكر الدم، وتقديم المشورة بالإقلاع عن التدخين.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Complications of Wound Healing</span><span class="ar">مضاعفات التئام الجروح</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>The healing process can sometimes go wrong, leading to several complications.</p>
+    <ul>
+        <li><strong>Deficient Scar Formation:</strong> Inadequate formation of granulation tissue or scar.
+            <ul>
+                <li><strong>Wound Weakness / Dehiscence:</strong> The wound ruptures or opens. This can lead to <strong>incisional hernia</strong> formation.</li>
+                <li><strong>Ulceration:</strong> A defect in the surface epithelium, often due to inadequate vascularization.</li>
+            </ul>
+        </li>
+        <li><strong>Excessive Scar Formation:</strong> Overproduction of collagen.
+            <ul>
+                <li><strong>Hypertrophic Scars:</strong> Raised scars that remain within the boundaries of the original wound and may regress over time.</li>
+                <li><strong>Keloids:</strong> Scars that grow beyond the original wound boundaries, invade surrounding tissue, and do not regress.</li>
+            </ul>
+        </li>
+        <li><strong>Other Complications:</strong>
+            <ul>
+                <li><strong>Wound Contraction (Contracture):</strong> Excessive contraction leading to deformity and limited movement, especially over joints.</li>
+                <li><strong>Epithelial Implantation:</strong> Trapping of epithelial cells beneath the skin can form an epidermal cyst.</li>
+                <li><strong>Infections.</strong></li>
+                <li><strong>Cancer:</strong> Rarely, chronic, non-healing wounds can undergo malignant transformation (e.g., Marjolin's ulcer).</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+<div class="ar">
+    <p>يمكن أن تسوء عملية الشفاء في بعض الأحيان، مما يؤدي إلى عدة مضاعفات.</p>
+    <ul>
+        <li><strong>قصور في تكوين الندبة:</strong> تكوين غير كافٍ للنسيج الحبيبي أو الندبة.
+            <ul>
+                <li><strong>ضعف الجرح / التفتق (Dehiscence):</strong> تمزق أو انفتاح الجرح. يمكن أن يؤدي هذا إلى تكوين <strong>فتق جراحي (incisional hernia)</strong>.</li>
+                <li><strong>التقرح (Ulceration):</strong> عيب في الظهارة السطحية، غالباً بسبب عدم كفاية الأوعية الدموية.</li>
+            </ul>
+        </li>
+        <li><strong>تكوين مفرط للندبة:</strong> إنتاج مفرط للكولاجين.
+            <ul>
+                <li><strong>الندبات الضخامية (Hypertrophic Scars):</strong> ندبات مرتفعة تبقى ضمن حدود الجرح الأصلي وقد تتراجع بمرور الوقت.</li>
+                <li><strong>الجدرة (Keloids):</strong> ندبات تنمو خارج حدود الجرح الأصلي، وتغزو الأنسجة المحيطة، ولا تتراجع.</li>
+            </ul>
+        </li>
+        <li><strong>مضاعفات أخرى:</strong>
+            <ul>
+                <li><strong>انكماش الجرح (التقفع):</strong> انكماش مفرط يؤدي إلى تشوه ومحدودية الحركة، خاصة فوق المفاصل.</li>
+                <li><strong>انغراس الظهارة:</strong> انحصار الخلايا الظهارية تحت الجلد يمكن أن يشكل كيسًا بشرويًا (epidermal cyst).</li>
+                <li><strong>العدوى.</strong></li>
+                <li><strong>السرطان:</strong> نادرًا ما يمكن أن تخضع الجروح المزمنة غير الملتئمة لتحول خبيث (مثل قرحة مارجولين).</li>
+            </ul>
+        </li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 16, 17 of 18</span>
+<span class="ar">المصدر: الصفحات 16, 17 من 18</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Keloid "Klimbs" out of the wound boundary. Hypertrophic scar stays "Home" (within the boundary).</div><div class="ar">الجدرة "تتسلق" خارج حدود الجرح. الندبة الضخامية تبقى "في المنزل" (ضمن الحدود).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Histologically, both keloids and hypertrophic scars show excessive collagen deposition. The key difference is their clinical behavior (growth beyond boundaries).</div><div class="ar">من الناحية النسيجية، تُظهر كل من الجدرة والندبات الضخامية ترسبًا مفرطًا للكولاجين. الفرق الرئيسي هو سلوكها السريري (النمو خارج الحدود).</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Keloids are more common in individuals with darker skin and have a high recurrence rate after surgical excision.</div><div class="ar">الجدرة أكثر شيوعاً لدى الأفراد ذوي البشرة الداكنة ولها معدل تكرار مرتفع بعد الاستئصال الجراحي.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Summary</span><span class="ar">الملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+    <ul>
+        <li><strong>Healing</strong> is the body's response to injury, occurring via <strong>regeneration</strong> (ideal, restores original tissue) or <strong>repair</strong> (scar formation).</li>
+        <li>The outcome depends on the tissue's cell type: <strong>labile</strong> (continuously dividing), <strong>stable</strong> (can divide when needed), or <strong>permanent</strong> (non-dividing).</li>
+        <li><strong>Wound healing</strong> has four phases: <strong>Hemostasis, Inflammatory, Proliferative, and Maturation</strong>.</li>
+        <li><strong>Primary Intention</strong> healing is for clean, approximated wounds, resulting in a minimal scar.</li>
+        <li><strong>Secondary Intention</strong> healing is for large, open wounds and involves significant granulation tissue, <strong>wound contraction</strong>, and a permanent scar.</li>
+        <li>Healing can be delayed by <strong>systemic factors</strong> (e.g., diabetes, poor nutrition) and <strong>local factors</strong> (e.g., infection, ischemia).</li>
+        <li><strong>Complications</strong> include deficient scarring (hernia, ulcer), excessive scarring (hypertrophic scar, keloid), and contractures.</li>
+    </ul>
+</div>
+<div class="ar">
+    <ul>
+        <li><strong>الالتئام</strong> هو استجابة الجسم للإصابة، ويحدث عن طريق <strong>التجدد</strong> (مثالي، يعيد النسيج الأصلي) أو <strong>الإصلاح</strong> (تكوين الندبة).</li>
+        <li>تعتمد النتيجة على نوع خلايا النسيج: <strong>متجددة</strong> (تنقسم باستمرار)، <strong>مستقرة</strong> (يمكن أن تنقسم عند الحاجة)، أو <strong>دائمة</strong> (لا تنقسم).</li>
+        <li><strong>التئام الجروح</strong> له أربع مراحل: <strong>الإرقاء، الالتهابية، التكاثرية، والنضج</strong>.</li>
+        <li>الالتئام بـ <strong>النية الأولية</strong> مخصص للجروح النظيفة والمتقاربة، وينتج عنه ندبة بسيطة.</li>
+        <li>الالتئام بـ <strong>النية الثانوية</strong> مخصص للجروح الكبيرة والمفتوحة ويشمل نسيجاً حبيبياً كبيراً و<strong>انكماش الجرح</strong> وندبة دائمة.</li>
+        <li>يمكن أن يتأخر الشفاء بسبب <strong>عوامل جهازية</strong> (مثل السكري، سوء التغذية) و<strong>عوامل محلية</strong> (مثل العدوى، نقص التروية).</li>
+        <li>تشمل <strong>المضاعفات</strong> قصور التندب (فتق، قرحة)، والتندب المفرط (ندبة ضخامية، جدرة)، والتقفعات.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 4-17 of 18</span>
+<span class="ar">المصدر: الصفحات 4-17 من 18</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Create a concept map linking cell types to healing outcomes and factors that can disrupt each phase of healing.</div><div class="ar">أنشئ خريطة مفاهيم تربط بين أنواع الخلايا ونتائج الشفاء والعوامل التي يمكن أن تعطل كل مرحلة من مراحل الشفاء.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">A solid understanding of tissue repair is fundamental to all clinical practice, from managing a simple cut to complex post-surgical care.</div><div class="ar">الفهم القوي لإصلاح الأنسجة أساسي لجميع الممارسات السريرية، من إدارة جرح بسيط إلى الرعاية المعقدة بعد الجراحة.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Recognizing the signs of impaired healing (e.g., persistent redness, lack of granulation) allows for timely intervention to prevent severe complications.</div><div class="ar">التعرف على علامات ضعف الشفاء (مثل الاحمرار المستمر، نقص النسيج الحبيبي) يسمح بالتدخل في الوقت المناسب لمنع المضاعفات الشديدة.</div></div></div>
+</div>
+</aside>
+</section>
+
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Regeneration / تجدد</div><div class="content" hidden=""><div class="en">Replacement of damaged tissue with native tissue, leading to complete restoration.</div><div class="ar">استبدال النسيج التالف بنسيج أصلي، مما يؤدي إلى استعادة كاملة.</div></div></div>
+<div class="card"><div class="head">Fibrosis / تليف</div><div class="content" hidden=""><div class="en">Replacement of damaged tissue with fibrous connective tissue, resulting in a scar.</div><div class="ar">استبدال النسيج التالف بنسيج ضام ليفي، مما ينتج عنه ندبة.</div></div></div>
+<div class="card"><div class="head">Labile Cells / خلايا متجددة</div><div class="content" hidden=""><div class="en">Cells that continuously divide and replicate throughout life (e.g., skin, GI mucosa).</div><div class="ar">خلايا تنقسم وتتكاثر باستمرار طوال الحياة (مثل الجلد، الغشاء المخاطي للجهاز الهضمي).</div></div></div>
+<div class="card"><div class="head">Granulation Tissue / نسيج حبيبي</div><div class="content" hidden=""><div class="en">New connective tissue and microscopic blood vessels that form on the surfaces of a wound during healing.</div><div class="ar">نسيج ضام جديد وأوعية دموية مجهرية تتكون على أسطح الجرح أثناء الشفاء.</div></div></div>
+<div class="card"><div class="head">Angiogenesis / تكوين الأوعية</div><div class="content" hidden=""><div class="en">The physiological process through which new blood vessels form from pre-existing vessels.</div><div class="ar">العملية الفسيولوجية التي تتكون من خلالها أوعية دموية جديدة من أوعية موجودة مسبقًا.</div></div></div>
+<div class="card"><div class="head">Primary Intention / النية الأولية</div><div class="content" hidden=""><div class="en">Healing of a clean wound where the edges are surgically apposed, resulting in minimal scarring.</div><div class="ar">شفاء جرح نظيف حيث يتم تقريب الحواف جراحيًا، مما يؤدي إلى الحد الأدنى من التندب.</div></div></div>
+<div class="card"><div class="head">Secondary Intention / النية الثانوية</div><div class="content" hidden=""><div class="en">Wound healing where the edges are separated; involves granulation tissue formation and wound contraction.</div><div class="ar">شفاء الجروح حيث تكون الحواف منفصلة؛ يتضمن تكوين النسيج الحبيبي وانكماش الجرح.</div></div></div>
+<div class="card"><div class="head">Keloid / جُدرة</div><div class="content" hidden=""><div class="en">An abnormal proliferation of scar tissue that forms at the site of skin injury but grows beyond the original boundaries.</div><div class="ar">تكاثر غير طبيعي لنسيج الندبة يتشكل في موقع إصابة الجلد ولكنه ينمو خارج الحدود الأصلية.</div></div></div>
+<div class="card"><div class="head">Wound Contraction / انكماش الجرح</div><div class="content" hidden=""><div class="en">The process by which the size of a wound decreases, mediated by myofibroblasts. A key feature of secondary intention.</div><div class="ar">العملية التي ينقص بها حجم الجرح، وتتم بوساطة الخلايا الليفية العضلية. سمة رئيسية للنية الثانوية.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — What are the two main processes of healing?</span><span class="ar">١ — ما هما العمليتان الرئيسيتان للشفاء؟</span></div><div class="content" hidden=""><span class="en">A: Regeneration and Repair (scar formation).</span><span class="ar">ج: التجدد والإصلاح (تكوين الندبات).</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — Which cell type cannot proliferate after injury?</span><span class="ar">٢ — أي نوع من الخلايا لا يمكنه التكاثر بعد الإصابة؟</span></div><div class="content" hidden=""><span class="en">A: Permanent cells (e.g., neurons, cardiac muscle).</span><span class="ar">ج: الخلايا الدائمة (مثل الخلايا العصبية، عضلة القلب).</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — What are the main components of granulation tissue?</span><span class="ar">٣ — ما هي المكونات الرئيسية للنسيج الحبيبي؟</span></div><div class="content" hidden=""><span class="en">A: Fibroblasts/collagen and new blood vessels (angiogenesis).</span><span class="ar">ج: الخلايا الليفية/الكولاجين والأوعية الدموية الجديدة (تكوين الأوعية).</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — What is the first phase of wound healing after injury?</span><span class="ar">٤ — ما هي المرحلة الأولى من التئام الجروح بعد الإصابة؟</span></div><div class="content" hidden=""><span class="en">A: Hemostasis (clot formation).</span><span class="ar">ج: الإرقاء (تكوين الجلطة).</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — A biopsy shows numerous neutrophils. How old is the wound?</span><span class="ar">٥ — خزعة تظهر عدداً كبيراً من العدلات. ما عمر الجرح؟</span></div><div class="content" hidden=""><span class="en">A: It is in the inflammatory phase, likely within the first 1-4 days.</span><span class="ar">ج: إنه في المرحلة الالتهابية، على الأرجح خلال الأيام 1-4 الأولى.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — Which healing intention results in wound contraction?</span><span class="ar">٦ — أي نوع من الالتئام ينتج عنه انكماش الجرح؟</span></div><div class="content" hidden=""><span class="en">A: Secondary intention.</span><span class="ar">ج: النية الثانوية.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — Vitamin C deficiency impairs healing by affecting what?</span><span class="ar">٧ — نقص فيتامين C يضعف الشفاء من خلال التأثير على ماذا؟</span></div><div class="content" hidden=""><span class="en">A: Collagen synthesis and maturation.</span><span class="ar">ج: تصنيع ونضج الكولاجين.</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — What is the key difference between a keloid and a hypertrophic scar?</span><span class="ar">٨ — ما هو الفرق الرئيسي بين الجدرة والندبة الضخامية؟</span></div><div class="content" hidden=""><span class="en">A: A keloid grows beyond the original wound boundaries; a hypertrophic scar does not.</span><span class="ar">ج: الجدرة تنمو خارج حدود الجرح الأصلية؛ الندبة الضخامية لا تفعل ذلك.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What cell is responsible for wound contraction?</span><span class="ar">٩ — ما هي الخلية المسؤولة عن انكماش الجرح؟</span></div><div class="content" hidden=""><span class="en">A: Myofibroblast.</span><span class="ar">ج: الخلية الليفية العضلية (Myofibroblast).</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

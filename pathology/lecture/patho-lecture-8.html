@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Two-Column Sections</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
+  strong { color: #8b5cf6; }
+
+</style>
+</head>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 8</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِنْ لِسَانِي يَفْقَهُوا قَوْلِي</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Tuberculosis & Actinomycosis</b></span>
+<span class="ar"><b>الموضوع: السل وداء الشعيات</b></span>
+</span>
+</div>
+<div class="sections">
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Granuloma and Tuberculosis Basics</span><span class="ar">أساسيات الورم الحبيبي والسل</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>A <strong>granuloma</strong> is a small, specific lesion primarily composed of modified macrophages called <strong>epithelioid cells</strong>. These are usually surrounded by lymphoid cells. Granulomas can also contain fibrosis, necrosis, and giant cells like <strong>Langhans giant cells</strong>.</p>
+    <p><strong>Tuberculosis (TB)</strong> is a classic example of chronic granulomatous inflammation. It is an infectious disease caused by the microorganism <strong><em>Mycobacterium tuberculosis</em></strong>, which is an acid-fast rod-shaped bacterium. Another cause is <strong><em>Mycobacterium bovis</em></strong>, which leads to oropharyngeal and intestinal TB, often from unpasteurized milk.</p>
+    <p>TB is more common in developing countries and is influenced by factors like malnutrition, poverty, crowding, and chronic conditions such as uncontrolled diabetes, alcoholism, and immunodeficiency (e.g., AIDS).</p>
+</div>
+<div class="ar">
+    <p><strong>الورم الحبيبي (Granuloma)</strong> هو آفة صغيرة ومحددة تتكون بشكل أساسي من خلايا بلعمية كبيرة معدلة تسمى <strong>الخلايا الظهارانية (epithelioid cells)</strong>. عادة ما تكون هذه الخلايا محاطة بخلايا ليمفاوية. يمكن أن تحتوي الأورام الحبيبية أيضًا على تليف، ونخر، وخلايا عملاقة مثل <strong>خلايا لانغهانز العملاقة (Langhans giant cells)</strong>.</p>
+    <p><strong>السل (Tuberculosis)</strong> هو مثال كلاسيكي للالتهاب الحبيبي المزمن. وهو مرض معدي يسببه كائن دقيق هو <strong><em>المتفطرة السلية (Mycobacterium tuberculosis)</em></strong>، وهي بكتيريا عصوية صامدة للحمض. سبب آخر هو <strong><em>المتفطرة البقرية (Mycobacterium bovis)</em></strong>، التي تؤدي إلى سل الفم والبلعوم والأمعاء، وغالبًا ما تنتقل عن طريق الحليب غير المبستر.</p>
+    <p>ينتشر السل بشكل أكبر في البلدان النامية ويتأثر بعوامل مثل سوء التغذية، والفقر، والازدحام، والحالات المزمنة مثل مرض السكري غير المنضبط، وإدمان الكحول، ونقص المناعة (مثل الإيدز).</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 3, 4 of 28</span>
+<span class="ar">المصدر: الصفحات 3، 4 من 28</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">A granuloma is a collection of modified macrophages (epithelioid cells), often with a surrounding collar of lymphocytes. A key feature in TB is <strong>caseous necrosis</strong> (cheese-like necrosis) in the center.</div><div class="ar">الورم الحبيبي هو تجمع من البلاعم المعدلة (الخلايا الظهارانية)، وغالبًا ما يكون محاطًا بطوق من الخلايا الليمفاوية. السمة الرئيسية في السل هي <strong>النخر المتجبن</strong> (نخر شبيه بالجبن) في المركز.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Risk factors that weaken the immune system, such as malnutrition, uncontrolled diabetes, and AIDS, significantly increase the susceptibility to developing active TB.</div><div class="ar">عوامل الخطر التي تضعف جهاز المناعة، مثل سوء التغذية والسكري غير المنضبط والإيدز، تزيد بشكل كبير من قابلية الإصابة بالسل النشط.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en"><em>M. bovis</em>, transmitted through contaminated milk, is a reminder of the importance of food safety practices like pasteurization in preventing certain forms of TB.</div><div class="ar">المتفطرة البقرية (<em>M. bovis</em>)، التي تنتقل عبر الحليب الملوث، تذكرنا بأهمية ممارسات سلامة الغذاء مثل البسترة في الوقاية من أشكال معينة من السل.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Transmission and Pathogenesis of TB</span><span class="ar">انتقال السل وآلية تطوره</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Tuberculosis is transmitted through airborne droplets when an infected person coughs or sneezes. The process involves two main stages: first, a person becomes infected (often asymptomatically), and second, the infection progresses to active disease.</p>
+    <p><strong>Pathogenesis Timeline:</strong></p>
+    <ul>
+        <li><strong>First 3 Weeks:</strong> <em>M. tuberculosis</em> is inhaled and enters alveolar macrophages. The bacteria replicate within the macrophage by preventing the fusion of phagosomes with lysosomes. This leads to bacteremia and the seeding of bacteria to multiple sites in the body.</li>
+        <li><strong>After 3 Weeks:</strong> A cell-mediated immune response develops. Mycobacterial antigens are presented to T-cells. This activates <strong>T Helper 1 ($T_H1$) cells</strong>, which produce <strong>Interferon-gamma (IFN-γ)</strong>. IFN-γ activates macrophages, enabling them to kill the bacteria. <strong>Tumor Necrosis Factor (TNF)</strong> is also released, which recruits more monocytes to form a granuloma, effectively walling off the bacteria. This immune reaction leads to caseous necrosis and tissue damage.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p>ينتقل السل عن طريق الرذاذ المحمول جواً عندما يسعل الشخص المصاب أو يعطس. تتضمن العملية مرحلتين رئيسيتين: أولاً، يصاب الشخص بالعدوى (غالباً بدون أعراض)، وثانياً، تتطور العدوى إلى مرض نشط.</p>
+    <p><strong>الجدول الزمني لتطور المرض:</strong></p>
+    <ul>
+        <li><strong>أول 3 أسابيع:</strong> يتم استنشاق <em>المتفطرة السلية</em> وتدخل إلى البلاعم السنخية. تتكاثر البكتيريا داخل البلعم عن طريق منع اندماج الجسيمات البلعمية مع الجسيمات الحالة (الليزوزومات). يؤدي هذا إلى تجرثم الدم وانتشار البكتيريا إلى مواقع متعددة في الجسم.</li>
+        <li><strong>بعد 3 أسابيع:</strong> تتطور استجابة مناعية خلوية. يتم تقديم مستضدات المتفطرات إلى الخلايا التائية. هذا ينشط <strong>الخلايا التائية المساعدة من النوع 1 ($T_H1$)</strong>، التي تنتج <strong>الإنترفيرون غاما (IFN-γ)</strong>. يقوم IFN-γ بتنشيط البلاعم، مما يمكنها من قتل البكتيريا. يتم إطلاق <strong>عامل نخر الورم (TNF)</strong> أيضًا، والذي يجند المزيد من الخلايا الوحيدة لتشكيل الورم الحبيبي، مما يعزل البكتيريا بشكل فعال. يؤدي هذا التفاعل المناعي إلى النخر المتجبن وتلف الأنسجة.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 5, 6, 9, 10 of 28</span>
+<span class="ar">المصدر: الصفحات 5، 6، 9، 10 من 28</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Distinguishing between latent TB infection and active TB disease is critical. Most infected people have a latent infection and are not contagious, but they are at risk of developing active disease later.</div><div class="ar">يعد التمييز بين عدوى السل الكامنة ومرض السل النشط أمراً بالغ الأهمية. معظم المصابين لديهم عدوى كامنة وليسوا معديين، لكنهم معرضون لخطر الإصابة بالمرض النشط لاحقًا.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The immune response that contains the TB infection (granuloma formation) is the same response that causes tissue damage (hypersensitivity and caseous necrosis). It's a double-edged sword.</div><div class="ar">الاستجابة المناعية التي تحتوي على عدوى السل (تكوين الورم الحبيبي) هي نفس الاستجابة التي تسبب تلف الأنسجة (فرط الحساسية والنخر المتجبن). إنها سيف ذو حدين.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember the key players in TB immunity: <strong>M</strong>acrophages (eat), <strong>T</strong>-cells (activate), <strong>I</strong>FN-γ (powers up macrophages), and <strong>T</strong>NF (recruits).</div><div class="ar">تذكر اللاعبين الرئيسيين في مناعة السل: <strong>البلاعم</strong> (تأكل)، <strong>الخلايا التائية</strong> (تنشط)، <strong>الإنترفيرون-غاما</strong> (يقوي البلاعم)، و<strong>عامل نخر الورم</strong> (يجند).</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Primary Tuberculosis</span><span class="ar">السل الأولي</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Primary Tuberculosis (TB)</strong> occurs when an individual is infected for the first time and has not been previously immunized. This form is often asymptomatic.</p>
+    <p>The hallmark of primary TB is the <strong>Ghon's complex</strong>, which consists of two components:</p>
+    <ol>
+        <li><strong>The Ghon's focus:</strong> This is the initial lesion in the lung, typically a small (1-2 cm), solitary, white area of consolidation (granuloma). It is usually located in the subpleural area, either in the upper part of the lower lobe or the lower part of the upper lobe.</li>
+        <li><strong>Lymph node and lymphatic involvement:</strong> The bacteria drain to the regional hilar lymph nodes, causing them to enlarge (hilar lymphadenopathy).</li>
+    </ol>
+    <p>Grossly, the Ghon's focus appears as a grey-white, firm nodule, and the involved lymph nodes are matted and also show a grey-white cut surface.</p>
+</div>
+<div class="ar">
+    <p>يحدث <strong>السل الأولي</strong> عندما يصاب الفرد بالعدوى لأول مرة ولم يتم تحصينه مسبقًا. غالبًا ما يكون هذا الشكل بدون أعراض.</p>
+    <p>العلامة المميزة للسل الأولي هي <strong>معقد غون (Ghon's complex)</strong>، والذي يتكون من عنصرين:</p>
+    <ol>
+        <li><strong>بؤرة غون (Ghon's focus):</strong> وهي الآفة الأولية في الرئة، وعادة ما تكون منطقة تكثف صغيرة (1-2 سم)، مفردة، وبيضاء (ورم حبيبي). تقع عادة في المنطقة تحت الجنبية، إما في الجزء العلوي من الفص السفلي أو الجزء السفلي من الفص العلوي.</li>
+        <li><strong>إصابة العقد الليمفاوية والأوعية الليمفاوية:</strong> تنتقل البكتيريا إلى العقد الليمفاوية السرية المجاورة، مما يؤدي إلى تضخمها (اعتلال العقد الليمفاوية السرية).</li>
+    </ol>
+    <p>عيانياً، تظهر بؤرة غون كعقيدة رمادية-بيضاء صلبة، وتكون العقد الليمفاوية المصابة متكتلة وتظهر أيضًا سطحًا مقطوعًا رماديًا-أبيض.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 12, 13, 14 of 28</span>
+<span class="ar">المصدر: الصفحات 12، 13، 14 من 28</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The Ghon's complex is the combination of the initial lung lesion (Ghon's focus) and the infected regional lymph nodes. In over 90% of cases, this primary infection is contained and becomes dormant.</div><div class="ar">معقد غون هو مزيج من الآفة الرئوية الأولية (بؤرة غون) والعقد الليمفاوية المجاورة المصابة. في أكثر من 90٪ من الحالات، يتم احتواء هذه العدوى الأولية وتصبح كامنة.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">A child inhales TB bacteria. A small granuloma forms in the mid-zone of one lung, and the nearby hilar lymph nodes swell. The child shows no symptoms. This entire lesion is the Ghon's complex.</div><div class="ar">يستنشق طفل بكتيريا السل. يتكون ورم حبيبي صغير في المنطقة الوسطى من إحدى الرئتين، وتتورم العقد الليمفاوية السرية القريبة. لا تظهر على الطفل أي أعراض. هذه الآفة بأكملها هي معقد غون.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Primary TB is usually asymptomatic and may only be discovered incidentally on a chest X-ray as a calcified Ghon's complex (called a Ranke complex).</div><div class="ar">عادة ما يكون السل الأولي بدون أعراض وقد يتم اكتشافه بالصدفة فقط في صورة أشعة سينية على الصدر كمعقد غون متكلس (يسمى معقد رانكه).</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Secondary Tuberculosis</span><span class="ar">السل الثانوي</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Secondary Tuberculosis</strong>, also known as post-primary or reinfection TB, occurs in an individual who was previously infected. It can result from either a reactivation of a dormant primary complex or a new infection.</p>
+    <p>This is the most common form that causes infectivity to others. It typically affects the <strong>apex (top) of the lungs</strong>. This location is favored because the oxygen tension is high, which is ideal for the growth of the aerobic <em>M. tuberculosis</em> bacteria.</p>
+    <p>A key feature of secondary TB is <strong>cavitation</strong>, where the caseous necrosis liquefies and is coughed up, creating a cavity in the lung tissue. This process can lead to extensive tissue destruction and hemorrhage within the cavity.</p>
+</div>
+<div class="ar">
+    <p><strong>السل الثانوي</strong>، المعروف أيضًا باسم السل ما بعد الأولي أو سل إعادة العدوى، يحدث في فرد كان مصابًا سابقًا. يمكن أن ينتج إما عن إعادة تنشيط معقد أولي كامن أو عن عدوى جديدة.</p>
+    <p>هذا هو الشكل الأكثر شيوعًا الذي يسبب العدوى للآخرين. يصيب عادةً <strong>قمة الرئتين</strong>. يُفضل هذا الموقع لأن تركيز الأكسجين فيه مرتفع، وهو مثالي لنمو بكتيريا <em>المتفطرة السلية</em> الهوائية.</p>
+    <p>السمة الرئيسية للسل الثانوي هي <strong>التكهف (cavitation)</strong>، حيث يسيل النخر المتجبن ويتم إخراجه مع السعال، مما يخلق تجويفًا في نسيج الرئة. يمكن أن تؤدي هذه العملية إلى تدمير واسع للأنسجة ونزيف داخل التجويف.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 15, 16 of 28</span>
+<span class="ar">المصدر: الصفحات 15، 16 من 28</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Secondary TB is the contagious stage of the disease. The formation of cavities allows large numbers of bacteria to be expelled into the air through coughing.</div><div class="ar">السل الثانوي هو المرحلة المعدية من المرض. يسمح تكوين التجاويف بطرد أعداد كبيرة من البكتيريا في الهواء عن طريق السعال.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The predilection for the lung apex is a classic radiological sign of secondary TB. High oxygen levels in the apex create a perfect environment for the aerobic mycobacteria to thrive and cause damage.</div><div class="ar">يعتبر الميل لإصابة قمة الرئة علامة إشعاعية كلاسيكية للسل الثانوي. تخلق مستويات الأكسجين المرتفعة في القمة بيئة مثالية للمتفطرات الهوائية لتنمو وتسبب الضرر.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Patients with cavitary secondary TB often present with a productive cough, sometimes with hemoptysis (coughing up blood), due to the erosion of blood vessels within the cavity walls.</div><div class="ar">غالبًا ما يعاني المرضى المصابون بالسل الثانوي التكهفي من سعال منتج، وأحيانًا مع نفث الدم (سعال مصحوب بدم)، بسبب تآكل الأوعية الدموية داخل جدران التجويف.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Miliary (Tertiary) Tuberculosis</span><span class="ar">السل الدخني (الثالثي)</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Miliary Tuberculosis</strong> occurs when the host's immunity is poorly suppressed, such as in immunocompromised individuals (e.g., children, elderly, AIDS patients). The term "miliary" comes from the appearance of the lesions, which resemble millet seeds.</p>
+    <p>In this form, the bacteria spread through the bloodstream, leading to multi-organ involvement. Grossly, the lesions are tiny (about 1 mm in diameter), yellowish, firm areas scattered throughout various organs.</p>
+    <p>Commonly affected organs include:</p>
+    <ul>
+        <li>Lungs</li>
+        <li>Liver</li>
+        <li>Spleen</li>
+        <li>Adrenals</li>
+        <li>Meninges (causing meningitis)</li>
+        <li>Vertebrae (causing Pott's disease)</li>
+        <li>Lymph nodes</li>
+        <li>Joints and long bones</li>
+    </ul>
+</div>
+<div class="ar">
+    <p>يحدث <strong>السل الدخني</strong> عندما تكون مناعة المضيف مثبطة بشدة، كما هو الحال في الأفراد الذين يعانون من نقص المناعة (مثل الأطفال وكبار السن ومرضى الإيدز). يأتي مصطلح "دخني" من مظهر الآفات التي تشبه بذور الدخن.</p>
+    <p>في هذا الشكل، تنتشر البكتيريا عبر مجرى الدم، مما يؤدي إلى إصابة أعضاء متعددة. عيانياً، تكون الآفات صغيرة (حوالي 1 ملم في القطر)، وهي مناطق صفراء صلبة منتشرة في جميع أنحاء الأعضاء المختلفة.</p>
+    <p>تشمل الأعضاء المصابة بشكل شائع ما يلي:</p>
+    <ul>
+        <li>الرئتان</li>
+        <li>الكبد</li>
+        <li>الطحال</li>
+        <li>الغدد الكظرية</li>
+        <li>السحايا (مما يسبب التهاب السحايا)</li>
+        <li>الفقرات (مما يسبب مرض بوت)</li>
+        <li>العقد الليمفاوية</li>
+        <li>المفاصل والعظام الطويلة</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 17, 18 of 28</span>
+<span class="ar">المصدر: الصفحات 17، 18 من 28</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Miliary TB is a severe and often fatal form of tuberculosis if not treated promptly, due to its widespread dissemination and impact on multiple vital organs.</div><div class="ar">السل الدخني هو شكل حاد ومميت في كثير من الأحيان من السل إذا لم يتم علاجه على الفور، بسبب انتشاره الواسع وتأثيره على العديد من الأعضاء الحيوية.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The name "miliary" was coined because the numerous small lesions on a chest X-ray or on gross examination of organs resemble millet seeds scattered about.</div><div class="ar">تم إطلاق اسم "دخني" لأن الآفات الصغيرة العديدة في صورة الأشعة السينية على الصدر أو عند الفحص العياني للأعضاء تشبه بذور الدخن المتناثرة.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Systemic spread can lead to diverse symptoms depending on the organ affected, such as neurological deficits in tuberculous meningitis or back pain and spinal deformity in Pott's disease (TB of the spine).</div><div class="ar">يمكن أن يؤدي الانتشار الجهازي إلى أعراض متنوعة اعتمادًا على العضو المصاب، مثل العجز العصبي في التهاب السحايا السلي أو آلام الظهر وتشوه العمود الفقري في مرض بوت (سل العمود الفقري).</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Clinical Features and Diagnosis of TB</span><span class="ar">المظاهر السريرية وتشخيص السل</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>While primary TB is often asymptomatic, secondary (active) TB presents with systemic and respiratory symptoms. <strong>Key clinical features include:</strong></p>
+    <ul>
+        <li>Intermittent fever</li>
+        <li>Night sweats</li>
+        <li>Weight loss and loss of appetite</li>
+        <li>Productive cough, which may produce mucoid, purulent, or blood-stained sputum (hemoptysis).</li>
+    </ul>
+    <p><strong>Diagnosis</strong> is based on a combination of clinical, radiological, and pathological findings. The <strong>Mantoux test (tuberculin skin test)</strong> can indicate exposure, with an induration of 10mm or more considered positive.</p>
+    <div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th><span class="en">Method</span><span class="ar">الطريقة</span></th>
+                <th><span class="en">Details</span><span class="ar">التفاصيل</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="en"><strong>Radiological Findings</strong></span><span class="ar"><strong>النتائج الإشعاعية</strong></span></td>
+                <td><span class="en">Chest X-ray may show a <strong>Ranke complex</strong> (calcified Ghon's complex) or cavities, typically in the lung apex.</span><span class="ar">قد تظهر الأشعة السينية على الصدر <strong>معقد رانكه</strong> (معقد غون متكلس) أو تجاويف، عادة في قمة الرئة.</span></td>
+            </tr>
+            <tr>
+                <td><span class="en"><strong>Laboratory Findings</strong></span><span class="ar"><strong>النتائج المخبرية</strong></span></td>
+                <td><span class="en">
+                    <ul>
+                        <li><strong>Acid-fast staining (Ziehl-Neelsen):</strong> Identifies bacilli in sputum or tissue biopsy. Requires >10,000 organisms/mL for positivity.</li>
+                        <li><strong>Culture:</strong> The "gold standard". It confirms the diagnosis and allows for drug susceptibility testing. Conventional methods take up to 10 weeks.</li>
+                        <li><strong>PCR amplification:</strong> A fast method that can detect as few as 10 organisms.</li>
+                    </ul>
+                </span><span class="ar">
+                    <ul>
+                        <li><strong>صبغة الصمود للحمض (زيل-نلسن):</strong> تحدد العصيات في البلغم أو خزعة الأنسجة. تتطلب أكثر من 10,000 كائن/مل لتكون إيجابية.</li>
+                        <li><strong>الزرع:</strong> "المعيار الذهبي". يؤكد التشخيص ويسمح باختبار حساسية الأدوية. تستغرق الطرق التقليدية ما يصل إلى 10 أسابيع.</li>
+                        <li><strong>تضخيم PCR:</strong> طريقة سريعة يمكنها الكشف عن عدد قليل يصل إلى 10 كائنات.</li>
+                    </ul>
+                </span></td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+<div class="ar">
+    <p>بينما يكون السل الأولي غالبًا بدون أعراض، يظهر السل الثانوي (النشط) بأعراض جهازية وتنفسية. <strong>تشمل المظاهر السريرية الرئيسية:</strong></p>
+    <ul>
+        <li>حمى متقطعة</li>
+        <li>تعرق ليلي</li>
+        <li>فقدان الوزن وفقدان الشهية</li>
+        <li>سعال منتج، قد ينتج بلغمًا مخاطيًا أو قيحيًا أو ملطخًا بالدم (نفث الدم).</li>
+    </ul>
+    <p>يعتمد <strong>التشخيص</strong> على مزيج من النتائج السريرية والإشعاعية والمرضية. يمكن أن يشير <strong>اختبار مانتو (اختبار السلين الجلدي)</strong> إلى التعرض، حيث يعتبر التصلب بقطر 10 ملم أو أكثر إيجابيًا.</p>
+    <div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th><span class="en">Method</span><span class="ar">الطريقة</span></th>
+                <th><span class="en">Details</span><span class="ar">التفاصيل</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="en"><strong>Radiological Findings</strong></span><span class="ar"><strong>النتائج الإشعاعية</strong></span></td>
+                <td><span class="en">Chest X-ray may show a <strong>Ranke complex</strong> (calcified Ghon's complex) or cavities, typically in the lung apex.</span><span class="ar">قد تظهر الأشعة السينية على الصدر <strong>معقد رانكه</strong> (معقد غون متكلس) أو تجاويف، عادة في قمة الرئة.</span></td>
+            </tr>
+            <tr>
+                <td><span class="en"><strong>Laboratory Findings</strong></span><span class="ar"><strong>النتائج المخبرية</strong></span></td>
+                <td><span class="en">
+                    <ul>
+                        <li><strong>Acid-fast staining (Ziehl-Neelsen):</strong> Identifies bacilli in sputum or tissue biopsy. Requires >10,000 organisms/mL for positivity.</li>
+                        <li><strong>Culture:</strong> The "gold standard". It confirms the diagnosis and allows for drug susceptibility testing. Conventional methods take up to 10 weeks.</li>
+                        <li><strong>PCR amplification:</strong> A fast method that can detect as few as 10 organisms.</li>
+                    </ul>
+                </span><span class="ar">
+                    <ul>
+                        <li><strong>صبغة الصمود للحمض (زيل-نلسن):</strong> تحدد العصيات في البلغم أو خزعة الأنسجة. تتطلب أكثر من 10,000 كائن/مل لتكون إيجابية.</li>
+                        <li><strong>الزرع:</strong> "المعيار الذهبي". يؤكد التشخيص ويسمح باختبار حساسية الأدوية. تستغرق الطرق التقليدية ما يصل إلى 10 أسابيع.</li>
+                        <li><strong>تضخيم PCR:</strong> طريقة سريعة يمكنها الكشف عن عدد قليل يصل إلى 10 كائنات.</li>
+                    </ul>
+                </span></td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 7, 19, 20 of 28</span>
+<span class="ar">المصدر: الصفحات 7، 19، 20 من 28</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">The classic constitutional symptoms of active TB—fever, night sweats, and weight loss—are important red flags that should prompt further investigation for the disease.</div><div class="ar">الأعراض الجهازية الكلاسيكية للسل النشط - الحمى والتعرق الليلي وفقدان الوزن - هي علامات تحذيرية هامة يجب أن تدفع إلى إجراء مزيد من الفحوصات للمرض.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Culture is the "gold standard" because it provides a definitive diagnosis and is essential for determining which antibiotics will be effective against that specific strain of TB.</div><div class="ar">يعتبر الزرع "المعيار الذهبي" لأنه يوفر تشخيصًا نهائيًا وهو ضروري لتحديد المضادات الحيوية التي ستكون فعالة ضد تلك السلالة المحددة من السل.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Remember the Mantoux test readings for a standard individual: <strong>>10mm = Positive</strong>, 5-9mm = Inconclusive, <5mm = Negative. (Note: thresholds can be lower for high-risk groups).</div><div class="ar">تذكر قراءات اختبار مانتو للفرد العادي: <strong>>10 ملم = إيجابي</strong>، 5-9 ملم = غير حاسم، <5 ملم = سلبي. (ملاحظة: يمكن أن تكون العتبات أقل للمجموعات عالية الخطورة).</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Actinomycosis: Introduction and Types</span><span class="ar">داء الشعيات: مقدمة وأنواع</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Actinomycosis</strong> is a chronic suppurative (pus-forming) disease. It is caused by filamentous, branched, gram-positive, anaerobic bacteria, most commonly <strong><em>Actinomycetes israelii</em></strong>.</p>
+    <p>These organisms are normal commensals, meaning they naturally live in the oral cavity, gastrointestinal tract, and vagina without causing harm. Therefore, the infection is always <strong>endogenous</strong> (originating from within the body) and is not transmitted from person to person. It typically occurs when there is a break in the mucosal barrier.</p>
+    <p>The disease leads to the formation of multiple abscesses and draining sinuses. Based on the location, actinomycosis is classified into four main types:</p>
+    <ul>
+        <li><strong>Cervicofacial (60%):</strong> Affects the head and neck region, especially the lower jaw.</li>
+        <li><strong>Thoracic (30%):</strong> Affects the lungs and chest cavity.</li>
+        <li><strong>Abdominal:</strong> Affects the abdomen, often the ileocecal region.</li>
+        <li><strong>Pelvic:</strong> Can affect the female reproductive organs.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><strong>داء الشعيات (Actinomycosis)</strong> هو مرض تقيحي مزمن (مكون للقيح). يسببه بكتيريا خيطية، متفرعة، إيجابية الجرام، ولا هوائية، وأكثرها شيوعًا هي <strong><em>الشعية الإسرائيلية (Actinomycetes israelii)</em></strong>.</p>
+    <p>هذه الكائنات هي متعايشات طبيعية، مما يعني أنها تعيش بشكل طبيعي في تجويف الفم والجهاز الهضمي والمهبل دون أن تسبب ضررًا. لذلك، تكون العدوى دائمًا <strong>داخلية المنشأ</strong> (تنشأ من داخل الجسم) ولا تنتقل من شخص لآخر. تحدث عادة عندما يكون هناك تمزق في الحاجز المخاطي.</p>
+    <p>يؤدي المرض إلى تكوين خراجات متعددة ونواسير نازفة. بناءً على الموقع، يصنف داء الشعيات إلى أربعة أنواع رئيسية:</p>
+    <ul>
+        <li><strong>عنقي وجهي (60٪):</strong> يصيب منطقة الرأس والعنق، وخاصة الفك السفلي.</li>
+        <li><strong>صدري (30٪):</strong> يصيب الرئتين وتجويف الصدر.</li>
+        <li><strong>بطني:</strong> يصيب البطن، وغالبًا منطقة اللفائفي الأعوري.</li>
+        <li><strong>حوضي:</strong> يمكن أن يصيب الأعضاء التناسلية الأنثوية.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 21, 22, 23 of 28</span>
+<span class="ar">المصدر: الصفحات 21، 22، 23 من 28</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The causative agent, <em>Actinomycetes israelii</em>, is a bacterium, not a fungus, despite its name and filamentous appearance.</div><div class="ar">الكائن المسبب، <em>الشعية الإسرائيلية</em>، هو بكتيريا وليس فطرًا، على الرغم من اسمه ومظهره الخيطي.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Actinomycosis is an endogenous infection. It is not contagious and does not spread between people. It arises from a person's own bacterial flora after trauma or surgery.</div><div class="ar">داء الشعيات هو عدوى داخلية المنشأ. إنه ليس معديًا ولا ينتشر بين الناس. ينشأ من النبيت الجرثومي الخاص بالشخص بعد صدمة أو جراحة.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">The infection is characterized by its tendency to spread across tissue planes, forming multiple abscesses and interconnected sinus tracts that can drain to the skin surface.</div><div class="ar">تتميز العدوى بميلها إلى الانتشار عبر مستويات الأنسجة، مكونة خراجات متعددة ومسارات جيبية متصلة يمكن أن تصرف إلى سطح الجلد.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Cervicofacial Actinomycosis and Microscopy</span><span class="ar">داء الشعيات العنقي الوجهي والمجهر</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Cervicofacial actinomycosis</strong> is the most common form (60%) and has the best prognosis. The infection typically enters the body through sites of oral trauma, such as carious teeth, periodontal pockets, or following a tooth extraction.</p>
+    <p>Initially, a firm swelling develops, often in the lower jaw, which is commonly called <strong>"lumpy jaw"</strong>. This mass eventually breaks down to form abscesses and sinuses. The pus that drains from these sinuses contains characteristic tiny yellow <strong>sulfur granules</strong>, which are actually colonies of the bacteria.</p>
+    <p><strong>Microscopy:</strong></p>
+    <p>The histology shows <strong>granulomatous inflammation with central suppuration (abscess formation)</strong>. The periphery contains chronic inflammatory cells, giant cells, and fibroblasts. The center of each abscess contains the bacterial colony, the 'sulfur granule', which is gram-positive and characterized by radiating filaments.</p>
+</div>
+<div class="ar">
+    <p><strong>داء الشعيات العنقي الوجهي</strong> هو الشكل الأكثر شيوعًا (60٪) وله أفضل تشخيص. تدخل العدوى عادةً الجسم من خلال مواقع الرضوض الفموية، مثل الأسنان النخرة، والجيوب اللثوية، أو بعد خلع الأسنان.</p>
+    <p>في البداية، يتطور تورم صلب، غالبًا في الفك السفلي، والذي يطلق عليه عادة <strong>"الفك المتكتل" (lumpy jaw)</strong>. تتحلل هذه الكتلة في النهاية لتشكل خراجات ونواسير. يحتوي القيح الذي يتم تصريفه من هذه النواسير على <strong>حبيبات كبريتية</strong> صفراء صغيرة مميزة، وهي في الواقع مستعمرات من البكتيريا.</p>
+    <p><strong>الفحص المجهري:</strong></p>
+    <p>يُظهر النسيج <strong>التهابًا حبيبيًا مع تقيح مركزي (تكوين خراج)</strong>. يحتوي المحيط على خلايا التهابية مزمنة وخلايا عملاقة وأرومات ليفية. يحتوي مركز كل خراج على المستعمرة البكتيرية، "حبيبة الكبريت"، وهي إيجابية الجرام وتتميز بخيوط مشعة.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 24, 25, 27 of 28</span>
+<span class="ar">المصدر: الصفحات 24، 25، 27 من 28</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">A classic presentation is a hard, non-tender or slightly tender swelling at the angle of the jaw that develops slowly. It can be mistaken for a tumor, but the development of draining sinuses is a key diagnostic clue.</div><div class="ar">العرض الكلاسيكي هو تورم صلب، غير مؤلم أو مؤلم قليلاً عند زاوية الفك يتطور ببطء. يمكن الخلط بينه وبين ورم، لكن تطور النواسير النازفة هو دليل تشخيصي رئيسي.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The "sulfur granules" are named for their yellow color, not because they contain sulfur. They are macroscopic clumps of bacterial filaments matted together.</div><div class="ar">تُسمى "حبيبات الكبريت" بهذا الاسم بسبب لونها الأصفر، وليس لاحتوائها على الكبريت. هي تكتلات مرئية من الخيوط البكتيرية المتشابكة معًا.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think: <strong>Lumpy Jaw + Sulfur Granules = Cervicofacial Actinomycosis</strong>. The entry point is usually poor oral hygiene or dental procedures.</div><div class="ar">تذكر: <strong>فك متكتل + حبيبات كبريتية = داء الشعيات العنقي الوجهي</strong>. نقطة الدخول عادة ما تكون سوء نظافة الفم أو إجراءات طب الأسنان.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Summary</span><span class="ar">ملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+    <ul>
+        <li><strong>Tuberculosis (TB)</strong> is a chronic granulomatous disease caused by <em>M. tuberculosis</em>, characterized by caseating granulomas.</li>
+        <li><strong>Primary TB</strong> typically involves the lungs and regional lymph nodes (Ghon's complex) and is often asymptomatic.</li>
+        <li><strong>Secondary TB</strong> is a reactivation or reinfection, classically in the lung apex, featuring cavitation and is contagious.</li>
+        <li><strong>Miliary TB</strong> is a widespread, systemic form occurring in immunocompromised hosts, with millet seed-sized lesions in multiple organs.</li>
+        <li>TB diagnosis relies on clinical signs (fever, night sweats), radiology (cavities), and laboratory confirmation (stain, culture, PCR).</li>
+        <li><strong>Actinomycosis</strong> is an endogenous, chronic suppurative infection caused by the bacterium <em>A. israelii</em>.</li>
+        <li>The most common form is <strong>cervicofacial actinomycosis ("lumpy jaw")</strong>, which forms abscesses and sinuses that drain pus containing yellow <strong>sulfur granules</strong>.</li>
+    </ul>
+</div>
+<div class="ar">
+    <ul>
+        <li><strong>السل (TB)</strong> هو مرض حبيبي مزمن تسببه <em>المتفطرة السلية</em>، ويتميز بأورام حبيبية متجبنة.</li>
+        <li><strong>السل الأولي</strong> يشمل عادة الرئتين والعقد الليمفاوية المجاورة (معقد غون) وغالباً ما يكون بدون أعراض.</li>
+        <li><strong>السل الثانوي</strong> هو إعادة تنشيط أو عدوى جديدة، يحدث بشكل كلاسيكي في قمة الرئة، ويتميز بالتكهف وهو معدي.</li>
+        <li><strong>السل الدخني</strong> هو شكل جهازي منتشر يحدث في المضيفين منقوصي المناعة، مع آفات بحجم بذور الدخن في أعضاء متعددة.</li>
+        <li>يعتمد تشخيص السل على العلامات السريرية (حمى، تعرق ليلي)، الأشعة (تجاويف)، والتأكيد المخبري (صبغة، زرع، PCR).</li>
+        <li><strong>داء الشعيات</strong> هو عدوى قيحية مزمنة داخلية المنشأ تسببها بكتيريا <em>الشعية الإسرائيلية</em>.</li>
+        <li>الشكل الأكثر شيوعًا هو <strong>داء الشعيات العنقي الوجهي ("الفك المتكتل")</strong>، الذي يشكل خراجات ونواسير تصرف قيحًا يحتوي على <strong>حبيبات كبريتية</strong> صفراء.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: All pages</span>
+<span class="ar">المصدر: جميع الصفحات</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Focus on the key differences: TB is caused by an acid-fast bacillus, is highly contagious (secondary form), and forms caseating granulomas. Actinomycosis is from an anaerobic bacterium, is not contagious, and forms abscesses with sulfur granules.</div><div class="ar">ركز على الفروق الرئيسية: السل تسببه عصية صامدة للحمض، وهو شديد العدوى (الشكل الثانوي)، ويشكل أورام حبيبية متجبنة. داء الشعيات ينجم عن بكتيريا لا هوائية، وهو غير معدي، ويشكل خراجات مع حبيبات كبريتية.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Both TB and Actinomycosis can present as persistent infections in the head and neck region. A correct diagnosis based on their distinct features is crucial for appropriate (and very different) treatment.</div><div class="ar">يمكن أن يظهر كل من السل وداء الشعيات كعدوى مستمرة في منطقة الرأس والعنق. التشخيص الصحيح بناءً على ميزاتهما المتميزة أمر بالغ الأهمية للعلاج المناسب (والمختلف جدًا).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Key Histological Features: <strong>Caseating granulomas</strong> in TB vs. <strong>Sulfur granules</strong> (bacterial colonies) within abscesses in Actinomycosis.</div><div class="ar">السمات النسيجية الرئيسية: <strong>الأورام الحبيبية المتجبنة</strong> في السل مقابل <strong>حبيبات الكبريت</strong> (مستعمرات بكتيرية) داخل الخراجات في داء الشعيات.</div></div></div>
+</div>
+</aside>
+</section>
+
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Granuloma / ورم حبيبي</div><div class="content" hidden=""><div class="en">A small, organized collection of immune cells (mainly macrophages) formed to wall off substances the body cannot eliminate.</div><div class="ar">تجمع صغير ومنظم من الخلايا المناعية (بشكل رئيسي البلاعم) يتشكل لعزل المواد التي لا يستطيع الجسم التخلص منها.</div></div></div>
+<div class="card"><div class="head">Caseous Necrosis / نخر متجبن</div><div class="content" hidden=""><div class="en">A form of cell death where tissue maintains a cheese-like appearance. It's a hallmark of tuberculosis.</div><div class="ar">شكل من أشكال موت الخلايا حيث يحافظ النسيج على مظهر شبيه بالجبن. وهو سمة مميزة لمرض السل.</div></div></div>
+<div class="card"><div class="head">Epithelioid Cells / خلايا ظهارانية</div><div class="content" hidden=""><div class="en">Activated macrophages that are elongated and resemble epithelial cells; the primary component of a granuloma.</div><div class="ar">بلاعم منشطة تكون متطاولة وتشبه الخلايا الظهارية؛ المكون الأساسي للورم الحبيبي.</div></div></div>
+<div class="card"><div class="head">Ghon's Complex / معقد غون</div><div class="content" hidden=""><div class="en">The combination of the initial lung lesion (Ghon's focus) and the infected hilar lymph nodes in primary tuberculosis.</div><div class="ar">مزيج من الآفة الرئوية الأولية (بؤرة غون) والعقد الليمفاوية السرية المصابة في السل الأولي.</div></div></div>
+<div class="card"><div class="head">Cavitation (TB) / تكهف (سل)</div><div class="content" hidden=""><div class="en">The formation of a cavity in lung tissue, which occurs when caseous necrotic material liquefies and is coughed out.</div><div class="ar">تكوين تجويف في نسيج الرئة، والذي يحدث عندما تسيل المادة النخرية المتجبنة ويتم إخراجها مع السعال.</div></div></div>
+<div class="card"><div class="head">Miliary Tuberculosis / سل دخني</div><div class="content" hidden=""><div class="en">A disseminated form of TB where bacteria spread through the bloodstream, causing numerous small lesions in multiple organs.</div><div class="ar">شكل منتشر من السل حيث تنتشر البكتيريا عبر مجرى الدم، مسببة العديد من الآفات الصغيرة في أعضاء متعددة.</div></div></div>
+<div class="card"><div class="head">Actinomycosis / داء الشعيات</div><div class="content" hidden=""><div class="en">A chronic, suppurative infection caused by endogenous, anaerobic bacteria (Actinomyces israelii), leading to abscess and sinus formation.</div><div class="ar">عدوى قيحية مزمنة تسببها بكتيريا لا هوائية داخلية المنشأ (الشعية الإسرائيلية)، مما يؤدي إلى تكوين خراجات ونواسير.</div></div></div>
+<div class="card"><div class="head">Sulfur Granules / حبيبات كبريتية</div><div class="content" hidden=""><div class="en">Visible yellow particles found in pus from actinomycosis lesions, which are actually macroscopic colonies of the bacteria.</div><div class="ar">جسيمات صفراء مرئية توجد في القيح من آفات داء الشعيات، وهي في الواقع مستعمرات بكتيرية مرئية.</div></div></div>
+<div class="card"><div class="head">Mantoux Test / اختبار مانتو</div><div class="content" hidden=""><div class="en">A skin test used to detect exposure to M. tuberculosis by injecting a purified protein derivative (PPD) and measuring the skin's reaction.</div><div class="ar">اختبار جلدي يستخدم للكشف عن التعرض للمتفطرة السلية عن طريق حقن مشتق بروتيني منقى (PPD) وقياس تفاعل الجلد.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — What is the main causative agent of Tuberculosis?</span><span class="ar">١ — ما هو العامل المسبب الرئيسي لمرض السل؟</span></div><div class="content" hidden=""><span class="en">A: <em>Mycobacterium tuberculosis</em>.</span><span class="ar">ج: <em>المتفطرة السلية</em>.</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — What are the two main components of a Ghon's complex?</span><span class="ar">٢ — ما هما المكونان الرئيسيان لمعقد غون؟</span></div><div class="content" hidden=""><span class="en">A: The Ghon's focus (lung lesion) and involved hilar lymph nodes.</span><span class="ar">ج: بؤرة غون (الآفة الرئوية) والعقد الليمفاوية السرية المصابة.</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — Where in the lungs does secondary TB typically occur and why?</span><span class="ar">٣ — أين يحدث السل الثانوي عادة في الرئتين ولماذا؟</span></div><div class="content" hidden=""><span class="en">A: In the apex, due to high oxygen tension which favors the aerobic bacteria.</span><span class="ar">ج: في القمة، بسبب ارتفاع تركيز الأكسجين الذي يفضل نمو البكتيريا الهوائية.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — What is the characteristic appearance of miliary TB lesions?</span><span class="ar">٤ — ما هو المظهر المميز لآفات السل الدخني؟</span></div><div class="content" hidden=""><span class="en">A: Small (1 mm), millet seed-sized, yellowish firm areas.</span><span class="ar">ج: مناطق صغيرة (1 ملم)، بحجم بذور الدخن، صفراء صلبة.</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — What is the "gold standard" for TB diagnosis?</span><span class="ar">٥ — ما هو "المعيار الذهبي" لتشخيص السل؟</span></div><div class="content" hidden=""><span class="en">A: Culture, because it allows for drug susceptibility testing.</span><span class="ar">ج: الزرع، لأنه يسمح باختبار حساسية الأدوية.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — What is the causative agent of Actinomycosis?</span><span class="ar">٦ — ما هو العامل المسبب لداء الشعيات؟</span></div><div class="content" hidden=""><span class="en">A: <em>Actinomycetes israelii</em>.</span><span class="ar">ج: <em>الشعية الإسرائيلية</em>.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — Is Actinomycosis contagious?</span><span class="ar">٧ — هل داء الشعيات معدي؟</span></div><div class="content" hidden=""><span class="en">A: No, it is an endogenous infection from commensal bacteria.</span><span class="ar">ج: لا، إنها عدوى داخلية المنشأ من بكتيريا متعايشة.</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — What is the common name for cervicofacial actinomycosis?</span><span class="ar">٨ — ما هو الاسم الشائع لداء الشعيات العنقي الوجهي؟</span></div><div class="content" hidden=""><span class="en">A: "Lumpy jaw".</span><span class="ar">ج: "الفك المتكتل".</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What are the yellow particles in pus from an actinomycotic abscess?</span><span class="ar">٩ — ما هي الجسيمات الصفراء في القيح من خراج داء الشعيات؟</span></div><div class="content" hidden=""><span class="en">A: Sulfur granules (which are bacterial colonies).</span><span class="ar">ج: حبيبات الكبريت (وهي مستعمرات بكتيرية).</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>
