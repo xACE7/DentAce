@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .answer table{width:100%; border-collapse: collapse; margin-top: 10px;}
+  .answer th, .answer td{border:1px solid var(--card-border); padding: 8px; text-align:left;}
+  .answer th{font-weight: bold;}
+
+
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 27</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+  {
+    q: "Which of the following tooth structures is the MOST radiopaque on a dental radiograph?",
+    opts: ["Enamel", "Dentin", "Pulp Chamber", "Cementum"],
+    correct: 0,
+    explain: "Enamel is the most calcified (96% inorganic material) structure in the body, making it the most radiopaque (whitest) on a radiograph."
+  },
+  {
+    q: "A structure that appears dark or black on a radiograph is termed:",
+    opts: ["Radiopaque", "Radiolucent", "Dense", "Attenuated"],
+    correct: 1,
+    explain: "Radiolucent structures are less dense and allow more x-rays to pass through, resulting in a darker appearance on the radiograph."
+  },
+  {
+    q: "The thin, radiopaque line of cortical bone that lines the tooth socket is known as the:",
+    opts: ["Alveolar Crest", "Trabecular Bone", "Lamina Dura", "Cementum"],
+    correct: 2,
+    explain: "The Lamina Dura is the dense cortical bone lining the alveolus (tooth socket). Its integrity is a key indicator of periodontal health."
+  },
+  {
+    q: "Which of the following structures appears radiolucent on a dental radiograph?",
+    opts: ["Enamel", "Dentin", "Lamina Dura", "Pulp Cavity"],
+    correct: 3,
+    explain: "The pulp cavity contains soft tissues (nerves and blood vessels) which are not dense, making it appear radiolucent (dark)."
+  },
+  {
+    q: "Loss of continuity or a break in the lamina dura at the apex of a tooth is often indicative of:",
+    opts: ["A vital pulp", "Ankylosis", "A periapical abscess", "A healthy periodontium"],
+    correct: 2,
+    explain: "A periapical infection causes bone resorption, which manifests radiographically as a break in the otherwise continuous lamina dura."
+  },
+  {
+    q: "In a healthy periodontium, the alveolar crest between two teeth typically forms a:",
+    opts: ["Rounded margin", "Sharp angle with the lamina dura", "Radiolucent line", "Concave shape"],
+    correct: 1,
+    explain: "A healthy alveolar crest appears as a sharp, well-defined angle where it meets the lamina dura of the adjacent teeth."
+  },
+  {
+    q: "Why is cementum typically not visible on a radiograph?",
+    opts: ["It is too radiolucent.", "It is too radiopaque.", "Its density is very similar to enamel.", "There is very low contrast between it and dentin."],
+    correct: 3,
+    explain: "Cementum is a thin layer with a mineral density very close to that of dentin, making it difficult to distinguish as a separate layer radiographically."
+  },
+  {
+    q: "The radiographic appearance of the periodontal ligament (PDL) is:",
+    opts: ["A thin radiopaque line", "A thick radiopaque band", "A thin radiolucent space", "Not visible on radiographs"],
+    correct: 2,
+    explain: "The PDL itself is soft tissue, so it appears as a radiolucent space between the tooth root (dentin/cementum) and the lamina dura."
+  },
+  {
+    q: "What term describes the complete obliteration of the PDL space, fusing the tooth to the bone?",
+    opts: ["Periodontitis", "Ankylosis", "Hypercementosis", "Periapical abscess"],
+    correct: 1,
+    explain: "Ankylosis is the fusion of the cementum to the alveolar bone, which results in the radiographic loss of the radiolucent PDL space."
+  },
+  {
+    q: "The trabecular bone pattern in the posterior mandible is often described as:",
+    opts: ["Fine and granular", "Dense and numerous with small marrow spaces", "A horizontal stepladder pattern", "Sparse with very large marrow spaces"],
+    correct: 2,
+    explain: "The trabeculae in the posterior mandible are often aligned horizontally, creating a distinct 'stepladder' appearance on radiographs."
+  },
+  {
+    q: "Compared to enamel, dentin is:",
+    opts: ["More radiopaque", "Equally radiopaque", "Less radiopaque", "Completely radiolucent"],
+    correct: 2,
+    explain: "Dentin is less mineralized (around 65% inorganic) than enamel, so it appears less radiopaque (darker gray) but more radiopaque than pulp."
+  },
+  {
+    q: "Which part of the alveolar process is composed of plates of compact bone on the facial and lingual surfaces?",
+    opts: ["Spongy bone", "Lamina dura", "Cortical bone", "Trabecular bone"],
+    correct: 2,
+    explain: "The cortical bone (or cortical plates) forms the dense outer shell of the alveolar process on the facial and lingual aspects."
+  },
+  {
+    q: "The medullary spaces within the cancellous bone appear:",
+    opts: ["Radiopaque", "Radiolucent", "Mixed density", "The same as enamel"],
+    correct: 1,
+    explain: "Medullary spaces contain bone marrow, which is a soft tissue. Therefore, these spaces appear radiolucent (dark) between the radiopaque trabeculae."
+  },
+  {
+    q: "Rounding of the alveolar crest is a radiographic sign often associated with:",
+    opts: ["Healthy gums", "Tooth eruption", "Periodontal disease", "A vital tooth"],
+    correct: 2,
+    explain: "Inflammation from periodontal disease leads to resorption of the bone, causing the normally sharp alveolar crest to appear blunted or rounded."
+  },
+  {
+    q: "The radiographic image is formed based on the principle of:",
+    opts: ["Reflection of x-rays", "Refraction of x-rays", "Equal absorption of x-rays by all tissues", "Differential attenuation of x-rays by tissues of different densities"],
+    correct: 3,
+    explain: "Tissues with higher density (like enamel) attenuate (block) more x-rays, while less dense tissues (like pulp) allow more to pass through, creating the image."
+  },
+  {
+    q: "The trabecular pattern in the anterior maxilla is typically:",
+    opts: ["Thick and sparse", "A stepladder pattern", "Fine, numerous, and granular with small marrow spaces", "Completely radiolucent"],
+    correct: 2,
+    explain: "The anterior maxilla typically has a fine, lace-like trabecular pattern with many small marrow spaces, giving it a granular appearance."
+  },
+  {
+    q: "The part of the jaw that forms and supports the tooth sockets is the:",
+    opts: ["Basal bone", "Alveolar process", "Coronoid process", "Mandibular ramus"],
+    correct: 1,
+    explain: "The alveolar process is the specific part of the maxilla and mandible that encases the tooth roots and provides support."
+  },
+  {
+    q: "What is the junction between the enamel of the crown and the cementum of the root called?",
+    opts: ["Amelo-dentinal Junction", "Cementoenamel Junction (CEJ)", "Alveolar Crest", "Apical Foramen"],
+    correct: 1,
+    explain: "The Cementoenamel Junction (CEJ) is the anatomical line where the enamel and cementum meet."
+  },
+  {
+    q: "Which structure is composed of thin strands of bone that appear radiopaque?",
+    opts: ["Pulp canals", "Medullary spaces", "Trabeculae", "Periodontal ligament fibers"],
+    correct: 2,
+    explain: "Trabeculae are the small, interconnected strands of bone that make up the cancellous (spongy) bone, appearing as a radiopaque network."
+  },
+  {
+    q: "On a radiograph, the PDL space is typically widest at the:",
+    opts: ["Mid-root level", "Cementoenamel junction", "Apex and coronal portion", "It has a uniform width throughout"],
+    correct: 2,
+    explain: "The PDL space is slightly wider at the coronal aspect (near the crestal bone) and at the apex, and narrowest in the middle of the root."
+  },
+    {
+    q: "The inferior border of the mandible is a radiographic landmark composed of what type of bone?",
+    opts: ["Cancellous Bone", "Spongy Bone", "Trabecular Bone", "Cortical Bone"],
+    correct: 3,
+    explain: "The inferior border of the mandible is a thick, dense layer of cortical bone, appearing as a prominent radiopaque band."
+  },
+  {
+    q: "What percentage of enamel is inorganic material, contributing to its high radiopacity?",
+    opts: ["65%", "45%", "96%", "75%"],
+    correct: 2,
+    explain: "Enamel is approximately 96% inorganic (hydroxyapatite crystals), making it the most mineralized and radiodense tissue in the tooth."
+  },
+  {
+    q: "Which of these is NOT considered a supporting structure of the tooth?",
+    opts: ["Alveolar process", "Dentin", "Periodontal ligament space", "Lamina dura"],
+    correct: 1,
+    explain: "Dentin is part of the tooth structure itself, along with enamel and pulp. The others are all part of the supporting periodontium."
+  },
+  {
+    q: "The internal space within the crown of a tooth that contains the pulp is the:",
+    opts: ["Root Canal", "Pulp Chamber", "Apical Foramen", "Lateral Canal"],
+    correct: 1,
+    explain: "The pulp chamber is the coronal portion of the pulp cavity, located within the crown of the tooth."
+  },
+  {
+    q: "In radiography, the principle 'what the brain does not know, the eye cannot see' emphasizes the importance of knowing:",
+    opts: ["The patient's medical history", "The correct exposure settings", "Normal radiographic anatomy", "The brand of the x-ray machine"],
+    correct: 2,
+    explain: "This quote highlights that without a solid knowledge of normal anatomical structures, an observer cannot reliably identify abnormalities."
+  },
+  {
+    q: "Which of the following would appear the MOST radiolucent?",
+    opts: ["Dentin", "Lamina Dura", "A sinus cavity", "Cancellous bone"],
+    correct: 2,
+    explain: "A sinus cavity is an air-filled space with no dense tissue to block x-rays, making it appear very radiolucent (black)."
+  },
+  {
+    q: "The alveolar bone proper is another name for which radiographic structure?",
+    opts: ["Alveolar Crest", "Lamina Dura", "Spongy Bone", "Cortical Plate"],
+    correct: 1,
+    explain: "The lamina dura is also known as the alveolar bone proper, as it is the direct bony lining of the tooth socket."
+  },
+  {
+    q: "What is the primary component of the radiopaque structures seen in cancellous bone?",
+    opts: ["Bone marrow", "Blood vessels", "Trabeculae", "Fat cells"],
+    correct: 2,
+    explain: "Cancellous bone is a network of radiopaque bone trabeculae surrounding radiolucent marrow spaces."
+  },
+  {
+    q: "The Amelo-dentinal Junction (ADJ) is the interface between:",
+    opts: ["Enamel and pulp", "Dentin and cementum", "Enamel and dentin", "Cementum and bone"],
+    correct: 2,
+    explain: "The ADJ is the boundary between the inner surface of the enamel cap and the outer surface of the dentin."
+  },
+  {
+    q: "The portion of the tooth that is embedded in the alveolar process is the:",
+    opts: ["Crown", "Root", "Pulp chamber", "Enamel"],
+    correct: 1,
+    explain: "The root is the part of the tooth that extends into the jawbone and is surrounded by the supporting structures."
+  }
+];
+
+const tfs = [
+  {
+    q: "The pulp cavity of a tooth appears radiopaque on a dental radiograph.",
+    answer: false,
+    explain: "False. The pulp cavity contains soft tissue and is not calcified, so it appears radiolucent (dark)."
+  },
+  {
+    q: "Enamel is less dense and therefore less radiopaque than dentin.",
+    answer: false,
+    explain: "False. Enamel is the densest, most mineralized tissue in the tooth and is significantly more radiopaque than dentin."
+  },
+  {
+    q: "An intact lamina dura surrounding the apex of a tooth suggests the tooth has a vital pulp.",
+    answer: true,
+    explain: "True. An intact lamina dura indicates the absence of periapical bone resorption, which is a common sign of pulpal necrosis and infection."
+  },
+  {
+    q: "The periodontal ligament space is filled with calcified tissue, making it appear radiopaque.",
+    answer: false,
+    explain: "False. The periodontal ligament is soft connective tissue, so the space it occupies appears as a radiolucent line between the root and lamina dura."
+  },
+  {
+    q: "Rounding or blunting of the alveolar crest is a radiographic sign of a healthy periodontium.",
+    answer: false,
+    explain: "False. A healthy alveolar crest forms a sharp angle. Rounding indicates bone loss and is a sign of periodontal disease."
+  },
+  {
+    q: "The trabecular bone pattern in the maxilla is typically identical to the pattern in the mandible.",
+    answer: false,
+    explain: "False. The maxilla usually has a fine, granular pattern, while the posterior mandible often shows a coarser, 'stepladder' pattern."
+  },
+  {
+    q: "Ankylosis is the radiographic term for the loss or absence of the periodontal ligament space.",
+    answer: true,
+    explain: "True. Ankylosis involves the fusion of the tooth root directly to the bone, eliminating the PDL space."
+  },
+  {
+    q: "Cementum is easily distinguished from dentin on a typical periapical radiograph.",
+    answer: false,
+    explain: "False. The similar radiodensities and thinness of the cementum layer make it very difficult to differentiate from the underlying dentin."
+  },
+  {
+    q: "Cortical bone, such as the inferior border of the mandible, appears radiopaque.",
+    answer: true,
+    explain: "True. Cortical bone is very dense compact bone, which heavily attenuates x-rays and thus appears very radiopaque (white)."
+  }
+];
+
+const saqs = [
+  {
+    q: "Define the term 'radiopaque' and provide two examples of structures in the tooth or jaw that appear radiopaque.",
+    a: "<b>Definition:</b> Radiopaque refers to structures that are dense and absorb or resist the penetration of x-rays. They appear white or light gray on a radiograph.<br><br><b>Examples:</b><br>1. Enamel<br>2. Dentin<br>3. Lamina Dura<br>4. Cortical Bone"
+  },
+  {
+    q: "Explain the clinical significance of the alveolar crest's radiographic appearance.",
+    a: "The appearance of the alveolar crest is a key indicator of periodontal health. In a healthy state, it forms a sharp, pointed angle with the lamina dura of the adjacent tooth and is located 1-2 mm apical to the CEJ. In periodontal disease, inflammation causes bone resorption, leading to the crest appearing blunted, rounded, or flattened, and its position may be more apical."
+  },
+  {
+    q: "List the three main components of the tooth structure visible on a radiograph, in order from MOST radiopaque to MOST radiolucent.",
+    a: "<table><thead><tr><th>Order</th><th>Structure</th></tr></thead><tbody><tr><td>1</td><td>Enamel</td></tr><tr><td>2</td><td>Dentin</td></tr><tr><td>3</td><td>Pulp</td></tr></tbody></table>"
+  },
+  {
+    q: "List the three main components of the alveolar process.",
+    a: "The alveolar process is composed of:<br><br>1. <b>Lamina Dura (Alveolar Bone Proper):</b> The dense cortical bone lining the tooth socket.<br>2. <b>Supporting Cortical Bone:</b> The compact bone plates on the facial and lingual surfaces.<br>3. <b>Supporting Spongy Bone (Cancellous Bone):</b> The trabecular bone that fills the space between the lamina dura and cortical plates."
+  },
+  {
+    q: "Compare the typical radiographic appearance of the trabecular bone in the posterior mandible versus the anterior maxilla.",
+    a: "<table><thead><tr><th>Location</th><th>Radiographic Appearance</th></tr></thead><tbody><tr><td><b>Anterior Maxilla</b></td><td>Features a fine, dense, lace-like, or granular pattern with numerous small trabeculae and very small marrow spaces.</td></tr><tr><td><b>Posterior Mandible</b></td><td>Features a coarser pattern with fewer, thicker trabeculae that are often arranged horizontally, creating a 'stepladder' appearance with larger marrow spaces.</td></tr></tbody></table>"
+  },
+  {
+    q: "A patient's periapical radiograph of a painful lower molar shows a widening of the radiolucent space at the root tip and a distinct break in the continuity of the thin white line surrounding the root. What condition do these signs strongly suggest?",
+    a: "These signs strongly suggest a <b>periapical abscess</b> or <b>periapical periodontitis</b>. The widening of the radiolucent space indicates inflammation in the PDL, and the break in the white line (the lamina dura) indicates resorption of the bone due to infection originating from a necrotic pulp."
+  }
+];
+
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return;
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;margin-bottom:10px;"></textarea>
+  <div class="btnrow">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    toggleBtn.style.borderColor = now ? "rgba(34,197,94,.7)" : "rgba(255,255,255,0.18)";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+    // Recalculate MCQ score based on whether the chosen answer was correct
+    const mcqScore = state.mcq.reduce((score, selectedVisualIndex, idx) => {
+        if (selectedVisualIndex === null) return score;
+        const item = mcqs[idx];
+        const card = mcqGrid.children[idx];
+        const correctBtn = card.querySelector('.opt-btn.correct');
+        const correctVisualIndex = Number(correctBtn.dataset.v);
+        return score + (selectedVisualIndex === correctVisualIndex ? 1 : 0);
+    }, 0);
+
+    // Recalculate T/F score
+    const tfScore = state.tf.reduce((score, val, idx) => {
+        if (val === null) return score;
+        return score + (val === tfs[idx].answer ? 1 : 0);
+    }, 0);
+
+    // Recalculate SAQ score
+    const saqScore = state.saq.filter(Boolean).length;
+    const total = mcqScore + tfScore + saqScore;
+
+    // Update all score displays
+    document.getElementById('sMcq').textContent = mcqScore;
+    document.getElementById('sTf').textContent = tfScore;
+    document.getElementById('sSaq').textContent = saqScore;
+    document.getElementById('sTotal').textContent = total;
+    document.getElementById('sMcq2').textContent = mcqScore;
+    document.getElementById('sTf2').textContent = tfScore;
+    document.getElementById('sSaq2').textContent = saqScore;
+    document.getElementById('sTotal2').textContent = total;
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{
+      b.textContent="I was correct"; 
+      b.style.outline="none";
+      b.style.borderColor = "rgba(255,255,255,0.18)";
+  });
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>
+

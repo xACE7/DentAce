@@ -67,6 +67,7 @@
     .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
   }
 
+  /* Cards (no accent on the card itself) */
   .card{
     background:var(--card);
     border:1px solid var(--card-border);
@@ -93,6 +94,7 @@
   }
   .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
 
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
   .opt-btn.correct{
     border-left:6px solid var(--ok);
     outline:none;
@@ -111,11 +113,6 @@
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
-  .answer table{width:100%; border-collapse: collapse; margin-top: 10px;}
-  .answer th, .answer td{border:1px solid var(--card-border); padding: 8px; text-align:left;}
-  .answer th{font-weight: bold;}
-
-
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -130,8 +127,20 @@
   }
   .score .part{color:var(--muted);font-weight:600}
   .score b{color:var(--text)}
+  .answer table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .answer th, .answer td { border: 1px solid var(--card-border); padding: 8px; text-align: left; }
+  .answer th { background-color: var(--glass); }
 </style>
 </head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
 <body>
   <header class="titlebar">
     <div class="inner">
@@ -175,262 +184,451 @@
 // ----------- Data -----------
 const mcqs = [
   {
-    q: "Which of the following tooth structures is the MOST radiopaque on a dental radiograph?",
-    opts: ["Enamel", "Dentin", "Pulp Chamber", "Cementum"],
+    q: "When does the development of the periodontal ligament (PDL) begin?",
+    opts: [
+      "After tooth eruption is complete",
+      "With root formation, prior to tooth eruption",
+      "During the bell stage of tooth development",
+      "Simultaneously with crown formation"
+    ],
+    correct: 1,
+    explain: "PDL development is initiated with the formation of the root by Hertwig's epithelial root sheath (HERS) before the tooth emerges into the oral cavity."
+  },
+  {
+    q: "What structure is formed by the continuous proliferation of the internal and external enamel epithelium?",
+    opts: [
+      "Dental papilla",
+      "Stellate reticulum",
+      "Cervical loop",
+      "Dental follicle"
+    ],
+    correct: 2,
+    explain: "The cervical loop is the structure at the cervical aspect of the enamel organ where the inner and outer enamel epithelia meet and proliferate to form HERS."
+  },
+  {
+    q: "Hertwig's epithelial root sheath (HERS) grows apically between which two structures?",
+    opts: [
+      "Dental papilla and dental follicle",
+      "Enamel and dentin",
+      "Alveolar bone and gingiva",
+      "Cementum and dental pulp"
+    ],
     correct: 0,
-    explain: "Enamel is the most calcified (96% inorganic material) structure in the body, making it the most radiopaque (whitest) on a radiograph."
+    explain: "HERS grows down between the dental papilla (which will form pulp and dentin) and the dental follicle (which will form the PDL, cementum, and alveolar bone)."
   },
   {
-    q: "A structure that appears dark or black on a radiograph is termed:",
-    opts: ["Radiopaque", "Radiolucent", "Dense", "Attenuated"],
-    correct: 1,
-    explain: "Radiolucent structures are less dense and allow more x-rays to pass through, resulting in a darker appearance on the radiograph."
-  },
-  {
-    q: "The thin, radiopaque line of cortical bone that lines the tooth socket is known as the:",
-    opts: ["Alveolar Crest", "Trabecular Bone", "Lamina Dura", "Cementum"],
-    correct: 2,
-    explain: "The Lamina Dura is the dense cortical bone lining the alveolus (tooth socket). Its integrity is a key indicator of periodontal health."
-  },
-  {
-    q: "Which of the following structures appears radiolucent on a dental radiograph?",
-    opts: ["Enamel", "Dentin", "Lamina Dura", "Pulp Cavity"],
+    q: "Which cells within the developing PDL have the potential to differentiate into osteoblasts, cementoblasts, and fibroblasts?",
+    opts: [
+      "Epithelial cell rests of Malassez",
+      "Odontoblasts",
+      "Ameloblasts",
+      "Undifferentiated stem cells"
+    ],
     correct: 3,
-    explain: "The pulp cavity contains soft tissues (nerves and blood vessels) which are not dense, making it appear radiolucent (dark)."
+    explain: "The dental follicle contains undifferentiated mesenchymal stem cells that are crucial for forming the various tissues of the periodontium."
   },
   {
-    q: "Loss of continuity or a break in the lamina dura at the apex of a tooth is often indicative of:",
-    opts: ["A vital pulp", "Ankylosis", "A periapical abscess", "A healthy periodontium"],
-    correct: 2,
-    explain: "A periapical infection causes bone resorption, which manifests radiographically as a break in the otherwise continuous lamina dura."
-  },
-  {
-    q: "In a healthy periodontium, the alveolar crest between two teeth typically forms a:",
-    opts: ["Rounded margin", "Sharp angle with the lamina dura", "Radiolucent line", "Concave shape"],
-    correct: 1,
-    explain: "A healthy alveolar crest appears as a sharp, well-defined angle where it meets the lamina dura of the adjacent teeth."
-  },
-  {
-    q: "Why is cementum typically not visible on a radiograph?",
-    opts: ["It is too radiolucent.", "It is too radiopaque.", "Its density is very similar to enamel.", "There is very low contrast between it and dentin."],
+    q: "Which are the first principal fiber bundles of the PDL to become discernible?",
+    opts: [
+      "Oblique fiber group",
+      "Apical fiber group",
+      "Horizontal fiber group",
+      "Alveolar crest fiber bundle group"
+    ],
     correct: 3,
-    explain: "Cementum is a thin layer with a mineral density very close to that of dentin, making it difficult to distinguish as a separate layer radiographically."
+    explain: "The alveolar crest fibers are the first to form, appearing just before tooth eruption adjacent to the cementum in the coronal third of the root."
   },
   {
-    q: "The radiographic appearance of the periodontal ligament (PDL) is:",
-    opts: ["A thin radiopaque line", "A thick radiopaque band", "A thin radiolucent space", "Not visible on radiographs"],
+    q: "What is the initial orientation of the alveolar crest fibers as they are forming?",
+    opts: [
+      "Horizontal",
+      "Parallel to the long axis of the tooth",
+      "Oblique",
+      "Circular"
+    ],
     correct: 2,
-    explain: "The PDL itself is soft tissue, so it appears as a radiolucent space between the tooth root (dentin/cementum) and the lamina dura."
+    explain: "Initially, the developing alveolar crest fibers are aligned in an oblique direction to the long axis of the tooth."
   },
   {
-    q: "What term describes the complete obliteration of the PDL space, fusing the tooth to the bone?",
-    opts: ["Periodontitis", "Ankylosis", "Hypercementosis", "Periapical abscess"],
+    q: "At what stage are the horizontal group of principal fibers almost completely developed?",
+    opts: [
+      "Before root formation begins",
+      "By the time of first occlusal contact",
+      "After the apex of the root is fully formed",
+      "During crown calcification"
+    ],
     correct: 1,
-    explain: "Ankylosis is the fusion of the cementum to the alveolar bone, which results in the radiographic loss of the radiolucent PDL space."
+    explain: "The development of the principal fibers progresses coronally to apically. The horizontal fibers (in the coronal third) are well-developed when the tooth first contacts its antagonist."
   },
   {
-    q: "The trabecular bone pattern in the posterior mandible is often described as:",
-    opts: ["Fine and granular", "Dense and numerous with small marrow spaces", "A horizontal stepladder pattern", "Sparse with very large marrow spaces"],
+    q: "Which of the following is NOT considered a primary function of the PDL?",
+    opts: [
+      "Supportive",
+      "Sensory",
+      "Hormonal",
+      "Nutritive"
+    ],
     correct: 2,
-    explain: "The trabeculae in the posterior mandible are often aligned horizontally, creating a distinct 'stepladder' appearance on radiographs."
+    explain: "The PDL's functions are physical/supportive, homeostatic, sensory, eruptive, and nutritive. It does not have a primary hormonal function."
   },
   {
-    q: "Compared to enamel, dentin is:",
-    opts: ["More radiopaque", "Equally radiopaque", "Less radiopaque", "Completely radiolucent"],
-    correct: 2,
-    explain: "Dentin is less mineralized (around 65% inorganic) than enamel, so it appears less radiopaque (darker gray) but more radiopaque than pulp."
-  },
-  {
-    q: "Which part of the alveolar process is composed of plates of compact bone on the facial and lingual surfaces?",
-    opts: ["Spongy bone", "Lamina dura", "Cortical bone", "Trabecular bone"],
-    correct: 2,
-    explain: "The cortical bone (or cortical plates) forms the dense outer shell of the alveolar process on the facial and lingual aspects."
-  },
-  {
-    q: "The medullary spaces within the cancellous bone appear:",
-    opts: ["Radiopaque", "Radiolucent", "Mixed density", "The same as enamel"],
+    q: "Which physical function involves protecting vessels and nerves from mechanical forces?",
+    opts: [
+      "Transmission of occlusal forces",
+      "Provision of a soft-tissue 'casing'",
+      "Attachment of teeth to bone",
+      "Shock absorption"
+    ],
     correct: 1,
-    explain: "Medullary spaces contain bone marrow, which is a soft tissue. Therefore, these spaces appear radiolucent (dark) between the radiopaque trabeculae."
+    explain: "The PDL acts as a soft-tissue casing that cushions and protects the neurovascular structures within it from damage during mastication."
   },
   {
-    q: "Rounding of the alveolar crest is a radiographic sign often associated with:",
-    opts: ["Healthy gums", "Tooth eruption", "Periodontal disease", "A vital tooth"],
+    q: "Under an axial occlusal force, which principal fibers sustain the major part of the force?",
+    opts: [
+      "Horizontal fibers",
+      "Apical fibers",
+      "Oblique fibers",
+      "Alveolar crest fibers"
+    ],
     correct: 2,
-    explain: "Inflammation from periodontal disease leads to resorption of the bone, causing the normally sharp alveolar crest to appear blunted or rounded."
+    explain: "The oblique fibers are oriented to best resist axial forces, altering their wavy pattern to become taut and transmit the force to the bone."
   },
   {
-    q: "The radiographic image is formed based on the principle of:",
-    opts: ["Reflection of x-rays", "Refraction of x-rays", "Equal absorption of x-rays by all tissues", "Differential attenuation of x-rays by tissues of different densities"],
+    q: "When a horizontal or tipping force is applied to a tooth, how does the apical portion of the root move?",
+    opts: [
+      "In the same direction as the crown",
+      "It does not move",
+      "In the opposite direction to the coronal portion",
+      "In a random, unpredictable direction"
+    ],
+    correct: 2,
+    explain: "The tooth rotates around an axis. When the crown is tipped in one direction, the apex of the root moves in the opposite direction."
+  },
+  {
+    q: "What is the core concept of the 'tensional theory' of tooth support?",
+    opts: [
+      "Fluid movements control tooth displacement.",
+      "Principal fibers are the major factor in supporting the tooth.",
+      "The bony socket elasticity is irrelevant.",
+      "Only the apical fibers resist occlusal forces."
+    ],
+    correct: 1,
+    explain: "The tensional theory posits that the principal fibers of the PDL play the primary role by unfolding and transmitting forces to the alveolar bone."
+  },
+  {
+    q: "According to the 'viscoelastic system theory', what is the initial event when forces are transmitted to a tooth?",
+    opts: [
+      "Principal fibers immediately tighten.",
+      "Extracellular fluid passes from the PDL into bone marrow spaces.",
+      "Cementum gets compressed.",
+      "Blood vessels in the PDL constrict."
+    ],
+    correct: 1,
+    explain: "This theory suggests that the initial shock absorption is handled by the movement of fluid out of the PDL space, with the fibers playing a secondary role."
+  },
+  {
+    q: "What is the primary function of the sensory nerve fibers in the PDL?",
+    opts: [
+      "Regulating blood flow",
+      "Controlling cell differentiation",
+      "Transmitting tactile, pressure, and pain sensations",
+      "Initiating bone resorption"
+    ],
+    correct: 2,
+    explain: "The PDL is richly innervated with sensory fibers that provide proprioceptive feedback (touch, pressure) and nociception (pain) via the trigeminal nerve."
+  },
+  {
+    q: "Compared to other ligaments and tendons, the PDL is considered to be:",
+    opts: [
+      "Poorly vascularized",
+      "Highly vascularized",
+      "Avascular",
+      "Equally vascularized"
+    ],
+    correct: 1,
+    explain: "The PDL has a rich blood supply to meet the high metabolic demands of its cells and to support its nutritive and remodeling functions."
+  },
+  {
+    q: "Which of these is a described age-related change in the periodontal ligament?",
+    opts: [
+      "Increased numbers of fibroblasts",
+      "Increased organic matrix production",
+      "Decreased amounts of elastic fiber",
+      "Decreased epithelial cell rests"
+    ],
     correct: 3,
-    explain: "Tissues with higher density (like enamel) attenuate (block) more x-rays, while less dense tissues (like pulp) allow more to pass through, creating the image."
+    explain: "With age, the PDL tends to show a decrease in fibroblasts, matrix production, and epithelial cell rests, but an increase in elastic fibers."
   },
   {
-    q: "The trabecular pattern in the anterior maxilla is typically:",
-    opts: ["Thick and sparse", "A stepladder pattern", "Fine, numerous, and granular with small marrow spaces", "Completely radiolucent"],
+    q: "What is the consequence of decreased cell proliferation in the PDL with age?",
+    opts: [
+      "An enhanced repair potential",
+      "A wider PDL space",
+      "An impairment of repair potential",
+      "Increased resistance to occlusal forces"
+    ],
     correct: 2,
-    explain: "The anterior maxilla typically has a fine, lace-like trabecular pattern with many small marrow spaces, giving it a granular appearance."
+    explain: "Reduced cell proliferation capacity with age suggests that the PDL's ability to repair and remodel itself in response to injury or stress is diminished."
   },
   {
-    q: "The part of the jaw that forms and supports the tooth sockets is the:",
-    opts: ["Basal bone", "Alveolar process", "Coronoid process", "Mandibular ramus"],
-    correct: 1,
-    explain: "The alveolar process is the specific part of the maxilla and mandible that encases the tooth roots and provides support."
-  },
-  {
-    q: "What is the junction between the enamel of the crown and the cementum of the root called?",
-    opts: ["Amelo-dentinal Junction", "Cementoenamel Junction (CEJ)", "Alveolar Crest", "Apical Foramen"],
-    correct: 1,
-    explain: "The Cementoenamel Junction (CEJ) is the anatomical line where the enamel and cementum meet."
-  },
-  {
-    q: "Which structure is composed of thin strands of bone that appear radiopaque?",
-    opts: ["Pulp canals", "Medullary spaces", "Trabeculae", "Periodontal ligament fibers"],
+    q: "The constant breakdown and replacement of old cells and fibers in the PDL is known as:",
+    opts: [
+      "Homeostasis",
+      "Apoptosis",
+      "Remodelling",
+      "Calcification"
+    ],
     correct: 2,
-    explain: "Trabeculae are the small, interconnected strands of bone that make up the cancellous (spongy) bone, appearing as a radiopaque network."
+    explain: "The PDL is a dynamic tissue that is constantly undergoing remodeling to adapt to functional demands."
   },
   {
-    q: "On a radiograph, the PDL space is typically widest at the:",
-    opts: ["Mid-root level", "Cementoenamel junction", "Apex and coronal portion", "It has a uniform width throughout"],
-    correct: 2,
-    explain: "The PDL space is slightly wider at the coronal aspect (near the crestal bone) and at the apex, and narrowest in the middle of the root."
-  },
-    {
-    q: "The inferior border of the mandible is a radiographic landmark composed of what type of bone?",
-    opts: ["Cancellous Bone", "Spongy Bone", "Trabecular Bone", "Cortical Bone"],
+    q: "Regulatory molecules secreted by PDL cells are essential for which process?",
+    opts: [
+      "Tooth color determination",
+      "Saliva production",
+      "Enamel formation",
+      "Tissue remodeling and homeostasis"
+    ],
     correct: 3,
-    explain: "The inferior border of the mandible is a thick, dense layer of cortical bone, appearing as a prominent radiopaque band."
+    explain: "PDL cells actively participate in maintaining the ligament's structure and width by secreting molecules that regulate the activity of bone, cementum, and fiber-forming cells."
   },
   {
-    q: "What percentage of enamel is inorganic material, contributing to its high radiopacity?",
-    opts: ["65%", "45%", "96%", "75%"],
+    q: "Which cells are NOT formed from the undifferentiated mesenchymal cells of the dental follicle?",
+    opts: [
+      "Cementoblasts",
+      "Osteoblasts",
+      "Fibroblasts",
+      "Ameloblasts"
+    ],
+    correct: 3,
+    explain: "Ameloblasts, which form enamel, are of ectodermal origin from the inner enamel epithelium, not mesenchymal origin like the cells of the dental follicle."
+  },
+  {
+    q: "The definitive architecture of the PDL is established with the formation of which fiber group?",
+    opts: [
+      "Horizontal fiber group",
+      "Alveolar crest fiber group",
+      "Oblique fiber group",
+      "Apical fiber group"
+    ],
+    correct: 3,
+    explain: "The maturation of the PDL progresses apically, and the formation of the apical fiber group marks the establishment of the complete, definitive PDL structure."
+  },
+  {
+    q: "In areas of tension due to tipping forces, how do the principal fibers appear?",
+    opts: [
+      "Wavy and relaxed",
+      "Compressed",
+      "Taut",
+      "Broken down"
+    ],
     correct: 2,
-    explain: "Enamel is approximately 96% inorganic (hydroxyapatite crystals), making it the most mineralized and radiodense tissue in the tooth."
+    explain: "In tension zones, the fibers are stretched and become taut. In pressure zones, they are compressed."
   },
   {
-    q: "Which of these is NOT considered a supporting structure of the tooth?",
-    opts: ["Alveolar process", "Dentin", "Periodontal ligament space", "Lamina dura"],
+    q: "The nutritive function of the PDL supplies nutrients to all the following tissues EXCEPT:",
+    opts: [
+      "Cementum",
+      "Bone",
+      "Gingiva",
+      "Enamel"
+    ],
+    correct: 3,
+    explain: "Enamel is acellular and avascular; it does not receive nutrients from the PDL. The PDL nourishes the cellular cementum, the alveolar bone, and the gingiva."
+  },
+  {
+    q: "What is the role of fibroblasts in the PDL?",
+    opts: [
+      "Resorbing bone",
+      "Forming collagen fibers",
+      "Transmitting sensory signals",
+      "Forming blood vessels"
+    ],
     correct: 1,
-    explain: "Dentin is part of the tooth structure itself, along with enamel and pulp. The others are all part of the supporting periodontium."
+    explain: "Fibroblasts are the primary cells of the PDL responsible for synthesizing and breaking down collagen fibers, thus maintaining the ligament's integrity."
   },
   {
-    q: "The internal space within the crown of a tooth that contains the pulp is the:",
-    opts: ["Root Canal", "Pulp Chamber", "Apical Foramen", "Lateral Canal"],
+    q: "What does 'homeostasis' in the context of the PDL refer to?",
+    opts: [
+      "The ability to transmit pain",
+      "The process of tooth eruption",
+      "Maintaining its width at a constant dimension",
+      "The initial formation of collagen fibers"
+    ],
+    correct: 2,
+    explain: "A key homeostatic function of the PDL is its ability to regulate bone and cementum formation and resorption to maintain its own width throughout life."
+  },
+  {
+    q: "When teeth first come into occlusion, the fiber bundles of the PDL are:",
+    opts: [
+      "Thin and poorly oriented",
+      "Thick and well-organized",
+      "Completely absent",
+      "Only present at the apex"
+    ],
     correct: 1,
-    explain: "The pulp chamber is the coronal portion of the pulp cavity, located within the crown of the tooth."
+    explain: "Initially, the developing fiber bundles are thin and not well-oriented. They become well-organized in terms of thickness and orientation only after the teeth are in function."
   },
   {
-    q: "In radiography, the principle 'what the brain does not know, the eye cannot see' emphasizes the importance of knowing:",
-    opts: ["The patient's medical history", "The correct exposure settings", "Normal radiographic anatomy", "The brand of the x-ray machine"],
-    correct: 2,
-    explain: "This quote highlights that without a solid knowledge of normal anatomical structures, an observer cannot reliably identify abnormalities."
-  },
-  {
-    q: "Which of the following would appear the MOST radiolucent?",
-    opts: ["Dentin", "Lamina Dura", "A sinus cavity", "Cancellous bone"],
-    correct: 2,
-    explain: "A sinus cavity is an air-filled space with no dense tissue to block x-rays, making it appear very radiolucent (black)."
-  },
-  {
-    q: "The alveolar bone proper is another name for which radiographic structure?",
-    opts: ["Alveolar Crest", "Lamina Dura", "Spongy Bone", "Cortical Plate"],
+    q: "Which theory of tooth support better explains the initial tooth movement under load?",
+    opts: [
+      "Tensional theory",
+      "Viscoelastic system theory",
+      "Fiber bundle theory",
+      "Occlusal force theory"
+    ],
     correct: 1,
-    explain: "The lamina dura is also known as the alveolar bone proper, as it is the direct bony lining of the tooth socket."
+    explain: "The viscoelastic system theory, which emphasizes fluid movement, is considered to better explain the immediate displacement of the tooth when a force is first applied."
   },
   {
-    q: "What is the primary component of the radiopaque structures seen in cancellous bone?",
-    opts: ["Bone marrow", "Blood vessels", "Trabeculae", "Fat cells"],
+    q: "The formative and remodeling function of the PDL is LEAST active during:",
+    opts: [
+      "Physiologic tooth movement",
+      "Orthodontic tooth movement",
+      "Repair of injuries",
+      "A state of complete ankylosis"
+    ],
+    correct: 3,
+    explain: "Ankylosis is the fusion of the tooth to the bone, meaning the PDL is obliterated. In this state, there is no formative or remodeling function as the ligament no longer exists."
+  },
+  {
+    q: "What is the fate of HERS after root formation?",
+    opts: [
+      "It transforms into cementoblasts",
+      "It completely disintegrates and vanishes",
+      "It persists as the epithelial cell rests of Malassez",
+      "It forms the junctional epithelium"
+    ],
     correct: 2,
-    explain: "Cancellous bone is a network of radiopaque bone trabeculae surrounding radiolucent marrow spaces."
+    explain: "After guiding root formation, HERS breaks down, but remnants persist within the PDL as clusters of epithelial cells known as the cell rests of Malassez."
   },
   {
-    q: "The Amelo-dentinal Junction (ADJ) is the interface between:",
-    opts: ["Enamel and pulp", "Dentin and cementum", "Enamel and dentin", "Cementum and bone"],
+    q: "The maintenance of gingival tissues in their proper relationship to the teeth is a function of:",
+    opts: [
+      "Only the nutritive function",
+      "Only the sensory function",
+      "The physical function",
+      "The homeostatic function"
+    ],
     correct: 2,
-    explain: "The ADJ is the boundary between the inner surface of the enamel cap and the outer surface of the dentin."
-  },
-  {
-    q: "The portion of the tooth that is embedded in the alveolar process is the:",
-    opts: ["Crown", "Root", "Pulp chamber", "Enamel"],
-    correct: 1,
-    explain: "The root is the part of the tooth that extends into the jawbone and is surrounded by the supporting structures."
+    explain: "The attachment of the tooth to the bone via the PDL, including the supracrestal fibers, is a key physical function that maintains the position and integrity of the gingival tissues."
   }
 ];
 
 const tfs = [
   {
-    q: "The pulp cavity of a tooth appears radiopaque on a dental radiograph.",
+    q: "The development of the periodontal ligament is complete before the tooth erupts into the oral cavity.",
     answer: false,
-    explain: "False. The pulp cavity contains soft tissue and is not calcified, so it appears radiolucent (dark)."
+    explain: "PDL development begins before eruption but continues as the tooth erupts and comes into function, with fiber bundles becoming fully organized only after occlusal contact is established."
   },
   {
-    q: "Enamel is less dense and therefore less radiopaque than dentin.",
+    q: "The dental follicle is composed of a single, uniform population of mesenchymal cells.",
     answer: false,
-    explain: "False. Enamel is the densest, most mineralized tissue in the tooth and is significantly more radiopaque than dentin."
+    explain: "The dental follicle consists of at least two subpopulations: mesenchymal cells of the dental follicle proper and the perifollicular mesenchyme."
   },
   {
-    q: "An intact lamina dura surrounding the apex of a tooth suggests the tooth has a vital pulp.",
+    q: "The oblique fibers are the principal fibers most resistant to horizontal or tipping forces.",
+    answer: false,
+    explain: "Oblique fibers are best suited to resist axial (vertical) forces. Horizontal and alveolar crest fibers are more effective at resisting horizontal or tipping forces."
+  },
+  {
+    q: "The viscoelastic system theory suggests that PDL fibers play only a secondary role in shock absorption.",
     answer: true,
-    explain: "True. An intact lamina dura indicates the absence of periapical bone resorption, which is a common sign of pulpal necrosis and infection."
+    explain: "This theory prioritizes the role of fluid movement from the PDL into bone for initial shock absorption, with the fibers tightening afterward."
   },
   {
-    q: "The periodontal ligament space is filled with calcified tissue, making it appear radiopaque.",
+    q: "The periodontal ligament is an avascular and aneural tissue.",
     answer: false,
-    explain: "False. The periodontal ligament is soft connective tissue, so the space it occupies appears as a radiolucent line between the root and lamina dura."
+    explain: "The PDL is highly vascularized and abundantly supplied with sensory nerve fibers, which are critical for its nutritive and sensory functions."
   },
   {
-    q: "Rounding or blunting of the alveolar crest is a radiographic sign of a healthy periodontium.",
-    answer: false,
-    explain: "False. A healthy alveolar crest forms a sharp angle. Rounding indicates bone loss and is a sign of periodontal disease."
-  },
-  {
-    q: "The trabecular bone pattern in the maxilla is typically identical to the pattern in the mandible.",
-    answer: false,
-    explain: "False. The maxilla usually has a fine, granular pattern, while the posterior mandible often shows a coarser, 'stepladder' pattern."
-  },
-  {
-    q: "Ankylosis is the radiographic term for the loss or absence of the periodontal ligament space.",
+    q: "During orthodontic tooth movement, cells of the PDL participate in the resorption and formation of bone and cementum.",
     answer: true,
-    explain: "True. Ankylosis involves the fusion of the tooth root directly to the bone, eliminating the PDL space."
+    explain: "The formative and remodeling function of the PDL is essential for the bone resorption (on the pressure side) and bone apposition (on the tension side) that allows teeth to move orthodontically."
   },
   {
-    q: "Cementum is easily distinguished from dentin on a typical periapical radiograph.",
+    q: "With age, the number of fibroblasts and the rate of collagen synthesis in the PDL increase.",
     answer: false,
-    explain: "False. The similar radiodensities and thinness of the cementum layer make it very difficult to differentiate from the underlying dentin."
+    explain: "Age-related changes typically include a decrease in the number of fibroblasts and decreased organic matrix production, leading to an impaired repair potential."
   },
   {
-    q: "Cortical bone, such as the inferior border of the mandible, appears radiopaque.",
+    q: "All developing fiber bundles of the PDL are initially thin and not well oriented.",
     answer: true,
-    explain: "True. Cortical bone is very dense compact bone, which heavily attenuates x-rays and thus appears very radiopaque (white)."
+    explain: "The organization of PDL fiber bundles into thick, well-oriented groups only occurs after the tooth has come into functional occlusion."
+  },
+  {
+    q: "The sensory information from the PDL is transmitted via the facial nerve.",
+    answer: false,
+    explain: "Sensory information (tactile, pressure, pain) from the PDL is transmitted via the trigeminal nerve (Cranial Nerve V)."
   }
 ];
 
 const saqs = [
   {
-    q: "Define the term 'radiopaque' and provide two examples of structures in the tooth or jaw that appear radiopaque.",
-    a: "<b>Definition:</b> Radiopaque refers to structures that are dense and absorb or resist the penetration of x-rays. They appear white or light gray on a radiograph.<br><br><b>Examples:</b><br>1. Enamel<br>2. Dentin<br>3. Lamina Dura<br>4. Cortical Bone"
+    q: "Describe the two main theories that explain the mechanism of tooth support and shock absorption by the PDL.",
+    a: "The two main theories are the <strong>Tensional Theory</strong> and the <strong>Viscoelastic System Theory</strong>.<br><br>1. <strong>Tensional Theory:</strong> This theory states that the principal fibers of the PDL are the major factor. When force is applied, these fibers unfold, straighten, and transmit the forces to the alveolar bone, causing it to deform elastically.<br><br>2. <strong>Viscoelastic System Theory:</strong> This theory proposes that tooth displacement is primarily controlled by fluid movements. When force is applied, extracellular fluid is pushed from the PDL into the marrow spaces of the bone, providing the initial shock absorption. The fibers tighten only after the fluid has been displaced."
   },
   {
-    q: "Explain the clinical significance of the alveolar crest's radiographic appearance.",
-    a: "The appearance of the alveolar crest is a key indicator of periodontal health. In a healthy state, it forms a sharp, pointed angle with the lamina dura of the adjacent tooth and is located 1-2 mm apical to the CEJ. In periodontal disease, inflammation causes bone resorption, leading to the crest appearing blunted, rounded, or flattened, and its position may be more apical."
+    q: "List the six primary functions of the periodontal ligament.",
+    a: `The six main functions of the PDL are:
+      <ol>
+        <li><strong>Physical/Supportive:</strong> Attaches the tooth to bone, transmits occlusal forces, absorbs shock, and protects vessels and nerves.</li>
+        <li><strong>Formative/Remodeling:</strong> Contains cells that form and resorb cementum, bone, and PDL fibers.</li>
+        <li><strong>Homeostatic:</strong> Maintains the width and integrity of the PDL space.</li>
+        <li><strong>Sensory:</strong> Provides tactile, pressure, and pain sensation through abundant nerve supply.</li>
+        <li><strong>Eruptive:</strong> Plays a role in accommodating tooth eruption and movement.</li>
+        <li><strong>Nutritive:</strong> Supplies nutrients to the cementum, alveolar bone, and gingiva through its rich blood supply.</li>
+      </ol>`
   },
   {
-    q: "List the three main components of the tooth structure visible on a radiograph, in order from MOST radiopaque to MOST radiolucent.",
-    a: "<table><thead><tr><th>Order</th><th>Structure</th></tr></thead><tbody><tr><td>1</td><td>Enamel</td></tr><tr><td>2</td><td>Dentin</td></tr><tr><td>3</td><td>Pulp</td></tr></tbody></table>"
+    q: "Compare the PDL's response to axial forces versus tipping (horizontal) forces.",
+    a: `<table>
+        <thead>
+          <tr>
+            <th>Feature</th>
+            <th>Response to Axial Force</th>
+            <th>Response to Tipping Force</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>1. Primary Fibers Involved</td>
+            <td>The <strong>oblique fibers</strong> bear the majority of the force, transmitting it to the bone.</td>
+            <td>Fibers on one side (tension side) become <strong>taut</strong>, while fibers on the opposite side (pressure side) are <strong>compressed</strong>.</td>
+          </tr>
+          <tr>
+            <td>2. Tooth Movement</td>
+            <td>The root tends to be displaced apically into the alveolus.</td>
+            <td>The tooth rotates about an axis, with the crown and apex moving in <strong>opposite directions</strong>.</td>
+          </tr>
+          <tr>
+            <td>3. Bone Response</td>
+            <td>Generally uniform tension on the alveolar bone socket.</td>
+            <td>Creates distinct areas of tension and pressure on the bony socket wall, leading to remodeling if the force is sustained.</td>
+          </tr>
+        </tbody>
+      </table>`
   },
   {
-    q: "List the three main components of the alveolar process.",
-    a: "The alveolar process is composed of:<br><br>1. <b>Lamina Dura (Alveolar Bone Proper):</b> The dense cortical bone lining the tooth socket.<br>2. <b>Supporting Cortical Bone:</b> The compact bone plates on the facial and lingual surfaces.<br>3. <b>Supporting Spongy Bone (Cancellous Bone):</b> The trabecular bone that fills the space between the lamina dura and cortical plates."
+    q: "A 14-year-old patient is undergoing orthodontic treatment to correct crowded lower incisors. Describe the cellular activities occurring within the periodontal ligament that allow the teeth to move through the bone.",
+    a: "During orthodontic treatment, sustained pressure and tension are applied to the teeth. On the <strong>pressure side</strong> (the direction of tooth movement), the compressed PDL signals cells like osteoclasts to resorb the alveolar bone. On the <strong>tension side</strong>, the stretched PDL fibers stimulate cells like osteoblasts to deposit new bone (apposition). Simultaneously, the fibroblasts within the PDL are actively remodeling the collagen fiber network to adapt to the new tooth position. This coordinated process of resorption and apposition allows the tooth to move through the jaw without damaging the periodontium."
   },
   {
-    q: "Compare the typical radiographic appearance of the trabecular bone in the posterior mandible versus the anterior maxilla.",
-    a: "<table><thead><tr><th>Location</th><th>Radiographic Appearance</th></tr></thead><tbody><tr><td><b>Anterior Maxilla</b></td><td>Features a fine, dense, lace-like, or granular pattern with numerous small trabeculae and very small marrow spaces.</td></tr><tr><td><b>Posterior Mandible</b></td><td>Features a coarser pattern with fewer, thicker trabeculae that are often arranged horizontally, creating a 'stepladder' appearance with larger marrow spaces.</td></tr></tbody></table>"
+    q: "What are the main age-related changes that occur in the periodontal ligament, and what is their clinical significance?",
+    a: `The main age-related changes in the PDL include:
+      <ol>
+        <li>Decreased number of fibroblasts and reduced cell proliferation.</li>
+        <li>Decreased production of organic matrix (collagen).</li>
+        <li>Decreased number of epithelial cell rests of Malassez.</li>
+        <li>Increased amount of elastic fiber.</li>
+      </ol>
+      The clinical significance of these changes is primarily an <strong>impaired repair potential</strong>. The PDL in an older individual may respond more slowly to injuries, occlusal trauma, or orthodontic forces, and its capacity for regeneration may be diminished.`
   },
   {
-    q: "A patient's periapical radiograph of a painful lower molar shows a widening of the radiolucent space at the root tip and a distinct break in the continuity of the thin white line surrounding the root. What condition do these signs strongly suggest?",
-    a: "These signs strongly suggest a <b>periapical abscess</b> or <b>periapical periodontitis</b>. The widening of the radiolucent space indicates inflammation in the PDL, and the break in the white line (the lamina dura) indicates resorption of the bone due to infection originating from a necrotic pulp."
+    q: "Explain the role of Hertwig's Epithelial Root Sheath (HERS) in the development of the periodontal ligament.",
+    a: "Hertwig's Epithelial Root Sheath (HERS) plays a crucial, indirect role. It is an epithelial structure that grows apically from the cervical loop, shaping the root of the tooth. As HERS grows, it induces adjacent cells in the dental papilla to differentiate into odontoblasts and form root dentin. After dentin is formed, HERS begins to break down. This fragmentation allows cells from the dental follicle to come into contact with the newly formed root dentin. This contact is the signal for these dental follicle cells to differentiate into cementoblasts, which then lay down cementum on the root surface. Other cells in the dental follicle differentiate into fibroblasts to form the PDL fibers, which embed into the cementum and the alveolar bone."
   }
 ];
-
 
 // ----------- State -----------
 const state = {
@@ -490,11 +688,15 @@ mcqs.forEach((item, idx)=>{
       const v = Number(btn.dataset.v);
       state.mcq[idx] = v;
 
+      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
       const correctBtn = buttons[correctVisualIndex];
       correctBtn.classList.add('correct');
 
       if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
@@ -542,16 +744,20 @@ tfs.forEach((item, idx)=>{
 
   buttons.forEach(btn=>{
     btn.addEventListener('click', ()=>{
-      if(card.dataset.locked === 'true') return;
+      if(card.dataset.locked === 'true') return; // one attempt
       const val = btn.dataset.v === "true";
       state.tf[idx] = val;
 
+      // clear classes
       buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
       const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
       correctBtn.classList.add('correct');
 
       const isCorrect = (val === item.answer);
       if(!isCorrect){
+        // mark chosen wrong (red)
         btn.classList.add('wrong');
         feedback.hidden=false;
         feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
@@ -578,13 +784,14 @@ saqs.forEach((item, idx)=>{
   card.innerHTML = `
   <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
   <h3 class="qtitle">${item.q}</h3>
-  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:inherit;margin-bottom:10px;"></textarea>
-  <div class="btnrow">
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
+  <div class="btnrow" style="margin-top:10px">
     <button class="primary" data-act="reveal">Reveal Answer</button>
     <button class="ghost" data-act="toggle">I was correct</button>
   </div>
   <div class="answer" hidden>${item.a}</div>
 `;
+
 
   const revealBtn = card.querySelector('[data-act="reveal"]');
   const toggleBtn = card.querySelector('[data-act="toggle"]');
@@ -600,7 +807,6 @@ saqs.forEach((item, idx)=>{
     state.saq[idx] = now;
     toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
     toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
-    toggleBtn.style.borderColor = now ? "rgba(34,197,94,.7)" : "rgba(255,255,255,0.18)";
     recalc();
   });
 
@@ -609,35 +815,30 @@ saqs.forEach((item, idx)=>{
 
 // ----------- Score + Reset -----------
 function recalc(){
-    // Recalculate MCQ score based on whether the chosen answer was correct
-    const mcqScore = state.mcq.reduce((score, selectedVisualIndex, idx) => {
-        if (selectedVisualIndex === null) return score;
-        const item = mcqs[idx];
-        const card = mcqGrid.children[idx];
-        const correctBtn = card.querySelector('.opt-btn.correct');
-        const correctVisualIndex = Number(correctBtn.dataset.v);
-        return score + (selectedVisualIndex === correctVisualIndex ? 1 : 0);
-    }, 0);
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
 
-    // Recalculate T/F score
-    const tfScore = state.tf.reduce((score, val, idx) => {
-        if (val === null) return score;
-        return score + (val === tfs[idx].answer ? 1 : 0);
-    }, 0);
-
-    // Recalculate SAQ score
-    const saqScore = state.saq.filter(Boolean).length;
-    const total = mcqScore + tfScore + saqScore;
-
-    // Update all score displays
-    document.getElementById('sMcq').textContent = mcqScore;
-    document.getElementById('sTf').textContent = tfScore;
-    document.getElementById('sSaq').textContent = saqScore;
-    document.getElementById('sTotal').textContent = total;
-    document.getElementById('sMcq2').textContent = mcqScore;
-    document.getElementById('sTf2').textContent = tfScore;
-    document.getElementById('sSaq2').textContent = saqScore;
-    document.getElementById('sTotal2').textContent = total;
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
 }
 
 document.getElementById('resetAll').addEventListener('click', ()=>{
@@ -650,11 +851,7 @@ document.getElementById('resetAll').addEventListener('click', ()=>{
   document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
   document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
   document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
-  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{
-      b.textContent="I was correct"; 
-      b.style.outline="none";
-      b.style.borderColor = "rgba(255,255,255,0.18)";
-  });
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
 
   state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
   recalc();
@@ -664,4 +861,3 @@ recalc();
 </script>
 </body>
 </html>
-

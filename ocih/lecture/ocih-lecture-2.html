@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" style="direction:ltr;">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>OCIH 2 — 🦷 Dentistry 3rd year — Two-Column Sections</title>
-<meta name="color-scheme" content="dark" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Histology and Embryology of Salivary Glands</title>
+<meta content="dark" name="color-scheme"/>
 <style>
   :root{
     --bg:#0b0b12;
@@ -109,6 +109,9 @@
   .sec-body{display:flex;flex-direction:column;gap:.75rem}
   .sec-body p{margin:0}
 
+  /* Custom: Bolded Keywords */
+  strong { color: #8b5cf6; font-weight: 800; }
+
   /* Callouts column */
   .callouts{display:flex;flex-direction:column;gap:.6rem}
   .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
@@ -124,7 +127,7 @@
   .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
   .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
 
-  /* Table wrap */
+  /* Table wrap: invisible scroll container */
   .table-wrap{
     overflow-x:auto;
     margin:.25rem 0 0;
@@ -179,7 +182,7 @@
   #glossary .card{box-shadow:var(--glossary-glow);}
   #flashcards .card{box-shadow:var(--flash-glow);}
 
-  /* Responsive */
+  /* Responsive: stack to 1 column under 960px */
   @media(max-width:960px){
     .section{grid-template-columns:1fr;}
     .grid.g3x4{grid-template-columns:repeat(2,1fr);}
@@ -187,492 +190,603 @@
   @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
 
   /* RTL/LTR control */
-  body.lang-ar { direction: rtl; text-align: right; }
-  body.lang-en { direction: ltr; text-align: left; }
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
 
   /* Keep header always LTR */
-  header, header * { direction: ltr !important; text-align: left !important; }
-
-  /* === Language Switcher (unchanged) === */
-  #langBtn{
-    --h: 40px; --pad: 3px;
-    position: fixed; top: 16px; right: 16px;
-    display: inline-flex; align-items: center; justify-content: space-between;
-    min-width: 150px; height: var(--h); padding: 0 6px;
-    border-radius: 9999px; font-size: 13px; font-weight: 800; gap: .35rem;
-    border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.06); color: var(--muted);
-    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
-    backdrop-filter: blur(6px); isolation: isolate; overflow: hidden; z-index: 9999;
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
   }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
   #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
   #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
   #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
   #langBtn::after{
     content:"";
-    position:absolute; top: var(--pad); bottom: var(--pad); left: var(--pad);
-    width: calc(50% - var(--pad)*2 + 2px);
-    border-radius: inherit; background: rgba(255,255,255,.10);
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
     box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
-    transform: translateX(0);
+    transform: translateX(0);               /* EN active by default */
     z-index: 0;
   }
-  @keyframes bgToRight { 0%{transform:translateX(0%);}70%{transform:translateX(108%);}100%{transform:translateX(100%);} }
-  @keyframes bgToLeft  { 0%{transform:translateX(100%);}70%{transform:translateX(-8%);}100%{transform:translateX(0%);} }
-  @keyframes bounceActive { 0%{transform:scale(1.0);}40%{transform:scale(1.14);}70%{transform:scale(1.04);}100%{transform:scale(1.08);} }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
   body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
   body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
-  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
-  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none; transform: scale(1.0); }
-  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
-  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none; transform: scale(1.0); }
 
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
   @media (prefers-reduced-motion: reduce) {
     #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
-      animation: none !important; transition: none !important; transform: none !important;
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
     }
   }
 
-  /* Source footer pinned to bottom of LEFT column only */
+  /* Source footer pinned to bottom of the LEFT column only */
   .content-col{display:flex;flex-direction:column;}
   .source-footer{
-    margin-top:auto; padding:8px 12px; font-size:.85rem; color:var(--muted);
-    border-top:1px solid rgba(255,255,255,.12); background:rgba(255,255,255,.03);
-    text-align:center; border-radius:0 0 var(--radius) var(--radius);
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
   }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
 </style>
 </head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
 <body class="lang-en">
 <header>
-  <div class="hdr wrap">
-    <div class="left">
-      <div class="title">🦷 Dentistry 3rd year</div>
-      <div class="subtitle">Lecture 2</div>
-    </div>
-    <button id="langBtn" class="lang-toggle" aria-label="Toggle language">
-      <span class="lab en">EN</span>
-      <span class="lab ar">AR</span>
-    </button>
-  </div>
-</header>
-
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 2</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
 <main class="wrap">
-  <!-- Dua (same Arabic text shown in both EN/AR as required) -->
-  <div class="dua"><span class="en">اللَّهُمَّ زِدْنَا عِلْمًا نَافِعًا وارْزُقْنَا فَهْمًا صَائِبًا وَعَمَلًا صَالِحًا.</span><span class="ar">اللَّهُمَّ زِدْنَا عِلْمًا نَافِعًا وارْزُقْنَا فَهْمًا صَائِبًا وَعَمَلًا صَالِحًا.</span></div>
-
-  <!-- Topic -->
-  <div class="chip-box">
-    <span class="chip">
-      <span class="en"><b>Topic: Histology & Embryology of Salivary Glands</b></span>
-      <span class="ar"><b>الموضوع: النسج والتكوُّن الجنيني للغُدَد اللعابية</b></span>
-    </span>
-  </div>
-
-  <div class="sections">
-
-    <!-- 1. Definition -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">1) What is a gland?</span><span class="ar">١) ما هي الغدّة؟</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <p>Gland = an organ of secretion formed by specialized epithelial cells derived from surface epithelium and opening onto it.</p>
-          </div>
-          <div class="ar">
-            <p>الغدّة: عضو إفرازي مكوّن من خلايا ظهارية متخصصة مشتقّة من الظهارة السطحية وتفتح عليها.</p>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 6/39</span><span class="ar">الصفحات المرجعية: ٦/٣٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Epithelial origin; communicates with surface by a duct.</div><div class="ar">أصلها ظهاري وتتصل بالسطح عبر قناة.</div></div></div>
-          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Explains why gland tumors keep epithelial markers.</div><div class="ar">يُفسّر احتفاظ أورام الغدد بواسمات ظهارية.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Link “gland = epithelium + duct”.</div><div class="ar">اربط: «غدّة = ظهارة + قناة».</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- 2. General features -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">2) General Features</span><span class="ar">٢) خصائص عامة</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <ul>
-              <li>Epithelial in origin.</li>
-              <li>Secretory units (“end pieces”) are acinar (flask) or tubular (cylindrical).</li>
-              <li>Secreted fluid: enzymes, hormones, or mucus; under neural & hormonal control.</li>
-              <li>Myoepithelial cells lie between secretory cells and basement membrane and help expel secretion.</li>
-            </ul>
-          </div>
-          <div class="ar">
-            <ul>
-              <li>الأصل ظهاري.</li>
-              <li>الوحدات الإفرازية (النهايات الإفرازية): سنخية أو أنبوبية.</li>
-              <li>المفرَزات: إنزيمات/هرمونات/مخاط؛ تتحكم بها آليات عصبية وهرمونية.</li>
-              <li>الخلايا العضلية الظهارية بين الخلايا الإفرازية والغشاء القاعدي وتساعد في طرد الإفراز.</li>
-            </ul>
-          </div>
-          <div class="table-wrap" aria-label="Secretory unit shapes">
-            <table>
-              <thead>
-                <tr>
-                  <th><span class="en">Unit</span><span class="ar">الوحدة</span></th>
-                  <th><span class="en">Shape</span><span class="ar">الشكل</span></th>
-                  <th><span class="en">Notes</span><span class="ar">ملاحظات</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="en">Acinus</span><span class="ar">سنخي</span></td>
-                  <td><span class="en">Flask-like</span><span class="ar">قِرْبي</span></td>
-                  <td><span class="en">Common in serous units</span><span class="ar">شائع في الوحدات المصليّة</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">Tubular</span><span class="ar">أنبوبي</span></td>
-                  <td><span class="en">Cylinder-like</span><span class="ar">اسطواني</span></td>
-                  <td><span class="en">Common in mucous units</span><span class="ar">شائع في الوحدات المخاطية</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 6/39</span><span class="ar">الصفحات المرجعية: ٦/٣٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">End pieces drain into a duct system.</div><div class="ar">النهايات الإفرازية تُصرّف في جهاز قنوي.</div></div></div>
-          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“A for Acinus = Aqueous (serous)”.</div><div class="ar">«السنخي = سائل مائي».</div></div></div>
-          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden><div class="en">Myoepithelial cells are stellate and contractile.</div><div class="ar">الخلايا العضلية الظهارية نجمية الشكل وقابلة للانقباض.</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- 3. Embryologic development -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">3) Embryologic Development</span><span class="ar">٣) التكوُّن الجنيني</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <ul>
-              <li>Glands develop by epithelial invagination into vascular connective tissue.</li>
-              <li>Distal part → secretory end piece (functional portion).</li>
-              <li>Proximal part → excretory duct → opens on epithelial surface.</li>
-              <li>Timeline landmarks: ~4 weeks → epithelial bud; ~6 weeks → branching; ~8 weeks → lumenization & acini primordia.</li>
-            </ul>
-          </div>
-          <div class="ar">
-            <ul>
-              <li>تتكوّن الغدد بانغراز الظهارة في النسيج الضام الوعائي.</li>
-              <li>الطرف البعيد ⇠ النهاية الإفرازية (الجزء الفعّال).</li>
-              <li>الطرف القريب ⇠ قناة مُفرِغة تفتح على السطح.</li>
-              <li>المعالم الزمنية: ~٤ أسابيع ⇠ برعم ظهاري؛ ~٦ أسابيع ⇠ تفرّع؛ ~٨ أسابيع ⇠ تكوّن التجاويف وبواكير الأسناخ.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 7/39</span><span class="ar">الصفحات المرجعية: ٧/٣٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Distal “bud” expands and differentiates into acini.</div><div class="ar">يتوسع البرعم البعيد ويتمايز إلى أسناخ.</div></div></div>
-          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Explains congenital duct anomalies.</div><div class="ar">يُفسّر الشذوذات القنوية الخلقية.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Remember “Distal = Do secretion; Proximal = Pipe out”.</div><div class="ar">تذكّر: «البعيد إفراز، القريب تصريف».</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- 4. Histology overview: acini & ducts -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">4) Histology: Acini & Ducts</span><span class="ar">٤) النسج: الأسناخ والقنوات</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <p>Salivary parenchyma consists of secretory acini (serous or mucous) and a duct system. Myoepithelial cells sit between acinar cells and the basement membrane.</p>
-          </div>
-          <div class="ar">
-            <p>يتكوّن النسيج الغُدّي من أسناخ مصلية أو مخاطية ومن جهاز قنوي. وتوجد الخلايا العضلية الظهارية بين خلايا الأسناخ والغشاء القاعدي.</p>
-          </div>
-
-          <div class="table-wrap" aria-label="Duct system (as referenced)">
-            <table>
-              <thead>
-                <tr>
-                  <th><span class="en">Duct</span><span class="ar">النوع القنوي</span></th>
-                  <th><span class="en">Key features (from lecture images/text)</span><span class="ar">سمات رئيسية (حسب المحاضرة)</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="en">Intercalated</span><span class="ar">موصولة قصيرة</span></td>
-                  <td><span class="en">Small ducts between acini & striated ducts (seen adjacent to acini).</span><span class="ar">قنوات صغيرة بين الأسناخ والقنوات المخططة (تظهر قرب الأسناخ).</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">Striated</span><span class="ar">مُخَطَّطة</span></td>
-                  <td><span class="en">Prominent in submandibular; fewer in sublingual.</span><span class="ar">كثيرة في تحت الفك السفلي؛ قليلة في تحت اللسان.</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">Excretory</span><span class="ar">مُفرِغة</span></td>
-                  <td><span class="en">Larger ducts opening onto oral epithelium.</span><span class="ar">قنوات أكبر تفتح على الظهارة الفموية.</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 14,17,19/39</span><span class="ar">الصفحات المرجعية: ١٤، ١٧، ١٩/٣٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Acini types determine saliva character.</div><div class="ar">نوع الأسناخ يحدد طبيعة اللعاب.</div></div></div>
-          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Duct obstruction → sialadenitis/swelling.</div><div class="ar">انسداد القنوات ⇠ التهاب/تورم الغدّة.</div></div></div>
-          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Don’t confuse striated ducts with muscle striations.</div><div class="ar">لا تُخلط تخطّط القنوات مع تخطّط العضلات.</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- 5. Serous acini -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">5) Serous Acini</span><span class="ar">٥) الأسناخ المصلية</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <ul>
-              <li>Thin, watery secretion; small lumen.</li>
-              <li>Round, centrally placed nucleus.</li>
-              <li>Basophilic cytoplasm with zymogen granules (H&E: deeply stained).</li>
-              <li>Example-dominant gland: Parotid.</li>
-            </ul>
-          </div>
-          <div class="ar">
-            <ul>
-              <li>إفراز مائي رقيق؛ تجويف صغير.</li>
-              <li>نواة مستديرة مركزية.</li>
-              <li>سيتوبلازم قاعدي مع حبيبات زيـموغين (يَصبغ بقوة في H&E).</li>
-              <li>مثال: الغدّة النكفية (سائدة مصلية).</li>
-            </ul>
-          </div>
-          <div class="table-wrap" aria-label="Serous vs Mucous snapshot">
-            <table>
-              <thead>
-                <tr>
-                  <th><span class="en">Feature</span><span class="ar">الميزة</span></th>
-                  <th><span class="en">Serous</span><span class="ar">مصلية</span></th>
-                  <th><span class="en">Mucous</span><span class="ar">مخاطية</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="en">Secretion</span><span class="ar">الإفراز</span></td>
-                  <td><span class="en">Thin, watery</span><span class="ar">رقيق مائي</span></td>
-                  <td><span class="en">Thick, viscous</span><span class="ar">سميك لزج</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">Nucleus</span><span class="ar">النواة</span></td>
-                  <td><span class="en">Round, central</span><span class="ar">مستديرة مركزية</span></td>
-                  <td><span class="en">Flattened, peripheral</span><span class="ar">مُفلطحة طرفية</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">Lumen</span><span class="ar">اللمعة</span></td>
-                  <td><span class="en">Small</span><span class="ar">صغيرة</span></td>
-                  <td><span class="en">Large</span><span class="ar">كبيرة</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">H&E stain</span><span class="ar">صبغة H&E</span></td>
-                  <td><span class="en">Deeply stained</span><span class="ar">تصبغ قوي</span></td>
-                  <td><span class="en">Lightly stained</span><span class="ar">تصبغ خفيف</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">Example</span><span class="ar">مثال</span></td>
-                  <td><span class="en">Parotid</span><span class="ar">النكفية</span></td>
-                  <td><span class="en">Sublingual</span><span class="ar">تحت اللسان</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 17,22/39</span><span class="ar">الصفحات المرجعية: ١٧، ٢٢/٣٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Serous = S for ‘Strongly stained’.”</div><div class="ar">«مصلية = تصبغ قوي».</div></div></div>
-          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Parotid section shows abundant serous acini + adipocytes.</div><div class="ar">مقطع النكفية: أسناخ مصلية كثيرة + خلايا دهنية.</div></div></div>
-          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden><div class="en">Zymogen granules = enzyme precursors.</div><div class="ar">حبيبات الزيـموغين = طلائع الإنزيمات.</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- 6. Mucous acini -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">6) Mucous Acini</span><span class="ar">٦) الأسناخ المخاطية</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <ul>
-              <li>Thick, viscous secretion; larger lumen.</li>
-              <li>Flattened peripheral nuclei; cytoplasm pale with mucigen droplets.</li>
-              <li>Example-dominant gland: Sublingual.</li>
-            </ul>
-          </div>
-          <div class="ar">
-            <ul>
-              <li>إفراز لزج سميك؛ لمعة أكبر.</li>
-              <li>نوى مُفلطحة طرفية؛ سيتوبلازم باهت مع قطرات مُخَيِّنة (mucigen).</li>
-              <li>مثال: الغدّة تحت اللسان.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 19,22/39</span><span class="ar">الصفحات المرجعية: ١٩، ٢٢/٣٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Serous demilunes may cap mucous tubules (e.g., in mixed glands).</div><div class="ar">قد تُغطّي أنصافُ الأقمارِ المصليةُ الأنابيبَ المخاطية (في الغدد المختلطة).</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">“Mucous = M for ‘Much lumen’.”</div><div class="ar">«مخاطي = لمعة أكبر».</div></div></div>
-          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Don’t mistake pale cytoplasm for artifact—check nucleus position.</div><div class="ar">لا تعتبر الشحوب أثراً فنياً—تحقّق من موضع النواة.</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- 7. Myoepithelial cells -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">7) Myoepithelial Cells</span><span class="ar">٧) الخلايا العضلية الظهارية</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <p>Star-shaped contractile cells located between secretory/duct cells and the basement membrane; they contract to help expel acinar and ductal contents.</p>
-          </div>
-          <div class="ar">
-            <p>خلايا نجمية قابلة للانقباض تقع بين الخلايا الإفرازية/القنوية والغشاء القاعدي؛ تنقبض لتُساعِد على طرد المحتوى.</p>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 14,29/39</span><span class="ar">الصفحات المرجعية: ١٤، ٢٩/٣٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Loss of myoepithelial layer is a diagnostic clue in some tumors.</div><div class="ar">فقدان الطبقة العضلية الظهارية علامة تشخيصية في بعض الأورام.</div></div></div>
-          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Seen hugging acini as “basket cells”.</div><div class="ar">تظهر كـ«خلايا سَلّية» تحيط بالأسناخ.</div></div></div>
-          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Explains rapid saliva ejection in response to stimulation.</div><div class="ar">تُفسّر سرعة قذف اللعاب عند التحفيز.</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- 8. Major salivary glands -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">8) Major Salivary Glands</span><span class="ar">٨) الغدد اللعابية الكبرى</span></h2>
-        <div class="sec-body">
-          <div class="table-wrap" aria-label="Comparison of major glands">
-            <table>
-              <thead>
-                <tr>
-                  <th><span class="en">Gland</span><span class="ar">الغدّة</span></th>
-                  <th><span class="en">Acini type</span><span class="ar">نوع الأسناخ</span></th>
-                  <th><span class="en">Ducts</span><span class="ar">القنوات</span></th>
-                  <th><span class="en">Distinct feature</span><span class="ar">ميزة بارزة</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="en">Parotid</span><span class="ar">النكفية</span></td>
-                  <td><span class="en">Predominantly serous</span><span class="ar">مصلية بشكل أساسي</span></td>
-                  <td><span class="en">Many ducts</span><span class="ar">قنوات كثيرة</span></td>
-                  <td><span class="en">Fat-cell (adipocyte) infiltration</span><span class="ar">ارتشاح خلايا دهنية</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">Submandibular</span><span class="ar">تحت الفك السفلي</span></td>
-                  <td><span class="en">Mixed: many serous, few mucous; serous demilunes present</span><span class="ar">مختلطة: مصلية كثيرة ومخاطية قليلة؛ توجد أنصاف أقمار مصلية</span></td>
-                  <td><span class="en">Many striated ducts</span><span class="ar">قنوات مخططة كثيرة</span></td>
-                  <td><span class="en">Classic mixed pattern</span><span class="ar">نموذج مختلط كلاسيكي</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">Sublingual</span><span class="ar">تحت اللسان</span></td>
-                  <td><span class="en">Predominantly mucous</span><span class="ar">مخاطية بشكل أساسي</span></td>
-                  <td><span class="en">Few striated ducts</span><span class="ar">قنوات مخططة قليلة</span></td>
-                  <td><span class="en">Demilunes frequent over mucous tubules</span><span class="ar">أنصاف أقمار شائعة فوق الأنابيب المخاطية</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-          <div class="en"><p>Slides/images in the lecture show typical sections of parotid and submandibular glands, plus mixed patterns.</p></div>
-          <div class="ar"><p>تُظهر شرائح المحاضرة مقاطع نموذجية للنكفية وتحت الفك السفلي وأنماطاً مختلطة.</p></div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 22,32,37/39</span><span class="ar">الصفحات المرجعية: ٢٢، ٣٢، ٣٧/٣٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Parotid = serous; Sublingual = mucous; Submandibular = mixed.</div><div class="ar">النكفية = مصلية؛ تحت اللسان = مخاطية؛ تحت الفك = مختلطة.</div></div></div>
-          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Parotid swelling often feels watery due to serous predominance.</div><div class="ar">تورّم النكفية يبدو «مائياً» لسيادة المصلية.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">PSM mnemonic: Parotid-Serous, Sublingual-Mucous, Submandibular-Mix.</div><div class="ar">ترميز: نكفية=مصلية، تحت اللسان=مخاطية، تحت الفك=مختلطة.</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- 9. Summary -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">9) Summary</span><span class="ar">٩) الخلاصة</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <ul>
-              <li>Salivary glands arise by epithelial invagination; distal becomes the secretory end piece, proximal the excretory duct.</li>
-              <li>Serous acini: watery, small lumen, central nuclei, strong H&E staining (e.g., parotid).</li>
-              <li>Mucous acini: viscous, large lumen, peripheral flattened nuclei, pale cytoplasm (e.g., sublingual).</li>
-              <li>Submandibular is mixed with many striated ducts and serous demilunes.</li>
-              <li>Myoepithelial cells assist in rapid expulsion of saliva.</li>
-            </ul>
-          </div>
-          <div class="ar">
-            <ul>
-              <li>تنشأ الغدد اللعابية من انغراز الظهارة؛ الطرف البعيد ⇠ نهاية إفرازية، والقريب ⇠ قناة مُفرِغة.</li>
-              <li>الأسناخ المصلية: لعاب مائي، لمعة صغيرة، نوى مركزية، تصبغ قوي (مثال: النكفية).</li>
-              <li>الأسناخ المخاطية: لعاب لزج، لمعة كبيرة، نوى طرفية مفلطحة، سيتوبلازم باهت (مثال: تحت اللسان).</li>
-              <li>غدّة تحت الفك السفلي مختلطة مع قنوات مخططة كثيرة وأنصاف أقمار مصلية.</li>
-              <li>الخلايا العضلية الظهارية تُساعِد على قذف اللعاب بسرعة.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 6,7,14,17,19,22,32,37,29/39</span><span class="ar">الصفحات المرجعية: ٦، ٧، ١٤، ١٧، ١٩، ٢٢، ٣٢، ٣٧، ٢٩/٣٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Correlates microscopic structure with saliva properties and common pathologies.</div><div class="ar">يربط البنية المجهرية بخصائص اللعاب والآفات الشائعة.</div></div></div>
-          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“Parotid = Purely (mostly) serous; Sublingual = Slimy mucous; Submandibular = a mix.”</div><div class="ar">«النكفية مصلية؛ تحت اللسان مخاطية؛ تحت الفك مختلطة».</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Practice drawing a quick serous vs mucous acinus sketch before exams.</div><div class="ar">درّب نفسك على رسم مخطط سريع للسنخ المصلي مقابل المخاطي.</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-  </div>
-
-  <!-- Glossary -->
-  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
-  <div class="grid g3x4" id="glossary">
-    <div class="card"><div class="head">Acinus / سنخ</div><div class="content" hidden><div class="en">Flask-shaped secretory end piece.</div><div class="ar">نهاية إفرازية قِرْبية الشكل.</div></div></div>
-    <div class="card"><div class="head">Tubular unit / وحدة أنبوبية</div><div class="content" hidden><div class="en">Cylinder-like secretory unit.</div><div class="ar">وحدة إفرازية أسطوانية.</div></div></div>
-    <div class="card"><div class="head">Myoepithelial / خلايا عضلية ظهارية</div><div class="content" hidden><div class="en">Contractile cells aiding secretion.</div><div class="ar">خلايا قابلة للانقباض تُساعِد على الطرد.</div></div></div>
-    <div class="card"><div class="head">Zymogen granules / حبيبات زيـموغين</div><div class="content" hidden><div class="en">Enzyme precursors in serous cells.</div><div class="ar">طلائع إنزيمات في الخلايا المصلية.</div></div></div>
-    <div class="card"><div class="head">Mucigen / مُخَيِّنة</div><div class="content" hidden><div class="en">Mucin precursor in mucous cells.</div><div class="ar">سلف الميوسين في الخلايا المخاطية.</div></div></div>
-    <div class="card"><div class="head">Striated duct / قناة مُخَطَّطة</div><div class="content" hidden><div class="en">Duct segment with basal striations.</div><div class="ar">جزء قنوي ذو تخطّط قاعدي.</div></div></div>
-    <div class="card"><div class="head">Serous demilune / نصف قمر مصلي</div><div class="content" hidden><div class="en">Crescent of serous cells capping mucous tubules.</div><div class="ar">هلال خلايا مصلية يغطي الأنابيب المخاطية.</div></div></div>
-    <div class="card"><div class="head">Excretory duct / قناة مُفرِغة</div><div class="content" hidden><div class="en">Large duct opening to oral surface.</div><div class="ar">قناة كبيرة تفتح على السطح الفموي.</div></div></div>
-    <div class="card"><div class="head">Adipocyte infiltration / ارتشاح خلايا دهنية</div><div class="content" hidden><div class="en">Fat cells within parotid stroma.</div><div class="ar">خلايا دهنية ضمن سدى النكفية.</div></div></div>
-  </div>
-
-  <!-- Flashcards -->
-  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
-  <div class="grid g3x4" id="flashcards">
-    <div class="card"><div class="head"><span class="en">1 — Define a gland.</span><span class="ar">١ — عرّف الغدّة.</span></div><div class="content" hidden><span class="en">Organ of secretion from surface epithelium opening onto it.</span><span class="ar">عضو إفرازي من الظهارة السطحية يفتح عليها.</span></div></div>
-    <div class="card"><div class="head"><span class="en">2 — Serous vs mucous: lumen?</span><span class="ar">٢ — اللمعة: مصلي/مخاطي؟</span></div><div class="content" hidden><span class="en">Serous small; mucous large.</span><span class="ar">المصلية صغيرة؛ المخاطية كبيرة.</span></div></div>
-    <div class="card"><div class="head"><span class="en">3 — Nuclei position?</span><span class="ar">٣ — موضع النوى؟</span></div><div class="content" hidden><span class="en">Serous central; mucous peripheral & flattened.</span><span class="ar">المصلية مركزية؛ المخاطية طرفية ومفلطحة.</span></div></div>
-    <div class="card"><div class="head"><span class="en">4 — Example glands.</span><span class="ar">٤ — أمثلة غدد.</span></div><div class="content" hidden><span class="en">Parotid (serous), Sublingual (mucous), Submandibular (mixed).</span><span class="ar">النكفية مصلية، تحت اللسان مخاطية، تحت الفك مختلطة.</span></div></div>
-    <div class="card"><div class="head"><span class="en">5 — Myoepithelial role.</span><span class="ar">٥ — دور الخلايا العضلية الظهارية.</span></div><div class="content" hidden><span class="en">Contract to expel secretions.</span><span class="ar">تنقبض لطرد الإفرازات.</span></div></div>
-    <div class="card"><div class="head"><span class="en">6 — Development: distal vs proximal.</span><span class="ar">٦ — التطوّر: البعيد والقريب.</span></div><div class="content" hidden><span class="en">Distal → acini; proximal → excretory duct.</span><span class="ar">البعيد ⇠ أسناخ؛ القريب ⇠ قناة مُفرِغة.</span></div></div>
-    <div class="card"><div class="head"><span class="en">7 — Staining difference.</span><span class="ar">٧ — اختلاف التصبغ.</span></div><div class="content" hidden><span class="en">Serous: deeply stained; Mucous: lightly stained.</span><span class="ar">المصلية: تصبغ قوي؛ المخاطية: خفيف.</span></div></div>
-    <div class="card"><div class="head"><span class="en">8 — Striated ducts: where many?</span><span class="ar">٨ — القنوات المخططة: أين تكثر؟</span></div><div class="content" hidden><span class="en">Submandibular gland.</span><span class="ar">في غدّة تحت الفك السفلي.</span></div></div>
-    <div class="card"><div class="head"><span class="en">9 — Feature of parotid stroma.</span><span class="ar">٩ — سِمَة في سدى النكفية.</span></div><div class="content" hidden><span class="en">Adipocyte infiltration.</span><span class="ar">ارتشاح خلايا دهنية.</span></div></div>
-  </div>
-
+<div class="dua">اللهم انفعني بما علمتني، وعلمني ما ينفعني، وزدني علماً</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Histology & Embryology of Salivary Glands</b></span>
+<span class="ar"><b>الموضوع: علم الأنسجة والأجنة للغدد اللعابية</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Introduction to Glands</span><span class="ar">مقدمة عن الغدد</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>A <strong>gland</strong> is an organ responsible for secretion. It consists of specialized <strong>secretory cells</strong> that originate from the surface epithelium, where the gland eventually opens.</p>
+    <p>These secretory cells form functional units called <strong>secretory end pieces</strong>, which can have different shapes. The most common shapes are flask-like (<strong>acinus</strong>) or cylindrical (<strong>tubular</strong>). The secretions can be enzymes, hormones, or mucus, and their release is regulated by nervous and hormonal signals.</p>
+</div>
+<div class="ar">
+    <p><strong>الغدة</strong> هي عضو مسؤول عن الإفراز. تتكون من <strong>خلايا إفرازية</strong> متخصصة تنشأ من النسيج الطلائي السطحي، حيث تفتح الغدة في النهاية.</p>
+    <p>تشكل هذه الخلايا الإفرازية وحدات وظيفية تسمى <strong>القطع النهائية الإفرازية</strong>، والتي يمكن أن تكون لها أشكال مختلفة. الأشكال الأكثر شيوعًا هي الشبيهة بالقارورة (<strong>عنيبة</strong>) أو الأسطوانية (<strong>أنبوبية</strong>). يمكن أن تكون الإفرازات عبارة عن إنزيمات أو هرمونات أو مخاط، ويتم تنظيم إطلاقها بواسطة إشارات عصبية وهرمونية.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 4, 5, 6 of 39</span>
+<span class="ar">المصدر: الصفحات ٤، ٥، ٦ من ٣٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">All glands are <strong>epithelial in origin</strong>, meaning they are derived from epithelial tissue.</div><div class="ar">جميع الغدد <strong>ذات أصل طلائي</strong>، مما يعني أنها مشتقة من النسيج الطلائي.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Salivary glands are a perfect example of exocrine glands, secreting saliva through ducts into the oral cavity.</div><div class="ar">تعتبر الغدد اللعابية مثالاً ممتازاً على الغدد خارجية الإفراز، حيث تفرز اللعاب عبر قنوات إلى تجويف الفم.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding the basic structure of glands is fundamental to histology, as it explains how different organs produce essential substances for the body.</div><div class="ar">فهم التركيب الأساسي للغدد أمر جوهري في علم الأنسجة، لأنه يوضح كيف تنتج الأعضاء المختلفة مواد أساسية للجسم.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Embryological Development</span><span class="ar">التطور الجنيني</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Salivary glands develop from an <strong>invagination of oral epithelium</strong> into the underlying connective tissue, known as <strong>ectomesenchyme</strong>. This epithelial cord then grows and branches.</p>
+    <p>The structure differentiates into two main parts:</p>
+    <ul>
+        <li>The <strong>distal part</strong> develops into the functional <strong>secretory end pieces (acini)</strong>.</li>
+        <li>The <strong>proximal part</strong> forms the <strong>excretory duct system</strong>, which connects the acini to the surface.</li>
+    </ul>
+    <p>Eventually, the central cells of the branched cords degenerate to form a hollow tube, creating the <strong>lumen</strong> of the ducts and acini.</p>
+    <p>The major salivary glands begin to develop at different times during gestation:</p>
+    <ul>
+        <li><strong>Parotid Gland:</strong> Starts around the 4th to 6th week.</li>
+        <li><strong>Submandibular Gland:</strong> Starts around the 6th week.</li>
+        <li><strong>Sublingual and Minor Glands:</strong> Start around the 8th to 12th week.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p>تتطور الغدد اللعابية من <strong>انغماس النسيج الطلائي الفموي</strong> في النسيج الضام الأساسي، المعروف باسم <strong>اللحمة المتوسطة الظاهرية (ectomesenchyme)</strong>. ثم ينمو هذا الحبل الطلائي ويتفرع.</p>
+    <p>يتميز التركيب إلى جزأين رئيسيين:</p>
+    <ul>
+        <li><strong>الجزء القاصي (البعيد)</strong> يتطور إلى <strong>القطع النهائية الإفرازية (العنيبات)</strong> الوظيفية.</li>
+        <li><strong>الجزء الداني (القريب)</strong> يشكل <strong>نظام القنوات المفرغة</strong>، الذي يربط العنيبات بالسطح.</li>
+    </ul>
+    <p>في النهاية، تتحلل الخلايا المركزية للحبال المتفرعة لتشكل أنبوبًا مجوفًا، مما يخلق <strong>التجويف (lumen)</strong> للقنوات والعنيبات.</p>
+    <p>تبدأ الغدد اللعابية الرئيسية في التطور في أوقات مختلفة أثناء الحمل:</p>
+    <ul>
+        <li><strong>الغدة النكافية:</strong> تبدأ حوالي الأسبوع الرابع إلى السادس.</li>
+        <li><strong>الغدة تحت الفك السفلي:</strong> تبدأ حوالي الأسبوع السادس.</li>
+        <li><strong>الغدة تحت اللسان والغدد الصغيرة:</strong> تبدأ حوالي الأسبوع الثامن إلى الثاني عشر.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 7, 8, 9 of 39</span>
+<span class="ar">المصدر: الصفحات ٧، ٨، ٩ من ٣٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The entire glandular structure, including both secretory cells and duct cells, originates from the initial epithelial bud.</div><div class="ar">ينشأ الهيكل الغدي بأكمله، بما في ذلك الخلايا الإفرازية وخلايا القنوات، من البرعم الطلائي الأولي.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember the order of development: <strong>P</strong>arotid (first), <strong>S</strong>ub<strong>m</strong>andibular (second), <strong>S</strong>ub<strong>l</strong>ingual (last). Think "<strong>P</strong>lease <strong>S</strong>top <strong>S</strong>moking."</div><div class="ar">تذكر ترتيب التطور: <strong>النكافية</strong> (أولاً)، <strong>تحت الفك</strong> (ثانياً)، <strong>تحت اللسان</strong> (أخيراً).</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Developmental anomalies can lead to conditions like aplasia (absence of a gland) or ectopic salivary tissue (gland tissue in an abnormal location).</div><div class="ar">يمكن أن تؤدي التشوهات التطورية إلى حالات مثل عدم التنسج (غياب الغدة) أو أنسجة الغدد اللعابية المنتبذة (نسيج غدي في مكان غير طبيعي).</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Histological Components of Salivary Glands</span><span class="ar">المكونات النسيجية للغدد اللعابية</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Salivary glands are composed of two main functional parts: the <strong>parenchyma</strong> (the functional epithelial tissue) and the <strong>stroma</strong> (the supporting connective tissue).</p>
+    <p>The parenchyma consists of:</p>
+    <ol>
+        <li><strong>Secretory End Pieces (Acini):</strong> These are clusters of cells that produce the saliva. They are classified based on the type of secretion they produce.</li>
+        <li><strong>Duct System:</strong> A network of tubes that modifies and transports the saliva from the acini to the oral cavity.</li>
+    </ol>
+    <p>Additionally, specialized cells called <strong>Myoepithelial Cells</strong> surround the acini and parts of the duct system, playing a crucial role in secretion.</p>
+</div>
+<div class="ar">
+    <p>تتكون الغدد اللعابية من جزأين وظيفيين رئيسيين: <strong>البرنشيمة (Parenchyma)</strong> (النسيج الطلائي الوظيفي) و<strong>السدى (Stroma)</strong> (النسيج الضام الداعم).</p>
+    <p>تتكون البرنشيمة من:</p>
+    <ol>
+        <li><strong>القطع النهائية الإفرازية (العنيبات):</strong> وهي مجموعات من الخلايا التي تنتج اللعاب. يتم تصنيفها بناءً على نوع الإفراز الذي تنتجه.</li>
+        <li><strong>نظام القنوات:</strong> شبكة من الأنابيب تقوم بتعديل ونقل اللعاب من العنيبات إلى تجويف الفم.</li>
+    </ol>
+    <p>بالإضافة إلى ذلك، تحيط خلايا متخصصة تسمى <strong>الخلايا الطلائية العضلية (Myoepithelial Cells)</strong> بالعنيبات وأجزاء من نظام القنوات، وتلعب دورًا حاسمًا في عملية الإفراز.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 11, 12, 13, 14 of 39</span>
+<span class="ar">المصدر: الصفحات ١١، ١٢، ١٣، ١٤ من ٣٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The secretory cells lie on a <strong>basement membrane</strong>, which separates the epithelium from the connective tissue.</div><div class="ar">تقع الخلايا الإفرازية على <strong>غشاء قاعدي</strong>، يفصل النسيج الطلائي عن النسيج الضام.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">The connective tissue stroma not only provides support but also carries blood vessels, nerves, and lymphatics that supply the gland.</div><div class="ar">السدى النسيجي الضام لا يوفر الدعم فحسب، بل يحمل أيضًا الأوعية الدموية والأعصاب والأوعية اللمفاوية التي تغذي الغدة.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Visualize the gland as a bunch of grapes. The grapes are the <strong>acini</strong> (producing juice), and the stems are the <strong>ducts</strong> (transporting it).</div><div class="ar">تخيل الغدة كعنقود عنب. حبات العنب هي <strong>العنيبات</strong> (تنتج العصير)، والسيقان هي <strong>القنوات</strong> (تنقله).</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Secretory Acini: Serous Acini</span><span class="ar">العنيبات الإفرازية: العنيبات المصلية</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Serous acini</strong> are specialized for producing a thin, watery secretion rich in proteins and enzymes, such as amylase.</p>
+    <ul>
+        <li><strong>Shape:</strong> The cells are <strong>pyramidal</strong> in shape, arranged in a circular pattern around a very small central <strong>lumen</strong>.</li>
+        <li><strong>Nucleus:</strong> The nucleus is <strong>round</strong> and typically located in the basal half of the cell, but not pushed to the very edge.</li>
+        <li><strong>Staining:</strong> The cytoplasm stains <strong>darkly</strong> and is basophilic (purple/blue with H&E stain) at the base due to abundant rough endoplasmic reticulum. The apical part contains eosinophilic (pink) <strong>zymogen granules</strong>, which are secretory vesicles containing digestive enzymes.</li>
+        <li><strong>Lumen:</strong> The lumen is narrow, with small intercellular channels called <strong>canaliculi</strong> between adjacent cells to increase the secretory surface area.</li>
+    </ul>
+    <p>The <strong>Parotid gland</strong> is a classic example of a purely serous salivary gland.</p>
+</div>
+<div class="ar">
+    <p><strong>العنيبات المصلية</strong> متخصصة في إنتاج إفراز رقيق ومائي غني بالبروتينات والإنزيمات، مثل الأميليز.</p>
+    <ul>
+        <li><strong>الشكل:</strong> الخلايا <strong>هرمية</strong> الشكل، مرتبة في نمط دائري حول <strong>تجويف (lumen)</strong> مركزي صغير جدًا.</li>
+        <li><strong>النواة:</strong> النواة <strong>مستديرة</strong> وتقع عادة في النصف القاعدي من الخلية، ولكنها ليست مدفوعة إلى الحافة تمامًا.</li>
+        <li><strong>التصبغ:</strong> يتصبغ السيتوبلازم بلون <strong>داكن</strong> ويكون قاعديًا (أرجواني/أزرق بصبغة H&E) في القاعدة بسبب وفرة الشبكة الإندوبلازمية الخشنة. يحتوي الجزء القمي على <strong>حبيبات زيموجين</strong> يوزينية (وردية)، وهي حويصلات إفرازية تحتوي على إنزيمات هاضمة.</li>
+        <li><strong>التجويف:</strong> التجويف ضيق، مع قنوات صغيرة بين الخلايا تسمى <strong>قنيوات (canaliculi)</strong> لزيادة مساحة السطح الإفرازي.</li>
+    </ul>
+    <p><strong>الغدة النكافية</strong> هي مثال كلاسيكي لغدة لعابية مصلية بحتة.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 15, 16, 17, 21, 22 of 39</span>
+<span class="ar">المصدر: الصفحات ١٥، ١٦، ١٧، ٢١، ٢٢ من ٣٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The term "zymogen" refers to an inactive precursor of an enzyme. The granules store these precursors safely until they are secreted and activated.</div><div class="ar">يشير مصطلح "زيموجين" إلى طليعة غير نشطة للإنزيم. تخزن الحبيبات هذه السلائف بأمان حتى يتم إفرازها وتنشيطها.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think "<strong>S</strong>erous is <strong>S</strong>pherical". Serous cells have spherical (round) nuclei. They secrete a "serious" (important) enzyme-rich fluid.</div><div class="ar">تذكر "<strong>S</strong>erous is <strong>S</strong>pherical". الخلايا المصلية لها أنوية كروية (مستديرة). تفرز سائلاً "جدياً" (مهماً) غنياً بالإنزيمات.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Serous saliva begins the process of carbohydrate digestion in the mouth through the action of salivary amylase. This is the first step in breaking down starches.</div><div class="ar">يبدأ اللعاب المصلي عملية هضم الكربوهيدرات في الفم من خلال عمل إنزيم الأميليز اللعابي. هذه هي الخطوة الأولى في تكسير النشويات.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Secretory Acini: Mucous Acini</span><span class="ar">العنيبات الإفرازية: العنيبات المخاطية</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Mucous acini</strong> are specialized to produce <strong>mucin</strong>, a glycoprotein that mixes with water to form mucus. This secretion is thick and viscous, serving as a lubricant.</p>
+    <ul>
+        <li><strong>Shape:</strong> The cells are typically <strong>cuboidal or columnar</strong> and are often arranged in a more tubular shape than serous acini.</li>
+        <li><strong>Nucleus:</strong> The nucleus is <strong>flattened (oval)</strong> and pressed against the basal membrane of the cell. This is due to the large volume of mucin droplets accumulating in the cytoplasm.</li>
+        <li><strong>Staining:</strong> The cytoplasm appears <strong>pale, empty, or foamy</strong> with standard H&E staining because the mucin droplets do not stain well. This gives them a "washed-out" look.</li>
+        <li><strong>Lumen:</strong> The central lumen is typically <strong>wider</strong> than that of a serous acinus.</li>
+    </ul>
+    <p>The <strong>Sublingual gland</strong> is an example of a gland that is predominantly mucous.</p>
+</div>
+<div class="ar">
+    <p><strong>العنيبات المخاطية</strong> متخصصة في إنتاج <strong>الميوسين</strong>، وهو بروتين سكري يمتزج بالماء لتكوين المخاط. هذا الإفراز سميك ولزج ويعمل كمادة مزلقة.</p>
+    <ul>
+        <li><strong>الشكل:</strong> الخلايا عادة <strong>مكعبة أو عمودية</strong> وغالبًا ما تكون مرتبة في شكل أنبوبي أكثر من العنيبات المصلية.</li>
+        <li><strong>النواة:</strong> النواة <strong>مسطحة (بيضاوية)</strong> ومضغوطة على الغشاء القاعدي للخلية. ويرجع ذلك إلى الحجم الكبير لقطرات الميوسين المتراكمة في السيتوبلازم.</li>
+        <li><strong>التصبغ:</strong> يبدو السيتوبلازم <strong>باهتًا أو فارغًا أو رغويًا</strong> مع صبغة H&E القياسية لأن قطرات الميوسين لا تتصبغ جيدًا. هذا يمنحها مظهرًا "باهتًا".</li>
+        <li><strong>التجويف:</strong> التجويف المركزي عادة ما يكون <strong>أوسع</strong> من تجويف العنيبة المصلية.</li>
+    </ul>
+    <p><strong>الغدة تحت اللسان</strong> هي مثال لغدة يغلب عليها الطابع المخاطي.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 18, 19, 21, 22 of 39</span>
+<span class="ar">المصدر: الصفحات ١٨، ١٩، ٢١، ٢٢ من ٣٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Unlike serous acini, mucous acini do not have intercellular canaliculi.</div><div class="ar">على عكس العنيبات المصلية، لا تحتوي العنيبات المخاطية على قنيوات بين خلوية.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think "<strong>M</strong>ucous is <strong>M</strong>ashed". The nucleus in a mucous cell looks like it has been mashed flat against the bottom of the cell.</div><div class="ar">تذكر "<strong>M</strong>ucous is <strong>M</strong>ashed". تبدو النواة في الخلية المخاطية وكأنها سُحقت بشكل مسطح على قاعدة الخلية.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Mucous saliva lubricates the food bolus, making it easier to swallow. It also protects the oral mucosa from mechanical damage and dehydration.</div><div class="ar">يقوم اللعاب المخاطي بتزليق لقمة الطعام، مما يسهل بلعها. كما أنه يحمي الغشاء المخاطي الفموي من التلف الميكانيكي والجفاف.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Secretory Acini: Mixed (Mucoserous) Acini</span><span class="ar">العنيبات الإفرازية: العنيبات المختلطة (المخاطية المصلية)</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Some salivary glands contain a mix of both mucous and serous cells. In these mixed glands, the cells are often arranged in a specific structure called a <strong>serous demilune</strong>.</p>
+    <p>A serous demilune (from the French for "half-moon") is a crescent-shaped cap of <strong>serous cells</strong> that sits on top of a central <strong>mucous acinus</strong>.</p>
+    <p>The serous cells secrete their watery product into the lumen through tiny intercellular <strong>canaliculi</strong> that run between the mucous cells. Therefore, the final secretion is a mix of both mucous and serous fluids.</p>
+    <p>The <strong>Submandibular gland</strong> is a classic example of a mixed gland, containing mostly serous acini but also many mucous acini with serous demilunes.</p>
+</div>
+<div class="ar">
+    <p>تحتوي بعض الغدد اللعابية على مزيج من الخلايا المخاطية والمصلية. في هذه الغدد المختلطة، غالبًا ما يتم ترتيب الخلايا في بنية محددة تسمى <strong>الهلال المصلي (serous demilune)</strong>.</p>
+    <p>الهلال المصلي (من الكلمة الفرنسية التي تعني "نصف قمر") هو غطاء على شكل هلال من <strong>الخلايا المصلية</strong> يقع فوق <strong>عنيبة مخاطية</strong> مركزية.</p>
+    <p>تفرز الخلايا المصلية منتجها المائي في التجويف من خلال <strong>قنيوات</strong> صغيرة بين الخلايا تمر بين الخلايا المخاطية. لذلك، يكون الإفراز النهائي مزيجًا من السوائل المخاطية والمصلية.</p>
+    <p><strong>الغدة تحت الفك السفلي</strong> هي مثال كلاسيكي للغدة المختلطة، حيث تحتوي على غالبية من العنيبات المصلية ولكن أيضًا العديد من العنيبات المخاطية مع أهلة مصلية.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 23, 24, 25 of 39</span>
+<span class="ar">المصدر: الصفحات ٢٣، ٢٤، ٢٥ من ٣٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The demilune appearance is often considered a histological artifact. During tissue preparation, the mucous cells swell, pushing the serous cells outward into a crescent shape.</div><div class="ar">غالبًا ما يُعتبر مظهر الهلال المصلي من القطع الأثرية النسيجية. أثناء تحضير الأنسجة، تنتفخ الخلايا المخاطية، مما يدفع الخلايا المصلية إلى الخارج لتأخذ شكل هلال.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">The submandibular gland provides about 70% of resting saliva, and its mixed nature allows it to produce both lubricating mucus and digestive enzymes.</div><div class="ar">توفر الغدة تحت الفك السفلي حوالي 70% من اللعاب في وقت الراحة، وتسمح طبيعتها المختلطة بإنتاج كل من المخاط المزلق والإنزيمات الهاضمة.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Changes in the ratio of serous to mucous cells can occur in certain diseases, like Sjögren's syndrome, altering the consistency and function of saliva.</div><div class="ar">يمكن أن تحدث تغيرات في نسبة الخلايا المصلية إلى المخاطية في بعض الأمراض، مثل متلازمة شوغرن، مما يغير من قوام ووظيفة اللعاب.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">The Duct System</span><span class="ar">نظام القنوات</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Saliva produced in the acini travels through a series of ducts that modify its composition before it reaches the mouth. The duct system progresses in the following order:</p>
+    <ol>
+        <li><strong>Intercalated Ducts:</strong> The smallest ducts, leading directly from the acini. They are lined by <strong>simple cuboidal epithelium</strong> and are most prominent in serous glands.</li>
+        <li><strong>Striated (Intralobular) Ducts:</strong> Formed by the joining of several intercalated ducts. They are lined by <strong>simple columnar epithelium</strong>. Their name comes from basal "striations," which are infoldings of the basal membrane packed with mitochondria. These ducts actively modify saliva by reabsorbing sodium and secreting potassium.</li>
+        <li><strong>Interlobular (Excretory) Ducts:</strong> Located in the connective tissue septa between lobules. They are larger and lined by <strong>pseudostratified or stratified columnar epithelium</strong>.</li>
+        <li><strong>Main Duct:</strong> The final large duct that opens into the oral cavity. Its epithelium transitions from <strong>stratified columnar</strong> to <strong>stratified squamous</strong> near the opening to blend with the oral mucosa.</li>
+    </ol>
+    <p>Both intercalated and striated ducts are located <strong>within</strong> the gland lobules and are thus called <strong>intralobular ducts</strong>.</p>
+</div>
+<div class="ar">
+    <p>ينتقل اللعاب المنتج في العنيبات عبر سلسلة من القنوات التي تعدل تركيبته قبل أن يصل إلى الفم. يتقدم نظام القنوات بالترتيب التالي:</p>
+    <ol>
+        <li><strong>القنوات المقحمة (Intercalated Ducts):</strong> أصغر القنوات، وتؤدي مباشرة من العنيبات. وهي مبطنة بـ<strong>نسيج طلائي مكعبي بسيط</strong> وتكون بارزة بشكل خاص في الغدد المصلية.</li>
+        <li><strong>القنوات المخططة (Striated Ducts):</strong> تتكون من اتحاد عدة قنوات مقحمة. وهي مبطنة بـ<strong>نسيج طلائي عمودي بسيط</strong>. يأتي اسمها من "التخطيطات" القاعدية، وهي طيات للغشاء القاعدي مليئة بالميتوكوندريا. تقوم هذه القنوات بتعديل اللعاب بنشاط عن طريق إعادة امتصاص الصوديوم وإفراز البوتاسيوم.</li>
+        <li><strong>القنوات بين الفصيصية (Excretory Ducts):</strong> تقع في حواجز النسيج الضام بين الفصيصات. وهي أكبر ومبطنة بـ<strong>نسيج طلائي عمودي مطبق كاذب أو مطبق</strong>.</li>
+        <li><strong>القناة الرئيسية:</strong> القناة الكبيرة النهائية التي تفتح في تجويف الفم. ينتقل نسيجها الطلائي من <strong>عمودي مطبق</strong> إلى <strong>حرشفي مطبق</strong> بالقرب من الفتحة للاندماج مع الغشاء المخاطي الفموي.</li>
+    </ol>
+    <p>تقع كل من القنوات المقحمة والمخططة <strong>داخل</strong> فصيصات الغدة وبالتالي تسمى <strong>القنوات داخل الفصيصية (intralobular)</strong>.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 26, 27, 28 of 39</span>
+<span class="ar">المصدر: الصفحات ٢٦، ٢٧، ٢٨ من ٣٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The striated ducts are responsible for making saliva hypotonic (less concentrated than blood plasma) by actively pumping out ions.</div><div class="ar">القنوات المخططة مسؤولة عن جعل اللعاب منخفض التوتر (أقل تركيزًا من بلازما الدم) عن طريق ضخ الأيونات بنشاط إلى الخارج.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The modification of saliva in the ducts is crucial. It changes the initial isotonic secretion from the acini into the final hypotonic saliva found in the mouth, which is important for taste perception and protecting teeth from demineralization.</div><div class="ar">تعديل اللعاب في القنوات أمر حاسم. فهو يغير الإفراز الأولي متساوي التوتر من العنيبات إلى اللعاب النهائي منخفض التوتر الموجود في الفم، وهو أمر مهم لإدراك التذوق وحماية الأسنان من إزالة المعادن.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Duct order from smallest to largest: <strong>I S E M</strong> - "<strong>I</strong>nside <strong>S</strong>mall, <strong>E</strong>xiting <strong>M</strong>ajor". (<strong>I</strong>ntercalated -> <strong>S</strong>triated -> <strong>E</strong>xcretory -> <strong>M</strong>ain).</div><div class="ar">ترتيب القنوات من الأصغر للأكبر: تذكر الترتيب التدريجي من داخل الفصيص إلى الخارج: مقحمة -> مخططة -> مفرغة -> رئيسية.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Myoepithelial Cells ('Basket Cells')</span><span class="ar">الخلايا الطلائية العضلية ("الخلايا السلّية")</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Myoepithelial cells</strong> are specialized, contractile cells of epithelial origin. They are found situated between the secretory cells (of acini) and the basement membrane.</p>
+    <p>They are often called <strong>'basket cells'</strong> because their long, branching processes form a basket-like network around the acini and intercalated ducts.</p>
+    <ul>
+        <li><strong>Shape:</strong> Around the acini, they have a star-like or <strong>stellate shape</strong> with multiple processes. Around the ducts, they are more elongated and spindle-shaped.</li>
+        <li><strong>Composition:</strong> They contain contractile proteins like <strong>actin</strong> and <strong>myosin</strong>, similar to smooth muscle cells, which gives them their contractile ability. They also contain cytokeratin filaments, confirming their epithelial origin.</li>
+        <li><strong>Function:</strong> The primary function of myoepithelial cells is to <strong>contract and squeeze</strong> the acini and ducts. This action helps to expel the saliva from the secretory end pieces into the duct system and towards the oral cavity.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><strong>الخلايا الطلائية العضلية</strong> هي خلايا متخصصة قابلة للتقلص من أصل طلائي. توجد بين الخلايا الإفرازية (للعنيبات) والغشاء القاعدي.</p>
+    <p>غالبًا ما تسمى <strong>"الخلايا السلّية"</strong> لأن امتداداتها الطويلة المتفرعة تشكل شبكة تشبه السلة حول العنيبات والقنوات المقحمة.</p>
+    <ul>
+        <li><strong>الشكل:</strong> حول العنيبات، لها شكل نجمي أو <strong>شبيه بالنجمة (stellate)</strong> مع امتدادات متعددة. حول القنوات، تكون أكثر استطالة ومغزلية الشكل.</li>
+        <li><strong>التركيب:</strong> تحتوي على بروتينات قابلة للتقلص مثل <strong>الأكتين</strong> و<strong>الميوسين</strong>، على غرار خلايا العضلات الملساء، مما يمنحها قدرتها على التقلص. كما تحتوي على خيوط السيتوكيراتين، مما يؤكد أصلها الطلائي.</li>
+        <li><strong>الوظيفة:</strong> الوظيفة الأساسية للخلايا الطلائية العضلية هي <strong>التقلص والضغط</strong> على العنيبات والقنوات. يساعد هذا الإجراء على طرد اللعاب من القطع النهائية الإفرازية إلى نظام القنوات وباتجاه تجويف الفم.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 6, 29, 30 of 39</span>
+<span class="ar">المصدر: الصفحات ٦، ٢٩، ٣٠ من ٣٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The name "myoepithelial" perfectly describes them: "myo" for muscle-like function and "epithelial" for their origin.</div><div class="ar">يصف اسم "طلائية عضلية" هذه الخلايا بشكل مثالي: "عضلية" لوظيفتها الشبيهة بالعضلات و"طلائية" لأصلها.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">These cells provide the force needed to overcome the resistance within the long duct system, ensuring a steady flow of saliva. Without them, secretion would be a much slower, passive process.</div><div class="ar">توفر هذه الخلايا القوة اللازمة للتغلب على المقاومة داخل نظام القنوات الطويل، مما يضمن تدفقًا ثابتًا للعاب. بدونها، سيكون الإفراز عملية سلبية وأبطأ بكثير.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Myoepithelial cells are important in pathology. In some salivary gland tumors, these cells can proliferate, and their presence helps pathologists diagnose specific types of tumors, like a pleomorphic adenoma.</div><div class="ar">تعتبر الخلايا الطلائية العضلية مهمة في علم الأمراض. في بعض أورام الغدد اللعابية، يمكن أن تتكاثر هذه الخلايا، ويساعد وجودها أخصائيي علم الأمراض في تشخيص أنواع معينة من الأورام، مثل الورم الغدي متعدد الأشكال.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Histology of Major Salivary Glands</span><span class="ar">النسيج الخاص بالغدد اللعابية الرئيسية</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>The three major salivary glands have distinct histological features based on their acini types.</p>
+    <div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th><span class="en">Feature</span><span class="ar">الميزة</span></th>
+                <th><span class="en">Parotid Gland</span><span class="ar">الغدة النكافية</span></th>
+                <th><span class="en">Submandibular Gland</span><span class="ar">الغدة تحت الفك</span></th>
+                <th><span class="en">Sublingual Gland</span><span class="ar">الغدة تحت اللسان</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="en"><strong>Acinar Type</strong></span><span class="ar"><strong>نوع العنيبات</strong></span></td>
+                <td><span class="en">Purely <strong>Serous</strong></span><span class="ar"><strong>مصلية</strong> بحتة</span></td>
+                <td><span class="en">Mixed, but predominantly <strong>Serous</strong> (~90% serous, 10% mucous with demilunes)</span><span class="ar">مختلطة، ولكن يغلب عليها <strong>المصلي</strong> (حوالي ٩٠٪ مصلي، ١٠٪ مخاطي مع أهلة)</span></td>
+                <td><span class="en">Mixed, but predominantly <strong>Mucous</strong> (with serous demilunes)</span><span class="ar">مختلطة، ولكن يغلب عليها <strong>المخاطي</strong> (مع أهلة مصلية)</span></td>
+            </tr>
+            <tr>
+                <td><span class="en"><strong>Duct System</strong></span><span class="ar"><strong>نظام القنوات</strong></span></td>
+                <td><span class="en">Long, prominent intercalated and striated ducts</span><span class="ar">قنوات مقحمة ومخططة طويلة وبارزة</span></td>
+                <td><span class="en">Many well-developed striated ducts, shorter intercalated ducts</span><span class="ar">العديد من القنوات المخططة المتطورة، قنوات مقحمة أقصر</span></td>
+                <td><span class="en">Short and less developed ducts; striated ducts are rare or absent</span><span class="ar">قنوات قصيرة وأقل تطورًا؛ القنوات المخططة نادرة أو غائبة</span></td>
+            </tr>
+            <tr>
+                <td><span class="en"><strong>Connective Tissue (Stroma)</strong></span><span class="ar"><strong>النسيج الضام (السدى)</strong></span></td>
+                <td><span class="en">Well-developed capsule and septa, often infiltrated with <strong>adipocytes (fat cells)</strong></span><span class="ar">محفظة وحواجز متطورة، غالبًا ما تكون متسللة بـ<strong>خلايا دهنية</strong></span></td>
+                <td><span class="en">Well-developed capsule and septa.</span><span class="ar">محفظة وحواجز متطورة.</span></td>
+                <td><span class="en">Poorly developed capsule or none at all.</span><span class="ar">محفظة ضعيفة التطور أو غير موجودة.</span></td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+<div class="ar">
+    <p>تتميز الغدد اللعابية الرئيسية الثلاث بميزات نسيجية مميزة بناءً على أنواع عنيباتها.</p>
+    <div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th><span class="en">Feature</span><span class="ar">الميزة</span></th>
+                <th><span class="en">Parotid Gland</span><span class="ar">الغدة النكافية</span></th>
+                <th><span class="en">Submandibular Gland</span><span class="ar">الغدة تحت الفك</span></th>
+                <th><span class="en">Sublingual Gland</span><span class="ar">الغدة تحت اللسان</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="en"><strong>Acinar Type</strong></span><span class="ar"><strong>نوع العنيبات</strong></span></td>
+                <td><span class="en">Purely <strong>Serous</strong></span><span class="ar"><strong>مصلية</strong> بحتة</span></td>
+                <td><span class="en">Mixed, but predominantly <strong>Serous</strong> (~90% serous, 10% mucous with demilunes)</span><span class="ar">مختلطة، ولكن يغلب عليها <strong>المصلي</strong> (حوالي ٩٠٪ مصلي، ١٠٪ مخاطي مع أهلة)</span></td>
+                <td><span class="en">Mixed, but predominantly <strong>Mucous</strong> (with serous demilunes)</span><span class="ar">مختلطة، ولكن يغلب عليها <strong>المخاطي</strong> (مع أهلة مصلية)</span></td>
+            </tr>
+            <tr>
+                <td><span class="en"><strong>Duct System</strong></span><span class="ar"><strong>نظام القنوات</strong></span></td>
+                <td><span class="en">Long, prominent intercalated and striated ducts</span><span class="ar">قنوات مقحمة ومخططة طويلة وبارزة</span></td>
+                <td><span class="en">Many well-developed striated ducts, shorter intercalated ducts</span><span class="ar">العديد من القنوات المخططة المتطورة، قنوات مقحمة أقصر</span></td>
+                <td><span class="en">Short and less developed ducts; striated ducts are rare or absent</span><span class="ar">قنوات قصيرة وأقل تطورًا؛ القنوات المخططة نادرة أو غائبة</span></td>
+            </tr>
+            <tr>
+                <td><span class="en"><strong>Connective Tissue (Stroma)</strong></span><span class="ar"><strong>النسيج الضام (السدى)</strong></span></td>
+                <td><span class="en">Well-developed capsule and septa, often infiltrated with <strong>adipocytes (fat cells)</strong></span><span class="ar">محفظة وحواجز متطورة، غالبًا ما تكون متسللة بـ<strong>خلايا دهنية</strong></span></td>
+                <td><span class="en">Well-developed capsule and septa.</span><span class="ar">محفظة وحواجز متطورة.</span></td>
+                <td><span class="en">Poorly developed capsule or none at all.</span><span class="ar">محفظة ضعيفة التطور أو غير موجودة.</span></td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 31, 33, 34, 35, 36, 37 of 39</span>
+<span class="ar">المصدر: الصفحات ٣١، ٣٣، ٣٤، ٣٥، ٣٦، ٣٧ من ٣٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Rule of "S": <strong>S</strong>erous = <strong>S</strong>ubmandibular (mostly). <strong>M</strong>ucous = Sub<strong>M</strong>andibular & Subli<strong>M</strong>gual. Purely <strong>S</strong>erous = Parotid (Stensen's duct).</div><div class="ar">قاعدة الحروف: <strong>المصلي</strong> (Serous) = تحت الفك (Submandibular) في الغالب. <strong>المخاطي</strong> (Mucous) = تحت الفك وتحت اللسان. <strong>المصلي البحت</strong> = النكافية (Parotid).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The presence of many fat cells is a key identifying feature of the parotid gland in histological slides, especially in adults.</div><div class="ar">وجود العديد من الخلايا الدهنية هو سمة مميزة رئيسية للغدة النكافية في الشرائح النسيجية، خاصة عند البالغين.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">The parotid gland is the most common site for salivary gland tumors. Its purely serous nature means tumors originating from it, like acinic cell carcinoma, will show serous differentiation.</div><div class="ar">الغدة النكافية هي الموقع الأكثر شيوعًا لأورام الغدد اللعابية. طبيعتها المصلية البحتة تعني أن الأورام التي تنشأ منها، مثل سرطانة الخلايا العنيبية، ستظهر تمايزًا مصليًا.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Summary</span><span class="ar">ملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+    <ul>
+        <li><strong>Development:</strong> Salivary glands arise from an invagination of oral epithelium, differentiating into <strong>secretory acini</strong> (distal part) and a <strong>duct system</strong> (proximal part).</li>
+        <li><strong>Serous Acini:</strong> Produce watery, enzyme-rich saliva. They have <strong>pyramidal cells</strong>, round central nuclei, and dark-staining cytoplasm with zymogen granules. (e.g., <strong>Parotid Gland</strong>).</li>
+        <li><strong>Mucous Acini:</strong> Produce viscous, lubricating mucus. They have <strong>cuboidal cells</strong>, flattened basal nuclei, and pale, foamy cytoplasm. (e.g., <strong>Sublingual Gland</strong>).</li>
+        <li><strong>Mixed Acini:</strong> Feature mucous acini capped by <strong>serous demilunes</strong>. (e.g., <strong>Submandibular Gland</strong>).</li>
+        <li><strong>Duct System:</strong> Modifies and transports saliva. The order is <strong>Intercalated</strong> (simple cuboidal) → <strong>Striated</strong> (columnar, ion-transporting) → <strong>Excretory</strong> (stratified).</li>
+        <li><strong>Myoepithelial Cells:</strong> Contractile 'basket cells' that surround acini and squeeze out saliva.</li>
+    </ul>
+</div>
+<div class="ar">
+    <ul>
+        <li><strong>التطور:</strong> تنشأ الغدد اللعابية من انغماس النسيج الطلائي الفموي، وتتمايز إلى <strong>عنيبات إفرازية</strong> (الجزء القاصي) و<strong>نظام قنوات</strong> (الجزء الداني).</li>
+        <li><strong>العنيبات المصلية:</strong> تنتج لعابًا مائيًا غنيًا بالإنزيمات. لها <strong>خلايا هرمية</strong>، أنوية مركزية مستديرة، وسيتوبلازم داكن التصبغ مع حبيبات زيموجين. (مثال: <strong>الغدة النكافية</strong>).</li>
+        <li><strong>العنيبات المخاطية:</strong> تنتج مخاطًا لزجًا ومزلقًا. لها <strong>خلايا مكعبة</strong>، أنوية قاعدية مسطحة، وسيتوبلازم باهت ورغوي. (مثال: <strong>الغدة تحت اللسان</strong>).</li>
+        <li><strong>العنيبات المختلطة:</strong> تتميز بعنيبات مخاطية مغطاة بـ<strong>أهلة مصلية</strong>. (مثال: <strong>الغدة تحت الفك السفلي</strong>).</li>
+        <li><strong>نظام القنوات:</strong> يعدل وينقل اللعاب. الترتيب هو <strong>مقحمة</strong> (مكعبي بسيط) ← <strong>مخططة</strong> (عمودي، ناقل للأيونات) ← <strong>مفرغة</strong> (مطبق).</li>
+        <li><strong>الخلايا الطلائية العضلية:</strong> "خلايا سلية" قابلة للتقلص تحيط بالعنيبات وتضغط اللعاب للخارج.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 1-39 of 39</span>
+<span class="ar">المصدر: الصفحات ١-٣٩ من ٣٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">To master salivary gland histology, focus on identifying the three key structures: serous acini (dark, round nuclei), mucous acini (pale, flat nuclei), and striated ducts (columnar cells, central nuclei, eosinophilic cytoplasm). If you can spot these, you can identify any major salivary gland.</div><div class="ar">لإتقان نسيج الغدد اللعابية، ركز على تحديد الهياكل الرئيسية الثلاثة: العنيبات المصلية (داكنة، أنوية مستديرة)، العنيبات المخاطية (باهتة، أنوية مسطحة)، والقنوات المخططة (خلايا عمودية، أنوية مركزية، سيتوبلازم يوزيني). إذا تمكنت من تمييز هذه، يمكنك تحديد أي غدة لعابية رئيسية.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">A solid understanding of normal histology is the foundation for recognizing pathological changes. Knowing what a healthy gland looks like is the first step to diagnosing diseases like sialadenitis (inflammation) or salivary neoplasms (tumors).</div><div class="ar">الفهم القوي لعلم الأنسجة الطبيعي هو الأساس للتعرف على التغيرات المرضية. معرفة كيف تبدو الغدة السليمة هي الخطوة الأولى لتشخيص أمراض مثل التهاب الغدد اللعابية أو أورام الغدد اللعابية.</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Acinus / عنيبة</div><div class="content" hidden=""><div class="en">A small, flask-shaped sac of secretory cells that forms the functional end piece of a gland.</div><div class="ar">كيس صغير على شكل قارورة من الخلايا الإفرازية يشكل القطعة النهائية الوظيفية للغدة.</div></div></div>
+<div class="card"><div class="head">Myoepithelial Cell / خلية طلائية عضلية</div><div class="content" hidden=""><div class="en">A contractile cell of epithelial origin that surrounds acini and helps expel secretions.</div><div class="ar">خلية قابلة للتقلص من أصل طلائي تحيط بالعنيبات وتساعد على طرد الإفرازات.</div></div></div>
+<div class="card"><div class="head">Serous Demilune / هلال مصلي</div><div class="content" hidden=""><div class="en">A crescent-shaped cap of serous cells on a mucous acinus in a mixed salivary gland.</div><div class="ar">غطاء على شكل هلال من الخلايا المصلية فوق عنيبة مخاطية في غدة لعابية مختلطة.</div></div></div>
+<div class="card"><div class="head">Intercalated Duct / قناة مقحمة</div><div class="content" hidden=""><div class="en">The smallest type of duct, lined with simple cuboidal epithelium, leading directly from an acinus.</div><div class="ar">أصغر أنواع القنوات، مبطنة بنسيج طلائي مكعبي بسيط، وتؤدي مباشرة من العنيبة.</div></div></div>
+<div class="card"><div class="head">Striated Duct / قناة مخططة</div><div class="content" hidden=""><div class="en">An intralobular duct with basal striations (mitochondria) that actively modifies saliva composition.</div><div class="ar">قناة داخل الفصيص ذات تخطيطات قاعدية (ميتوكوندريا) تقوم بتعديل تركيبة اللعاب بنشاط.</div></div></div>
+<div class="card"><div class="head">Zymogen Granules / حبيبات زيموجين</div><div class="content" hidden=""><div class="en">Vesicles in serous cells containing inactive enzyme precursors. They stain eosinophilic (pink).</div><div class="ar">حويصلات في الخلايا المصلية تحتوي على سلائف إنزيمية غير نشطة. تتصبغ باليوزين (لون وردي).</div></div></div>
+<div class="card"><div class="head">Parenchyma / برنشيمة</div><div class="content" hidden=""><div class="en">The functional tissue of an organ, as distinguished from the connective and supporting tissue. In salivary glands, it includes the acini and ducts.</div><div class="ar">النسيج الوظيفي لعضو ما، والذي يتم تمييزه عن النسيج الضام والداعم. في الغدد اللعابية، يشمل العنيبات والقنوات.</div></div></div>
+<div class="card"><div class="head">Stroma / سدى</div><div class="content" hidden=""><div class="en">The supportive framework of an organ, typically consisting of connective tissue, which carries blood vessels and nerves.</div><div class="ar">الإطار الداعم لعضو ما، ويتكون عادة من نسيج ضام يحمل الأوعية الدموية والأعصاب.</div></div></div>
+<div class="card"><div class="head">Lumen / تجويف</div><div class="content" hidden=""><div class="en">The inside space of a tubular structure, such as an acinus or a duct, through which secretions pass.</div><div class="ar">المساحة الداخلية لهيكل أنبوبي، مثل العنيبة أو القناة، والتي تمر من خلالها الإفرازات.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — Which major salivary gland is purely serous?</span><span class="ar">١ — أي من الغدد اللعابية الرئيسية تعتبر مصلية بحتة؟</span></div><div class="content" hidden=""><span class="en">A: The Parotid Gland.</span><span class="ar">ج: الغدة النكافية.</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — What is the function of myoepithelial cells?</span><span class="ar">٢ — ما هي وظيفة الخلايا الطلائية العضلية؟</span></div><div class="content" hidden=""><span class="en">A: To contract and expel saliva from the acini into the ducts.</span><span class="ar">ج: التقلص وطرد اللعاب من العنيبات إلى القنوات.</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — What is a serous demilune?</span><span class="ar">٣ — ما هو الهلال المصلي؟</span></div><div class="content" hidden=""><span class="en">A: A crescent-shaped cap of serous cells over a mucous acinus.</span><span class="ar">ج: غطاء هلالي الشكل من الخلايا المصلية فوق عنيبة مخاطية.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — What type of epithelium lines striated ducts?</span><span class="ar">٤ — ما هو نوع النسيج الطلائي الذي يبطن القنوات المخططة؟</span></div><div class="content" hidden=""><span class="en">A: Simple columnar epithelium.</span><span class="ar">ج: نسيج طلائي عمودي بسيط.</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — Where are the nuclei in mucous cells typically located?</span><span class="ar">٥ — أين تقع أنوية الخلايا المخاطية عادةً؟</span></div><div class="content" hidden=""><span class="en">A: Flattened and pressed against the basal membrane.</span><span class="ar">ج: مسطحة ومضغوطة على الغشاء القاعدي.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — Salivary glands develop from which embryonic tissue?</span><span class="ar">٦ — من أي نسيج جنيني تتطور الغدد اللعابية؟</span></div><div class="content" hidden=""><span class="en">A: Oral epithelium invaginating into ectomesenchyme.</span><span class="ar">ج: النسيج الطلائي الفموي الذي ينغمس في اللحمة المتوسطة الظاهرية.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — Which major gland is predominantly mucous?</span><span class="ar">٧ — أي من الغدد الرئيسية يغلب عليها الطابع المخاطي؟</span></div><div class="content" hidden=""><span class="en">A: The Sublingual Gland.</span><span class="ar">ج: الغدة تحت اللسان.</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — What feature gives striated ducts their name?</span><span class="ar">٨ — ما هي الميزة التي تعطي القنوات المخططة اسمها؟</span></div><div class="content" hidden=""><span class="en">A: Basal striations, which are infoldings of the basal membrane filled with mitochondria for ion transport.</span><span class="ar">ج: التخطيطات القاعدية، وهي طيات من الغشاء القاعدي مليئة بالميتوكوندريا لنقل الأيونات.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — Fat cell infiltration is a characteristic feature of which gland?</span><span class="ar">٩ — تسلل الخلايا الدهنية هو سمة مميزة لأي غدة؟</span></div><div class="content" hidden=""><span class="en">A: The Parotid Gland.</span><span class="ar">ج: الغدة النكافية.</span></div></div>
+</div>
 </main>
-
 <script>
   // Language toggle: flip lang visibility + page direction
   const btn=document.getElementById('langBtn');
@@ -693,7 +807,7 @@
     });
   });
 
-  // Glossary toggle
+  // Glossary toggle (dim term when open)
   document.querySelectorAll('#glossary .card').forEach(card=>{
     card.addEventListener('click',()=>{
       card.classList.toggle('open');
@@ -702,7 +816,7 @@
     });
   });
 
-  // Flashcards toggle
+  // Flashcards toggle (dim question when open)
   document.querySelectorAll('#flashcards .card').forEach(card=>{
     card.addEventListener('click',()=>{
       card.classList.toggle('open');

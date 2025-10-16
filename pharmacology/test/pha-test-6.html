@@ -1,0 +1,678 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 6</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+  {
+    q: "Which division of the Autonomic Nervous System is responsible for the 'fight or flight' response?",
+    opts: ["Sympathetic Division", "Parasympathetic Division", "Somatic Nervous System", "Central Nervous System"],
+    correct: 0,
+    explain: "The Sympathetic Division prepares the body for stressful or energetic activity, known as the 'fight or flight' response."
+  },
+  {
+    q: "The primary neurotransmitter for the Sympathetic Division at the effector organ is:",
+    opts: ["Norepinephrine", "Acetylcholine", "Dopamine", "Serotonin"],
+    correct: 0,
+    explain: "Norepinephrine (NE) is the main neurotransmitter released by postganglionic sympathetic fibers."
+  },
+  {
+    q: "Stimulation of which adrenergic receptor primarily leads to an increase in heart rate and contractility?",
+    opts: ["Beta 1", "Alpha 1", "Beta 2", "Alpha 2"],
+    correct: 0,
+    explain: "Beta 1 receptors are predominantly found in the heart, and their stimulation increases heart rate and force of contraction."
+  },
+  {
+    q: "Which of the following drugs is a Beta 2 agonist commonly used for its bronchodilatory effects?",
+    opts: ["Salbutamol", "Dobutamine", "Phenylephrine", "Clonidine"],
+    correct: 0,
+    explain: "Salbutamol is a selective Beta 2 agonist that causes relaxation of bronchial smooth muscles, making it useful in treating asthma."
+  },
+  {
+    q: "An Alpha 1 agonist like Phenylephrine would be expected to cause which physiological effect?",
+    opts: ["Increased Blood Pressure", "Decreased Blood Pressure", "Bronchodilation", "Decreased Heart Rate"],
+    correct: 0,
+    explain: "Alpha 1 agonists cause vasoconstriction of blood vessels, leading to an increase in blood pressure."
+  },
+  {
+    q: "Clonidine is an Alpha 2 agonist. What is its primary therapeutic effect?",
+    opts: ["Reduces Blood Pressure", "Increases Blood Pressure", "Increases Heart Rate", "Causes Bronchial Relaxation"],
+    correct: 0,
+    explain: "Alpha 2 receptors provide negative feedback, so stimulating them with Clonidine reduces sympathetic outflow and lowers blood pressure."
+  },
+  {
+    q: "Propranolol is classified as a:",
+    opts: ["Non-selective Beta Blocker", "Selective Beta 1 Blocker", "Alpha 1 Blocker", "Beta 2 Agonist"],
+    correct: 0,
+    explain: "Propranolol blocks both Beta 1 and Beta 2 receptors, making it a non-selective beta blocker."
+  },
+  {
+    q: "Why is epinephrine often added to local anesthetics like lidocaine?",
+    opts: ["To prolong the anesthetic's action", "To increase systemic absorption", "To decrease the anesthetic's potency", "To prevent allergic reactions"],
+    correct: 0,
+    explain: "Epinephrine causes local vasoconstriction, which limits the diffusion of the local anesthetic from the injection site, prolonging its duration and reducing systemic toxicity."
+  },
+  {
+    q: "Which adverse effect is commonly associated with adrenergic agonists?",
+    opts: ["Tachycardia", "Bradycardia", "Hypotension", "Drowsiness"],
+    correct: 0,
+    explain: "Adverse reactions to adrenergic drugs are extensions of their pharmacological effects, which include increased heart rate (tachycardia) and tremors."
+  },
+  {
+    q: "Which enzyme is involved in the enzymatic degradation of catecholamines like norepinephrine?",
+    opts: ["Monoamine oxidase (MAO)", "Acetylcholinesterase", "Amylase", "Lipase"],
+    correct: 0,
+    explain: "Catecholamines are degraded by two main enzymes: Monoamine oxidase (MAO) and catechol-o-methyl transferase (COMT)."
+  },
+  {
+    q: "Stimulation of adrenergic receptors in the eye can lead to:",
+    opts: ["Mydriasis (pupil dilation)", "Miosis (pupil constriction)", "Increased salivation", "Bronchoconstriction"],
+    correct: 0,
+    explain: "Adrenergic drugs can cause mydriasis and are used to lower intraocular pressure."
+  },
+  {
+    q: "A patient taking a non-selective beta blocker might experience which respiratory side effect?",
+    opts: ["Bronchoconstriction", "Bronchodilation", "Increased respiratory rate", "Decreased mucus production"],
+    correct: 0,
+    explain: "Blocking Beta 2 receptors in the lungs can cause bronchoconstriction, which is dangerous for patients with asthma."
+  },
+  {
+    q: "Dobutamine is a Beta 1 agonist used primarily for its effects on the:",
+    opts: ["Heart", "Lungs", "Blood Vessels", "Kidneys"],
+    correct: 0,
+    explain: "Dobutamine primarily stimulates Beta 1 receptors, making it a cardiac stimulant that increases heart contractility and blood pressure."
+  },
+  {
+    q: "Which term is synonymous with the Sympathetic nervous system?",
+    opts: ["Adrenergic", "Cholinergic", "Parasympathomimetic", "Somatic"],
+    correct: 0,
+    explain: "The sympathetic system uses adrenergic receptors and neurotransmitters, so 'Adrenergic' is a synonymous term."
+  },
+  {
+    q: "Prazosin is an Alpha 1 blocker. What is its primary therapeutic use?",
+    opts: ["To reduce blood pressure", "To increase blood pressure", "To treat asthma", "To manage opioid withdrawal"],
+    correct: 0,
+    explain: "By blocking Alpha 1 receptors, Prazosin prevents vasoconstriction, leading to a reduction in blood pressure. It's used to treat hypertension."
+  },
+  {
+    q: "What metabolic effect can be caused by Beta-receptor stimulation?",
+    opts: ["Hyperglycemia", "Hypoglycemia", "Increased fat storage", "Decreased metabolic rate"],
+    correct: 0,
+    explain: "Beta-receptor stimulation increases glycogenolysis, which can lead to hyperglycemia (increased blood sugar)."
+  },
+  {
+    q: "Which of the following drugs is a selective Beta 1 blocker?",
+    opts: ["Atenolol", "Propranolol", "Yohimbine", "Salbutamol"],
+    correct: 0,
+    explain: "Atenolol and Metoprolol are selective Beta 1 blockers, primarily affecting the heart."
+  },
+  {
+    q: "Antiadrenergic drugs are primarily used to treat which condition?",
+    opts: ["Hypertension", "Asthma", "Cardiac arrest", "Nasal congestion"],
+    correct: 0,
+    explain: "These drugs reduce sympathetic tone, decrease peripheral resistance, and lower blood pressure, making them useful for treating hypertension."
+  },
+  {
+    q: "The term 'sympathomimetic' means a drug that:",
+    opts: ["Mimics the sympathetic system", "Blocks the sympathetic system", "Mimics the parasympathetic system", "Blocks the parasympathetic system"],
+    correct: 0,
+    explain: "A sympathomimetic drug mimics the effects of the sympathetic nervous system."
+  },
+  {
+    q: "What is the effect of adrenergic drugs on salivary glands?",
+    opts: ["Decreased salivary flow (dryness)", "Increased salivary flow", "No effect", "Thickened saliva"],
+    correct: 0,
+    explain: "These drugs cause vasoconstriction of the salivary glands, which leads to decreased salivary flow and a sensation of dryness."
+  },
+  {
+    q: "Which receptor is NOT a primary adrenergic receptor?",
+    opts: ["Nicotinic", "Alpha 1", "Beta 2", "Alpha 2"],
+    correct: 0,
+    explain: "Nicotinic receptors are part of the cholinergic system, primarily responding to acetylcholine."
+  },
+  {
+    q: "Higher doses of adrenergic drugs can produce which CNS effect?",
+    opts: ["Anxiety and tremors", "Sedation and sleepiness", "Pain relief", "Muscle paralysis"],
+    correct: 0,
+    explain: "Adrenergic drugs are CNS stimulants. Higher doses can lead to over-excitation, causing anxiety, apprehension, restlessness, and tremors."
+  },
+  {
+    q: "Yohimbine is an Alpha 2 blocker. What effect would it have on blood pressure?",
+    opts: ["Increases BP", "Reduces BP", "No effect on BP", "Causes orthostatic hypotension"],
+    correct: 0,
+    explain: "By blocking the Alpha 2 feedback receptor, Yohimbine prevents the reduction of sympathetic outflow, thereby increasing blood pressure."
+  },
+  {
+    q: "Drugs like Dexamphetamine are classified as:",
+    opts: ["CNS stimulants", "Nasal decongestants", "Bronchodilators", "Cardiac stimulants"],
+    correct: 0,
+    explain: "Dexamphetamine is an adrenergic agent used for its CNS stimulant effects."
+  },
+  {
+    q: "The 'rest and digest' state is dominated by which system?",
+    opts: ["Parasympathetic Division", "Sympathetic Division", "Somatic System", "Endocrine System"],
+    correct: 0,
+    explain: "The Parasympathetic Division directs maintenance activities and dominates during times of rest and relaxation."
+  },
+  {
+    q: "What is a common adverse reaction of beta blockers like Propranolol?",
+    opts: ["Bradycardia", "Tachycardia", "Hypertension", "Anxiety"],
+    correct: 0,
+    explain: "Beta blockers reduce heart rate, so bradycardia (slow heart rate) is a common adverse effect."
+  },
+  {
+    q: "Which of the following is considered a catecholamine?",
+    opts: ["Epinephrine", "Acetylcholine", "Prazosin", "Atenolol"],
+    correct: 0,
+    explain: "The primary catecholamines are epinephrine, norepinephrine, and dopamine."
+  },
+  {
+    q: "Adrenergic blocking drugs can cause orthostatic hypotension, which is:",
+    opts: ["A drop in blood pressure upon standing", "A sustained high blood pressure", "An irregular heartbeat", "Difficulty breathing while lying down"],
+    correct: 0,
+    explain: "Orthostatic hypotension is a form of low blood pressure that happens when you stand up from sitting or lying down."
+  },
+  {
+    q: "Terbutaline is an adrenergic agent used as a:",
+    opts: ["Uterine relaxant and vasodilator", "CNS stimulant", "Pressor agent", "Nasal decongestant"],
+    correct: 0,
+    explain: "Terbutaline, similar to Salbutamol, is a Beta 2 agonist used for uterine relaxation and bronchodilation."
+  },
+  {
+    q: "Methyldopa is an antiadrenergic drug used to:",
+    opts: ["Decrease blood pressure", "Increase heart rate", "Manage opioid withdrawal", "Treat asthma"],
+    correct: 0,
+    explain: "Methyldopa is an Alpha 2 agonist, similar to Clonidine, used to decrease blood pressure."
+  }
+];
+
+const tfs = [
+  {
+    q: "The Parasympathetic nervous system is also known as the Adrenergic system.",
+    answer: false,
+    explain: "The Parasympathetic system is the Cholinergic system. The Sympathetic system is the Adrenergic system."
+  },
+  {
+    q: "Stimulating Beta 2 receptors leads to relaxation of bronchiole smooth muscles.",
+    answer: true,
+    explain: "This is the primary mechanism by which drugs like Salbutamol work to treat asthma."
+  },
+  {
+    q: "Atenolol is a non-selective beta blocker that affects both the heart and the lungs.",
+    answer: false,
+    explain: "Atenolol is a selective Beta 1 blocker, primarily targeting the heart. Propranolol is non-selective."
+  },
+  {
+    q: "The neurotransmitter at the preganglionic synapse is acetylcholine for both sympathetic and parasympathetic divisions.",
+    answer: true,
+    explain: "Both systems use acetylcholine (ACh) to transmit signals from preganglionic to postganglionic neurons."
+  },
+  {
+    q: "Adrenergic agonists typically cause an increase in salivary flow.",
+    answer: false,
+    explain: "Adrenergic drugs cause vasoconstriction of salivary glands, leading to decreased salivary flow (dry mouth)."
+  },
+  {
+    q: "Antiadrenergic drugs are commonly used to treat cardiac arrest.",
+    answer: false,
+    explain: "Adrenergic agonists like epinephrine are used to treat cardiac arrest. Antiadrenergics lower blood pressure."
+  },
+  {
+    q: "Clonidine decreases blood pressure by blocking Alpha 1 receptors.",
+    answer: false,
+    explain: "Clonidine is an Alpha 2 agonist. It decreases blood pressure by stimulating these receptors, which reduces sympathetic outflow."
+  },
+  {
+    q: "The primary catecholamines are norepinephrine and epinephrine.",
+    answer: true,
+    explain: "These, along with dopamine, are the main neurotransmitters for the adrenergic system."
+  },
+  {
+    q: "A potential side effect of beta blockers is drowsiness and fatigue.",
+    answer: true,
+    explain: "Drowsiness, fatigue, bradycardia, and hypotension are all common adverse reactions of adrenergic blocking drugs."
+  }
+];
+
+const saqs = [
+  {
+    q: "Describe the primary reason why adrenergic drugs, like epinephrine, are combined with local anesthetics in dental procedures.",
+    a: "Epinephrine is a vasoconstrictor. When added to local anesthetics, it constricts the blood vessels at the site of injection. This action achieves three main goals: <br>1. <b>Prolongs the action</b> of the anesthetic by preventing it from diffusing away quickly. <br>2. <b>Reduces systemic toxicity</b> by limiting the absorption of the anesthetic into the bloodstream. <br>3. <b>Creates a dry field</b> for the procedure by reducing local bleeding."
+  },
+  {
+    q: "List four of the seven categories of adrenergic agents mentioned in the lecture.",
+    a: "Any four of the following are correct: <ol><li>Pressor agents (e.g., Noradrenaline)</li><li>Cardiac stimulants (e.g., Adrenaline)</li><li>Bronchodilators (e.g., Salbutamol)</li><li>Nasal decongestants (e.g., Ephedrine)</li><li>CNS stimulants (e.g., Dexamphetamine)</li><li>Uterine relaxants and vasodilators (e.g., Terbutaline)</li><li>Anorectics (e.g., Sibutramine)</li></ol>"
+  },
+  {
+    q: "A patient with both asthma and hypertension is prescribed a new medication for their high blood pressure. Why would a selective Beta 1 blocker (like Atenolol) be a much safer choice than a non-selective beta blocker (like Propranolol) for this patient?",
+    a: "A non-selective beta blocker like Propranolol blocks both Beta 1 (heart) and Beta 2 (lungs) receptors. Blocking Beta 2 receptors in the lungs can cause <b>bronchoconstriction</b>, which would worsen the patient's asthma and could be dangerous. A selective Beta 1 blocker like Atenolol primarily targets the receptors in the heart to lower blood pressure, with minimal effect on the lungs, making it a much safer option."
+  },
+  {
+    q: "Explain the difference in physiological outcomes when stimulating an Alpha 1 receptor versus an Alpha 2 receptor.",
+    a: "<b>Alpha 1 Receptor Stimulation:</b> Leads to vasoconstriction of smooth muscles in blood vessels, which causes an <b>increase in blood pressure</b>.<br><br><b>Alpha 2 Receptor Stimulation:</b> These receptors are part of a negative feedback mechanism. Stimulating them (e.g., with Clonidine) inhibits further release of norepinephrine from the nerve terminal, leading to a reduction in overall sympathetic tone and a <b>decrease in blood pressure</b>."
+  },
+  {
+    q: "List four common adverse reactions associated with adrenergic blocking drugs.",
+    a: "Common adverse reactions for adrenergic blockers include: <ol><li>Drowsiness / fatigue</li><li>Bradycardia (slow heart rate)</li><li>Hypotension (low blood pressure)</li><li>Orthostatic hypotension (dizziness on standing)</li><li>Diarrhea</li></ol>"
+  },
+  {
+    q: "Compare and contrast the primary function of the Sympathetic and Parasympathetic nervous systems.",
+    a: "This table summarizes the key differences:<br><br><table style='width:100%; text-align:left;'><tr><th style='padding:4px;'>Feature</th><th style='padding:4px;'>Sympathetic (Adrenergic)</th><th style='padding:4px;'>Parasympathetic (Cholinergic)</th></tr><tr><td style='padding:4px;'><b>Nickname</b></td><td style='padding:4px;'>'Fight or Flight'</td><td style='padding:4px;'>'Rest and Digest'</td></tr><tr><td style='padding:4px;'><b>Primary Role</b></td><td style='padding:4px;'>Prepares body for stress/emergency</td><td style='padding:4px;'>Maintains homeostasis, directs routine activities</td></tr><tr><td style='padding:4px;'><b>Neurotransmitter</b></td><td style='padding:4px;'>Norepinephrine</td><td style='padding:4px;'>Acetylcholine</td></tr></table>"
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      const chosenOriginalIndex = visualToOriginal[v];
+      state.mcq[idx] = chosenOriginalIndex;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+      const isCorrect = chosenOriginalIndex === item.correct;
+
+      if(!isCorrect){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    toggleBtn.style.borderColor = now ? "rgba(34,197,94,.7)" : "rgba(255,255,255,0.18)";
+
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const isCorrect = v === mcqs[i].correct;
+    return s + (isCorrect ? 1 : 0);
+  },0);
+
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const isCorrect = v === tfs[i].answer;
+    return s + (isCorrect ? 1 : 0);
+  },0);
+
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{
+    b.textContent="I was correct";
+    b.style.outline="none";
+    b.style.borderColor = "rgba(255,255,255,0.18)";
+  });
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

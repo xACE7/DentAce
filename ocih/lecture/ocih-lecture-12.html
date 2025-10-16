@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en" style="direction:ltr;">
 <head>
-<meta charset="utf-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>🦷 Dentistry 3rd year — Two-Column Sections</title>
-<meta name="color-scheme" content="dark" />
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Jaw Movements & TMJ</title>
+<meta content="dark" name="color-scheme"/>
 <style>
   :root{
     --bg:#0b0b12;
@@ -91,6 +91,8 @@
   .section>div{display:flex;flex-direction:column}
   .content-col{min-width:0;}
   .callouts-col{min-width:0;}
+  
+  strong { color: #8b5cf6; }
 
   .sec-head{
     font-weight:900;
@@ -168,6 +170,7 @@
     font-size:1.35rem;
     background:linear-gradient(90deg,#06b6d4,#8b5cf6);
     -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
   }
   .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
   .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
@@ -203,17 +206,17 @@
 
   /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
   #langBtn{
-    --h: 40px;
-    --pad: 3px;
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
     position: fixed;
     top: 16px;
     right: 16px;
     display: inline-flex;
     align-items: center;
     justify-content: space-between;
-    min-width: 150px;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
     height: var(--h);
-    padding: 0 6px;
+    padding: 0 6px;     /* tight outer padding */
     border-radius: 9999px;
     font-size: 13px;
     font-weight: 800;
@@ -227,36 +230,56 @@
     overflow: hidden;
     z-index: 9999;
   }
+  /* Labels flush to edges */
   #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
   #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
   #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
 
+  /* Sliding background (covers half), with overshoot animations */
   #langBtn::after{
     content:"";
     position:absolute;
     top: var(--pad);
     bottom: var(--pad);
     left: var(--pad);
-    width: calc(50% - var(--pad)*2 + 2px);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
     border-radius: inherit;
-    background: rgba(255,255,255,.10);
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
     box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
-    transform: translateX(0);
+    transform: translateX(0);               /* EN active by default */
     z-index: 0;
   }
 
-  @keyframes bgToRight { 0%{transform:translateX(0%)}70%{transform:translateX(108%)}100%{transform:translateX(100%)} }
-  @keyframes bgToLeft  { 0%{transform:translateX(100%)}70%{transform:translateX(-8%)}100%{transform:translateX(0%)} }
-  @keyframes bounceActive { 0%{transform:scale(1)}40%{transform:scale(1.14)}70%{transform:scale(1.04)}100%{transform:scale(1.08)} }
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
 
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
   body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
   body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
 
   body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
-  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none; transform: scale(1.0); }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
   body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
-  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none; transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
 
+  /* Reduced motion preference */
   @media (prefers-reduced-motion: reduce) {
     #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
       animation: none !important;
@@ -265,6 +288,7 @@
     }
   }
 
+  /* Source footer pinned to bottom of the LEFT column only */
   .content-col{display:flex;flex-direction:column;}
   .source-footer{
     margin-top:auto;
@@ -276,440 +300,537 @@
     text-align:center;
     border-radius:0 0 var(--radius) var(--radius);
   }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
 </style>
 </head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
 <body class="lang-en">
 <header>
-  <div class="hdr wrap">
-    <div class="left">
-      <div class="title">🦷 Dentistry 3rd year</div>
-      <div class="subtitle">Lecture 12</div>
-    </div>
-    <button id="langBtn" class="lang-toggle" aria-label="Toggle language">
-      <span class="lab en">EN</span>
-      <span class="lab ar">AR</span>
-    </button>
-  </div>
-</header>
-
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 12</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
 <main class="wrap">
-  <!-- Dua (Arabic shown in both EN/AR as requested) -->
-  <div class="dua"><span class="en">اللهم انفعنا بما علمتنا وزدنا علماً نافِعاً وعملاً صالحاً.</span><span class="ar">اللهم انفعنا بما علمتنا وزدنا علماً نافِعاً وعملاً صالحاً.</span></div>
+<div class="dua">رَبِّ زِدْنِي عِلْمًا</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Jaw Movements and Functions of the TMJ</b></span>
+<span class="ar"><b>الموضوع: حركات الفك ووظائف المفصل الصدغي الفكي</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Introduction to the TMJ</span><span class="ar">مقدمة في المفصل الصدغي الفكي</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>The <strong style="color:#8b5cf6;">Temporomandibular Joint (TMJ)</strong> is one of the most complex joints in the body. It's where the mandible (lower jaw) articulates with the cranium, specifically the temporal bone.</p>
+    <p>This joint is unique because it combines two types of movements:</p>
+    <ul>
+        <li><strong>Hinging movement:</strong> This is a simple open-and-close motion, like a door hinge. This makes it a <strong style="color:#8b5cf6;">Ginglymoid</strong> joint.</li>
+        <li><strong>Gliding movement:</strong> This allows the jaw to move forward, backward, and side-to-side. This makes it an <strong style="color:#8b5cf6;">Arthrodial</strong> joint.</li>
+    </ul>
+    <p>Because it performs both actions, the TMJ is technically classified as a <strong style="color:#8b5cf6;">Ginglymoarthrodial joint</strong>. It is also a synovial joint, meaning it contains a fluid-filled cavity that lubricates movement.</p>
+</div>
+<div class="ar">
+    <p>يعتبر <strong style="color:#8b5cf6;">المفصل الصدغي الفكي (TMJ)</strong> من أكثر المفاصل تعقيدًا في الجسم. وهو النقطة التي يتمفصل فيها الفك السفلي مع الجمجمة، وتحديداً مع العظم الصدغي.</p>
+    <p>هذا المفصل فريد من نوعه لأنه يجمع بين نوعين من الحركات:</p>
+    <ul>
+        <li><strong>الحركة المفصلية (الرزية):</strong> وهي حركة فتح وإغلاق بسيطة، مثل مفصل الباب. وهذا يجعله مفصلاً <strong style="color:#8b5cf6;">رزيّاً (Ginglymoid)</strong>.</li>
+        <li><strong>الحركة الانزلاقية:</strong> وهي التي تسمح للفك بالتحرك للأمام والخلف ومن جانب إلى آخر. وهذا يجعله مفصلاً <strong style="color:#8b5cf6;">انسيابياً (Arthrodial)</strong>.</li>
+    </ul>
+    <p>ولأنه يقوم بكلا الحركتين، يُصنف المفصل الصدغي الفكي تقنيًا على أنه <strong style="color:#8b5cf6;">مفصل رزيّ انسيابي (Ginglymoarthrodial)</strong>. وهو أيضًا مفصل زلالي، مما يعني أنه يحتوي على تجويف مملوء بسائل يسهل الحركة.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 3 of 29</span>
+<span class="ar">المصدر: صفحة 3 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The TMJ is the only bilateral joint in the body that functions as a single unit. Both the left and right joints must work together.</div><div class="ar">المفصل الصدغي الفكي هو المفصل المزدوج الوحيد في الجسم الذي يعمل كوحدة واحدة. يجب أن يعمل المفصلان الأيمن والأيسر معًا.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong>Ginglymo-</strong> sounds like "Hinge-limo" (a hinging joint).<br><strong>Arthro-</strong> sounds like "Art" (gliding artfully).</div><div class="ar"><strong>Ginglymo-</strong> تشبه كلمة "Hinge" (مفصل).<br><strong>Arthro-</strong> تشبه كلمة "Art" (فن)، تخيل حركة انزلاقية فنية.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding its dual nature is crucial for diagnosing and treating TMJ disorders (TMD), as problems can arise from either the hinging or gliding component.</div><div class="ar">فهم طبيعته المزدوجة أمر حاسم لتشخيص وعلاج اضطرابات المفصل الصدغي الفكي (TMD)، حيث يمكن أن تنشأ المشاكل من المكون المفصلي أو الانزلاقي.</div></div></div>
+</div>
+</aside>
+</section>
 
-  <!-- Topic -->
-  <div class="chip-box">
-    <span class="chip">
-      <span class="en"><b>Topic: Jaw Movements & Functions of the TMJ</b></span>
-      <span class="ar"><b>الموضوع: حركات الفك ووظائف المفصل الفكي الصدغي</b></span>
-    </span>
-  </div>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Anatomy & Compartments of the TMJ</span><span class="ar">تشريح وحجرات المفصل الصدغي الفكي</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>The TMJ's complex movements are made possible by its unique anatomy. A key component is the <strong style="color:#8b5cf6;">articular disc</strong> (or meniscus), a piece of dense fibrous tissue located between the head of the mandible and the temporal bone.</p>
+    <p>This disc divides the joint into two separate synovial compartments:</p>
+    <ul>
+        <li><strong>Upper Compartment (Meniscotemporal):</strong> Located between the upper surface of the disc and the temporal bone. The primary movement here is <strong style="color:#8b5cf6;">translation (gliding)</strong>.</li>
+        <li><strong>Lower Compartment (Meniscomandibular):</strong> Located between the disc and the head of the mandible. The primary movement here is <strong style="color:#8b5cf6;">rotation (hinging)</strong>.</li>
+    </ul>
+    <p>This two-compartment system allows the TMJ to perform both rotation and gliding simultaneously, enabling complex functions like chewing.</p>
+</div>
+<div class="ar">
+    <p>تُمكن الحركات المعقدة للمفصل الصدغي الفكي بفضل تشريحه الفريد. المكون الرئيسي هو <strong style="color:#8b5cf6;">القرص المفصلي</strong> (أو الغضروف المفصلي)، وهو قطعة من النسيج الليفي الكثيف تقع بين رأس الفك السفلي والعظم الصدغي.</p>
+    <p>يقسم هذا القرص المفصل إلى حجرتين زلاليتين منفصلتين:</p>
+    <ul>
+        <li><strong>الحجرة العلوية (الغضروفية الصدغية):</strong> تقع بين السطح العلوي للقرص والعظم الصدغي. الحركة الأساسية هنا هي <strong style="color:#8b5cf6;">الحركة الانتقالية (الانزلاق)</strong>.</li>
+        <li><strong>الحجرة السفلية (الغضروفية الفكية):</strong> تقع بين القرص ورأس الفك السفلي. الحركة الأساسية هنا هي <strong style="color:#8b5cf6;">الحركة الدورانية (المفصلية)</strong>.</li>
+    </ul>
+    <p>يسمح نظام الحجرتين هذا للمفصل بأداء كل من الدوران والانزلاق في وقت واحد، مما يتيح وظائف معقدة مثل المضغ.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 4 of 29</span>
+<span class="ar">المصدر: صفحة 4 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The articular disc is avascular and aneural in its central, force-bearing region, which is why it can withstand significant pressure without pain.</div><div class="ar">القرص المفصلي لا يحتوي على أوعية دموية أو أعصاب في منطقته المركزية التي تتحمل القوة، ولهذا السبب يمكنه تحمل ضغط كبير دون ألم.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">A "clicking" or "popping" sound in the jaw often indicates that the articular disc is displaced and then snaps back into its proper position during jaw movement.</div><div class="ar">صوت "الطقطقة" أو "الفرقعة" في الفك يشير غالبًا إلى أن القرص المفصلي قد انزاح عن مكانه ثم يعود فجأة إلى وضعه الصحيح أثناء حركة الفك.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">The synovial fluid in both compartments acts as a lubricant to reduce friction and as a medium for nutrient and waste transport for the surrounding tissues.</div><div class="ar">يعمل السائل الزلالي في كلتا الحجرتين كمادة تشحيم لتقليل الاحتكاك وكوسيط لنقل العناصر الغذائية والفضلات للأنسجة المحيطة.</div></div></div>
+</div>
+</aside>
+</section>
 
-  <div class="sections">
-    <!-- 1. TMJ overview & classification -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">1) TMJ Overview & Classification</span><span class="ar">١) لمحة وتصنيف المفصل الفكي الصدغي</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <p>The temporomandibular joint (TMJ) is where the mandible articulates with the temporal bone. It combines <b>hinging</b> in one plane (ginglymoid) and <b>gliding</b> (arthrodial), hence it is a <b>ginglymoarthrodial</b> synovial joint.</p>
-            <p>An articular disc divides the joint into upper and lower compartments, each enabling a different movement pattern.</p>
-          </div>
-          <div class="ar">
-            <p>المفصل الفكي الصدغي هو موضع ارتباط mandibular مع العظم الصدغي. يجمع بين <b>الحركة المفصلية</b> في مستوى واحد (مفصل مفصلي) و<b>الانزلاق</b> (مفصل انزلاقي)، لذلك يُعد <b>مفصلاً مفصلياً-انزلاقياً</b> وهو مفصل زلالي.</p>
-            <p>يقسم القرص المفصلي المفصل إلى حجرتين (علوية وسفلية) لكلٍ منهما نمط حركة مختلف.</p>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 2,3/29</span><span class="ar">الصفحات المرجعية: ٢،٣/٢٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">TMJ = synovial, with an articular disc and fibrous capsule.</div><div class="ar">المفصل فُقاري زلالي مع قرص مفصلي ومحفظة ليفية.</div></div></div>
-          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Dual movement types explain normal opening mechanics and many dysfunction patterns.</div><div class="ar">ازدواجية الحركة تفسّر ميكانيكية الفتح الطبيعية وكثيراً من أنماط الخلل.</div></div></div>
-          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en"><b>Ginglymoid = hinge</b>, <b>Arthrodial = glide</b> → TMJ is both.</div><div class="ar"><b>مفصلي = hinge</b> و<b>انزلاقي = glide</b> → TMJ يجمعهما.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Link “hinge below, glide above” to the lower vs upper compartments.</div><div class="ar">اربط “الفتح بالمفصل السفلي، والانزلاق بالعلوي”.</div></div></div>
-        </div>
-      </aside>
-    </section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Basic Jaw Movements: Rotation and Translation</span><span class="ar">حركات الفك الأساسية: الدوران والانتقال</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Opening the mouth is not a single motion but a combination of two distinct movements that occur in sequence:</p>
+    <p>1. <strong>Rotation (Hinging):</strong> During the initial phase of opening the mouth (the first 20-25 mm), the head of the mandible simply rotates on the undersurface of the articular disc. This is a pure hinge-like movement and occurs primarily in the <strong style="color:#8b5cf6;">lower compartment</strong> of the TMJ.</p>
+    <p>2. <strong>Translation (Gliding):</strong> To open the mouth wider, the rotation is followed by a gliding movement. The articular disc and the head of the mandible slide forward and downward together, along the articular eminence of the temporal bone. This translation occurs primarily in the <strong style="color:#8b5cf6;">upper compartment</strong>.</p>
+    <p>Closing the mouth involves reversing these movements: first translation backward, then rotation to bring the teeth together.</p>
+</div>
+<div class="ar">
+    <p>فتح الفم ليس حركة واحدة، بل هو مزيج من حركتين متميزتين تحدثان بالتتابع:</p>
+    <p>1. <strong>الدوران (الحركة المفصلية):</strong> خلال المرحلة الأولية لفتح الفم (أول 20-25 ملم)، يدور رأس الفك السفلي ببساطة على السطح السفلي للقرص المفصلي. هذه حركة مفصلية بحتة وتحدث بشكل أساسي في <strong style="color:#8b5cf6;">الحجرة السفلية</strong> للمفصل الصدغي الفكي.</p>
+    <p>2. <strong>الانتقال (الانزلاق):</strong> لفتح الفم بشكل أوسع، يتبع الدوران حركة انزلاقية. ينزلق القرص المفصلي ورأس الفك السفلي معًا إلى الأمام والأسفل، على طول الحدبة المفصلية للعظم الصدغي. يحدث هذا الانتقال بشكل أساسي في <strong style="color:#8b5cf6;">الحجرة العلوية</strong>.</p>
+    <p>إغلاق الفم يتضمن عكس هذه الحركات: أولاً الانتقال للخلف، ثم الدوران لجمع الأسنان معًا.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 5-7 of 29</span>
+<span class="ar">المصدر: صفحات 5-7 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">At maximum opening, the head of the mandible lies under the articular tubercle, which is a bony prominence on the temporal bone.</div><div class="ar">عند الفتح الأقصى، يستقر رأس الفك السفلي تحت الحدبة المفصلية، وهي بروز عظمي على العظم الصدغي.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">If the condyle glides too far forward over the articular eminence and gets stuck, it results in a condition called dislocation or "open lock," where the patient cannot close their mouth.</div><div class="ar">إذا انزلقت اللقمة بعيدًا جدًا للأمام فوق الحدبة المفصلية وعلقت، فإن ذلك يؤدي إلى حالة تسمى الخلع أو "القفل المفتوح"، حيث لا يستطيع المريض إغلاق فمه.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Think of yawning: The initial small opening is rotation. The wide, full yawn involves translation, where you can feel your jaw shifting forward.</div><div class="ar">فكر في التثاؤب: الفتحة الصغيرة الأولية هي دوران. أما التثاؤب الكامل الواسع فيشمل الانتقال، حيث يمكنك أن تشعر بانزياح فكك إلى الأمام.</div></div></div>
+</div>
+</aside>
+</section>
 
-    <!-- 2. Joint compartments & movement palette -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">2) Joint Compartments & Movement Palette</span><span class="ar">٢) الحجرات المفصلية وأنواع الحركة</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <ul>
-              <li><b>Upper (meniscotemporal) compartment</b>: disc glides on temporal bone.</li>
-              <li><b>Lower (meniscomandibular) compartment</b>: condyle rotates against the disc.</li>
-            </ul>
-            <p><b>Movements:</b> protrusion, retraction, elevation (closing), depression (opening), and lateral excursions (chewing).</p>
-          </div>
-          <div class="ar">
-            <ul>
-              <li><b>الحجرة العلوية (قرصي-صدغي)</b>: انزلاق القرص على العظم الصدغي.</li>
-              <li><b>الحجرة السفلية (قرصي-سفلي)</b>: دوران اللقمة على القرص.</li>
-            </ul>
-            <p><b>الحركات:</b> تقدم، رجوع، رفع (إغلاق)، خفض (فتح)، وانحراف جانبي للمضغ.</p>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 4,5/29</span><span class="ar">الصفحات المرجعية: ٤،٥/٢٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Upper compartment = translation; lower compartment = rotation.</div><div class="ar">العلوية = انزلاق، السفلية = دوران.</div></div></div>
-          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Gentle opening uses lower-compartment rotation first.</div><div class="ar">الفتح الخفيف يبدأ بدوران الحجرة السفلية.</div></div></div>
-          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden><div class="en">The disc equalizes load and improves congruency.</div><div class="ar">القرص يوزّع القوى ويحسّن التوافق المفصلي.</div></div></div>
-        </div>
-      </aside>
-    </section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Primary Muscles of Mastication (Part 1)</span><span class="ar">العضلات الماضغة الأساسية (الجزء الأول)</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>These are the main muscles responsible for jaw movement.</p>
+    <p><strong>1. Temporalis Muscle:</strong></p>
+    <ul>
+        <li><strong>Origin:</strong> A large, fan-shaped muscle originating from the temporal fossa of the skull.</li>
+        <li><strong>Insertion:</strong> Inserts onto the coronoid process and anterior border of the ramus of the mandible.</li>
+        <li><strong>Function:</strong> A powerful <strong style="color:#8b5cf6;">elevator</strong> of the mandible (closes the mouth). Its posterior fibers are crucial for <strong style="color:#8b5cf6;">retraction</strong> (pulling the jaw backward) and it assists in side-to-side grinding movements.</li>
+    </ul>
+    <p><strong>2. Masseter Muscle:</strong></p>
+    <ul>
+        <li><strong>Origin:</strong> A powerful rectangular muscle originating from the zygomatic arch.</li>
+        <li><strong>Insertion:</strong> Inserts onto the angle and lateral surface of the ramus of the mandible.</li>
+        <li><strong>Function:</strong> A very strong <strong style="color:#8b5cf6;">elevator</strong> of the mandible, providing the main force for chewing.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p>هذه هي العضلات الرئيسية المسؤولة عن حركة الفك.</p>
+    <p><strong>1. العضلة الصدغية (Temporalis):</strong></p>
+    <ul>
+        <li><strong>المنشأ:</strong> عضلة كبيرة على شكل مروحة تنشأ من الحفرة الصدغية للجمجمة.</li>
+        <li><strong>الاندغام:</strong> تندغم في الناتئ الإكليلي والحافة الأمامية لرأد الفك السفلي.</li>
+        <li><strong>الوظيفة:</strong> عضلة <strong style="color:#8b5cf6;">رافعة</strong> قوية للفك السفلي (تغلق الفم). أليافها الخلفية ضرورية لـ<strong style="color:#8b5cf6;">سحب الفك للخلف (Retraction)</strong>، وتساعد في حركات الطحن الجانبية.</li>
+    </ul>
+    <p><strong>2. العضلة الماضغة (Masseter):</strong></p>
+    <ul>
+        <li><strong>المنشأ:</strong> عضلة مستطيلة قوية تنشأ من القوس الوجني.</li>
+        <li><strong>الاندغام:</strong> تندغم في زاوية والسطح الجانبي لرأد الفك السفلي.</li>
+        <li><strong>الوظيفة:</strong> عضلة <strong style="color:#8b5cf6;">رافعة</strong> قوية جداً للفك السفلي، وتوفر القوة الرئيسية للمضغ.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 10-14 of 29</span>
+<span class="ar">المصدر: صفحات 10-14 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Bruxism (teeth grinding) can lead to hypertrophy (enlargement) of the masseter muscle, giving the face a squared appearance. This can also cause muscle pain and headaches.</div><div class="ar">صرير الأسنان (Bruxism) يمكن أن يؤدي إلى تضخم العضلة الماضغة، مما يعطي الوجه مظهرًا مربعًا. يمكن أن يسبب هذا أيضًا ألمًا في العضلات وصداعًا.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">To feel your temporalis muscle, place your fingers on your temples and clench your teeth. To feel the masseter, place your fingers on your cheek just above the jaw angle and clench.</div><div class="ar">لتشعر بالعضلة الصدغية، ضع أصابعك على صدغيك وأطبق أسنانك. لتشعر بالعضلة الماضغة، ضع أصابعك على خدك فوق زاوية الفك مباشرة وأطبق أسنانك.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong>T</strong>emporalis = at your <strong>T</strong>emples.<br><strong>M</strong>asseter = for <strong>M</strong>assive power.</div><div class="ar"><strong>T</strong>emporalis = عند <strong>T</strong>emples (الصدغين).<br><strong>M</strong>asseter = من أجل قوة <strong>M</strong>assive (هائلة).</div></div></div>
+</div>
+</aside>
+</section>
 
-    <!-- 3. Opening/closing sequence -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">3) Mouth Opening & Closing Sequence</span><span class="ar">٣) تتابع فتح وإغلاق الفم</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <p><b>Initial 20–25 mm</b>: pure <b>rotation</b> of the condyle under the disc (lower compartment).</p>
-            <p><b>Further opening</b>: <b>translation</b>—disc and condyle glide anteriorly until the condyle lies under the articular tubercle. Closing reverses this sequence.</p>
-          </div>
-          <div class="ar">
-            <p><b>أول 20–25 مم</b>: <b>دوران</b> صِرف للقمّة تحت القرص (الحجرة السفلية).</p>
-            <p><b>الفتح الأوسع</b>: <b>انزلاق</b> أمامي للقرص والقمّة حتى أسفل الحديبة المفصلية. الإغلاق بالعكس.</p>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 6,7/29</span><span class="ar">الصفحات المرجعية: ٦،٧/٢٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“<b>R</b>otate then <b>T</b>ranslate” → <b>R</b>eally <b>T</b>all mouth.</div><div class="ar">“<b>د</b>ور ثم <b>ا</b>نزلق” → الفتح الكبير بعد الانزلاق.</div></div></div>
-          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Translation limits often restricted in disc displacement or capsular fibrosis.</div><div class="ar">الانزلاق قد يقيَّد في إزاحة القرص أو تليّف المحفظة.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Associate “tubercle at end of wide opening.”</div><div class="ar">اربط “نهاية الفتح الواسع = تحت الحديبة”.</div></div></div>
-        </div>
-      </aside>
-    </section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Primary Muscles of Mastication (Part 2)</span><span class="ar">العضلات الماضغة الأساسية (الجزء الثاني)</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>3. Medial Pterygoid Muscle:</strong></p>
+    <ul>
+        <li><strong>Origin:</strong> Has two heads; a deep head from the medial surface of the lateral pterygoid plate and a superficial head from the maxillary tuberosity.</li>
+        <li><strong>Insertion:</strong> Inserts on the medial surface of the angle of the mandible.</li>
+        <li><strong>Function:</strong> Works with the masseter to <strong style="color:#8b5cf6;">elevate</strong> the mandible. Acting with the lateral pterygoid, it produces side-to-side grinding motions.</li>
+    </ul>
+    <p><strong>4. Lateral Pterygoid Muscle:</strong></p>
+    <ul>
+        <li><strong>Origin:</strong> Also has two heads; an upper head from the infratemporal surface of the sphenoid bone and a lower head from the lateral surface of the lateral pterygoid plate.</li>
+        <li><strong>Insertion:</strong> Inserts onto the anterior neck of the mandible and the articular disc.</li>
+        <li><strong>Function:</strong> This muscle is unique. The lower head is the primary muscle for <strong style="color:#8b5cf6;">protrusion</strong> (moving the jaw forward) and <strong style="color:#8b5cf6;">depression</strong> (opening the mouth). The upper head is active during elevation. When one side contracts, it causes lateral movement to the opposite side.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><strong>3. العضلة الجناحية الإنسية (Medial Pterygoid):</strong></p>
+    <ul>
+        <li><strong>المنشأ:</strong> لها رأسان؛ رأس عميق من السطح الإنسي للصفيحة الجناحية الوحشية ورأس سطحي من حدبة الفك العلوي.</li>
+        <li><strong>الاندغام:</strong> تندغم في السطح الإنسي لزاوية الفك السفلي.</li>
+        <li><strong>الوظيفة:</strong> تعمل مع العضلة الماضغة لـ<strong style="color:#8b5cf6;">رفع</strong> الفك السفلي. وعندما تعمل مع العضلة الجناحية الوحشية، تنتج حركات الطحن الجانبية.</li>
+    </ul>
+    <p><strong>4. العضلة الجناحية الوحشية (Lateral Pterygoid):</strong></p>
+    <ul>
+        <li><strong>المنشأ:</strong> لها رأسان أيضًا؛ رأس علوي من السطح تحت الصدغي للعظم الوتدي ورأس سفلي من السطح الوحشي للصفيحة الجناحية الوحشية.</li>
+        <li><strong>الاندغام:</strong> تندغم في العنق الأمامي للفك السفلي والقرص المفصلي.</li>
+        <li><strong>الوظيفة:</strong> هذه العضلة فريدة من نوعها. الرأس السفلي هو العضلة الأساسية لـ<strong style="color:#8b5cf6;">تقديم الفك للأمام (Protrusion)</strong> و<strong style="color:#8b5cf6;">خفضه (Depression)</strong> (فتح الفم). الرأس العلوي ينشط أثناء الرفع. عندما تنقبض جهة واحدة، تسبب حركة جانبية للجهة المقابلة.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 15-18 of 29</span>
+<span class="ar">المصدر: صفحات 15-18 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The Medial Pterygoid and Masseter form a "muscular sling" around the angle of the mandible, working together powerfully to elevate the jaw.</div><div class="ar">تشكل العضلة الجناحية الإنسية والعضلة الماضغة "حمالة عضلية" حول زاوية الفك السفلي، وتعملان معًا بقوة لرفع الفك.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The Lateral Pterygoid's attachment to the articular disc is clinically significant. Spasm or dysfunction of this muscle can cause disc displacement, leading to TMJ clicking and pain.</div><div class="ar">ارتباط العضلة الجناحية الوحشية بالقرص المفصلي له أهمية سريرية. يمكن أن يسبب تشنج أو خلل في هذه العضلة انزياح القرص، مما يؤدي إلى طقطقة وألم في المفصل الصدغي الفكي.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Palpation of the pterygoid muscles is done intra-orally, as they are located deep within the infratemporal fossa.</div><div class="ar">يتم جس العضلات الجناحية من داخل الفم، حيث أنها تقع في عمق الحفرة تحت الصدغية.</div></div></div>
+</div>
+</aside>
+</section>
 
-    <!-- 4. Protrusion/Retraction -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">4) Protrusion & Retraction</span><span class="ar">٤) التقدّم والرجوع</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <p><b>Protrusion</b>: the disc glides forward on the upper surface and the condylar head moves with it.</p>
-            <p><b>Retraction</b>: reverse path back to centric relation.</p>
-          </div>
-          <div class="ar">
-            <p><b>التقدّم</b>: ينزلق القرص للأمام على السطح العلوي وتتحرّك اللقمة معه.</p>
-            <p><b>الرجوع</b>: العودة عكسياً حتى العلاقة المركزية.</p>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 8/29</span><span class="ar">الصفحات المرجعية: ٨/٢٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Edge-to-edge incisal contact often requires protrusion.</div><div class="ar">تلامس الحواف القاطعة يحتاج غالباً إلى تقدّم.</div></div></div>
-          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warning</span><span class="ar">⚠️ تحذير</span></div><div class="body" hidden><div class="en">Excessive protrusion may stress retrodiscal tissues.</div><div class="ar">التقدّم المفرط يجهد النسج خلف القرص.</div></div></div>
-          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 الأهمية</span></div><div class="body" hidden><div class="en">Guides anterior guidance and protrusive records.</div><div class="ar">أساسي للتوجيه الأمامي وتسجيلات التقدّم.</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- 5. Lateral excursions (chewing) -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">5) Lateral Excursions (Chewing)</span><span class="ar">٥) الحركات الجانبية (المضغ)</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <p>If the right condyle translates forward, the left condyle mainly <b>rotates in place</b>, shifting the chin to the <b>left</b>. Then sides alternate to produce grinding.</p>
-          </div>
-          <div class="ar">
-            <p>عند انزلاق لقمة اليمين للأمام، تدور لقمة اليسار غالباً <b>في مكانها</b>، فينحرف الذقن إلى <b>اليسار</b>. ثم يحدث العكس لإتمام حركة الطحن.</p>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 9/29</span><span class="ar">الصفحات المرجعية: ٩/٢٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Fact</span><span class="ar">📌 حقيقة</span></div><div class="body" hidden><div class="en">Working side: rotation; Balancing side: translation.</div><div class="ar">الجانب العامل: دوران؛ المقابل: انزلاق.</div></div></div>
-          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Asymmetry in paths may indicate intracapsular disorder.</div><div class="ar">عدم التماثل قد يدل على اضطراب داخل المحفظة.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Sketch arrows for each condyle to visualize chewing cycles.</div><div class="ar">ارسم أسهماً لكل لقمة لتصوّر دورات المضغ.</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- 6. Muscles overview -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">6) Muscles of Mastication — Overview</span><span class="ar">٦) عضلات المضغ — نظرة عامة</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <p><b>Primary</b>: Masseter, Temporalis, Medial pterygoid, Lateral pterygoid.</p>
-            <p><b>Secondary (accessory)</b>: Digastric, Mylohyoid, Geniohyoid.</p>
-          </div>
-          <div class="ar">
-            <p><b>الرئيسية</b>: الماضغة، الصدغية، الجناحية الإنسية، الجناحية الوحشية.</p>
-            <p><b>المساعدة</b>: ذات البطنين، الضرسية اللامية (الضرسية الفكية)، الذقنية اللامية.</p>
-          </div>
-          <div class="table-wrap" aria-label="Muscles and actions">
-            <table>
-              <thead>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Accessory Muscles & Movement Summary</span><span class="ar">العضلات المساعدة وملخص الحركة</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>While the four primary muscles are the main drivers, accessory muscles assist in jaw movements, especially in depressing (opening) the mandible.</p>
+    <p><strong>Accessory (Depressor) Muscles:</strong></p>
+    <ul>
+        <li><strong>Digastric</strong></li>
+        <li><strong>Mylohyoid</strong></li>
+        <li><strong>Geniohyoid</strong></li>
+    </ul>
+    <p>These muscles, along with gravity and the lateral pterygoid, help to open the mouth.</p>
+    <p><strong>Summary of Muscle Actions:</strong></p>
+    <div class="table-wrap">
+        <table>
+            <thead>
                 <tr>
-                  <th><span class="en">Muscle</span><span class="ar">العضلة</span></th>
-                  <th><span class="en">Origin</span><span class="ar">المنشأ</span></th>
-                  <th><span class="en">Insertion</span><span class="ar">المرتكز</span></th>
-                  <th><span class="en">Primary Action</span><span class="ar">الوظيفة</span></th>
+                    <th>Movement</th>
+                    <th>Primary Muscles Involved</th>
                 </tr>
-              </thead>
-              <tbody>
+            </thead>
+            <tbody>
                 <tr>
-                  <td><span class="en">Temporalis</span><span class="ar">الصدغية</span></td>
-                  <td><span class="en">Temporal fossa</span><span class="ar">الحفرة الصدغية</span></td>
-                  <td><span class="en">Coronoid process & anterior ramus</span><span class="ar">الناتئ الإكليلي وحدّ مقدّم الرأد</span></td>
-                  <td><span class="en">Elevation; posterior fibers retract; aids grinding</span><span class="ar">رفع؛ الألياف الخلفية تُرجِع؛ تساعد في الطحن</span></td>
+                    <td><strong>Elevation (Closing)</strong></td>
+                    <td>Temporalis, Masseter, Medial Pterygoid</td>
                 </tr>
                 <tr>
-                  <td><span class="en">Masseter</span><span class="ar">الماضغة</span></td>
-                  <td><span class="en">Zygomatic arch</span><span class="ar">القوس الوجني</span></td>
-                  <td><span class="en">Angle & lateral ramus</span><span class="ar">زاوية الفك والسطح الوحشي للرأد</span></td>
-                  <td><span class="en">Powerful elevation; assists chewing</span><span class="ar">رفع قوي؛ تساعد المضغ</span></td>
+                    <td><strong>Depression (Opening)</strong></td>
+                    <td>Lateral Pterygoid (lower head), Digastric, Mylohyoid, Geniohyoid, Gravity</td>
                 </tr>
                 <tr>
-                  <td><span class="en">Medial pterygoid</span><span class="ar">الجناحية الإنسية</span></td>
-                  <td><span class="en">Maxillary tuberosity & medial pterygoid plate</span><span class="ar">الحدبة الفكية & الصفيحة الجناحية الإنسية</span></td>
-                  <td><span class="en">Medial surface of mandibular angle</span><span class="ar">السطح الأنسي لزاوية الفك</span></td>
-                  <td><span class="en">Elevation; grinding</span><span class="ar">رفع؛ طحن</span></td>
+                    <td><strong>Protrusion (Forward)</strong></td>
+                    <td>Lateral Pterygoid (main), assisted by Medial Pterygoid</td>
                 </tr>
                 <tr>
-                  <td><span class="en">Lateral pterygoid (upper/lower)</span><span class="ar">الجناحية الوحشية (رأس علوي/سفلي)</span></td>
-                  <td><span class="en">Infratemporal surface of sphenoid (upper); lateral pterygoid plate (lower)</span><span class="ar">السطح تحت الصدغي للوتدي (علوي)؛ الصفيحة الجناحية الوحشية (سفلي)</span></td>
-                  <td><span class="en">Neck of mandible & disc</span><span class="ar">عنق الفك والقرص</span></td>
-                  <td><span class="en">Main protrusion; upper aids elevation; lower aids depression (opening)</span><span class="ar">التقدّم الأساسي؛ العلوي يساند الرفع؛ السفلي يساند الخفض (الفتح)</span></td>
+                    <td><strong>Retraction (Backward)</strong></td>
+                    <td>Temporalis (posterior fibers), Deep part of Masseter, Digastric</td>
                 </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 10,11,12,13,14,15/29</span><span class="ar">الصفحات المرجعية: ١٠،١١،١٢،١٣،١٤،١٥/٢٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Temporalis posterior fibers retract; lateral pterygoid is key protruder.</div><div class="ar">الألياف الخلفية للصدغية تُرجِع؛ الجناحية الوحشية أهم دافعة للأمام.</div></div></div>
-          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Tender masseter or temporalis often correlates with bruxism.</div><div class="ar">ألم الماضغة/الصدغية يرتبط غالباً بالصرير.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Mnemonic</span><span class="ar">💡 تذكّر</span></div><div class="body" hidden><div class="en"><b>M²T²</b>: Masseter & Medial = <b>elevation</b>; Temporalis posterior = <b>retraction</b>; (La)teral = <b>protru(s)ion</b>.</div><div class="ar"><b>م²ص²</b>: الماضغة والإنسية = <b>رفع</b>؛ الصدغية الخلفية = <b>رجوع</b>؛ الوحشية = <b>تقدّم</b>.</div></div></div>
-        </div>
-      </aside>
-    </section>
+                <tr>
+                    <td><strong>Lateral (Side-to-Side)</strong></td>
+                    <td>Contralateral Medial & Lateral Pterygoids (to move jaw to opposite side), Ipsilateral Temporalis (to stabilize)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+<div class="ar">
+    <p>بينما تعتبر العضلات الأساسية الأربع هي المحركات الرئيسية، تساعد العضلات المساعدة في حركات الفك، خاصة في خفض (فتح) الفك السفلي.</p>
+    <p><strong>العضلات المساعدة (الخافضة):</strong></p>
+    <ul>
+        <li><strong>ذات البطنين (Digastric)</strong></li>
+        <li><strong>الضرسية اللامية (Mylohyoid)</strong></li>
+        <li><strong>الذقنية اللامية (Geniohyoid)</strong></li>
+    </ul>
+    <p>تساعد هذه العضلات، بالإضافة إلى الجاذبية والعضلة الجناحية الوحشية، على فتح الفم.</p>
+    <p><strong>ملخص وظائف العضلات:</strong></p>
+    <div class="table-wrap">
+        <table>
+            <thead>
+                <tr>
+                    <th>الحركة</th>
+                    <th>العضلات الأساسية المشاركة</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>الرفع (الإغلاق)</strong></td>
+                    <td>الصدغية، الماضغة، الجناحية الإنسية</td>
+                </tr>
+                <tr>
+                    <td><strong>الخفض (الفتح)</strong></td>
+                    <td>الجناحية الوحشية (الرأس السفلي)، ذات البطنين، الضرسية اللامية، الذقنية اللامية، الجاذبية</td>
+                </tr>
+                <tr>
+                    <td><strong>التقديم (للأمام)</strong></td>
+                    <td>الجناحية الوحشية (أساسي)، بمساعدة الجناحية الإنسية</td>
+                </tr>
+                <tr>
+                    <td><strong>السحب (للخلف)</strong></td>
+                    <td>الصدغية (الألياف الخلفية)، الجزء العميق من الماضغة، ذات البطنين</td>
+                </tr>
+                <tr>
+                    <td><strong>الحركة الجانبية</strong></td>
+                    <td>الجناحية الإنسية والوحشية في الجهة المقابلة (لتحريك الفك للجهة المعاكسة)، الصدغية في نفس الجهة (للتثبيت)</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 19-20 of 29</span>
+<span class="ar">المصدر: صفحات 19-20 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember "<strong>L</strong>ateral <strong>L</strong>owers" - the <strong>L</strong>ateral Pterygoid is the key muscle that helps <strong>L</strong>ower the mandible to open.</div><div class="ar">تذكر "<strong>الوحشية</strong> <strong>تُخفِض</strong>" - العضلة الجناحية <strong>الوحشية</strong> هي العضلة الرئيسية التي تساعد على <strong>خفض</strong> الفك السفلي للفتح.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Side-to-side chewing movements are not from a single muscle. It's a complex, alternating contraction of the pterygoid muscles on opposite sides.</div><div class="ar">حركات المضغ الجانبية لا تأتي من عضلة واحدة. إنها انقباض معقد ومتناوب للعضلات الجناحية على الجانبين المتقابلين.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Knowing which muscles perform which action is essential for diagnosing the source of myofascial pain and for targeted therapies like botox injections or physical therapy.</div><div class="ar">معرفة العضلات التي تؤدي كل حركة أمر ضروري لتشخيص مصدر الألم العضلي الليفي وللعلاجات الموجهة مثل حقن البوتوكس أو العلاج الطبيعي.</div></div></div>
+</div>
+</aside>
+</section>
 
-    <!-- 7. Control of lateral movement -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">7) Control of Lateral Movement</span><span class="ar">٧) ضبط الحركة الجانبية</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <p>Lateral movement is chiefly by <b>contralateral pterygoids</b> (lateral + medial), controlled by <b>ipsilateral temporalis & masseter</b>. Ligaments and joint surfaces restrict over-movement.</p>
-          </div>
-          <div class="ar">
-            <p>الحركة الجانبية تنتج أساساً بواسطة <b>الجناحيتين على الجهة المقابلة</b>، وتُضبط بواسطة <b>الصدغية والماضغة على الجهة نفسها</b>. تحدّ الأربطة والأسطح المفصلية من الحركة المفرطة.</p>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 16/29</span><span class="ar">الصفحات المرجعية: ١٦/٢٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 الأهمية</span></div><div class="body" hidden><div class="en">Explains working vs balancing side mechanics.</div><div class="ar">يشرح ميكانيكية الجانب العامل والمقابل.</div></div></div>
-          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra</span><span class="ar">📝 إضافي</span></div><div class="body" hidden><div class="en">Ligament restraint prevents joint overtravel during chewing.</div><div class="ar">تمنع الأربطة تجاوز المفصل أثناء المضغ.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Think “push from the opposite side; steer on the same side”.</div><div class="ar">تخيّل “الدفع من الجهة المقابلة؛ التوجيه من الجهة نفسها”.</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- 8. Functions of TMJ -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">8) Functions of the TMJ</span><span class="ar">٨) وظائف المفصل الفكي الصدغي</span></h2>
-        <div class="sec-body">
-          <div class="en">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Clinical Examination of the TMJ</span><span class="ar">الفحص السريري للمفصل الصدغي الفكي</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>A thorough TMJ examination involves several steps to assess its health and function.</p>
+    <ul>
+        <li><strong>Inspection:</strong> Visually check for any swelling over the joint region and observe for symmetry during opening and closing. Note any deviation of the jaw to one side.</li>
+        <li><strong>Palpation:</strong> Feel the joint for tenderness, temperature changes, and crepitus (a grating sensation). This is done both pre-auricularly (in front of the ear) and intra-auricularly (by placing a finger gently in the patient's ear canal).</li>
+        <li><strong>Auscultation:</strong> Use a stethoscope to listen for joint sounds like <strong style="color:#8b5cf6;">clicking</strong> (a sharp sound) or <strong style="color:#8b5cf6;">crepitus</strong> (a grinding, gravelly sound).</li>
+        <li><strong>Range of Motion Measurement:</strong>
             <ul>
-              <li><b>Mastication</b>: hinge + glide allow crushing, grinding, cutting.</li>
-              <li><b>Speech</b> & <b>Swallowing</b>.</li>
-              <li><b>Respiration & Rest posture</b>: maintains airway patency.</li>
-              <li><b>Stress absorption</b>: disc & synovial fluid buffer heavy biting forces.</li>
-              <li><b>Coordination</b>: right & left TMJs work simultaneously to maintain occlusion.</li>
+                <li><strong>Maximum Opening:</strong> The normal interincisal distance is 40-55 mm. This is measured with a ruler.</li>
+                <li><strong>Lateral Excursion:</strong> The patient moves their jaw to the right and left.</li>
+                <li><strong>Protrusion/Retrusion:</strong> The patient moves their jaw forward and backward.</li>
             </ul>
-          </div>
-          <div class="ar">
+        </li>
+    </ul>
+    <p>The examination also includes palpating the muscles of mastication to identify any tenderness or trigger points, which could indicate muscle-related pain.</p>
+</div>
+<div class="ar">
+    <p>يتضمن الفحص الشامل للمفصل الصدغي الفكي عدة خطوات لتقييم صحته ووظيفته.</p>
+    <ul>
+        <li><strong>المعاينة:</strong> التحقق بصريًا من وجود أي تورم فوق منطقة المفصل ومراقبة التناظر أثناء الفتح والإغلاق. لاحظ أي انحراف للفك إلى جانب واحد.</li>
+        <li><strong>الجس:</strong> تحسس المفصل للبحث عن أي إيلام، تغيرات في درجة الحرارة، أو فرقعة (إحساس بالطحن). يتم ذلك أمام الأذن (pre-auricularly) وداخل الأذن (عن طريق وضع إصبع بلطف في قناة أذن المريض).</li>
+        <li><strong>التسمع:</strong> استخدام سماعة الطبيب للاستماع إلى أصوات المفصل مثل <strong style="color:#8b5cf6;">الطقطقة</strong> (صوت حاد) أو <strong style="color:#8b5cf6;">الفرقعة</strong> (صوت طحن أو حصى).</li>
+        <li><strong>قياس مدى الحركة:</strong>
             <ul>
-              <li><b>المضغ</b>: المفصل يسمح بالسحق والطحن والقطع.</li>
-              <li><b>النطق</b> و<b>البلع</b>.</li>
-              <li><b>التنفس & وضع الراحة</b>: الحفاظ على سالكية المجرى الهوائي.</li>
-              <li><b>امتصاص الإجهاد</b>: القرص والسائل الزليلي يمتصان قوى العض.</li>
-              <li><b>التنسيق</b>: يعمل المفصلان الأيمن والأيسر معاً للحفاظ على الإطباق.</li>
+                <li><strong>الفتح الأقصى:</strong> المسافة الطبيعية بين القواطع هي 40-55 ملم. يتم قياسها بمسطرة.</li>
+                <li><strong>الحركة الجانبية:</strong> يحرك المريض فكه يمينًا ويسارًا.</li>
+                <li><strong>التقديم/السحب:</strong> يحرك المريض فكه للأمام والخلف.</li>
             </ul>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 17/29</span><span class="ar">الصفحات المرجعية: ١٧/٢٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Both TMJs must coordinate; pathology in one affects the other.</div><div class="ar">لابد من تنسيق المفصلين؛ مرض أحدهما يؤثر على الآخر.</div></div></div>
-          <div class="callout why"><div class="hdr"><span class="en">🎯 Clinical Relevance</span><span class="ar">🎯 صلة سريرية</span></div><div class="body" hidden><div class="en">Explains bilateral signs in unilateral disc issues.</div><div class="ar">يفسّر العلامات الثنائية مع اضطراب قرصي وحيد الجانب.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Tie functions to symptoms (e.g., speech changes → translation limits).</div><div class="ar">اربط الوظائف بالأعراض (مثلاً تغيّر النطق ← نقص الانزلاق).</div></div></div>
-        </div>
-      </aside>
-    </section>
+        </li>
+    </ul>
+    <p>يشمل الفحص أيضًا جس عضلات المضغ لتحديد أي إيلام أو نقاط تحفيز، والتي يمكن أن تشير إلى ألم مرتبط بالعضلات.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 22-23 of 29</span>
+<span class="ar">المصدر: صفحات 22-23 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">A deviation on opening (jaw moves to one side then returns to the center) can indicate a disc displacement with reduction. A deflection (jaw moves to one side and stays there) may indicate a locked joint on that side.</div><div class="ar">الانحراف عند الفتح (يتحرك الفك إلى جانب واحد ثم يعود إلى المركز) يمكن أن يشير إلى انزياح القرص مع الرد. أما الانحراف المستمر (يتحرك الفك إلى جانب واحد ويبقى هناك) فقد يشير إلى مفصل مقفل في ذلك الجانب.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Crepitus is often associated with more advanced degenerative changes in the joint, like osteoarthritis, where the articular surfaces have become rough.</div><div class="ar">غالبًا ما ترتبط الفرقعة بتغيرات تنكسية أكثر تقدمًا في المفصل، مثل الفصال العظمي، حيث تصبح الأسطح المفصلية خشنة.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">A common way to roughly measure maximum opening is the "three-finger test," where a patient should be able to fit three of their own fingers (knuckles vertical) between their upper and lower incisors.</div><div class="ar">طريقة شائعة لقياس الفتح الأقصى تقريبًا هي "اختبار الأصابع الثلاثة"، حيث يجب أن يكون المريض قادرًا على إدخال ثلاثة من أصابعه (المفاصل عمودية) بين قواطعه العلوية والسفلية.</div></div></div>
+</div>
+</aside>
+</section>
 
-    <!-- 9. TMJ Examination -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">9) TMJ Examination</span><span class="ar">٩) فحص المفصل الفكي الصدغي</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <p><b>Inspection</b>: swelling, symmetry, deviation, clicking.</p>
-            <p><b>Palpation</b>: pre-auricular & intra-auricular; skin temperature; tenderness; crepitus.</p>
-            <p><b>Auscultation</b>: clicking.</p>
-            <p><b>Range</b>: vertical opening (interincisal distance via ruler/caliper), right/left lateral excursions; note pain and joint sounds.</p>
-          </div>
-          <div class="ar">
-            <p><b>الفحص البصري</b>: تورم، تماثل، انحراف، طقطقة.</p>
-            <p><b>الجس</b>: أمام الأذن وداخلها؛ حرارة الجلد؛ إيلام؛ فرقعة.</p>
-            <p><b>الإصغاء</b>: أصوات طقطقة.</p>
-            <p><b>المدى الحركي</b>: الفتح العمودي (المسافة بين القواطع)، الانحراف الجانبي يمين/يسار؛ مع تسجيل الألم والأصوات.</p>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 18,19,20,21/29</span><span class="ar">الصفحات المرجعية: ١٨،١٩،٢٠،٢١/٢٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Pretragus and intra-auricular palpation localizes joint tenderness.</div><div class="ar">الجس أمام الأذن وداخلها يحدّد إيلام المفصل.</div></div></div>
-          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warning</span><span class="ar">⚠️ تحذير</span></div><div class="body" hidden><div class="en">Crepitus suggests degenerative change; avoid forceful manipulation.</div><div class="ar">الفرقعة قد تعني تغيّرات تنكسية؛ تجنّب المناورات العنيفة.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Exam Tip</span><span class="ar">💡 تلميح عملي</span></div><div class="body" hidden><div class="en">Measure midline deviation at maximum opening to document dysfunction.</div><div class="ar">قِس انحراف الخط الأوسط عند الفتح الأقصى لتوثيق الخلل.</div></div></div>
-        </div>
-      </aside>
-    </section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Developmental Abnormalities of the Condyle</span><span class="ar">التشوهات الخلقية في لقمة الفك</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Developmental issues can affect the mandibular condyle, leading to significant facial asymmetry and malocclusion.</p>
+    <p><strong>1. Condylar Hyperplasia:</strong></p>
+    <ul>
+        <li><strong>Definition:</strong> An overdevelopment or enlargement of the condylar head and neck.</li>
+        <li><strong>Clinical Features:</strong> Causes the chin to deviate to the <strong style="color:#8b5cf6;">unaffected</strong> side. A posterior open bite may develop on the <strong style="color:#8b5cf6;">affected</strong> side.</li>
+        <li><strong>Radiographic Features:</strong> The condylar neck appears elongated and thickened.</li>
+    </ul>
+    <p><strong>2. Condylar Hypoplasia:</strong></p>
+    <ul>
+        <li><strong>Definition:</strong> Failure of the condyle to develop to its normal size.</li>
+        <li><strong>Clinical Features:</strong> The jaw is smaller on the affected side, causing the chin to deviate towards the <strong style="color:#8b5cf6;">affected</strong> side.</li>
+        <li><strong>Radiographic Features:</strong> The condyle and mandibular fossa are smaller than normal, but may have a normal shape.</li>
+    </ul>
+    <p><strong>3. Bifid Condyle:</strong></p>
+    <ul>
+        <li><strong>Definition:</strong> A developmental anomaly where the condylar head is divided into two parts by a deep cleft or notch.</li>
+        <li><strong>Clinical Features:</strong> It is often an incidental finding on a radiograph and is usually asymptomatic.</li>
+        <li><strong>Radiographic Features:</strong> On an anteroposterior view, the condyle may have a "heart shape."</li>
+    </ul>
+</div>
+<div class="ar">
+    <p>يمكن أن تؤثر المشاكل الخلقية على لقمة الفك السفلي، مما يؤدي إلى عدم تناسق كبير في الوجه وسوء إطباق.</p>
+    <p><strong>1. فرط تنسج اللقمة (Condylar Hyperplasia):</strong></p>
+    <ul>
+        <li><strong>التعريف:</strong> نمو مفرط أو تضخم في رأس وعنق اللقمة.</li>
+        <li><strong>السمات السريرية:</strong> يسبب انحراف الذقن إلى الجانب <strong style="color:#8b5cf6;">غير المصاب</strong>. قد تتطور عضة مفتوحة خلفية على الجانب <strong style="color:#8b5cf6;">المصاب</strong>.</li>
+        <li><strong>السمات الشعاعية:</strong> يظهر عنق اللقمة ممدودًا وسميكًا.</li>
+    </ul>
+    <p><strong>2. نقص تنسج اللقمة (Condylar Hypoplasia):</strong></p>
+    <ul>
+        <li><strong>التعريف:</strong> فشل اللقمة في النمو إلى حجمها الطبيعي.</li>
+        <li><strong>السمات السريرية:</strong> يكون الفك أصغر في الجانب المصاب، مما يؤدي إلى انحراف الذقن نحو الجانب <strong style="color:#8b5cf6;">المصاب</strong>.</li>
+        <li><strong>السمات الشعاعية:</strong> تكون اللقمة والحفرة الفكية أصغر من الطبيعي، ولكن قد يكون شكلها طبيعيًا.</li>
+    </ul>
+    <p><strong>3. اللقمة المشقوقة (Bifid Condyle):</strong></p>
+    <ul>
+        <li><strong>التعريف:</strong> شذوذ نمائي حيث ينقسم رأس اللقمة إلى جزأين بواسطة شق أو ثلمة عميقة.</li>
+        <li><strong>السمات السريرية:</strong> غالبًا ما يكون اكتشافًا عرضيًا في الصور الشعاعية وعادة ما يكون بدون أعراض.</li>
+        <li><strong>السمات الشعاعية:</strong> في المنظر الأمامي الخلفي، قد تكون للقمة "شكل قلب".</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 24-28 of 29</span>
+<span class="ar">المصدر: صفحات 24-28 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong>Hyper</strong> = Overgrowth pushes jaw <strong>AWAY</strong> (to unaffected side).<br><strong>Hypo</strong> = Undergrowth pulls jaw <strong>TOWARDS</strong> (to affected side).</div><div class="ar"><strong>Hyper (فرط)</strong> = النمو الزائد يدفع الفك <strong style="color:#8b5cf6;">بعيدًا</strong> (إلى الجانب غير المصاب).<br><strong>Hypo (نقص)</strong> = النمو الناقص يسحب الفك <strong style="color:#8b5cf6;">نحو</strong> (الجانب المصاب).</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Condylar hyperplasia is self-limiting. Treatment is often delayed until growth has ceased and then involves surgical correction (condylectomy and/or orthognathic surgery).</div><div class="ar">فرط تنسج اللقمة هو حالة محدودة ذاتيًا. غالبًا ما يتم تأخير العلاج حتى يتوقف النمو ثم يشمل التصحيح الجراحي (استئصال اللقمة و/أو جراحة تقويم الفكين).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The cause of these developmental issues is often unknown, but can be related to trauma, infection, or genetic factors during the growth period.</div><div class="ar">سبب هذه المشاكل النمائية غالبًا ما يكون غير معروف، ولكنه قد يكون مرتبطًا بالرضوض أو العدوى أو العوامل الوراثية خلال فترة النمو.</div></div></div>
+</div>
+</aside>
+</section>
 
-    <!-- 10. Developmental anomalies -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">10) Developmental Anomalies of the Condyle</span><span class="ar">١٠) الشذوذات التطورية للقمّة</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <p><b>Condylar hyperplasia</b>: enlargement ± deformity of condylar head; chin deviates to <i>unaffected</i> side; posterior open bite on affected side. <b>Radiology</b>: elongated, thickened condylar neck with lateral bend; inverted “L” appearance.</p>
-            <p><b>Condylar hypoplasia</b>: under-developed condyle; fossa proportionally small; posterior ramal border/neck may be dorsally inclined.</p>
-            <p><b>Bifid condyle</b>: superior depression/cleft; often incidental & asymptomatic; AP view can look “heart-shaped”.</p>
-          </div>
-          <div class="ar">
-            <p><b>فرط تنسّج القمّة</b>: تضخّم مع/بدون تشوّه؛ انحراف الذقن للجانب غير المصاب؛ عضة مفتوحة خلفية في الجانب المصاب. <b>شعاعياً</b>: عنق ممدود ومثخّن مع انحناء وحشي؛ صورة “L” مقلوبة.</p>
-            <p><b>نقص تنسّج القمّة</b>: قمّة صغيرة؛ الحفرة صدغية-فكية صغيرة تناسبياً؛ قد يميل الحد الخلفي للرأد/العنق للخلف.</p>
-            <p><b>القمّة المشقوقة (Bifid)</b>: انخفاض/شق مركزي؛ غالباً مصادفة دون أعراض؛ تبدو “شكل قلب” بمنظور أمامي-خلفي.</p>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 24,25,26,27,28/29</span><span class="ar">الصفحات المرجعية: ٢٤،٢٥،٢٦،٢٧،٢٨/٢٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Radiographic Clues</span><span class="ar">📌 دلائل شعاعية</span></div><div class="body" hidden><div class="en">Hyperplasia: elongated neck; Hypoplasia: small condyle & fossa; Bifid: superior notch (“heart”).</div><div class="ar">الفرط: عنق ممدود؛ النقص: قمّة وحفرة صغيرتان؛ المشقوقة: شق علوي “قلب”.</div></div></div>
-          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Posterior open bite on the affected side suggests hyperplasia.</div><div class="ar">العضة المفتوحة الخلفية بالجانب المصاب تُشير لفرط التنسّج.</div></div></div>
-          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Deviation of chin to the right with left posterior open bite → left condylar hyperplasia.</div><div class="ar">انحراف الذقن يميناً مع عضة مفتوحة خلفية يساراً → فرط قمّة أيسر.</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- 11. Muscle-by-muscle quick exam -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">11) Quick Exam: Each Masticatory Muscle</span><span class="ar">١١) فحص سريع: كل عضلة مضغ</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <ul>
-              <li><b>Temporalis</b>: palpate over temporal fossa during clenching; tenderness → parafunction.</li>
-              <li><b>Masseter</b>: palpate from zygomatic arch to angle; hypertrophy common in bruxism.</li>
-              <li><b>Medial pterygoid</b>: intraoral palpation medially near mandibular angle (careful).</li>
-              <li><b>Lateral pterygoid</b>: functional tests (resisted protrusion/opening) due to deep location.</li>
-              <li><b>Accessory</b>: digastric/mylohyoid/geniohyoid aid depression and stabilization.</li>
-            </ul>
-          </div>
-          <div class="ar">
-            <ul>
-              <li><b>الصدغية</b>: جس الحفرة الصدغية عند العض؛ الإيلام → عادات وظيفية خاطئة.</li>
-              <li><b>الماضغة</b>: جس من القوس الوجني إلى الزاوية؛ ضخامة شائعة مع الصرير.</li>
-              <li><b>الجناحية الإنسية</b>: جس داخل فموي قرب زاوية الفك (بحذر).</li>
-              <li><b>الجناحية الوحشية</b>: اختبارات وظيفية (مقاومة التقدّم/الفتح) لعمق موقعها.</li>
-              <li><b>المساعدة</b>: ذات البطنين/الضرسية اللامية/الذقنية اللامية تساعد الخفض والثبات.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 12,13,14,15,16/29</span><span class="ar">الصفحات المرجعية: ١٢،١٣،١٤،١٥،١٦/٢٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Palpate bilaterally and compare tone, bulk, and tenderness.</div><div class="ar">جِس ثنائياً وقارن التوتر والحجم والإيلام.</div></div></div>
-          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Caution</span><span class="ar">⚠️ تنبيه</span></div><div class="body" hidden><div class="en">Intraoral palpation of medial pterygoid can be uncomfortable—explain first.</div><div class="ar">جس الجناحية الإنسية داخل الفم قد يكون مزعجاً—اشرح قبل الفحص.</div></div></div>
-          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Pain on resisted opening suggests lower head of lateral pterygoid involvement.</div><div class="ar">ألم عند فتح فم مقاوم يدل على مشاركة الرأس السفلي للجناحية الوحشية.</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- 12. Summary -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head"><span class="en">12) Summary</span><span class="ar">١٢) الخلاصة</span></h2>
-        <div class="sec-body">
-          <div class="en">
-            <p>The TMJ is a ginglymoarthrodial synovial joint with a disc that splits function: <b>rotation below</b>, <b>translation above</b>. Opening: rotate → translate. Chewing alternates rotation/translation between sides. Primary muscles (masseter, temporalis, medial & lateral pterygoids) drive elevation, retraction, protrusion, and grinding, with accessory suprahyoids aiding depression. Examination includes inspection, targeted palpation, auscultation, and range measurements. Developmental anomalies—hyperplasia, hypoplasia, and bifid condyle—have characteristic clinical and radiographic signs.</p>
-          </div>
-          <div class="ar">
-            <p>المفصل الفكي الصدغي زلالي يجمع بين الدوران والانزلاق بفضل القرص: <b>الدوران سفلي</b> و<b>الانزلاق علوي</b>. الفتح: دوران ثم انزلاق. المضغ يتناوب بين الجانبين. العضلات الرئيسية تقود الرفع والرجوع والتقدّم والطحن، مع مساهمة العضلات فوق اللامية في الخفض. يشمل الفحص: المعاينة، الجس الموجّه، الإصغاء، وقياس المدى. للشذوذات التطورية علامات سريرية وشعاعية مميزة (الفرط، النقص، المشقوقة).</p>
-          </div>
-        </div>
-        <div class="source-footer"><span class="en">Source pages: 2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,24,25,26,27,28/29</span><span class="ar">الصفحات المرجعية: ٢،٣،٤،٥،٦،٧،٨،٩،١٠،١١،١٢،١٣،١٤،١٥،١٦،١٧،١٨،١٩،٢٠،٢١،٢٤،٢٥،٢٦،٢٧،٢٨/٢٩</span></div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout memory"><div class="hdr"><span class="en">🧠 High-Yield</span><span class="ar">🧠 مهم</span></div><div class="body" hidden><div class="en">R → T (Rotate then Translate) for opening sequence.</div><div class="ar">د → ا (دوران ثم انزلاق) في تتابع الفتح.</div></div></div>
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Must-Know</span><span class="ar">📌 أساسيات</span></div><div class="body" hidden><div class="en">Lateral pterygoid = protrusion; temporalis posterior = retraction.</div><div class="ar">الوحشية = تقدّم؛ الصدغية الخلفية = رجوع.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Exam Tips</span><span class="ar">💡 نصائح اختبار</span></div><div class="body" hidden><div class="en">Know hyperplasia vs hypoplasia vs bifid radiographic patterns.</div><div class="ar">فرّق شعاعياً بين فرط/نقص التنسّج والقمّة المشقوقة.</div></div></div>
-        </div>
-      </aside>
-    </section>
-  </div>
-
-  <!-- Glossary -->
-  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
-  <div class="grid g3x4" id="glossary">
-    <div class="card"><div class="head">Ginglymoid / مفصلي</div><div class="content" hidden><div class="en">Hinge-type motion at a joint.</div><div class="ar">حركة مفصلية تشبه المفصل الرزي.</div></div></div>
-    <div class="card"><div class="head">Arthrodial / انزلاقي</div><div class="content" hidden><div class="en">Gliding motion between flat/curved surfaces.</div><div class="ar">حركة انزلاق بين أسطح مفصلية.</div></div></div>
-    <div class="card"><div class="head">Articular disc / القرص المفصلي</div><div class="content" hidden><div class="en">Fibrocartilage pad dividing TMJ into two compartments.</div><div class="ar">وسادة ليفية غضروفية تقسم المفصل لحجرتين.</div></div></div>
-    <div class="card"><div class="head">Protrusion / التقدّم</div><div class="content" hidden><div class="en">Forward movement of the mandible.</div><div class="ar">تحرّك الفك للأمام.</div></div></div>
-    <div class="card"><div class="head">Retraction / الرجوع</div><div class="content" hidden><div class="en">Backward movement to centric relation.</div><div class="ar">عودة الفك للخلف للوضع المركزي.</div></div></div>
-    <div class="card"><div class="head">Translation / الانزلاق</div><div class="content" hidden><div class="en">Anterior glide of disc-condyle complex.</div><div class="ar">انزلاق أمامي لمركب القرص-القمّة.</div></div></div>
-    <div class="card"><div class="head">Rotation / الدوران</div><div class="content" hidden><div class="en">Hinge motion at lower compartment.</div><div class="ar">حركة رزية بالحجرة السفلية.</div></div></div>
-    <div class="card"><div class="head">Crepitus / فرقعة</div><div class="content" hidden><div class="en">Grinding sound suggesting degenerative change.</div><div class="ar">صوت احتكاك يدل على تغيّر تنكّسي.</div></div></div>
-    <div class="card"><div class="head">Condylar hyperplasia / فرط تنسّج القمّة</div><div class="content" hidden><div class="en">Overgrowth of condylar head/neck.</div><div class="ar">زيادة نمو رأس/عنق القمّة.</div></div></div>
-    <div class="card"><div class="head">Condylar hypoplasia / نقص تنسّج القمّة</div><div class="content" hidden><div class="en">Under-development of condyle and small fossa.</div><div class="ar">نقص نمو القمّة مع حفرة صغيرة.</div></div></div>
-    <div class="card"><div class="head">Bifid condyle / القمّة المشقوقة</div><div class="content" hidden><div class="en">Condyle with a sagittal/frontal cleft.</div><div class="ar">قمّة فيها شق سهمي/إكليلي.</div></div></div>
-  </div>
-
-  <!-- Flashcards -->
-  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
-  <div class="grid g3x4" id="flashcards">
-    <div class="card"><div class="head"><span class="en">1 — What makes TMJ “ginglymoarthrodial”?</span><span class="ar">١ — لماذا يُعد TMJ مفصلي-انزلاقي؟</span></div><div class="content" hidden><span class="en">It combines hinge (rotation) and gliding (translation).</span><span class="ar">لجمعه بين الدوران والانزلاق.</span></div></div>
-    <div class="card"><div class="head"><span class="en">2 — First phase of opening (mm)?</span><span class="ar">٢ — المرحلة الأولى من الفتح (مم)؟</span></div><div class="content" hidden><span class="en">~20–25 mm of pure rotation.</span><span class="ar">حوالي 20–25 مم دوران صِرف.</span></div></div>
-    <div class="card"><div class="head"><span class="en">3 — Which compartment translates?</span><span class="ar">٣ — أي حجرة يحدث فيها الانزلاق؟</span></div><div class="content" hidden><span class="en">Upper (meniscotemporal) compartment.</span><span class="ar">الحجرة العلوية (قرصي-صدغي).</span></div></div>
-    <div class="card"><div class="head"><span class="en">4 — Main protrusive muscle?</span><span class="ar">٤ — العضلة الأساسية للتقدّم؟</span></div><div class="content" hidden><span class="en">Lateral pterygoid.</span><span class="ar">الجناحية الوحشية.</span></div></div>
-    <div class="card"><div class="head"><span class="en">5 — Posterior fibers of temporalis?</span><span class="ar">٥ — وظيفة الألياف الخلفية للصدغية؟</span></div><div class="content" hidden><span class="en">Retraction of mandible.</span><span class="ar">إرجاع الفك للخلف.</span></div></div>
-    <div class="card"><div class="head"><span class="en">6 — Working vs balancing side?</span><span class="ar">٦ — الجانب العامل والمقابل؟</span></div><div class="content" hidden><span class="en">Working: rotation; Balancing: translation.</span><span class="ar">العامل: دوران؛ المقابل: انزلاق.</span></div></div>
-    <div class="card"><div class="head"><span class="en">7 — Sign of condylar hyperplasia?</span><span class="ar">٧ — علامة فرط تنسّج القمّة؟</span></div><div class="content" hidden><span class="en">Chin deviates to unaffected side; posterior open bite on affected side.</span><span class="ar">انحراف الذقن للجانب غير المصاب؛ عضة مفتوحة خلفية بالجانب المصاب.</span></div></div>
-    <div class="card"><div class="head"><span class="en">8 — Bifid condyle radiographic hint?</span><span class="ar">٨ — لمحة شعاعية للقمّة المشقوقة؟</span></div><div class="content" hidden><span class="en">Superior notch/cleft; “heart-shaped” AP outline.</span><span class="ar">شق علوي؛ مظهر “القلب” أمامي-خلفي.</span></div></div>
-    <div class="card"><div class="head"><span class="en">9 — Two measures in TMJ exam?</span><span class="ar">٩ — قياسان في فحص TMJ؟</span></div><div class="content" hidden><span class="en">Interincisal distance and lateral excursion.</span><span class="ar">المسافة بين القواطع والانحراف الجانبي.</span></div></div>
-  </div>
-
-  <!-- References (kept concise; pages already listed in sections) -->
-  <div class="glossary-box"><h3><span class="en">📖 References (from lecture)</span><span class="ar">📖 المراجع (من المحاضرة)</span></h3></div>
-  <div class="grid g3x4" id="refs">
-    <div class="card"><div class="head">Gray’s Anatomy (39th ed.)</div><div class="content" hidden><div class="en">Anatomical basis of clinical practice — TMJ sections.</div><div class="ar">الأساس التشريحي للممارسة — فقرات TMJ.</div></div></div>
-    <div class="card"><div class="head">Burket’s Oral Medicine (13th ed.) 350–355</div><div class="content" hidden><div class="en">TMJ disorders overview.</div><div class="ar">نظرة عامة على اضطرابات TMJ.</div></div></div>
-    <div class="card"><div class="head">White & Pharoah (7th ed.) 1350–1356</div><div class="content" hidden><div class="en">Oral radiology features of condylar anomalies.</div><div class="ar">ملامح شعاعية لشذوذات القمّة.</div></div></div>
-  </div>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Summary</span><span class="ar">الملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+    <ul>
+        <li>The TMJ is a complex <strong style="color:#8b5cf6;">ginglymoarthrodial</strong> joint, allowing both hinging (<strong style="color:#8b5cf6;">rotation</strong>) and gliding (<strong style="color:#8b5cf6;">translation</strong>).</li>
+        <li>The <strong style="color:#8b5cf6;">articular disc</strong> divides the joint into an upper compartment (for translation) and a lower compartment (for rotation).</li>
+        <li>Jaw opening involves initial rotation followed by translation for wider opening.</li>
+        <li>The four primary muscles of mastication are the <strong style="color:#8b5cf6;">Temporalis, Masseter, Medial Pterygoid,</strong> and <strong style="color:#8b5cf6;">Lateral Pterygoid</strong>.</li>
+        <li><strong>Elevation</strong> is primarily done by the Temporalis, Masseter, and Medial Pterygoid.</li>
+        <li><strong>Protrusion and Depression</strong> are primarily driven by the Lateral Pterygoid.</li>
+        <li>Clinical examination involves inspection, palpation, auscultation, and measuring the range of motion.</li>
+        <li>Developmental abnormalities like <strong style="color:#8b5cf6;">hyperplasia</strong> and <strong style="color:#8b5cf6;">hypoplasia</strong> can cause significant facial asymmetry.</li>
+    </ul>
+</div>
+<div class="ar">
+    <ul>
+        <li>المفصل الصدغي الفكي هو مفصل <strong style="color:#8b5cf6;">رزيّ انسيابي</strong> معقد، يسمح بكل من الحركة المفصلية (<strong style="color:#8b5cf6;">الدوران</strong>) والانزلاقية (<strong style="color:#8b5cf6;">الانتقال</strong>).</li>
+        <li>يقسم <strong style="color:#8b5cf6;">القرص المفصلي</strong> المفصل إلى حجرة علوية (للانتقال) وحجرة سفلية (للدوران).</li>
+        <li>يتضمن فتح الفك دورانًا أوليًا يتبعه انتقال لفتح أوسع.</li>
+        <li>عضلات المضغ الأساسية الأربع هي <strong style="color:#8b5cf6;">الصدغية، الماضغة، الجناحية الإنسية،</strong> و<strong style="color:#8b5cf6;">الجناحية الوحشية</strong>.</li>
+        <li>يتم <strong style="color:#8b5cf6;">الرفع</strong> بشكل أساسي بواسطة العضلات الصدغية والماضغة والجناحية الإنسية.</li>
+        <li>يتم <strong style="color:#8b5cf6;">التقديم والخفض</strong> بشكل أساسي بواسطة العضلة الجناحية الوحشية.</li>
+        <li>يشمل الفحص السريري المعاينة والجس والتسمع وقياس مدى الحركة.</li>
+        <li>يمكن أن تسبب التشوهات الخلقية مثل <strong style="color:#8b5cf6;">فرط التنسج</strong> و<strong style="color:#8b5cf6;">نقص التنسج</strong> عدم تناسق كبير في الوجه.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 3-28 of 29</span>
+<span class="ar">المصدر: صفحات 3-28 من 29</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+    <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Create a table summarizing each muscle's origin, insertion, and function. Use diagrams to visualize the movements and muscle locations.</div><div class="ar">قم بإنشاء جدول يلخص منشأ واندغام ووظيفة كل عضلة. استخدم الرسوم البيانية لتصور الحركات ومواقع العضلات.</div></div></div>
+    <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">TMJ disorders (TMD) are multifactorial. They can be related to the joint itself (internal derangement), the muscles (myofascial pain), or a combination of both.</div><div class="ar">اضطرابات المفصل الصدغي الفكي (TMD) متعددة العوامل. يمكن أن تكون مرتبطة بالمفصل نفسه (خلل داخلي)، أو بالعضلات (ألم عضلي ليفي)، أو مزيج من كليهما.</div></div></div>
+    <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">A solid understanding of TMJ anatomy and biomechanics is fundamental for every dentist, affecting everything from restorative dentistry and orthodontics to surgery.</div><div class="ar">إن الفهم القوي لتشريح وميكانيكا المفصل الصدغي الفكي أساسي لكل طبيب أسنان، حيث يؤثر على كل شيء من طب الأسنان الترميمي وتقويم الأسنان إلى الجراحة.</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Ginglymoid Joint/مفصل رزيّ</div><div class="content" hidden=""><div class="en">A type of synovial joint that allows movement in only one plane, like a hinge.</div><div class="ar">نوع من المفاصل الزلالية يسمح بالحركة في مستوى واحد فقط، مثل المفصلة.</div></div></div>
+<div class="card"><div class="head">Arthrodial Joint/مفصل انسيابي</div><div class="content" hidden=""><div class="en">A type of synovial joint that allows gliding or sliding movements.</div><div class="ar">نوع من المفاصل الزلالية يسمح بحركات الانزلاق.</div></div></div>
+<div class="card"><div class="head">Translation/حركة انتقالية</div><div class="content" hidden=""><div class="en">A gliding movement where every point of the moving object travels in the same direction. In the TMJ, it's the forward slide.</div><div class="ar">حركة انزلاقية حيث تتحرك كل نقطة من الجسم المتحرك في نفس الاتجاه. في المفصل الصدغي الفكي، هي الانزلاق للأمام.</div></div></div>
+<div class="card"><div class="head">Rotation/حركة دورانية</div><div class="content" hidden=""><div class="en">A movement in which an object turns around a central axis. In the TMJ, it's the initial hinging motion.</div><div class="ar">حركة يدور فيها الجسم حول محور مركزي. في المفصل الصدغي الفكي، هي الحركة المفصلية الأولية.</div></div></div>
+<div class="card"><div class="head">Protrusion/تقديم الفك</div><div class="content" hidden=""><div class="en">Movement of the mandible forward, away from the maxilla.</div><div class="ar">حركة الفك السفلي للأمام، بعيدًا عن الفك العلوي.</div></div></div>
+<div class="card"><div class="head">Retraction/سحب الفك</div><div class="content" hidden=""><div class="en">Movement of the mandible backward, toward the maxilla.</div><div class="ar">حركة الفك السفلي للخلف، باتجاه الفك العلوي.</div></div></div>
+<div class="card"><div class="head">Crepitus/فرقعة</div><div class="content" hidden=""><div class="en">A grating, crackling, or popping sound and sensation experienced under the skin and joints.</div><div class="ar">صوت وإحساس بالطحن أو التكسير أو الفرقعة تحت الجلد والمفاصل.</div></div></div>
+<div class="card"><div class="head">Hyperplasia/فرط التنسج</div><div class="content" hidden=""><div class="en">The enlargement of an organ or tissue caused by an increase in the reproduction rate of its cells.</div><div class="ar">تضخم عضو أو نسيج ناتج عن زيادة في معدل تكاثر خلاياه.</div></div></div>
+<div class="card"><div class="head">Hypoplasia/نقص التنسج</div><div class="content" hidden=""><div class="en">The underdevelopment or incomplete development of a tissue or organ.</div><div class="ar">نقص أو عدم اكتمال نمو نسيج أو عضو.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — What are the two types of movements in the TMJ?</span><span class="ar">١ — ما هما نوعا الحركة في المفصل الصدغي الفكي؟</span></div><div class="content" hidden=""><span class="en">A: Rotation (hinging) and Translation (gliding).</span><span class="ar">ج: الدوران (الحركة المفصلية) والانتقال (الانزلاق).</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — Which muscle is the primary protruder of the mandible?</span><span class="ar">٢ — ما هي العضلة الرئيسية التي تقدم الفك السفلي للأمام؟</span></div><div class="content" hidden=""><span class="en">A: The Lateral Pterygoid muscle.</span><span class="ar">ج: العضلة الجناحية الوحشية.</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — What three muscles are the primary elevators of the mandible?</span><span class="ar">٣ — ما هي العضلات الثلاث الرئيسية الرافعة للفك السفلي؟</span></div><div class="content" hidden=""><span class="en">A: Temporalis, Masseter, and Medial Pterygoid.</span><span class="ar">ج: الصدغية، الماضغة، والجناحية الإنسية.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — In which compartment does translation primarily occur?</span><span class="ar">٤ — في أي حجرة تحدث الحركة الانتقالية بشكل أساسي؟</span></div><div class="content" hidden=""><span class="en">A: In the upper (meniscotemporal) compartment.</span><span class="ar">ج: في الحجرة العلوية (الغضروفية الصدغية).</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — A chin deviated to the right could be caused by what condylar issue?</span><span class="ar">٥ — انحراف الذقن إلى اليمين يمكن أن يكون سببه أي مشكلة في اللقمة؟</span></div><div class="content" hidden=""><span class="en">A: Condylar hypoplasia on the right side, or condylar hyperplasia on the left side.</span><span class="ar">ج: نقص تنسج اللقمة في الجانب الأيمن، أو فرط تنسج اللقمة في الجانب الأيسر.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — What is the term for a grinding or gravelly sound in the TMJ?</span><span class="ar">٦ — ما هو المصطلح الذي يطلق على صوت الطحن أو الحصى في المفصل؟</span></div><div class="content" hidden=""><span class="en">A: Crepitus.</span><span class="ar">ج: الفرقعة.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — What is the normal range for maximum mouth opening?</span><span class="ar">٧ — ما هو المدى الطبيعي للفتح الأقصى للفم؟</span></div><div class="content" hidden=""><span class="en">A: 40-55 millimeters.</span><span class="ar">ج: 40-55 ملم.</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — Which muscle's posterior fibers retract the mandible?</span><span class="ar">٨ — ما هي العضلة التي تسحب أليافها الخلفية الفك السفلي للخلف؟</span></div><div class="content" hidden=""><span class="en">A: The Temporalis muscle.</span><span class="ar">ج: العضلة الصدغية.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What structure divides the TMJ into two compartments?</span><span class="ar">٩ — ما هو التركيب الذي يقسم المفصل الصدغي الفكي إلى حجرتين؟</span></div><div class="content" hidden=""><span class="en">A: The articular disc.</span><span class="ar">ج: القرص المفصلي.</span></div></div>
+</div>
 </main>
-
 <script>
   // Language toggle: flip lang visibility + page direction
   const btn=document.getElementById('langBtn');
@@ -741,15 +862,6 @@
 
   // Flashcards toggle (dim question when open)
   document.querySelectorAll('#flashcards .card').forEach(card=>{
-    card.addEventListener('click',()=>{
-      card.classList.toggle('open');
-      const cont=card.querySelector('.content');
-      cont.hidden=!cont.hidden;
-    });
-  });
-
-  // References toggle
-  document.querySelectorAll('#refs .card').forEach(card=>{
     card.addEventListener('click',()=>{
       card.classList.toggle('open');
       const cont=card.querySelector('.content');

@@ -1,0 +1,647 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Two-Column Sections</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+  strong { color: #8b5cf6; }
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 27
+</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">رَبِّ زِدْنِي عِلْمًا</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Radiographic Anatomy of Tooth Structure</b></span>
+<span class="ar"><b>الموضوع: التشريح الإشعاعي لتركيب السن</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Radiographic Principles</span><span class="ar">المبادئ الإشعاعية</span></h2>
+<div class="sec-body">
+<div class="en"><p>Radiographic images are formed based on the density of tissues. Denser tissues block more X-rays from reaching the sensor.</p><p>
+- <strong style="color:#8b5cf6;">Radiopaque:</strong> Describes dense structures that block X-rays (e.g., bone, enamel). They appear <strong style="color:#8b5cf6;">white or light gray</strong> on the radiograph.</p><p>
+- <strong style="color:#8b5cf6;">Radiolucent:</strong> Describes less dense structures that allow X-rays to pass through (e.g., pulp, cavities, sinuses). They appear <strong style="color:#8b5cf6;">dark or black</strong> on the radiograph.</p></div>
+<div class="ar"><p>تتكون الصور الإشعاعية بناءً على كثافة الأنسجة. الأنسجة الأكثر كثافة تمنع المزيد من الأشعة السينية من الوصول إلى المستشعر.</p><p>
+- <strong style="color:#8b5cf6;">ظليل للأشعة (Radiopaque):</strong> يصف التراكيب الكثيفة التي تمنع الأشعة السينية (مثل العظام، المينا). تظهر باللون <strong style="color:#8b5cf6;">الأبيض أو الرمادي الفاتح</strong> في الصورة الإشعاعية.</p><p>
+- <strong style="color:#8b5cf6;">شفيف للأشعة (Radiolucent):</strong> يصف التراكيب الأقل كثافة التي تسمح للأشعة السينية بالمرور من خلالها (مثل اللب، التسوس، الجيوب الأنفية). تظهر باللون <strong style="color:#8b5cf6;">الداكن أو الأسود</strong> في الصورة الإشعاعية.</p></div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 5-7 of 23</span>
+<span class="ar">المصدر: صفحات 5-7 من 23</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The formation of a radiographic image depends entirely on the differential absorption of X-rays by tissues of varying densities.</div><div class="ar">يعتمد تكوين الصورة الإشعاعية بشكل كامل على الامتصاص التفاضلي للأشعة السينية بواسطة الأنسجة ذات الكثافات المختلفة.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">A metal filling is extremely radiopaque (very white), while the pulp chamber is radiolucent (dark).</div><div class="ar">الحشوة المعدنية تكون ظليلة للأشعة للغاية (بيضاء جدًا)، بينما حجرة اللب تكون شفيفة للأشعة (داكنة).</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">"Opaque" blocks light, so <strong style="color:#8b5cf6;">radiopaque</strong> blocks X-rays and appears white. "Lucent" means clear, so <strong style="color:#8b5cf6;">radiolucent</strong> lets X-rays pass through, appearing black.</div><div class="ar">كلمة "Opaque" تعني معتم ويحجب الضوء، لذا <strong style="color:#8b5cf6;">radiopaque</strong> يحجب الأشعة السينية ويظهر أبيض. كلمة "Lucent" تعني شفاف، لذا <strong style="color:#8b5cf6;">radiolucent</strong> يسمح بمرور الأشعة السينية ويظهر أسود.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Gross Anatomy of the Tooth</span><span class="ar">التشريح العام للسن</span></h2>
+<div class="sec-body">
+<div class="en"><p>A tooth is composed of several structures, each with a distinct radiographic appearance. The main components are:</p>
+<ul>
+    <li><strong style="color:#8b5cf6;">Tooth Structures:</strong> Enamel, Dentin, and the Pulp Cavity.</li>
+    <li><strong style="color:#8b5cf6;">Supporting Structures:</strong> Alveolar process, Periodontal Ligament (PDL) space, and Lamina Dura.</li>
+</ul>
+<p>The tooth is visibly divided into the <strong style="color:#8b5cf6;">Crown</strong> (above the gumline) and the <strong style="color:#8b5cf6;">Root</strong> (below the gumline), separated by the Cementoenamel Junction (CEJ).</p></div>
+<div class="ar"><p>يتكون السن من عدة تراكيب، لكل منها مظهر إشعاعي مميز. المكونات الرئيسية هي:</p>
+<ul>
+    <li><strong style="color:#8b5cf6;">تراكيب السن:</strong> المينا، العاج، وحجرة اللب.</li>
+    <li><strong style="color:#8b5cf6;">التراكيب الداعمة:</strong> النتوء السنخي، مسافة الرباط اللثوي (PDL)، والصفيحة القاسية (Lamina Dura).</li>
+</ul>
+<p>ينقسم السن بشكل واضح إلى <strong style="color:#8b5cf6;">التاج</strong> (فوق خط اللثة) و<strong style="color:#8b5cf6;">الجذر</strong> (تحت خط اللثة)، ويفصل بينهما الموصل الملاطي المينائي (CEJ).</p></div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 8 of 23</span>
+<span class="ar">المصدر: صفحة 8 من 23</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The tooth is not a single solid structure but a complex arrangement of hard and soft tissues.</div><div class="ar">السن ليس بنية صلبة واحدة بل هو ترتيب معقد من الأنسجة الصلبة والرخوة.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">The <strong style="color:#8b5cf6;">Cementoenamel Junction (CEJ)</strong> is a critical anatomical landmark for assessing periodontal bone levels.</div><div class="ar">يعتبر <strong style="color:#8b5cf6;">الموصل الملاطي المينائي (CEJ)</strong> معلمًا تشريحيًا حاسمًا لتقييم مستويات العظم حول السن.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding the normal radiographic appearance of each part is essential before you can identify what's abnormal (pathology).</div><div class="ar">فهم المظهر الإشعاعي الطبيعي لكل جزء ضروري قبل أن تتمكن من تحديد ما هو غير طبيعي (مرضي).</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Enamel & Dentin</span><span class="ar">المينا والعاج</span></h2>
+<div class="sec-body">
+<div class="en"><p><strong style="color:#8b5cf6;">Enamel:</strong> This is the outermost layer of the tooth crown. It is the hardest substance in the body, composed of 96% inorganic material. This high density makes it the <strong style="color:#8b5cf6;">most radiopaque</strong> part of the tooth.</p><p><strong style="color:#8b5cf6;">Dentin:</strong> Located beneath the enamel, dentin forms the bulk of the tooth. It is less dense, with about 65% inorganic material. As a result, it is <strong style="color:#8b5cf6;">radiopaque, but appears grayer</strong> (less white) than enamel. The border between them is the Amelo-dentinal Junction.</p></div>
+<div class="ar"><p><strong style="color:#8b5cf6;">المينا (Enamel):</strong> هي الطبقة الخارجية لتاج السن. وهي أصلب مادة في الجسم، وتتكون من 96% مواد غير عضوية. هذه الكثافة العالية تجعلها الجزء <strong style="color:#8b5cf6;">الأكثر إظلالاً للأشعة</strong> في السن.</p><p><strong style="color:#8b5cf6;">العاج (Dentin):</strong> يقع تحت المينا ويشكل الجزء الأكبر من السن. وهو أقل كثافة، حيث يحتوي على حوالي 65% من المواد غير العضوية. نتيجة لذلك، يكون <strong style="color:#8b5cf6;">ظليلاً للأشعة، ولكنه يبدو أكثر رمادية</strong> (أقل بياضًا) من المينا. الحد الفاصل بينهما هو الموصل المينائي العاجي.</p></div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 9 of 23</span>
+<span class="ar">المصدر: صفحة 9 من 23</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Enamel is the most highly mineralized tissue in the body, making it extremely dense and radiopaque.</div><div class="ar">المينا هو النسيج الأكثر تمعدنًا في الجسم، مما يجعله كثيفًا جدًا وظليلاً للأشعة.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong style="color:#8b5cf6;">E</strong>namel is on the <strong style="color:#8b5cf6;">E</strong>dge and is <strong style="color:#8b5cf6;">E</strong>xtremely white on a radiograph.</div><div class="ar">المينا (Enamel) يوجد على الحافة (Edge) ولونه أبيض للغاية (Extremely white) في الصورة الإشعاعية.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">The clear distinction in radiodensity at the <strong style="color:#8b5cf6;">Amelo-dentinal Junction</strong> helps dentists visualize how far decay has penetrated the tooth.</div><div class="ar">التمييز الواضح في الكثافة الإشعاعية عند <strong style="color:#8b5cf6;">الموصل المينائي العاجي</strong> يساعد أطباء الأسنان على تصور مدى تغلغل التسوس في السن.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Pulp Cavity & Cementum</span><span class="ar">حجرة اللب والملاط</span></h2>
+<div class="sec-body">
+<div class="en"><p><strong style="color:#8b5cf6;">Pulp Cavity:</strong> This is the central-most part of the tooth, containing soft tissue (nerves and blood vessels). Because it is not calcified, it appears <strong style="color:#8b5cf6;">radiolucent</strong> (dark). The pulp cavity is divided into the <strong style="color:#8b5cf6;">Pulp Chamber</strong> within the crown and the <strong style="color:#8b5cf6;">Pulp/Root Canal(s)</strong> within the root(s).</p><p><strong style="color:#8b5cf6;">Cementum:</strong> A thin layer of bone-like tissue covering the root of the tooth. Radiographically, it is <strong style="color:#8b5cf6;">usually not apparent</strong> because its thickness and density are very similar to dentin, providing very low contrast.</p></div>
+<div class="ar"><p><strong style="color:#8b5cf6;">حجرة اللب (Pulp Cavity):</strong> هذا هو الجزء المركزي من السن، ويحتوي على نسيج رخو (أعصاب وأوعية دموية). لأنه غير متكلس، فإنه يظهر <strong style="color:#8b5cf6;">شفيفًا للأشعة</strong> (داكن). تنقسم حجرة اللب إلى <strong style="color:#8b5cf6;">حجرة اللب</strong> داخل التاج و<strong style="color:#8b5cf6;">قناة (أو قنوات) اللب/الجذر</strong> داخل الجذر (أو الجذور).</p><p><strong style="color:#8b5cf6;">الملاط (Cementum):</strong> طبقة رقيقة من نسيج شبيه بالعظم تغطي جذر السن. إشعاعيًا، <strong style="color:#8b5cf6;">عادة لا يكون واضحًا</strong> لأن سماكته وكثافته تشبهان إلى حد كبير العاج، مما يوفر تباينًا منخفضًا جدًا.</p></div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 10 of 23</span>
+<span class="ar">المصدر: صفحة 10 من 23</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The pulp is the vital, living tissue of the tooth. Its radiolucent appearance is due to the complete absence of mineralized tissue.</div><div class="ar">اللب هو النسيج الحيوي للسن. ومظهره الشفيف للأشعة يرجع إلى الغياب التام للنسيج المتمعدن.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Pulp inflammation or infection (pulpitis) is not visible on a radiograph, but its consequences, like a periapical abscess, are.</div><div class="ar">التهاب أو عدوى اللب (pulpitis) لا يكون مرئيًا في الصورة الإشعاعية، لكن عواقبه، مثل خراج قمي، تكون مرئية.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The radiolucent pulp canal is the pathway for infection to spread from inside the tooth to the bone at the root tip (apex).</div><div class="ar">قناة اللب الشفيفة للأشعة هي المسار الذي تنتشر من خلاله العدوى من داخل السن إلى العظم عند طرف الجذر (القمة).</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">The Alveolar Process & Lamina Dura</span><span class="ar">النتوء السنخي والصفيحة القاسية</span></h2>
+<div class="sec-body">
+<div class="en"><p><strong style="color:#8b5cf6;">Alveolar Process:</strong> This is the part of the maxilla or mandible that forms and supports the tooth sockets (alveoli). It is composed of both cortical and cancellous bone.</p><p><strong style="color:#8b5cf6;">Lamina Dura:</strong> This is a key radiographic landmark. It is the thin layer of dense cortical bone that lines the tooth socket. On a radiograph, it appears as a continuous, thin, <strong style="color:#8b5cf6;">radiopaque line</strong> adjacent to the periodontal ligament space. It is continuous with the bone of the alveolar crest.</p></div>
+<div class="ar"><p><strong style="color:#8b5cf6;">النتوء السنخي (Alveolar Process):</strong> هو جزء من الفك العلوي أو السفلي الذي يشكل ويدعم تجاويف الأسنان (الأسناخ). وهو يتكون من عظم قشري وإسفنجي.</p><p><strong style="color:#8b5cf6;">الصفيحة القاسية (Lamina Dura):</strong> هذه علامة إشعاعية رئيسية. هي طبقة رقيقة من العظم القشري الكثيف الذي يبطن تجويف السن. في الصورة الإشعاعية، تظهر كخط رفيع ومستمر <strong style="color:#8b5cf6;">ظليل للأشعة</strong> مجاور لمسافة الرباط اللثوي. وهي متصلة بعظم العرف السنخي.</p></div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 11-13 of 23</span>
+<span class="ar">المصدر: صفحات 11-13 من 23</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The lamina dura is essentially the wall of the tooth socket, seen on a 2D radiograph.</div><div class="ar">الصفيحة القاسية هي في الأساس جدار تجويف السن، كما يظهر في صورة إشعاعية ثنائية الأبعاد.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">"Lamina" means layer, and "Dura" means hard. It's literally the "hard layer" of bone lining the alveolus.</div><div class="ar">"Lamina" تعني طبقة، و "Dura" تعني قاسية. إنها حرفيًا "الطبقة القاسية" من العظم التي تبطن السنخ.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">The presence, thickness, and continuity of the lamina dura are important indicators of periodontal health.</div><div class="ar">وجود وسمك واستمرارية الصفيحة القاسية هي مؤشرات هامة لصحة الأنسجة الداعمة للأسنان.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Lamina Dura & Alveolar Crest: Clinical Notes</span><span class="ar">ملاحظات سريرية: الصفيحة القاسية والعرف السنخي</span></h2>
+<div class="sec-body">
+<div class="en"><p><strong style="color:#8b5cf6;">Importance of Lamina Dura:</strong> The integrity of this line is crucial for diagnosis.
+<ul>
+<li>An <strong style="color:#8b5cf6;">intact lamina dura</strong> around the root apex suggests the tooth has a vital pulp.</li>
+<li><strong style="color:#8b5cf6;">Loss or a break</strong> in the lamina dura, especially at the apex, is a classic sign of a <strong style="color:#8b5cf6;">periapical abscess</strong> or other pathology.</li>
+</ul></p><p><strong style="color:#8b5cf6;">Alveolar Crest:</strong> This is the coronal margin of the alveolar bone between teeth.
+<ul>
+<li>In health, it appears as a <strong style="color:#8b5cf6;">sharp, radiopaque angle</strong> that is continuous with the lamina dura.</li>
+<li><strong style="color:#8b5cf6;">Rounding or blunting</strong> of this sharp angle is an early radiographic sign of <strong style="color:#8b5cf6;">periodontal disease (PDL disease)</strong>.</li>
+</ul></p></div>
+<div class="ar"><p><strong style="color:#8b5cf6;">أهمية الصفيحة القاسية:</strong> سلامة هذا الخط حاسمة للتشخيص.
+<ul>
+<li><strong style="color:#8b5cf6;">صفيحة قاسية سليمة</strong> حول قمة الجذر تشير إلى أن السن لديه لب حيوي.</li>
+<li><strong style="color:#8b5cf6;">فقدان أو انقطاع</strong> في الصفيحة القاسية، خاصة عند القمة، هو علامة كلاسيكية على <strong style="color:#8b5cf6;">خراج قمي</strong> أو أمراض أخرى.</li>
+</ul></p><p><strong style="color:#8b5cf6;">العرف السنخي (Alveolar Crest):</strong> هو الحافة التاجية للعظم السنخي بين الأسنان.
+<ul>
+<li>في الحالة الصحية، يظهر كـ<strong style="color:#8b5cf6;">زاوية حادة وظليلة للأشعة</strong> متصلة بالصفيحة القاسية.</li>
+<li><strong style="color:#8b5cf6;">استدارة أو تآكل</strong> هذه الزاوية الحادة هو علامة إشعاعية مبكرة لـ<strong style="color:#8b5cf6;">مرض دواعم السن (PDL disease)</strong>.</li>
+</ul></p></div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 14-15 of 23</span>
+<span class="ar">المصدر: صفحات 14-15 من 23</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">A missing lamina dura is a strong indicator of pathology, but diagnosis should always be confirmed with clinical tests (e.g., pulp vitality testing).</div><div class="ar">غياب الصفيحة القاسية مؤشر قوي على وجود مرض، ولكن يجب دائمًا تأكيد التشخيص بالفحوصات السريرية (مثل اختبار حيوية اللب).</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Early detection of a blunted alveolar crest on routine radiographs can help prevent the progression of periodontal disease.</div><div class="ar">الكشف المبكر عن تآكل العرف السنخي في الصور الإشعاعية الروتينية يمكن أن يساعد في منع تطور مرض دواعم السن.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">These two landmarks are often the first radiographic signs of the two most common dental problems: infection (caries leading to abscess) and gum disease.</div><div class="ar">هذان المعلمان هما غالبًا أول العلامات الإشعاعية لأكثر مشكلتين شائعتين في طب الأسنان: العدوى (التسوس المؤدي إلى خراج) وأمراض اللثة.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Supporting Bone Structures</span><span class="ar">هياكل العظام الداعمة</span></h2>
+<div class="sec-body">
+<div class="en"><p><strong style="color:#8b5cf6;">Cortical Bone:</strong> This is the dense, compact outer layer of bone on the facial and lingual surfaces. It is very radiopaque and is clearly visible as the inferior border of the mandible or the floor of the nasal cavity.</p><p><strong style="color:#8b5cf6;">Cancellous (Spongy) Bone:</strong> Found between the cortical plates, this bone has a web-like appearance. It consists of <strong style="color:#8b5cf6;">radiopaque trabeculae</strong> (bony strands) and <strong style="color:#8b5cf6;">radiolucent marrow spaces</strong>.
+<ul>
+<li><strong>Maxilla:</strong> The trabecular pattern is typically fine and granular, with many small marrow spaces.</li>
+<li><strong>Mandible:</strong> The trabeculae are thicker and fewer, especially in the posterior, where they often form a horizontal, "stepladder" pattern.</li>
+</ul></p></div>
+<div class="ar"><p><strong style="color:#8b5cf6;">العظم القشري (Cortical Bone):</strong> هو الطبقة الخارجية الكثيفة والمدمجة من العظم على الأسطح الوجهية واللسانية. وهو ظليل جدًا للأشعة ويظهر بوضوح كالحافة السفلية للفك السفلي أو أرضية تجويف الأنف.</p><p><strong style="color:#8b5cf6;">العظم الإسفنجي (Cancellous Bone):</strong> يوجد بين الصفائح القشرية، وله مظهر شبكي. يتكون من <strong style="color:#8b5cf6;">ترابيق عظمية ظليلة للأشعة</strong> (خيوط عظمية) و<strong style="color:#8b5cf6;">فراغات نخاعية شفيفة للأشعة</strong>.
+<ul>
+<li><strong>الفك العلوي (Maxilla):</strong> يكون النمط الترابيقي عادةً دقيقًا وحبيبيًا، مع العديد من الفراغات النخاعية الصغيرة.</li>
+<li><strong>الفك السفلي (Mandible):</strong> تكون الترابيق أكثر سماكة وأقل عددًا، خاصة في المنطقة الخلفية، حيث تشكل غالبًا نمطًا أفقيًا يشبه "السلم".</li>
+</ul></p></div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 16-18 of 23</span>
+<span class="ar">المصدر: صفحات 16-18 من 23</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The trabecular bone pattern is highly variable between individuals and even in different areas of the same person's mouth.</div><div class="ar">يختلف نمط العظم الترابيقي بشكل كبير بين الأفراد وحتى في مناطق مختلفة من فم الشخص نفسه.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think of the <strong style="color:#8b5cf6;">M</strong>andible as more "Mighty" or "Masculine," so it has thicker, stronger-looking trabeculae compared to the maxilla.</div><div class="ar">فكر في الفك السفلي (<strong style="color:#8b5cf6;">M</strong>andible) على أنه "أقوى" أو "أكثر صلابة" (Mighty/Masculine)، لذلك لديه ترابيق أكثر سماكة ومظهرًا أقوى مقارنة بالفك العلوي.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">The dense, thick white line at the very bottom of a panoramic radiograph is the cortical bone of the inferior border of the mandible.</div><div class="ar">الخط الأبيض الكثيف والسميك في أسفل الصورة البانورامية هو العظم القشري للحافة السفلية للفك السفلي.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Periodontal Ligament (PDL) Space</span><span class="ar">مسافة رباط دواعم السن (PDL)</span></h2>
+<div class="sec-body">
+<div class="en"><p>The PDL space appears as a thin, continuous <strong style="color:#8b5cf6;">radiolucent line</strong> of uniform thickness located between the root of the tooth and the radiopaque lamina dura. </p><p>This is not an empty space; it contains the periodontal ligament fibers that attach the tooth to the bone. The space is typically widest at the coronal and apical thirds and narrowest in the middle.</p><p>A complete loss of the PDL space, where the tooth root fuses directly to the bone, is a pathological condition called <strong style="color:#8b5cf6;">Ankylosis</strong>.</p></div>
+<div class="ar"><p>تظهر مسافة PDL كخط رفيع ومستمر <strong style="color:#8b5cf6;">شفيف للأشعة</strong> بسماكة موحدة يقع بين جذر السن والصفيحة القاسية الظليلة للأشعة.</p><p>هذه ليست مساحة فارغة؛ بل تحتوي على ألياف رباط دواعم السن التي تربط السن بالعظم. تكون المسافة عادةً أوسع في الثلث التاجي والقمي وأضيق في المنتصف.</p><p>الفقدان الكامل لمسافة PDL، حيث يلتحم جذر السن مباشرة بالعظم، هو حالة مرضية تسمى <strong style="color:#8b5cf6;">القسط (Ankylosis)</strong>.</p></div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 19 of 23</span>
+<span class="ar">المصدر: صفحة 19 من 23</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The PDL acts as a shock absorber for the tooth and contains nerves that provide sensory information like pressure and pain.</div><div class="ar">يعمل رباط دواعم السن كمانع للصدمات للسن ويحتوي على أعصاب توفر معلومات حسية مثل الضغط والألم.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">A uniform <strong style="color:#8b5cf6;">widening</strong> of the PDL space can be a sign of occlusal trauma (excessive biting forces) or orthodontic tooth movement. A localized widening at the apex can indicate periapical inflammation.</div><div class="ar">قد يكون <strong style="color:#8b5cf6;">اتساع</strong> منتظم في مسافة PDL علامة على صدمة إطباقية (قوى عض مفرطة) أو حركة تقويمية للأسنان. وقد يشير اتساع موضعي عند القمة إلى التهاب قمي.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en"><strong style="color:#8b5cf6;">Ankylosis</strong> prevents both natural eruption and orthodontic movement of a tooth. The tooth is effectively fused to the jaw.</div><div class="ar">يمنع <strong style="color:#8b5cf6;">القسط</strong> (Ankylosis) البزوغ الطبيعي والحركة التقويمية للسن. يكون السن ملتحمًا بالفك بشكل فعال.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Summary of Radiographic Appearances</span><span class="ar">ملخص المظاهر الإشعاعية</span></h2>
+<div class="sec-body">
+<div class="en"><p>This summary outlines the typical radiographic appearance of key dental structures, ordered from most radiopaque (whitest) to most radiolucent (darkest).</p>
+<ul>
+    <li><strong style="color:#8b5cf6;">Enamel:</strong> Most Radiopaque (bright white).</li>
+    <li><strong style="color:#8b5cf6;">Dentin:</strong> Radiopaque (light gray, less white than enamel).</li>
+    <li><strong style="color:#8b5cf6;">Lamina Dura & Cortical Bone:</strong> Radiopaque (thin or thick white line).</li>
+    <li><strong style="color:#8b5cf6;">Cancellous Bone:</strong> A mixed pattern of radiopaque trabeculae and radiolucent marrow spaces.</li>
+    <li><strong style="color:#8b5cf6;">PDL Space:</strong> Radiolucent (thin dark line around the root).</li>
+    <li><strong style="color:#8b5cf6;">Pulp Cavity:</strong> Most Radiolucent (dark central area).</li>
+</ul></div>
+<div class="ar"><p>يلخص هذا الموجز المظهر الإشعاعي النموذجي لتراكيب الأسنان الرئيسية، مرتبة من الأكثر إظلالاً للأشعة (الأكثر بياضًا) إلى الأكثر شفافية للأشعة (الأكثر سوادًا).</p>
+<ul>
+    <li><strong style="color:#8b5cf6;">المينا:</strong> الأكثر إظلالاً للأشعة (أبيض ساطع).</li>
+    <li><strong style="color:#8b5cf6;">العاج:</strong> ظليل للأشعة (رمادي فاتح، أقل بياضًا من المينا).</li>
+    <li><strong style="color:#8b5cf6;">الصفيحة القاسية والعظم القشري:</strong> ظليل للأشعة (خط أبيض رفيع أو سميك).</li>
+    <li><strong style="color:#8b5cf6;">العظم الإسفنجي:</strong> نمط مختلط من الترابيق الظليلة للأشعة وفراغات النخاع الشفيفة للأشعة.</li>
+    <li><strong style="color:#8b5cf6;">مسافة PDL:</strong> شفيفة للأشعة (خط داكن رفيع حول الجذر).</li>
+    <li><strong style="color:#8b5cf6;">حجرة اللب:</strong> الأكثر شفافية للأشعة (منطقة مركزية داكنة).</li>
+</ul></div>
+</div>
+<div class="source-footer">
+<span class="en">Source: All Pages</span>
+<span class="ar">المصدر: جميع الصفحات</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">When analyzing a radiograph, systematically trace the lamina dura around the entire root of each tooth. Any break or change in thickness is a potential red flag that requires closer inspection.</div><div class="ar">عند تحليل صورة إشعاعية، تتبع بشكل منهجي الصفيحة القاسية حول كامل جذر كل سن. أي انقطاع أو تغيير في السماكة هو علامة تحذير محتملة تتطلب فحصًا أدق.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember the order of density (most to least radiopaque): <strong style="color:#8b5cf6;">E</strong>namel → <strong style="color:#8b5cf6;">D</strong>entin → <strong style="color:#8b5cf6;">B</strong>one → <strong style="color:#8b5cf6;">P</strong>ulp. Mnemonic: "<strong style="color:#8b5cf6;">E</strong>very <strong style="color:#8b5cf6;">D</strong>entist <strong style="color:#8b5cf6;">B</strong>elieves in <strong style="color:#8b5cf6;">P</strong>revention".</div><div class="ar">تذكر ترتيب الكثافة (من الأكثر إلى الأقل إظلالاً للأشعة): <strong style="color:#8b5cf6;">E</strong>namel → <strong style="color:#8b5cf6;">D</strong>entin → <strong style="color:#8b5cf6;">B</strong>one → <strong style="color:#8b5cf6;">P</strong>ulp. يمكن تذكرها بالجملة: "<strong style="color:#8b5cf6;">E</strong>very <strong style="color:#8b5cf6;">D</strong>entist <strong style="color:#8b5cf6;">B</strong>elieves in <strong style="color:#8b5cf6;">P</strong>revention".</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Mastering these fundamental patterns is the foundation for all radiographic diagnosis. It allows you to quickly spot deviations from the norm, which is the definition of finding disease.</div><div class="ar">إتقان هذه الأنماط الأساسية هو أساس كل تشخيص إشعاعي. يسمح لك بتحديد الانحرافات عن المعتاد بسرعة، وهو تعريف اكتشاف الأمراض.</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Radiopaque / ظليل للأشعة</div><div class="content" hidden=""><div class="en">A structure that appears white or light on a radiograph because it absorbs/blocks X-rays (e.g., enamel, bone).</div><div class="ar">بنية تظهر بيضاء أو فاتحة في الصورة الإشعاعية لأنها تمتص/تمنع الأشعة السينية (مثل المينا، العظم).</div></div></div>
+<div class="card"><div class="head">Radiolucent / شفيف للأشعة</div><div class="content" hidden=""><div class="en">A structure that appears dark or black on a radiograph because it allows X-rays to pass through (e.g., pulp, sinus).</div><div class="ar">بنية تظهر داكنة أو سوداء في الصورة الإشعاعية لأنها تسمح بمرور الأشعة السينية من خلالها (مثل اللب، الجيب الأنفي).</div></div></div>
+<div class="card"><div class="head">Enamel / المينا</div><div class="content" hidden=""><div class="en">The hardest, most mineralized (96%) substance in the body; appears as the most radiopaque layer of the tooth crown.</div><div class="ar">أصلب مادة وأكثرها تمعدنًا (96%) في الجسم؛ تظهر كأكثر طبقة ظليلة للأشعة في تاج السن.</div></div></div>
+<div class="card"><div class="head">Dentin / العاج</div><div class="content" hidden=""><div class="en">The tissue making up the bulk of the tooth, found beneath the enamel. It is radiopaque but less so than enamel.</div><div class="ar">النسيج الذي يشكل الجزء الأكبر من السن، ويوجد تحت المينا. وهو ظليل للأشعة ولكن بدرجة أقل من المينا.</div></div></div>
+<div class="card"><div class="head">Pulp Cavity / حجرة اللب</div><div class="content" hidden=""><div class="en">The central, radiolucent space within a tooth containing the pulp tissue (nerves and blood vessels).</div><div class="ar">المساحة المركزية الشفيفة للأشعة داخل السن والتي تحتوي على نسيج اللب (الأعصاب والأوعية الدموية).</div></div></div>
+<div class="card"><div class="head">Lamina Dura / الصفيحة القاسية</div><div class="content" hidden=""><div class="en">The thin, radiopaque line of dense cortical bone that lines the tooth socket.</div><div class="ar">الخط الرفيع الظليل للأشعة من العظم القشري الكثيف الذي يبطن تجويف السن.</div></div></div>
+<div class="card"><div class="head">PDL Space / مسافة الرباط اللثوي</div><div class="content" hidden=""><div class="en">The radiolucent space between the tooth root and the lamina dura, containing the periodontal ligament.</div><div class="ar">المساحة الشفيفة للأشعة بين جذر السن والصفيحة القاسية، وتحتوي على رباط دواعم السن.</div></div></div>
+<div class="card"><div class="head">Alveolar Crest / العرف السنخي</div><div class="content" hidden=""><div class="en">The most coronal portion of the alveolar bone found between teeth. Appears as a sharp, radiopaque point in health.</div><div class="ar">الجزء التاجي الأكثر ارتفاعًا من العظم السنخي الموجود بين الأسنان. يظهر كنقطة حادة وظليلة للأشعة في الحالة الصحية.</div></div></div>
+<div class="card"><div class="head">Ankylosis / القسط</div><div class="content" hidden=""><div class="en">A pathological condition involving the fusion of the tooth root directly to the alveolar bone, resulting in the loss of the PDL space.</div><div class="ar">حالة مرضية تنطوي على التحام جذر السن مباشرة بالعظم السنخي، مما يؤدي إلى فقدان مسافة الرباط اللثوي.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — Which tooth structure is the most radiopaque?</span><span class="ar">١ — أي تركيب في السن هو الأكثر إظلالاً للأشعة؟</span></div><div class="content" hidden=""><span class="en">A: Enamel</span><span class="ar">ج: المينا</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — How does the pulp cavity appear on a radiograph?</span><span class="ar">٢ — كيف تظهر حجرة اللب في الصورة الإشعاعية؟</span></div><div class="content" hidden=""><span class="en">A: Radiolucent (dark/black)</span><span class="ar">ج: شفيفة للأشعة (داكنة/سوداء)</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — What does a break in the lamina dura at the root apex often indicate?</span><span class="ar">٣ — على ماذا يدل انقطاع الصفيحة القاسية عند قمة الجذر غالبًا؟</span></div><div class="content" hidden=""><span class="en">A: Periapical pathology, such as an abscess.</span><span class="ar">ج: مرض قمي، مثل الخراج.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — What is the term for a structure that allows X-rays to pass through it?</span><span class="ar">٤ — ما هو المصطلح الذي يصف بنية تسمح للأشعة السينية بالمرور من خلالها؟</span></div><div class="content" hidden=""><span class="en">A: Radiolucent</span><span class="ar">ج: شفيف للأشعة</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — What does the rounding or blunting of the alveolar crest suggest?</span><span class="ar">٥ — على ماذا تشير استدارة أو تآكل العرف السنخي؟</span></div><div class="content" hidden=""><span class="en">A: Early periodontal disease.</span><span class="ar">ج: مرض دواعم السن المبكر.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — The lamina dura corresponds to what type of bone?</span><span class="ar">٦ — إلى أي نوع من العظام تنتمي الصفيحة القاسية؟</span></div><div class="content" hidden=""><span class="en">A: A thin layer of dense cortical bone lining the tooth socket.</span><span class="ar">ج: طبقة رقيقة من العظم القشري الكثيف التي تبطن تجويف السن.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — What is the radiolucent line between the root and the lamina dura called?</span><span class="ar">٧ — ماذا يسمى الخط الشفيف للأشعة بين الجذر والصفيحة القاسية؟</span></div><div class="content" hidden=""><span class="en">A: The Periodontal Ligament (PDL) Space.</span><span class="ar">ج: مسافة رباط دواعم السن (PDL).</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — True or False: Cementum is easily distinguished from dentin on a radiograph.</span><span class="ar">٨ — صح أم خطأ: يمكن تمييز الملاط بسهولة عن العاج في الصورة الإشعاعية.</span></div><div class="content" hidden=""><span class="en">A: False. Its contrast with dentin is very low.</span><span class="ar">ج: خطأ. تباينه مع العاج منخفض جدًا.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What condition is characterized by the radiographic loss of the PDL space?</span><span class="ar">٩ — ما هي الحالة التي تتميز بالفقدان الإشعاعي لمسافة PDL؟</span></div><div class="content" hidden=""><span class="en">A: Ankylosis</span><span class="ar">ج: القسط (Ankylosis)</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

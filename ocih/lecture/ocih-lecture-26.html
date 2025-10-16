@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — ocih-24</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+  strong { color: #8b5cf6; font-weight: 800; }
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p, .sec-body ul, .sec-body ol {margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 26</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">اللهم إني أسألك علماً نافعاً، ورزقاً طيباً، وعملاً متقبلاً</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Normal Periodontium</b></span>
+<span class="ar"><b>الموضوع: دواعم السن الطبيعية</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Introduction to the Periodontium</span><span class="ar">مقدمة في دواعم السن</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>The <strong>periodontium</strong> provides the essential support needed to keep teeth functional. It is a complex structure made up of four main components that work together to anchor the teeth within the jaw.</p>
+<ul>
+    <li><strong>Gingiva:</strong> The soft tissue that covers the alveolar bone and surrounds the neck of the tooth.</li>
+    <li><strong>Periodontal Ligament (PDL):</strong> A group of specialized connective tissue fibers that attach the tooth to the alveolar bone.</li>
+    <li><strong>Cementum:</strong> A hard, calcified tissue that covers the root of the tooth, providing attachment for the PDL fibers.</li>
+    <li><strong>Alveolar Bone:</strong> The bone of the jaw that forms the sockets for the teeth.</li>
+</ul>
+</div>
+<div class="ar">
+<p>توفر <strong>دواعم السن</strong> الدعم الأساسي اللازم للحفاظ على وظيفة الأسنان. وهي عبارة عن بنية معقدة تتكون من أربعة مكونات رئيسية تعمل معًا لتثبيت الأسنان داخل الفك.</p>
+<ul>
+    <li><strong>اللثة:</strong> النسيج الرخو الذي يغطي العظم السنخي ويحيط بعنق السن.</li>
+    <li><strong>الرباط اللثوي (PDL):</strong> مجموعة من ألياف النسيج الضام المتخصصة التي تربط السن بالعظم السنخي.</li>
+    <li><strong>الملاط:</strong> نسيج صلب متكلس يغطي جذر السن، ويوفر نقطة ارتكاز لألياف الرباط اللثوي.</li>
+    <li><strong>العظم السنخي:</strong> عظم الفك الذي يشكل تجاويف الأسنان.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 2 of 27</span>
+<span class="ar">المصدر: صفحة 2 من 27</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The term 'periodontium' comes from Greek: 'peri' meaning around, and 'odont' meaning tooth.</div><div class="ar">مصطلح 'periodontium' يأتي من اليونانية: 'peri' تعني حول، و'odont' تعني سن.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding the normal periodontium is the foundation for diagnosing and treating periodontal diseases like gingivitis and periodontitis.</div><div class="ar">فهم دواعم السن الطبيعية هو الأساس لتشخيص وعلاج أمراض اللثة مثل التهاب اللثة والتهاب دواعم السن.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember the 4 components with the acronym <strong>PCAG</strong>: Periodontal Ligament, Cementum, Alveolar Bone, Gingiva.</div><div class="ar">تذكر المكونات الأربعة بالاختصار <strong>PCAG</strong>: الرباط اللثوي، الملاط، العظم السنخي، اللثة.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">The Gingiva: Anatomy and Types</span><span class="ar">اللثة: التشريح والأنواع</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>The <strong>gingiva</strong> is divided into several distinct areas based on its location and function.</p>
+<ul>
+    <li><strong>Marginal Gingiva (Free Gingiva):</strong> This is the unattached, terminal edge of the gingiva that surrounds the tooth like a collar. It forms the soft tissue wall of the <strong>gingival sulcus</strong>.</li>
+    <li><strong>Gingival Sulcus:</strong> A shallow, V-shaped space around the tooth, located between the free gingiva and the tooth surface. In a healthy state, its depth is typically 2-3 mm when measured with a periodontal probe.</li>
+    <li><strong>Attached Gingiva:</strong> This part is firm, resilient, and tightly bound to the underlying periosteum of the alveolar bone. It is separated from the alveolar mucosa by the <strong>mucogingival junction (MGJ)</strong>.</li>
+    <li><strong>Interdental Gingiva (Papilla):</strong> The part of the gingiva that occupies the space between two adjacent teeth. It can be pyramidal in shape or have a "col" form, which is a valley-like depression connecting the facial and lingual papillae.</li>
+</ul>
+<p>If a <strong>diastema</strong> (space between teeth) exists, the interdental papilla is absent, and the gingiva forms a smooth, rounded surface over the bone.</p>
+</div>
+<div class="ar">
+<p>تنقسم <strong>اللثة</strong> إلى عدة مناطق متميزة بناءً على موقعها ووظيفتها.</p>
+<ul>
+    <li><strong>اللثة الحافية (اللثة الحرة):</strong> هي الحافة الطرفية غير الملتصقة من اللثة التي تحيط بالسن مثل طوق. وهي تشكل الجدار النسيجي الرخو <strong>للميزاب اللثوي</strong>.</li>
+    <li><strong>الميزاب اللثوي:</strong> هو فراغ ضحل على شكل حرف V حول السن، يقع بين اللثة الحرة وسطح السن. في الحالة الصحية، يبلغ عمقه عادة 2-3 ملم عند قياسه بمسبار اللثة.</li>
+    <li><strong>اللثة الملتصقة:</strong> هذا الجزء يكون ثابتًا ومرنًا ومرتبطًا بإحكام بالسمحاق العظمي للعظم السنخي تحته. يفصلها عن الغشاء المخاطي السنخي <strong>الوصل المخاطي اللثوي (MGJ)</strong>.</li>
+    <li><strong>اللثة بين السنية (الحليمة):</strong> هي جزء اللثة الذي يشغل الفراغ بين سنين متجاورين. يمكن أن تكون هرمية الشكل أو على شكل "Col"، وهو انخفاض يشبه الوادي يربط بين الحليمات الوجهية واللسانية.</li>
+</ul>
+<p>إذا كان هناك <strong>فلج</strong> (فراغ بين الأسنان)، تكون الحليمة بين السنية غائبة، وتشكل اللثة سطحًا أملسًا ومستديرًا فوق العظم.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 3, 4, 5, 6, 7 of 27</span>
+<span class="ar">المصدر: صفحات 3، 4، 5، 6، 7 من 27</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">The depth of the gingival sulcus is a critical indicator of periodontal health. A depth greater than 3 mm may indicate a periodontal pocket, a sign of disease.</div><div class="ar">يعتبر عمق الميزاب اللثوي مؤشرًا حاسمًا لصحة دواعم السن. عمق أكبر من 3 ملم قد يشير إلى وجود جيب لثوي، وهو علامة على المرض.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The attached gingiva provides stability to the marginal gingiva and can withstand the frictional stresses of chewing.</div><div class="ar">توفر اللثة الملتصقة استقرارًا للثة الحافية ويمكنها تحمل الضغوط الاحتكاكية للمضغ.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Frenum attachments are folds of mucosa that can connect the lip, cheek, or tongue to the gingiva. A high frenum attachment can sometimes contribute to gingival recession.</div><div class="ar">لُجُم الشفة هي طيات من الغشاء المخاطي يمكن أن تربط الشفة أو الخد أو اللسان باللثة. وجود لجام مرتفع يمكن أن يساهم أحيانًا في انحسار اللثة.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">The Alveolar Process and Bone</span><span class="ar">الناتئ السنخي والعظم</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>The <strong>alveolar process</strong> is the part of the maxilla and mandible that forms and supports the tooth sockets (alveoli). It consists of two main parts.</p>
+<ol>
+    <li><strong>Alveolar Bone Proper:</strong> This is a thin layer of dense bone that lines the tooth socket. It is also known as the cribriform plate because it has many small openings for blood vessels and nerves. Radiographically, it appears as the <strong>lamina dura</strong>.</li>
+    <li><strong>Supporting Alveolar Bone:</strong> This bone surrounds the alveolar bone proper and provides the main support. It has two components:
+        <ul>
+            <li><strong>Cortical Plates:</strong> These are compact bone plates that form the outer (facial) and inner (lingual) surfaces of the alveolar process.</li>
+            <li><strong>Spongy Bone (Trabecular Bone):</strong> This is the cancellous bone located between the alveolar bone proper and the cortical plates.</li>
+        </ul>
+    </li>
+</ol>
+<p>The coronal margin of the alveolar process is called the <strong>alveolar crest</strong>.</p>
+</div>
+<div class="ar">
+<p><strong>الناتئ السنخي</strong> هو جزء من الفك العلوي والفك السفلي الذي يشكل ويدعم تجاويف الأسنان (الأسناخ). يتكون من جزأين رئيسيين.</p>
+<ol>
+    <li><strong>العظم السنخي الخاص:</strong> هو طبقة رقيقة من العظم الكثيف تبطن تجويف السن. يُعرف أيضًا بالصفيحة المصفوية لأنه يحتوي على العديد من الفتحات الصغيرة للأوعية الدموية والأعصاب. إشعاعيًا، يظهر على شكل <strong>الصفيحة القاسية (Lamina Dura)</strong>.</li>
+    <li><strong>العظم السنخي الداعم:</strong> هذا العظم يحيط بالعظم السنخي الخاص ويوفر الدعم الرئيسي. له مكونان:
+        <ul>
+            <li><strong>الصفائح القشرية:</strong> هي صفائح عظمية مكتنزة تشكل السطوح الخارجية (الوجهية) والداخلية (اللسانية) للناتئ السنخي.</li>
+            <li><strong>العظم الإسفنجي (العظم التربيقي):</strong> هو العظم الإسفنجي الموجود بين العظم السنخي الخاص والصفائح القشرية.</li>
+        </ul>
+    </li>
+</ol>
+<p>تسمى الحافة التاجية للناتئ السنخي بـ<strong>العرف السنخي</strong>.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 9, 10, 11 of 27</span>
+<span class="ar">المصدر: صفحات 9، 10، 11 من 27</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The alveolar process develops during tooth eruption and is gradually resorbed if a tooth is lost.</div><div class="ar">يتطور الناتئ السنخي أثناء بزوغ الأسنان ويتم امتصاصه تدريجياً إذا فقد السن.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Bone loss, whether horizontal or vertical, is a key sign of periodontitis and can compromise the stability of the tooth.</div><div class="ar">فقدان العظم، سواء كان أفقيًا أو رأسيًا، هو علامة رئيسية على التهاب دواعم السن ويمكن أن يعرض استقرار السن للخطر.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">On a dental radiograph, the lamina dura is a key structure to evaluate. A continuous, intact lamina dura is a sign of periodontal health.</div><div class="ar">في صور الأشعة السينية للأسنان، تعتبر الصفيحة القاسية بنية رئيسية للتقييم. وجود صفيحة قاسية مستمرة وسليمة هو علامة على صحة دواعم السن.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think of the alveolar process like a flowerpot: the <strong>Alveolar Bone Proper</strong> is the inner wall touching the plant's roots, and the <strong>Supporting Bone</strong> is the thick outer part of the pot.</div><div class="ar">تخيل الناتئ السنخي كأصيص زهور: <strong>العظم السنخي الخاص</strong> هو الجدار الداخلي الذي يلامس جذور النبات، و<strong>العظم الداعم</strong> هو الجزء الخارجي السميك من الأصيص.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Radiographic Features of the Periodontium</span><span class="ar">السمات الإشعاعية لدواعم السن</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Dental radiographs are essential for evaluating the structures of the periodontium that are not visible clinically, especially the bone.</p>
+<ul>
+    <li><strong>Alveolar Crest:</strong> In a healthy state, the alveolar crest is located 1.5-2 mm apical to the cementoenamel junction (CEJ) of adjacent teeth. It forms a sharp angle where it meets the lamina dura. A rounded crest can be an early sign of periodontal disease.</li>
+    <li><strong>Lamina Dura:</strong> Appears as a dense, radiopaque (white) line surrounding the tooth root. It is continuous with the alveolar crest.</li>
+    <li><strong>Periodontal Ligament (PDL) Space:</strong> This appears as a thin, radiolucent (dark) space between the lamina dura and the tooth root. It is typically widest at the crown and apex and narrowest in the middle of the root.</li>
+</ul>
+<p>Radiographs also help visualize patterns of bone loss in disease, such as <strong>horizontal bone loss</strong> (crest height is reduced but parallel to a line between CEJs) and <strong>vertical/angular bone loss</strong> (bone loss is greater on one side of the tooth, forming a V-shaped defect).</p>
+</div>
+<div class="ar">
+<p>تعتبر صور الأشعة السينية للأسنان ضرورية لتقييم هياكل دواعم السن غير المرئية سريريًا، وخاصة العظم.</p>
+<ul>
+    <li><strong>العرف السنخي:</strong> في الحالة الصحية، يقع العرف السنخي على بعد 1.5-2 ملم ذرويًا من الوصل الملاطي المينائي (CEJ) للأسنان المجاورة. ويشكل زاوية حادة حيث يلتقي بالصفيحة القاسية. العرف المستدير يمكن أن يكون علامة مبكرة على مرض دواعم السن.</li>
+    <li><strong>الصفيحة القاسية (Lamina Dura):</strong> تظهر كخط كثيف معتم للأشعة (أبيض) يحيط بجذر السن. وهي متصلة بالعرف السنخي.</li>
+    <li><strong>فراغ الرباط اللثوي (PDL):</strong> يظهر كفراغ رفيع شاف للأشعة (داكن) بين الصفيحة القاسية وجذر السن. يكون عادةً أوسع عند التاج والذروة وأضيق في منتصف الجذر.</li>
+</ul>
+<p>تساعد صور الأشعة أيضًا في تصور أنماط فقدان العظم في حالة المرض، مثل <strong>فقدان العظم الأفقي</strong> (ارتفاع العرف منخفض ولكنه موازٍ لخط بين الوصلات الملاطية المينائية) و<strong>فقدان العظم الرأسي/الزاوي</strong> (فقدان العظم أكبر على جانب واحد من السن، مما يشكل عيبًا على شكل حرف V).</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 10, 11, 12, 13 of 27</span>
+<span class="ar">المصدر: صفحات 10، 11، 12، 13 من 27</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Widening of the PDL space can indicate trauma from occlusion (excessive biting forces) or tooth mobility.</div><div class="ar">اتساع فراغ الرباط اللثوي يمكن أن يشير إلى رض إطباقي (قوى عض مفرطة) أو حركة في السن.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Radiographs show the history of bone loss but do not show current disease activity. Clinical examination is required to determine if the disease is active.</div><div class="ar">تظهر صور الأشعة تاريخ فقدان العظم ولكنها لا تظهر نشاط المرض الحالي. الفحص السريري ضروري لتحديد ما إذا كان المرض نشطًا.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">On a bitewing radiograph of a healthy patient, you will see a sharp, continuous crest of bone just below the CEJ.</div><div class="ar">في صورة الأشعة المجنحة لمريض سليم، سترى عرفًا عظميًا حادًا ومستمرًا أسفل الوصل الملاطي المينائي مباشرة.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Clinical Examination of the Gingiva</span><span class="ar">الفحص السريري للثة</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>A thorough clinical examination of the gingiva is crucial for assessing periodontal health. The gingiva must be dried before observation to see fine details. The process involves several steps:</p>
+<ul>
+    <li><strong>Visual Examination:</strong> Observing the gingiva directly for any changes.</li>
+    <li><strong>Instrumentation:</strong> Using tools like a periodontal probe to explore and measure.</li>
+    <li><strong>Palpation:</strong> Applying firm but gentle pressure to check the resilience and consistency of the tissue.</li>
+</ul>
+<p>Key features to assess during the examination include:</p>
+<ol>
+    <li><strong>Color:</strong> The shade and uniformity of the gingiva.</li>
+    <li><strong>Size:</strong> Whether the gingiva is enlarged or normal.</li>
+    <li><strong>Contour:</strong> The shape of the gingival margins and interdental papillae.</li>
+    <li><strong>Consistency:</strong> The firmness or softness of the tissue.</li>
+    <li><strong>Surface Texture:</strong> The presence or absence of stippling.</li>
+    <li><strong>Position:</strong> The level of the gingival margin in relation to the tooth.</li>
+    <li><strong>Bleeding on Probing (BOP):</strong> Whether the gingiva bleeds when gently probed.</li>
+    <li><strong>Pain:</strong> Any discomfort experienced by the patient during the examination.</li>
+</ol>
+</div>
+<div class="ar">
+<p>يعد الفحص السريري الشامل للثة أمرًا بالغ الأهمية لتقييم صحة دواعم السن. يجب تجفيف اللثة قبل الفحص لرؤية التفاصيل الدقيقة. تتضمن العملية عدة خطوات:</p>
+<ul>
+    <li><strong>الفحص البصري:</strong> مراقبة اللثة مباشرة بحثًا عن أي تغييرات.</li>
+    <li><strong>استخدام الأدوات:</strong> استخدام أدوات مثل مسبار اللثة للاستكشاف والقياس.</li>
+    <li><strong>الجس:</strong> تطبيق ضغط ثابت ولطيف للتحقق من مرونة وقوام النسيج.</li>
+</ul>
+<p>تشمل الميزات الرئيسية التي يجب تقييمها أثناء الفحص ما يلي:</p>
+<ol>
+    <li><strong>اللون:</strong> درجة لون اللثة وتجانسه.</li>
+    <li><strong>الحجم:</strong> ما إذا كانت اللثة متضخمة أم طبيعية.</li>
+    <li><strong>الشكل:</strong> شكل حواف اللثة والحليمات بين السنية.</li>
+    <li><strong>القوام:</strong> صلابة أو ليونة النسيج.</li>
+    <li><strong>الملمس السطحي:</strong> وجود أو غياب التنقير.</li>
+    <li><strong>الموضع:</strong> مستوى حافة اللثة بالنسبة للسن.</li>
+    <li><strong>النزيف عند السبر (BOP):</strong> ما إذا كانت اللثة تنزف عند سبرها بلطف.</li>
+    <li><strong>الألم:</strong> أي إزعاج يشعر به المريض أثناء الفحص.</li>
+</ol>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 14, 15 of 27</span>
+<span class="ar">المصدر: صفحات 14، 15 من 27</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Always dry the gingiva with an air syringe or gauze before examining its texture. Moisture can make a diseased, smooth surface appear healthy.</div><div class="ar">جفف اللثة دائمًا بمحقنة هواء أو شاش قبل فحص ملمسها. يمكن للرطوبة أن تجعل السطح المريض الأملس يبدو صحيًا.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Bleeding on probing (BOP) is one of the earliest and most reliable signs of active gingival inflammation.</div><div class="ar">النزيف عند السبر (BOP) هو أحد أقدم وأكثر علامات التهاب اللثة النشط موثوقية.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">A systematic examination ensures that no signs of disease are missed, allowing for early intervention and better patient outcomes.</div><div class="ar">يضمن الفحص المنهجي عدم تفويت أي علامات للمرض، مما يسمح بالتدخل المبكر وتحقيق نتائج أفضل للمرضى.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Features of Healthy Gingiva</span><span class="ar">خصائص اللثة السليمة</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Recognizing the features of healthy gingiva is essential for identifying deviations that indicate disease. In health, the gingiva typically exhibits the following characteristics:</p>
+<ul>
+    <li><strong>Color:</strong> Generally described as <strong>"coral pink"</strong> or salmon pink. This can vary based on an individual's complexion and pigmentation.</li>
+    <li><strong>Consistency:</strong> The tissue is <strong>firm and resilient</strong>. It is tightly adapted to the teeth and does not easily deflect with a blast of air.</li>
+    <li><strong>Contour:</strong> The gingival margin is <strong>scalloped</strong> (arched) and has a thin, <strong>"knife-edge"</strong> profile. The interdental papillae are pointed and fill the embrasure space completely.</li>
+    <li><strong>Surface Texture:</strong> The surface of the attached gingiva is often <strong>stippled</strong>, resembling the surface of an orange peel. Stippling can vary with age and is best seen when the tissue is dry.</li>
+    <li><strong>Bleeding:</strong> There is an <strong>absence</strong> of bleeding when the gingival sulcus is gently probed.</li>
+    <li><strong>Pain:</strong> Probing should be painless.</li>
+</ul>
+</div>
+<div class="ar">
+<p>يعد التعرف على خصائص اللثة السليمة أمرًا ضروريًا لتحديد الانحرافات التي تشير إلى وجود مرض. في الحالة الصحية، تظهر اللثة عادة الخصائص التالية:</p>
+<ul>
+    <li><strong>اللون:</strong> يوصف بشكل عام بأنه <strong>"وردي مرجاني"</strong> أو وردي سلموني. يمكن أن يختلف هذا بناءً على بشرة الفرد وتصبغه.</li>
+    <li><strong>القوام:</strong> يكون النسيج <strong>صلبًا ومرنًا</strong>. وهو متكيف بإحكام مع الأسنان ولا ينحرف بسهولة مع تيار من الهواء.</li>
+    <li><strong>الشكل:</strong> تكون حافة اللثة <strong>مشرشرة</strong> (مقوسة) ولها شكل رفيع يشبه <strong>"حافة السكين"</strong>. تكون الحليمات بين السنية مدببة وتملأ الفراغ بين الأسنان بالكامل.</li>
+    <li><strong>الملمس السطحي:</strong> غالبًا ما يكون سطح اللثة الملتصقة <strong>منقرًا</strong>، يشبه سطح قشر البرتقال. يمكن أن يختلف التنقير مع تقدم العمر ويُرى بشكل أفضل عندما يكون النسيج جافًا.</li>
+    <li><strong>النزيف:</strong> <strong>لا يوجد نزيف</strong> عند سبر الميزاب اللثوي بلطف.</li>
+    <li><strong>الألم:</strong> يجب أن يكون السبر غير مؤلم.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 15, 16, 18, 19, 22, 24 of 27</span>
+<span class="ar">المصدر: صفحات 15، 16، 18، 19، 22، 24 من 27</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Stippling is caused by the pull of collagen fiber bundles that connect the gingival epithelium to the underlying bone.</div><div class="ar">يحدث التنقير بسبب شد حزم ألياف الكولاجين التي تربط ظهارة اللثة بالعظم الأساسي.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Healthy gingiva is <strong>"Firm, Pink, and Stippled"</strong> (FPS).</div><div class="ar">اللثة السليمة تكون <strong>"صلبة، وردية، ومنقرة"</strong> (صلبة، وردية، منقرة).</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">The color of the alveolar mucosa is redder than the gingiva because its epithelium is thinner, non-keratinized, and has more blood vessels close to the surface.</div><div class="ar">لون الغشاء المخاطي السنخي أكثر احمرارًا من اللثة لأن ظهارته أرق، وغير متقرنة، وتحتوي على أوعية دموية أكثر قربًا من السطح.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Changes in Gingival Disease (Gingivitis)</span><span class="ar">التغيرات في أمراض اللثة (التهاب اللثة)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Gingivitis</strong> is inflammation of the gingiva, and it causes visible changes that contrast with the features of health. These changes are key diagnostic signs.</p>
+<ul>
+    <li><strong>Color Change:</strong> The first sign is often a change from pink to <strong>red or bluish-red (cyanotic)</strong> due to increased blood flow (hyperemia) and stagnant blood.</li>
+    <li><strong>Size Change:</strong> Inflammation causes swelling or edema, leading to <strong>gingival enlargement</strong>.</li>
+    <li><strong>Contour Change:</strong> The fine "knife-edge" margin becomes <strong>rounded or rolled</strong>. The interdental papillae may become <strong>bulbous (swollen and rounded), blunted (flat), or cratered</strong>.</li>
+    <li><strong>Consistency Change:</strong> The tissue loses its firmness and becomes <strong>soft, spongy, and edematous</strong>. It pits on pressure and is easily deflected from the tooth. In chronic cases, it can become firm and fibrotic due to collagen production.</li>
+    <li><strong>Texture Change:</strong> The stippling is often lost, and the surface becomes <strong>smooth and shiny</strong> due to the swelling of the connective tissue.</li>
+    <li><strong>Bleeding:</strong> The tissue bleeds easily upon gentle probing (BOP) due to ulceration of the sulcular epithelium.</li>
+</ul>
+</div>
+<div class="ar">
+<p><strong>التهاب اللثة</strong> هو التهاب في اللثة، ويسبب تغيرات مرئية تتناقض مع خصائص الصحة. هذه التغيرات هي علامات تشخيصية رئيسية.</p>
+<ul>
+    <li><strong>تغير اللون:</strong> غالبًا ما تكون العلامة الأولى هي تغير اللون من الوردي إلى <strong>الأحمر أو الأحمر المزرق (الزرقة)</strong> بسبب زيادة تدفق الدم (الاحتقان) وركود الدم.</li>
+    <li><strong>تغير الحجم:</strong> يسبب الالتهاب تورمًا أو وذمة، مما يؤدي إلى <strong>تضخم اللثة</strong>.</li>
+    <li><strong>تغير الشكل:</strong> تصبح الحافة الرفيعة التي تشبه "حافة السكين" <strong>مستديرة أو ملفوفة</strong>. قد تصبح الحليمات بين السنية <strong>بصلية (متورمة ومستديرة)، أو كليلة (مسطحة)، أو مفوهة</strong>.</li>
+    <li><strong>تغير القوام:</strong> يفقد النسيج صلابته ويصبح <strong>رخوًا وإسفنجيًا ووذميًا</strong>. ينخمص عند الضغط عليه وينحرف بسهولة عن السن. في الحالات المزمنة، يمكن أن يصبح صلبًا ومتليفًا بسبب إنتاج الكولاجين.</li>
+    <li><strong>تغير الملمس:</strong> غالبًا ما يُفقد التنقير، ويصبح السطح <strong>أملسًا ولامعًا</strong> بسبب تورم النسيج الضام.</li>
+    <li><strong>النزيف:</strong> ينزف النسيج بسهولة عند السبر اللطيف (BOP) بسبب تقرح ظهارة الميزاب.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 17, 18, 19, 20, 21, 22, 23, 24 of 27</span>
+<span class="ar">المصدر: صفحات 17، 18، 19، 20، 21، 22، 23، 24 من 27</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Gingivitis is reversible with good oral hygiene. If left untreated, it can progress to periodontitis, which involves irreversible bone loss.</div><div class="ar">التهاب اللثة قابل للعكس مع نظافة الفم الجيدة. إذا تُرك دون علاج، يمكن أن يتطور إلى التهاب دواعم السن، والذي يتضمن فقدانًا لا رجعة فيه للعظم.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">When describing gingivitis, always note its distribution (localized to a few teeth or generalized throughout the mouth) and severity (slight, moderate, severe).</div><div class="ar">عند وصف التهاب اللثة، لاحظ دائمًا توزيعه (موضعي في عدد قليل من الأسنان أو معمّم في جميع أنحاء الفم) وشدته (خفيف، متوسط، شديد).</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">A patient with poor brushing habits might present with generalized, moderate gingivitis with red, swollen, bulbous papillae that bleed on probing.</div><div class="ar">قد يظهر مريض لديه عادات تنظيف سيئة بالتهاب لثة معمّم ومتوسط مع حليمات حمراء ومتورمة وبصلية تنزف عند السبر.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Probing and Clinical Measurements</span><span class="ar">السبر والقياسات السريرية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Using a periodontal probe is a fundamental part of the clinical examination to assess the health of the gingival sulcus and attachment levels.</p>
+<ul>
+    <li><strong>Probing Depth (PD):</strong> This is the distance from the gingival margin to the bottom of the probeable sulcus or pocket.
+        <ul>
+            <li>A healthy <strong>gingival sulcus</strong> has a probing depth of <strong>≤3 mm</strong>.</li>
+            <li>A <strong>periodontal pocket</strong> is a pathologically deepened sulcus with a probing depth of <strong>≥4 mm</strong>.</li>
+        </ul>
+    </li>
+    <li><strong>Probing Technique:</strong> The probe tip should be kept in contact with the tooth surface and moved gently along it to the base of the sulcus/pocket. To explore the entire circumference of the tooth, the probe is "walked" in small, millimeter-by-millimeter steps around the tooth.</li>
+    <li><strong>Gingival Recession:</strong> This refers to the exposure of the root surface due to the apical migration of the gingival margin. It is measured from the CEJ to the gingival margin.</li>
+    <li><strong>Gingival Enlargement:</strong> This is the coronal migration of the gingival margin, which can lead to deeper probing depths (pseudopockets) without any actual loss of attachment.</li>
+</ul>
+</div>
+<div class="ar">
+<p>يعد استخدام مسبار دواعم السن جزءًا أساسيًا من الفحص السريري لتقييم صحة الميزاب اللثوي ومستويات الارتباط.</p>
+<ul>
+    <li><strong>عمق السبر (PD):</strong> هو المسافة من حافة اللثة إلى قاع الميزاب أو الجيب القابل للسبر.
+        <ul>
+            <li><strong>الميزاب اللثوي</strong> الصحي له عمق سبر يبلغ <strong>≤3 ملم</strong>.</li>
+            <li><strong>الجيب اللثوي</strong> هو ميزاب عميق بشكل مرضي بعمق سبر يبلغ <strong>≥4 ملم</strong>.</li>
+        </ul>
+    </li>
+    <li><strong>تقنية السبر:</strong> يجب إبقاء طرف المسبار ملامسًا لسطح السن وتحريكه بلطف على طوله إلى قاعدة الميزاب/الجيب. لاستكشاف محيط السن بالكامل، يتم "تمشية" المسبار في خطوات صغيرة، مليمترًا بمليمتر، حول السن.</li>
+    <li><strong>انحسار اللثة:</strong> يشير هذا إلى انكشاف سطح الجذر بسبب هجرة حافة اللثة باتجاه الذروة. يتم قياسه من الوصل الملاطي المينائي إلى حافة اللثة.</li>
+    <li><strong>تضخم اللثة:</strong> هو هجرة حافة اللثة باتجاه التاج، مما قد يؤدي إلى أعماق سبر أعمق (جيوب كاذبة) دون أي فقدان فعلي في الارتباط.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 25, 26 of 27</span>
+<span class="ar">المصدر: صفحات 25، 26 من 27</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Always record 6 probing depths per tooth (mesio-buccal, mid-buccal, disto-buccal, and the corresponding lingual/palatal sites) for a complete assessment.</div><div class="ar">سجل دائمًا 6 قياسات لعمق السبر لكل سن (الوسطي الشدقي، المنتصف الشدقي، الوحشي الشدقي، والمواقع اللسانية/الحنكية المقابلة) لتقييم كامل.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">The clinical attachment level (CAL), measured from the CEJ to the bottom of the pocket, is a more accurate indicator of periodontal support than probing depth alone, especially when recession or enlargement is present.</div><div class="ar">مستوى الارتباط السريري (CAL)، الذي يتم قياسه من الوصل الملاطي المينائي إلى قاع الجيب، هو مؤشر أكثر دقة لدعم دواعم السن من عمق السبر وحده، خاصة عند وجود انحسار أو تضخم.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Accurate probing is essential for distinguishing between health, gingivitis, and periodontitis, which guides the entire treatment plan.</div><div class="ar">السبر الدقيق ضروري للتمييز بين الصحة والتهاب اللثة والتهاب دواعم السن، وهو ما يوجه خطة العلاج بأكملها.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Summary</span><span class="ar">ملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>The <strong>normal periodontium</strong> is a functional unit composed of the gingiva, periodontal ligament, cementum, and alveolar bone. A thorough understanding of its clinical and radiographic features in health is the foundation for diagnosing disease.</p>
+<p><strong>Key features of health include:</strong></p>
+<ul>
+    <li><strong>Gingiva:</strong> Coral pink, firm, stippled, with knife-edge margins and pointed papillae. No bleeding on probing.</li>
+    <li><strong>Sulcus Depth:</strong> 1-3 mm.</li>
+    <li><strong>Radiographically:</strong> An intact lamina dura and an alveolar crest 1.5-2 mm from the CEJ.</li>
+</ul>
+<p><strong>Key features of gingivitis (disease) include:</strong></p>
+<ul>
+    <li><strong>Gingiva:</strong> Red/bluish-red, soft/edematous, smooth/shiny, with rolled margins and bulbous or blunted papillae. Bleeding on probing is present.</li>
+</ul>
+<p>Clinical examination, including visual assessment and probing, is crucial for detecting the early signs of inflammation and preventing progression to more severe periodontal disease.</p>
+</div>
+<div class="ar">
+<p><strong>دواعم السن الطبيعية</strong> هي وحدة وظيفية تتكون من اللثة، والرباط اللثوي، والملاط، والعظم السنخي. الفهم الشامل لخصائصها السريرية والإشعاعية في الحالة الصحية هو أساس تشخيص المرض.</p>
+<p><strong>تشمل الميزات الرئيسية للصحة ما يلي:</strong></p>
+<ul>
+    <li><strong>اللثة:</strong> وردية مرجانية، صلبة، منقرة، مع حواف حادة وحليمات مدببة. لا يوجد نزيف عند السبر.</li>
+    <li><strong>عمق الميزاب:</strong> 1-3 ملم.</li>
+    <li><strong>إشعاعيًا:</strong> صفيحة قاسية سليمة وعرف سنخي على بعد 1.5-2 ملم من الوصل الملاطي المينائي.</li>
+</ul>
+<p><strong>تشمل الميزات الرئيسية لالتهاب اللثة (المرض) ما يلي:</strong></p>
+<ul>
+    <li><strong>اللثة:</strong> حمراء/حمراء مزرقة، رخوة/وذمية، ملساء/لامعة، مع حواف ملفوفة وحليمات بصلية أو كليلة. يوجد نزيف عند السبر.</li>
+</ul>
+<p>يعد الفحص السريري، بما في ذلك التقييم البصري والسبر، أمرًا بالغ الأهمية للكشف عن العلامات المبكرة للالتهاب ومنع تطوره إلى أمراض دواعم السن الأكثر شدة.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 2-26 of 27</span>
+<span class="ar">المصدر: صفحات 2-26 من 27</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Periodontal health is a state of balance between bacterial plaque and the host's immune response.</div><div class="ar">صحة دواعم السن هي حالة من التوازن بين اللويحة الجرثومية والاستجابة المناعية للمضيف.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Patient education on proper oral hygiene is the most effective way to maintain periodontal health and reverse gingivitis.</div><div class="ar">تثقيف المريض حول نظافة الفم السليمة هو الطريقة الأكثر فعالية للحفاظ على صحة دواعم السن وعكس التهاب اللثة.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Mastering the assessment of the normal periodontium allows a clinician to confidently identify, diagnose, and treat deviations from health, ultimately preserving patients' teeth.</div><div class="ar">إتقان تقييم دواعم السن الطبيعية يسمح للطبيب السريري بتحديد وتشخيص وعلاج الانحرافات عن الحالة الصحية بثقة، مما يحافظ في النهاية على أسنان المرضى.</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Periodontium / دواعم السن</div><div class="content" hidden=""><div class="en">The specialized tissues that surround and support the teeth, including the gingiva, PDL, cementum, and alveolar bone.</div><div class="ar">الأنسجة المتخصصة التي تحيط وتدعم الأسنان، بما في ذلك اللثة والرباط اللثوي والملاط والعظم السنخي.</div></div></div>
+<div class="card"><div class="head">Gingival Sulcus / الميزاب اللثوي</div><div class="content" hidden=""><div class="en">The shallow, V-shaped space between the free gingiva and the tooth surface.</div><div class="ar">الفراغ الضحل على شكل حرف V بين اللثة الحرة وسطح السن.</div></div></div>
+<div class="card"><div class="head">Lamina Dura / الصفيحة القاسية</div><div class="content" hidden=""><div class="en">The radiographic term for the dense cortical bone lining the tooth socket. Appears as a white line.</div><div class="ar">المصطلح الإشعاعي للعظم القشري الكثيف الذي يبطن تجويف السن. يظهر كخط أبيض.</div></div></div>
+<div class="card"><div class="head">Alveolar Crest / العرف السنخي</div><div class="content" hidden=""><div class="en">The most coronal portion of the alveolar bone, found between adjacent teeth.</div><div class="ar">الجزء الأكثر تاجية من العظم السنخي، يوجد بين الأسنان المجاورة.</div></div></div>
+<div class="card"><div class="head">Stippling / التنقير</div><div class="content" hidden=""><div class="en">The "orange-peel" appearance of healthy attached gingiva, caused by connective tissue projections.</div><div class="ar">المظهر الشبيه بـ"قشر البرتقال" للثة الملتصقة السليمة، ناتج عن نتوءات النسيج الضام.</div></div></div>
+<div class="card"><div class="head">Mucogingival Junction (MGJ) / الوصل المخاطي اللثوي</div><div class="content" hidden=""><div class="en">A distinct line separating the attached gingiva from the darker alveolar mucosa.</div><div class="ar">خط مميز يفصل اللثة الملتصقة عن الغشاء المخاطي السنخي الأغمق لونًا.</div></div></div>
+<div class="card"><div class="head">Gingivitis / التهاب اللثة</div><div class="content" hidden=""><div class="en">Inflammation of the gingiva, characterized by redness, swelling, and bleeding on probing. It is reversible.</div><div class="ar">التهاب اللثة، يتميز بالاحمرار والتورم والنزيف عند السبر. وهو قابل للعكس.</div></div></div>
+<div class="card"><div class="head">Periodontal Pocket / الجيب اللثوي</div><div class="content" hidden=""><div class="en">A pathologically deepened gingival sulcus, typically with a probing depth of 4mm or more.</div><div class="ar">ميزاب لثوي عميق بشكل مرضي، عادة بعمق سبر يبلغ 4 ملم أو أكثر.</div></div></div>
+<div class="card"><div class="head">Diastema / الفلج</div><div class="content" hidden=""><div class="en">A space or gap between two teeth. The interdental papilla is absent in this area.</div><div class="ar">فراغ أو فجوة بين سنين. الحليمة بين السنية تكون غائبة في هذه المنطقة.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — What are the four components of the periodontium?</span><span class="ar">١ — ما هي المكونات الأربعة لدواعم السن؟</span></div><div class="content" hidden=""><span class="en">A: Gingiva, Periodontal Ligament (PDL), Cementum, and Alveolar Bone.</span><span class="ar">ج: اللثة، الرباط اللثوي (PDL)، الملاط، والعظم السنخي.</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — What is the normal probing depth of a healthy gingival sulcus?</span><span class="ar">٢ — ما هو عمق السبر الطبيعي لميزاب لثوي سليم؟</span></div><div class="content" hidden=""><span class="en">A: 2 to 3 millimeters.</span><span class="ar">ج: من 2 إلى 3 مليمترات.</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — What is the clinical term for the "orange-peel" texture of healthy gingiva?</span><span class="ar">٣ — ما هو المصطلح السريري لملمس "قشر البرتقال" للثة السليمة؟</span></div><div class="content" hidden=""><span class="en">A: Stippling.</span><span class="ar">ج: التنقير.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — How does the color of the gingiva change in gingivitis?</span><span class="ar">٤ — كيف يتغير لون اللثة في حالة التهاب اللثة؟</span></div><div class="content" hidden=""><span class="en">A: It changes from coral pink to red or bluish-red.</span><span class="ar">ج: يتغير من الوردي المرجاني إلى الأحمر أو الأحمر المزرق.</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — What does "BOP" stand for and what does it indicate?</span><span class="ar">٥ — ماذا يرمز "BOP" وماذا يشير؟</span></div><div class="content" hidden=""><span class="en">A: Bleeding On Probing. It indicates active inflammation.</span><span class="ar">ج: النزيف عند السبر. يشير إلى وجود التهاب نشط.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — What is the radiographic appearance of the lamina dura?</span><span class="ar">٦ — ما هو المظهر الإشعاعي للصفيحة القاسية؟</span></div><div class="content" hidden=""><span class="en">A: A dense, radiopaque (white) line surrounding the tooth root.</span><span class="ar">ج: خط كثيف معتم للأشعة (أبيض) يحيط بجذر السن.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — What is the difference between marginal gingiva and attached gingiva?</span><span class="ar">٧ — ما الفرق بين اللثة الحافية واللثة الملتصقة؟</span></div><div class="content" hidden=""><span class="en">A: Marginal gingiva is the unattached collar around the tooth, while attached gingiva is firmly bound to the underlying bone.</span><span class="ar">ج: اللثة الحافية هي الطوق غير الملتصق حول السن، بينما اللثة الملتصقة مرتبطة بإحكام بالعظم الأساسي.</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — How does the consistency of gingiva change from health to disease?</span><span class="ar">٨ — كيف يتغير قوام اللثة من الصحة إلى المرض؟</span></div><div class="content" hidden=""><span class="en">A: It changes from firm and resilient to soft and edematous.</span><span class="ar">ج: يتغير من صلب ومرن إلى رخو ووذمي.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — In a healthy periodontium, how far is the alveolar crest from the CEJ?</span><span class="ar">٩ — في دواعم السن السليمة، كم يبعد العرف السنخي عن الوصل الملاطي المينائي؟</span></div><div class="content" hidden=""><span class="en">A: Approximately 1.5 to 2 mm.</span><span class="ar">ج: حوالي 1.5 إلى 2 ملم.</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

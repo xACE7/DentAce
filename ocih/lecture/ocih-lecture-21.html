@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
-<title>🦷 Dentistry 3rd year — Cementum (OCIH-21)</title>
+<title>🦷 Dentistry 3rd year — Cementum</title>
 <meta content="dark" name="color-scheme"/>
 <style>
   :root{
@@ -61,6 +61,7 @@
     font-size:1.2rem;
     background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
     -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
     text-align:center;
   }
   .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
@@ -107,6 +108,8 @@
   }
   .sec-body{display:flex;flex-direction:column;gap:.75rem}
   .sec-body p{margin:0}
+  .sec-body strong { color: #8b5cf6; }
+
 
   /* Callouts column */
   .callouts{display:flex;flex-direction:column;gap:.6rem}
@@ -123,7 +126,7 @@
   .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
   .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
 
-  /* Table wrap */
+  /* Table wrap: invisible scroll container */
   .table-wrap{
     overflow-x:auto;
     margin:.25rem 0 0;
@@ -133,6 +136,8 @@
   .table-wrap::-webkit-scrollbar{height:10px}
   .table-wrap::-webkit-scrollbar-track{background:transparent;}
   .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
   table{
     width:100%;
     border-collapse:collapse;
@@ -172,10 +177,11 @@
   .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
   .card .content[hidden]{display:none;}
   .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
   #glossary .card{box-shadow:var(--glossary-glow);}
   #flashcards .card{box-shadow:var(--flash-glow);}
 
-  /* Responsive */
+  /* Responsive: stack to 1 column under 960px */
   @media(max-width:960px){
     .section{grid-template-columns:1fr;}
     .grid.g3x4{grid-template-columns:repeat(2,1fr);}
@@ -183,534 +189,615 @@
   @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
 
   /* RTL/LTR control */
-  body.lang-ar { direction: rtl; text-align: right; }
-  body.lang-en { direction: ltr; text-align: left; }
-  header, header * { direction: ltr !important; text-align: left !important; }
-
-  /* Language Switcher */
-  #langBtn{
-    --h: 40px; --pad: 3px;
-    position: fixed; top: 16px; right: 16px;
-    display: inline-flex; align-items: center; justify-content: space-between;
-    min-width: 150px; height: var(--h); padding: 0 6px;
-    border-radius: 9999px; font-size: 13px; font-weight: 800; gap: .35rem;
-    border: 1px solid rgba(255,255,255,.12);
-    background: rgba(255,255,255,.06); color: var(--muted);
-    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
-    backdrop-filter: blur(6px); isolation: isolate; overflow: hidden; z-index: 9999;
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
   }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
   #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
   #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
   #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
   #langBtn::after{
-    content:""; position:absolute; top: var(--pad); bottom: var(--pad); left: var(--pad);
-    width: calc(50% - var(--pad)*2 + 2px); border-radius: inherit; background: rgba(255,255,255,.10);
-    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10); transform: translateX(0); z-index: 0;
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
   }
-  @keyframes bgToRight {0%{transform:translateX(0%)}70%{transform:translateX(108%)}100%{transform:translateX(100%)}}
-  @keyframes bgToLeft  {0%{transform:translateX(100%)}70%{transform:translateX(-8%)}100%{transform:translateX(0%)}}
-  @keyframes bounceActive {0%{transform:scale(1)}40%{transform:scale(1.14)}70%{transform:scale(1.04)}100%{transform:scale(1.08)}}
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
   body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
   body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
-  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
-  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none; transform: scale(1.0); }
-  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
-  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none; transform: scale(1.0); }
 
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
   @media (prefers-reduced-motion: reduce) {
-    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar { animation: none !important; transition: none !important; transform: none !important; }
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
   }
 
   /* Source footer pinned to bottom of the LEFT column only */
   .content-col{display:flex;flex-direction:column;}
   .source-footer{
-    margin-top:auto;padding:8px 12px;font-size:.85rem;color:var(--muted);
-    border-top:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);
-    text-align:center;border-radius:0 0 var(--radius) var(--radius);
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
   }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
 </style>
 </head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
 <body class="lang-en">
 <header>
-  <div class="hdr wrap">
-    <div class="left">
-      <div class="title">🦷 Dentistry 3rd year</div>
-      <div class="subtitle">Lecture 21</div>
-      <button aria-label="Toggle language" class="lang-toggle" id="langBtn">
-        <span class="lab en">EN</span>
-        <span class="lab ar">AR</span>
-      </button>
-    </div>
-  </div>
-</header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 21</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
 <main class="wrap">
-  <!-- Dua (kept ar only) -->
-  <div class="dua">اللهم ارزقنا فهمًا ينير عقولنا، وثباتًا يثبت قلوبنا، وعلّمنا ما ينفعنا وانفعنا بما علمتنا.</div>
+<div class="dua">رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِنْ لِسَانِي يَفْقَهُوا قَوْلِي</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Cementum</b></span>
+<span class="ar"><b>الموضوع: الملاط السني</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Introduction to Cementum</span><span class="ar">مقدمة في الملاط السني</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Cementum</strong> is a specialized, <strong>avascular</strong> (lacks blood vessels) mineralized connective tissue. It covers the anatomic roots of human teeth.</p>
+    <p>Its primary role is to provide a surface for the attachment of <strong>collagen fibers</strong> from the periodontal ligament, which anchors the tooth to the surrounding alveolar bone.</p>
+    <p>The thickness of cementum varies:</p>
+    <ul>
+        <li>It is <strong>thinnest</strong> at the cementoenamel junction (CEJ) near the crown, measuring about 20 to 50 micrometers.</li>
+        <li>It is <strong>thickest</strong> towards the root apex (tip), measuring about 150 to 200 micrometers.</li>
+    </ul>
+    <p>Cementum development occurs in two stages: a <strong>prefunctional stage</strong> during root formation and a <strong>functional stage</strong> that begins when the tooth comes into occlusion and continues throughout life.</p>
+</div>
+<div class="ar">
+    <p><strong>الملاط السني</strong> هو نسيج ضام متخصص ومتكلس <strong>لا وعائي</strong> (يفتقر إلى الأوعية الدموية). وهو يغطي الجذور التشريحية لأسنان الإنسان.</p>
+    <p>يتمثل دوره الأساسي في توفير سطح لارتباط <strong>ألياف الكولاجين</strong> من رباط اللثة، والذي يثبت السن في العظم السنخي المحيط به.</p>
+    <p>يختلف سمك الملاط:</p>
+    <ul>
+        <li>يكون <strong>أرق ما يمكن</strong> عند الموصل الملاطي المينائي (CEJ) بالقرب من التاج، حيث يبلغ سمكه حوالي 20 إلى 50 ميكرومترًا.</li>
+        <li>يكون <strong>أكثر سمكًا</strong> باتجاه ذروة الجذر (الطرف)، حيث يبلغ سمكه حوالي 150 إلى 200 ميكرومتر.</li>
+    </ul>
+    <p>يحدث تطور الملاط على مرحلتين: <strong>مرحلة ما قبل الوظيفة</strong> أثناء تكوين الجذر و<strong>مرحلة وظيفية</strong> تبدأ عندما يصل السن إلى الإطباق وتستمر مدى الحياة.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 3, 4 of 34</span>
+<span class="ar">الصفحات المرجعية: 3, 4 من 34</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+    <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Cementum is avascular, meaning it has no direct blood supply. It receives nutrients through diffusion from the adjacent periodontal ligament.</div><div class="ar">الملاط السني لا وعائي، مما يعني أنه لا يحتوي على إمداد دم مباشر. يحصل على العناصر الغذائية عن طريق الانتشار من رباط اللثة المجاور.</div></div></div>
+    <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think of cementum thickness like a carrot: thinnest at the top (cervical/CEJ) and thickest at the bottom (apex).</div><div class="ar">تخيل سمك الملاط مثل جزرة: يكون أرق في الأعلى (عنقي/CEJ) وأكثر سمكًا في الأسفل (الذروة).</div></div></div>
+    <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The primary function of cementum is anchorage. Without it, the periodontal ligament fibers couldn't attach to the tooth, leading to tooth instability.</div><div class="ar">الوظيفة الأساسية للملاط هي التثبيت. بدونه، لا يمكن لألياف رباط اللثة أن ترتبط بالسن، مما يؤدي إلى عدم استقرار السن.</div></div></div>
+</div>
+</aside>
+</section>
 
-  <!-- Topic -->
-  <div class="chip-box">
-    <span class="chip">
-      <span class="en"><b>Topic: Cementum (Part 1)</b> </span>
-      <span class="ar"><b>الموضوع: الملاط السِني (الجزء ١)</b></span>
-    </span>
-  </div>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Composition & Physical Properties</span><span class="ar">التركيب والخصائص الفيزيائية</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Physical Characteristics:</strong></p>
+    <ul>
+        <li>It is light yellow and lacks the luster of enamel.</li>
+        <li>It is <strong>less hard</strong> than dentin.</li>
+        <li>Cementum is <strong>permeable</strong>, allowing various materials to pass through it.</li>
+    </ul>
+    <p><strong>Chemical Composition:</strong></p>
+    <p>Cementum consists of approximately 45-50% inorganic substances and 50-55% organic material and water.</p>
+    <ul>
+        <li>The <strong>inorganic portion</strong> is mainly calcium and phosphate in the form of <strong>hydroxyapatite</strong> crystals.</li>
+        <li>The <strong>organic portion</strong> is primarily <strong>Type I collagen</strong> and non-collagenous proteins such as Bone Sialoprotein (BSP) and Osteopontin (OPN), which regulate mineralization.</li>
+    </ul>
+    <p>Notably, cementum has the <strong>highest fluoride content</strong> of all mineralized tissues in the body.</p>
+</div>
+<div class="ar">
+    <p><strong>الخصائص الفيزيائية:</strong></p>
+    <ul>
+        <li>لونه أصفر فاتح ويفتقر إلى بريق المينا.</li>
+        <li>هو <strong>أقل صلابة</strong> من العاج.</li>
+        <li>الملاط <strong>نفاذ</strong>، مما يسمح لمواد مختلفة بالمرور من خلاله.</li>
+    </ul>
+    <p><strong>التركيب الكيميائي:</strong></p>
+    <p>يتكون الملاط من حوالي 45-50% مواد غير عضوية و 50-55% مواد عضوية وماء.</p>
+    <ul>
+        <li><strong>الجزء غير العضوي</strong> يتكون بشكل أساسي من الكالسيوم والفوسفات على شكل بلورات <strong>هيدروكسي أباتيت</strong>.</li>
+        <li><strong>الجزء العضوي</strong> يتكون بشكل أساسي من <strong>كولاجين النوع الأول</strong> وبروتينات غير كولاجينية مثل بروتين سيال العظام (BSP) والأوستيوبونتين (OPN)، التي تنظم التمعدن.</li>
+    </ul>
+    <p>والجدير بالذكر أن الملاط يحتوي على <strong>أعلى محتوى من الفلورايد</strong> بين جميع الأنسجة المتكلسة في الجسم.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 7, 8 of 34</span>
+<span class="ar">الصفحات المرجعية: 7, 8 من 34</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+    <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The high fluoride content of cementum makes it more resistant to resorption, which is important for maintaining tooth position during orthodontic movement.</div><div class="ar">المحتوى العالي من الفلورايد في الملاط يجعله أكثر مقاومة للامتصاص، وهو أمر مهم للحفاظ على وضع السن أثناء حركة تقويم الأسنان.</div></div></div>
+    <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Cementum's composition is roughly a 50/50 split between inorganic (hard minerals) and organic (protein framework) components.</div><div class="ar">يتكون الملاط تقريبًا من نسبة 50/50 بين المكونات غير العضوية (المعادن الصلبة) والعضوية (الإطار البروتيني).</div></div></div>
+    <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Key proteins in the organic matrix, like Bone Sialoprotein (BSP) and Osteopontin (OPN), play crucial roles in initiating and regulating the mineralization process of cementum.</div><div class="ar">تلعب البروتينات الرئيسية في المصفوفة العضوية، مثل بروتين سيال العظام (BSP) والأوستيوبونتين (OPN)، أدوارًا حاسمة في بدء وتنظيم عملية تمعدن الملاط.</div></div></div>
+</div>
+</aside>
+</section>
 
-  <div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Cells of Cementum</span><span class="ar">خلايا الملاط السني</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>There are two main types of cells associated with cementum: cementoblasts and cementocytes.</p>
+    <p><strong>Cementoblasts:</strong></p>
+    <ul>
+        <li>These are the "cementum-forming" cells.</li>
+        <li>They originate from ectomesenchymal cells of the dental follicle or possibly from Hertwig's Epithelial Root Sheath (HERS).</li>
+        <li>Their function is to synthesize the collagen and proteins that make up the organic matrix of cementum. They produce the <strong>intrinsic fibers</strong> of cementum.</li>
+    </ul>
+    <p><strong>Cementocytes:</strong></p>
+    <ul>
+        <li>These are cementoblasts that have become trapped within the cementum matrix they secreted.</li>
+        <li>They reside in small spaces called <strong>lacunae</strong>.</li>
+        <li>Cementocytes have numerous cell processes called <strong>canaliculi</strong> that radiate from the cell body, allowing them to communicate with neighboring cells. These processes are mostly directed toward the periodontal ligament, their source of nutrients.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p>هناك نوعان رئيسيان من الخلايا المرتبطة بالملاط السني: أرومات الملاط وخلايا الملاط.</p>
+    <p><strong>أرومات الملاط (Cementoblasts):</strong></p>
+    <ul>
+        <li>هي الخلايا "المكونة للملاط".</li>
+        <li>تنشأ من الخلايا اللحمية المتوسطة الخارجية للجريب السني أو ربما من غمد هيرتويغ الظهاري للجذر (HERS).</li>
+        <li>وظيفتها هي تصنيع الكولاجين والبروتينات التي تشكل المصفوفة العضوية للملاط. وتنتج <strong>الألياف الداخلية</strong> للملاط.</li>
+    </ul>
+    <p><strong>خلايا الملاط (Cementocytes):</strong></p>
+    <ul>
+        <li>هي أرومات ملاط أصبحت محاصرة داخل مصفوفة الملاط التي أفرزتها.</li>
+        <li>توجد في مساحات صغيرة تسمى <strong>الجوبات (lacunae)</strong>.</li>
+        <li>تحتوي خلايا الملاط على العديد من النتوءات الخلوية تسمى <strong>القنيات (canaliculi)</strong> التي تمتد من جسم الخلية، مما يسمح لها بالتواصل مع الخلايا المجاورة. تتجه معظم هذه النتوءات نحو رباط اللثة، وهو مصدرها للعناصر الغذائية.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 10, 11, 12 of 34</span>
+<span class="ar">الصفحات المرجعية: 10, 11, 12 من 34</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+    <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Cementoblasts are the "builders" that line the surface of the cementum, while cementocytes are the "retired builders" trapped inside the structure they built.</div><div class="ar">أرومات الملاط هي "البناة" التي تبطن سطح الملاط، بينما خلايا الملاط هي "البناة المتقاعدون" المحاصرون داخل الهيكل الذي بنوه.</div></div></div>
+    <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Cementocytes live in "lacunae" (lakes) and get their food through "canaliculi" (canals) from the PDL.</div><div class="ar">تعيش خلايا الملاط في "الجوبات" (بحيرات) وتحصل على غذائها عبر "القنيات" (قنوات) من رباط اللثة.</div></div></div>
+    <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Since cementum is avascular, cementocytes in the deeper layers may become non-vital as they are too far from the nutrient supply of the periodontal ligament.</div><div class="ar">نظرًا لأن الملاط لا وعائي، فقد تصبح خلايا الملاط في الطبقات العميقة غير حيوية لأنها بعيدة جدًا عن إمداد العناصر الغذائية من رباط اللثة.</div></div></div>
+</div>
+</aside>
+</section>
 
-    <!-- Section 1 -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head">
-          <span class="en">1) Definition & Location</span>
-          <span class="ar">١) التعريف والموقع</span>
-        </h2>
-        <div class="sec-body">
-          <div class="en">
-            <p><b>Cementum</b> is an avascular, mineralized connective tissue covering the anatomic root from the cementoenamel junction (CEJ) to the apex. It provides a surface for collagen fiber attachment linking the tooth to supporting structures.</p>
-            <p>Thickness varies: <b>20–50 μm</b> at CEJ (thinnest) → <b>150–200 μm</b> near the apex (thickest). The apical foramen is surrounded by cementum.</p>
-            <p>Developmental timeline: <b>Prefunctional stage</b> (during root formation) then <b>Functional stage</b> (begins at occlusion and continues lifelong).</p>
-          </div>
-          <div class="ar">
-            <p><b>الملاط</b> نسيج ضام مُتَمَعْدِن لا وعائي يغطي جذر السن التشريحي من موضع اتحاد الميناء بالملاط (CEJ) حتى الذروة. يوفّر سطحًا لارتباط ألياف الكولاجين التي تثبّت السن بالأنسجة الداعمة.</p>
-            <p>السُمك يتدرّج: <b>50–20 ميكرون</b> عند CEJ (الأقل) → <b>200–150 ميكرون</b> قرب الذروة (الأكثر). الثقبة الذروية محاطة بالملاط.</p>
-            <p>التطور: <b>مرحلة ما قبل الوظيفة</b> أثناء تكوّن الجذر ثم <b>المرحلة الوظيفية</b> تبدأ مع الإطباق وتستمر طوال الحياة.</p>
-          </div>
-        </div>
-        <div class="source-footer">
-          <span class="en">Source pages: 1–3/34</span>
-          <span class="ar">الصفحات المرجعية: ٣–١/٣٤</span>
-        </div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Avascular, covers root; thinnest at CEJ; thickest apically.</div><div class="ar">لا وعائي، يغطي الجذر؛ أرق عند CEJ؛ أكثر سُمكًا ذروياً.</div></div></div>
-          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Anchorage via collagen fiber attachment is essential for tooth stability.</div><div class="ar">الارتكاز عبر ألياف الكولاجين أساس ثبات السن.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة</span></div><div class="body" hidden><div class="en">Remember “<b>Thin at the neck, thick at the tip</b>.”</div><div class="ar">احفظ: «<b>رفيع عند العنق، سميك عند القمة</b>».</div></div></div>
-          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra</span><span class="ar">📝 إضافي</span></div><div class="body" hidden><div class="en">Cementum persists and remodels without vascularity.</div><div class="ar">الملاط يتجدد دون أوعية دموية.</div></div></div>
-        </div>
-      </aside>
-    </section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Fibers of Cementum</span><span class="ar">ألياف الملاط السني</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>The fibrous matrix of cementum is composed of two main types of collagen fibers based on their origin.</p>
+    <p><strong>Intrinsic Fibers:</strong></p>
+    <ul>
+        <li>Produced by <strong>cementoblasts</strong>.</li>
+        <li>They are smaller in diameter (1-2 microns).</li>
+        <li>Their orientation is <strong>parallel</strong> to the root surface.</li>
+        <li>Their primary role is to form the cementum matrix itself.</li>
+    </ul>
+    <p><strong>Extrinsic Fibers:</strong></p>
+    <ul>
+        <li>Produced by fibroblasts from the <strong>periodontal ligament (PDL)</strong>.</li>
+        <li>They form larger bundles (5-7 microns in diameter).</li>
+        <li>Their orientation is <strong>perpendicular</strong> to the root surface.</li>
+        <li>These are the terminal portions of the principal fibers of the PDL that get embedded into the cementum. When embedded, they are known as <strong>Sharpey's fibers</strong>. Their main function is tooth anchorage.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p>تتكون المصفوفة الليفية للملاط من نوعين رئيسيين من ألياف الكولاجين بناءً على أصلها.</p>
+    <p><strong>الألياف الداخلية (Intrinsic Fibers):</strong></p>
+    <ul>
+        <li>تنتجها <strong>أرومات الملاط</strong>.</li>
+        <li>قطرها أصغر (1-2 ميكرون).</li>
+        <li>يكون اتجاهها <strong>موازيًا</strong> لسطح الجذر.</li>
+        <li>دورها الأساسي هو تكوين مصفوفة الملاط نفسها.</li>
+    </ul>
+    <p><strong>الألياف الخارجية (Extrinsic Fibers):</strong></p>
+    <ul>
+        <li>تنتجها الأرومات الليفية من <strong>رباط اللثة (PDL)</strong>.</li>
+        <li>تشكل حزمًا أكبر (قطرها 5-7 ميكرون).</li>
+        <li>يكون اتجاهها <strong>عموديًا</strong> على سطح الجذر.</li>
+        <li>هي الأجزاء النهائية للألياف الرئيسية لرباط اللثة التي تنغرس في الملاط. عند انغراسها، تُعرف باسم <strong>ألياف شاربي</strong>. وظيفتها الرئيسية هي تثبيت السن.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 13, 20 of 34</span>
+<span class="ar">الصفحات المرجعية: 13, 20 من 34</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+    <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Intrinsic fibers build the cementum itself, while extrinsic fibers (Sharpey's fibers) anchor the tooth to the bone.</div><div class="ar">الألياف الداخلية تبني الملاط نفسه، بينما الألياف الخارجية (ألياف شاربي) تثبت السن في العظم.</div></div></div>
+    <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">INtrinsic fibers are produced INside (by cementoblasts). EXtrinsic fibers come from the EXterior (the PDL).</div><div class="ar">الألياف الداخلية (INtrinsic) تُنتج في الداخل (بواسطة أرومات الملاط). الألياف الخارجية (EXtrinsic) تأتي من الخارج (رباط اللثة).</div></div></div>
+    <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Extrinsic fibers are larger and run perpendicular to the surface, reflecting their function of bearing tensile forces and anchoring the tooth.</div><div class="ar">الألياف الخارجية أكبر وتجري بشكل عمودي على السطح، مما يعكس وظيفتها في تحمل قوى الشد وتثبيت السن.</div></div></div>
+</div>
+</aside>
+</section>
 
-    <!-- Section 2 -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head">
-          <span class="en">2) Origin & Formation</span>
-          <span class="ar">٢) الأصل والتكوين</span>
-        </h2>
-        <div class="sec-body">
-          <div class="en">
-            <p>Root-supporting tissues arise from the <b>dental follicle</b>. Fragmentation of <b>Hertwig’s epithelial root sheath (HERS)</b> allows follicle ectomesenchymal cells to contact newly formed root dentin and differentiate into <b>cementoblasts</b>.</p>
-            <p>Evidence suggests some HERS cells may undergo epithelial–mesenchymal transformation to cementoblasts.</p>
-          </div>
-          <div class="ar">
-            <p>تتكوّن أنسجة دعم الجذر من <b>الجُريْب السِّني</b>. تفتّت <b>غمد الجذر الطلائي لهيرتفغ</b> يسمح لخلايا الجريب خارج-الميزنشيمية بملامسة عاج الجذر الحديث فتتمايز إلى <b>خلايا مُلاطية</b>.</p>
-            <p>تشير الأدلة إلى إمكانية تحوّل بعض خلايا الغمد إلى خلايا مُلاطية.</p>
-          </div>
-        </div>
-        <div class="source-footer">
-          <span class="en">Source pages: 4–7/34</span>
-          <span class="ar">الصفحات المرجعية: ٧–٤/٣٤</span>
-        </div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Dental follicle → cementoblasts; HERS fragmentation is key.</div><div class="ar">الجريب السني → خلايا ملاطية؛ تفتت غمد الجذر أساسي.</div></div></div>
-          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Follicle cells penetrate HERS fenestrations to reach root dentin.</div><div class="ar">خلايا الجريب تنفذ عبر فتحات الغمد لتصل لعاج الجذر.</div></div></div>
-          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Disturbances in HERS can alter root morphology and cementum.</div><div class="ar">اضطراب الغمد قد يغيّر شكل الجذر والملاط.</div></div></div>
-          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“HERS → Holes → Follicle in → Cementoblasts.”</div><div class="ar">«الغمد يَثْقُب → الجريب يدخل → خلايا ملاطية».</div></div></div>
-        </div>
-      </aside>
-    </section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Junctions: CEJ & CDJ</span><span class="ar">الموصلات: الملاطي المينائي والعاجي الملاطي</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Cemento-Enamel Junction (CEJ):</strong></p>
+    <p>This is the area where the cementum of the root meets the enamel of the crown. There are three common configurations:</p>
+    <ul>
+        <li><strong>Overlap (60%):</strong> Cementum overlaps the enamel for a short distance. This is the most common type.</li>
+        <li><strong>Meet (30%):</strong> Cementum meets the enamel in a sharp, edge-to-edge line (butt joint).</li>
+        <li><strong>Gap (10%):</strong> Cementum and enamel do not meet, leaving a small area of root dentin exposed.</li>
+    </ul>
+    <p><strong>Cementodentinal Junction (CDJ):</strong></p>
+    <p>This is the interface between the cementum and the underlying dentin.</p>
+    <ul>
+        <li>In permanent teeth, the CDJ is typically <strong>smooth</strong>.</li>
+        <li>In deciduous (baby) teeth, it can be <strong>scalloped</strong>.</li>
+        <li>Sometimes, a layer known as the <strong>intermediate cementum layer</strong> is found between the dentin and cementum, believed to seal the root dentin.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><strong>الموصل الملاطي المينائي (CEJ):</strong></p>
+    <p>هذه هي المنطقة التي يلتقي فيها ملاط الجذر بمينا التاج. هناك ثلاث تشكيلات شائعة:</p>
+    <ul>
+        <li><strong>تراكب (60%):</strong> يتراكب الملاط فوق المينا لمسافة قصيرة. هذا هو النوع الأكثر شيوعًا.</li>
+        <li><strong>التقاء (30%):</strong> يلتقي الملاط مع المينا في خط حاد، حافة إلى حافة (مفصل تناكبي).</li>
+        <li><strong>فجوة (10%):</strong> لا يلتقي الملاط والمينا، مما يترك مساحة صغيرة من عاج الجذر مكشوفة.</li>
+    </ul>
+    <p><strong>الموصل العاجي الملاطي (CDJ):</strong></p>
+    <p>هذا هو السطح الفاصل بين الملاط والعاج الذي يقع تحته.</p>
+    <ul>
+        <li>في الأسنان الدائمة، يكون الـ CDJ عادةً <strong>أملس</strong>.</li>
+        <li>في الأسنان اللبنية (أسنان الأطفال)، يمكن أن يكون <strong>متعرجًا</strong>.</li>
+        <li>أحيانًا، توجد طبقة تُعرف بـ<strong>طبقة الملاط المتوسطة</strong> بين العاج والملاط، ويُعتقد أنها تغلق عاج الجذر.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 16, 17, 18 of 34</span>
+<span class="ar">الصفحات المرجعية: 16, 17, 18 من 34</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+    <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Use the mnemonic "OMG" for CEJ variations: 60% Overlap, 30% Meet, 10% Gap.</div><div class="ar">استخدم الاختصار "OMG" لتذكر اختلافات الـ CEJ: ستين بالمئة تراكب (Overlap)، ثلاثين بالمئة التقاء (Meet)، عشرة بالمئة فجوة (Gap).</div></div></div>
+    <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">The 10% "Gap" variation at the CEJ can be clinically significant. It exposes the underlying dentin, which can lead to cervical dentin hypersensitivity (sensitivity to cold, hot, or sweet stimuli).</div><div class="ar">يمكن أن تكون "الفجوة" بنسبة 10% في الـ CEJ ذات أهمية سريرية. فهي تكشف العاج الكامن، مما قد يؤدي إلى فرط حساسية العاج العنقي (حساسية للمنبهات الباردة أو الساخنة أو الحلوة).</div></div></div>
+    <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The CDJ is smoother in permanent teeth compared to the scalloped appearance it can have in deciduous teeth.</div><div class="ar">الموصل العاجي الملاطي أملس في الأسنان الدائمة مقارنة بالمظهر المتعرج الذي يمكن أن يكون عليه في الأسنان اللبنية.</div></div></div>
+</div>
+</aside>
+</section>
 
-    <!-- Section 3 (Chart) -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head">
-          <span class="en">3) Composition & Physical Traits</span>
-          <span class="ar">٣) التركيب والصفات الفيزيائية</span>
-        </h2>
-        <div class="sec-body">
-          <div class="en">
-            <p><b>Hardness</b> less than dentin; <b>light yellow</b>; duller than enamel; relatively <b>permeable</b>.</p>
-            <p><b>Inorganic</b> 45–50% (hydroxyapatite Ca–P); <b>organic + water</b> 50–55% (Type I collagen + noncollagenous proteins: BSP, osteopontin, CAP). Highest fluoride content among mineralized tissues.</p>
-            <div class="chart-wrap" style="width:100%;overflow:hidden">
-              <!-- Simple bar chart: composition -->
-              <svg style="width:100%;height:auto;display:block" viewBox="0 0 860 240" aria-label="Cementum composition">
-                <line stroke="rgba(255,255,255,.7)" stroke-width="2" x1="60" x2="820" y1="200" y2="200"></line>
-                <line stroke="rgba(255,255,255,.7)" stroke-width="2" x1="60" x2="60" y1="40" y2="200"></line>
-                <text x="100" y="70" fill="#f6f7fb" font-size="16">Inorganic (45–50%)</text>
-                <rect fill="#60a5fa" height="28" opacity="0.95" rx="6" ry="6" width="320" x="100" y="80"></rect>
-                <text x="100" y="135" fill="#f6f7fb" font-size="16">Organic + Water (50–55%)</text>
-                <rect fill="#22d3ee" height="28" opacity="0.95" rx="6" ry="6" width="350" x="100" y="145"></rect>
-              </svg>
-            </div>
-          </div>
-          <div class="ar">
-            <p><b>الصلابة</b> أقل من العاج؛ <b>أصفر فاتح</b>؛ أقل لمعانًا من الميناء؛ <b>منفاذ</b> نسبيًا.</p>
-            <p><b>غير عضوي</b> 50–45% (هيدروكسي أباتيت كالسيوم-فوسفات)؛ <b>عضوي + ماء</b> 55–50% (كولاجين I + بروتينات غير كولاجينية: BSP، أوستيوبونتين، CAP). أعلى محتوى فلوريد بين الأنسجة المتكلسة.</p>
-          </div>
-        </div>
-        <div class="source-footer">
-          <span class="en">Source pages: 8–10/34</span>
-          <span class="ar">الصفحات المرجعية: ١٠–٨/٣٤</span>
-        </div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Type I collagen predominates; noncollagenous proteins fill interfibrillar spaces.</div><div class="ar">الكولاجين I هو الغالب؛ البروتينات غير الكولاجينية تملأ المسافات بين الليفية.</div></div></div>
-          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warning</span><span class="ar">⚠️ تحذير</span></div><div class="body" hidden><div class="en">Do not confuse cementum composition with enamel (96% inorganic).</div><div class="ar">لا تخلط تركيب الملاط مع الميناء (غير عضوي ٩٦٪).</div></div></div>
-          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Fluoride-rich cementum may resist root caries better.</div><div class="ar">غِنى الملاط بالفلوريد قد يُحسّن مقاومة نخور الجذور.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Exam Tip</span><span class="ar">💡 تلميح</span></div><div class="body" hidden><div class="en">“~50/50 split” helps recall cementum composition quickly.</div><div class="ar">«تقريبًا ٥٠/٥٠» اختصار مفيد لحفظ التركيب.</div></div></div>
-        </div>
-      </aside>
-    </section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Classification of Cementum</span><span class="ar">تصنيف الملاط السني</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Cementum can be classified based on several criteria:</p>
+    <p><strong>1. Presence of Cells:</strong></p>
+    <ul>
+        <li><strong>Acellular Cementum:</strong> Contains no cementocytes within its matrix. It is the first type to be formed and is called <strong>primary cementum</strong>.</li>
+        <li><strong>Cellular Cementum:</strong> Contains cementocytes trapped in lacunae. It forms after the acellular type and is called <strong>secondary cementum</strong>.</li>
+    </ul>
+    <p><strong>2. Origin of Fibers:</strong></p>
+    <ul>
+        <li><strong>Fibrillar Cementum:</strong> Contains well-defined collagen fibers (either intrinsic, extrinsic, or both).</li>
+        <li><strong>Afibrillar Cementum:</strong> Contains no collagen fibers and has a fine, granular matrix.</li>
+    </ul>
+    <div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th><span class="en">Feature</span><span class="ar">الميزة</span></th>
+                <th><span class="en">Acellular Cementum (Primary)</span><span class="ar">الملاط اللاخلوي (الأولي)</span></th>
+                <th><span class="en">Cellular Cementum (Secondary)</span><span class="ar">الملاط الخلوي (الثانوي)</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="en">Formation Time</span><span class="ar">وقت التكوين</span></td>
+                <td><span class="en">Formed first</span><span class="ar">يتكون أولاً</span></td>
+                <td><span class="en">Formed after acellular</span><span class="ar">يتكون بعد اللاخلوي</span></td>
+            </tr>
+            <tr>
+                <td><span class="en">Rate of Deposition</span><span class="ar">معدل الترسيب</span></td>
+                <td><span class="en">Slower</span><span class="ar">أبطأ</span></td>
+                <td><span class="en">Faster</span><span class="ar">أسرع</span></td>
+            </tr>
+            <tr>
+                <td><span class="en">Cementocytes</span><span class="ar">خلايا الملاط</span></td>
+                <td><span class="en">Absent</span><span class="ar">غائبة</span></td>
+                <td><span class="en">Present</span><span class="ar">موجودة</span></td>
+            </tr>
+            <tr>
+                <td><span class="en">Location</span><span class="ar">الموقع</span></td>
+                <td><span class="en">Cervical third of the root</span><span class="ar">الثلث العنقي من الجذر</span></td>
+                <td><span class="en">Apical third and inter-radicular areas</span><span class="ar">الثلث الذروي والمناطق بين الجذور</span></td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+<div class="ar">
+    <p>يمكن تصنيف الملاط بناءً على عدة معايير:</p>
+    <p><strong>1. وجود الخلايا:</strong></p>
+    <ul>
+        <li><strong>الملاط اللاخلوي:</strong> لا يحتوي على خلايا ملاطية داخل مصفوفته. وهو النوع الأول الذي يتكون ويسمى <strong>الملاط الأولي</strong>.</li>
+        <li><strong>الملاط الخلوي:</strong> يحتوي على خلايا ملاطية محاصرة في جوبات. يتكون بعد النوع اللاخلوي ويسمى <strong>الملاط الثانوي</strong>.</li>
+    </ul>
+    <p><strong>2. أصل الألياف:</strong></p>
+    <ul>
+        <li><strong>الملاط الليفي:</strong> يحتوي على ألياف كولاجين محددة جيدًا (إما داخلية أو خارجية أو كليهما).</li>
+        <li><strong>الملاط اللاليفي:</strong> لا يحتوي على ألياف كولاجين وله مصفوفة حبيبية دقيقة.</li>
+    </ul>
+    <div class="table-wrap">
+    <table>
+        <thead>
+            <tr>
+                <th><span class="ar">الميزة</span><span class="en">Feature</span></th>
+                <th><span class="ar">الملاط اللاخلوي (الأولي)</span><span class="en">Acellular Cementum (Primary)</span></th>
+                <th><span class="ar">الملاط الخلوي (الثانوي)</span><span class="en">Cellular Cementum (Secondary)</span></th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><span class="ar">وقت التكوين</span><span class="en">Formation Time</span></td>
+                <td><span class="ar">يتكون أولاً</span><span class="en">Formed first</span></td>
+                <td><span class="ar">يتكون بعد اللاخلوي</span><span class="en">Formed after acellular</span></td>
+            </tr>
+            <tr>
+                <td><span class="ar">معدل الترسيب</span><span class="en">Rate of Deposition</span></td>
+                <td><span class="ar">أبطأ</span><span class="en">Slower</span></td>
+                <td><span class="ar">أسرع</span><span class="en">Faster</span></td>
+            </tr>
+            <tr>
+                <td><span class="ar">خلايا الملاط</span><span class="en">Cementocytes</span></td>
+                <td><span class="ar">غائبة</span><span class="en">Absent</span></td>
+                <td><span class="ar">موجودة</span><span class="en">Present</span></td>
+            </tr>
+            <tr>
+                <td><span class="ar">الموقع</span><span class="en">Location</span></td>
+                <td><span class="ar">الثلث العنقي من الجذر</span><span class="en">Cervical third of the root</span></td>
+                <td><span class="ar">الثلث الذروي والمناطق بين الجذور</span><span class="en">Apical third and inter-radicular areas</span></td>
+            </tr>
+        </tbody>
+    </table>
+    </div>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 19, 21, 32 of 34</span>
+<span class="ar">الصفحات المرجعية: 19, 21, 32 من 34</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+    <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Acellular cementum is cell-free because it forms slowly, giving the cementoblasts time to move away. Cellular cementum forms rapidly, trapping the cells inside.</div><div class="ar">الملاط اللاخلوي خالٍ من الخلايا لأنه يتكون ببطء، مما يمنح أرومات الملاط وقتًا للابتعاد. أما الملاط الخلوي فيتكون بسرعة، مما يؤدي إلى حبس الخلايا في الداخل.</div></div></div>
+    <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">"A"cellular is "A"lways first (Primary). "C"ellular "C"omes later (Secondary).</div><div class="ar">الملاط اللاخلوي (Acellular) يأتي أولاً (Always first). الملاط الخلوي (Cellular) يأتي لاحقًا (Comes later).</div></div></div>
+    <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The two main types have different functions. Acellular cementum is primarily for anchorage, while cellular cementum is more involved in adaptation and repair in response to stress.</div><div class="ar">النوعان الرئيسيان لهما وظائف مختلفة. الملاط اللاخلوي وظيفته الأساسية هي التثبيت، بينما يشارك الملاط الخلوي بشكل أكبر في التكيف والإصلاح استجابةً للإجهاد.</div></div></div>
+</div>
+</aside>
+</section>
 
-    <!-- Section 4 (Cells) -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head">
-          <span class="en">4) Cells of Cementum</span>
-          <span class="ar">٤) خلايا الملاط</span>
-        </h2>
-        <div class="sec-body">
-          <div class="en">
-            <p><b>Cementoblasts</b>: from HERS and/or dental follicle; synthesize collagen and proteoglycans; produce <b>intrinsic fibers</b>.</p>
-            <p><b>Cementocytes</b>: trapped cells within <b>lacunae</b> in cellular cementum; have <b>canaliculi</b> (mostly oriented toward periodontal ligament) for diffusion-based nutrition; processes branch and anastomose.</p>
-          </div>
-          <div class="ar">
-            <p><b>الخلايا الملاطية (Cementoblasts)</b>: مصدرها الغمد/الجريب؛ تُنتج الكولاجين والسكريات المخاطية؛ تصنع <b>الألياف الجوهرية</b>.</p>
-            <p><b>الخلايا الملاطية المُحتجزة (Cementocytes)</b>: ضمن <b>فُجوات</b> في الملاط الخلوي؛ تمتلك <b>قنوات دقيقة</b> غالبًا باتجاه الرباط حول السني لتغذية بالانتشار؛ وتتفرع وتتآنس.</p>
-          </div>
-        </div>
-        <div class="source-footer">
-          <span class="en">Source pages: 11–14/34</span>
-          <span class="ar">الصفحات المرجعية: ١٤–١١/٣٤</span>
-        </div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Deep cementocytes may be non-vital; surface layers more metabolically active.</div><div class="ar">قد تكون الخلايا العميقة غير حية؛ السطحية أكثر نشاطًا.</div></div></div>
-          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“<b>Blasts build</b>, <b>cytes sit</b>.”</div><div class="ar">«<b>البِلاست تُبني</b>، <b>السّايت تثبت</b>».</div></div></div>
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Canaliculi direct toward PDL for nutrient diffusion.</div><div class="ar">القنيّات تتجه نحو الرباط لتغذية بالانتشار.</div></div></div>
-          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات</span></div><div class="body" hidden><div class="en">Cellularity increases in areas of rapid deposition (apex, furcations).</div><div class="ar">يزداد عدد الخلايا حيث الترسيب سريع (الذروة والتشعبات).</div></div></div>
-        </div>
-      </aside>
-    </section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Detailed Types of Cementum</span><span class="ar">الأنواع التفصيلية للملاط السني</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Based on the presence of cells and fibers, cementum is further divided into specific types:</p>
+    <ul>
+        <li><strong>Acellular Afibrillar Cementum (AAC):</strong> Contains no cells and no fibers. It's a thin layer sometimes found on enamel near the CEJ.</li>
+        <li><strong>Acellular Extrinsic Fiber Cementum (AEFC):</strong> This is the primary cementum. It's acellular and its bulk is made of extrinsic (Sharpey's) fibers. Its main function is anchorage, especially in single-rooted teeth. It covers the cervical one-third of the root.</li>
+        <li><strong>Cellular Intrinsic Fiber Cementum (CIFC):</strong> This secondary cementum contains cells (cementocytes) and only intrinsic fibers. It is important for filling resorption defects and repair.</li>
+        <li><strong>Cellular Mixed Stratified Cementum (CMSC):</strong> Contains cells and both intrinsic and extrinsic fibers, often in alternating layers. It is the principal cementum of the apical third and furcation areas, crucial for adaptation to tooth wear and movement. Its thickness can reach up to 1000 µm.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p>بناءً على وجود الخلايا والألياف، يُقسم الملاط إلى أنواع محددة:</p>
+    <ul>
+        <li><strong>الملاط اللاخلوي اللاليفي (AAC):</strong> لا يحتوي على خلايا ولا ألياف. وهو طبقة رقيقة توجد أحيانًا على المينا بالقرب من الـ CEJ.</li>
+        <li><strong>الملاط اللاخلوي ذو الألياف الخارجية (AEFC):</strong> هذا هو الملاط الأولي. وهو لاخلوي ويتكون معظمه من ألياف خارجية (ألياف شاربي). وظيفته الرئيسية هي التثبيت، خاصة في الأسنان أحادية الجذر. يغطي الثلث العنقي من الجذر.</li>
+        <li><strong>الملاط الخلوي ذو الألياف الداخلية (CIFC):</strong> هذا الملاط الثانوي يحتوي على خلايا (خلايا ملاطية) وألياف داخلية فقط. وهو مهم لملء عيوب الامتصاص والإصلاح.</li>
+        <li><strong>الملاط الخلوي المختلط الطبقي (CMSC):</strong> يحتوي على خلايا وألياف داخلية وخارجية، غالبًا في طبقات متناوبة. وهو الملاط الرئيسي للثلث الذروي ومناطق تشعب الجذور، وهو حاسم للتكيف مع تآكل الأسنان وحركتها. يمكن أن يصل سمكه إلى 1000 ميكرومتر.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 21-31 of 34</span>
+<span class="ar">الصفحات المرجعية: 21-31 من 34</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+    <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">AEFC is the main cementum for anchorage, using extrinsic fibers to connect to the PDL.</div><div class="ar">يعتبر AEFC هو الملاط الرئيسي للتثبيت، حيث يستخدم الألياف الخارجية للاتصال برباط اللثة.</div></div></div>
+    <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think of the functions: AEFC = Anchorage. Cellular types (CIFC, CMSC) = Coping & Repair.</div><div class="ar">تذكر الوظائف: AEFC = تثبيت (Anchorage). الأنواع الخلوية (CIFC, CMSC) = تكيف وإصلاح (Coping & Repair).</div></div></div>
+    <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">The adaptive deposition of cellular cementum (CMSC) at the apex is a continuous process that compensates for the loss of tooth substance from occlusal wear, helping to maintain the vertical dimension of occlusion.</div><div class="ar">الترسيب التكيفي للملاط الخلوي (CMSC) عند الذروة هو عملية مستمرة تعوض عن فقدان مادة السن بسبب التآكل الإطباقي، مما يساعد في الحفاظ على البعد العمودي للإطباق.</div></div></div>
+</div>
+</aside>
+</section>
 
-    <!-- Section 5 (Fibers, Cementoid, Incremental lines) -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head">
-          <span class="en">5) Fibers, Cementoid & Incremental Lines</span>
-          <span class="ar">٥) الألياف، الملاط غير المتكلّس، والخطوط التراكمية</span>
-        </h2>
-        <div class="sec-body">
-          <div class="en">
-            <p><b>Intrinsic fibers</b>: produced by cementoblasts; 1–2 µm; oriented parallel to the surface.</p>
-            <p><b>Extrinsic fibers</b>: produced by PDL fibroblasts; 5–7 µm bundles; perpendicular to surface; embedded as <b>Sharpey’s fibers</b>.</p>
-            <p><b>Cementoid</b>: thin unmineralized layer on the surface; earlier layers calcify as new ones form.</p>
-            <p><b>Incremental lines</b>: represent rest periods in formation; more mineralized than adjacent cementum.</p>
-          </div>
-          <div class="ar">
-            <p><b>الألياف الجوهرية</b>: من صنع الخلايا الملاطية؛ ١–٢ ميكرون؛ موازية للسطح.</p>
-            <p><b>الألياف الخارجية</b>: يصنعها ليفيات الرباط حول السني؛ حُزم ٧–٥ ميكرون؛ عمودية على السطح وتتثبت كـ <b>ألياف شربي</b>.</p>
-            <p><b>الملاط غير المتكلّس (Cementoid)</b>: طبقة سطحية غير متكلسة؛ تتكلس الطبقات الأقدم مع تشكُّل الجديدة.</p>
-            <p><b>الخطوط التراكمية</b>: فترات راحة في التشكّل؛ أكثر تمعدنًا من الملاط المجاور.</p>
-          </div>
-        </div>
-        <div class="source-footer">
-          <span class="en">Source pages: 15–18/34</span>
-          <span class="ar">الصفحات المرجعية: ١٨–١٥/٣٤</span>
-        </div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Sharpey’s fibers = embedded ends of PDL collagen.</div><div class="ar">ألياف شربي هي نهايات ألياف الرباط المغروسة في الملاط.</div></div></div>
-          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Intrinsic fibers encircle embedded portions of extrinsic bundles at the interface.</div><div class="ar">الألياف الجوهرية تحيط بالنهايات المغروسة للحزم الخارجية عند الحدّ.</div></div></div>
-          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">“<b>In</b>trinsic = <b>in</b>-line (parallel); Extrinsic = exit/enter (perpendicular).”</div><div class="ar">«الجوهرية موازية؛ الخارجية عمودية تدخل/تخرج».</div></div></div>
-          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 الأهمية</span></div><div class="body" hidden><div class="en">Orientation determines resistance to functional loads.</div><div class="ar">الاتجاه يحدد مقاومة قوى المضغ.</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- Section 6 (Junctions) -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head">
-          <span class="en">6) Junctions: CEJ & CDJ</span>
-          <span class="ar">٦) الوصلات: CEJ وCDJ</span>
-        </h2>
-        <div class="sec-body">
-          <div class="en">
-            <p><b>CEJ relations</b>:</p>
-            <ul>
-              <li>~60%: cementum overlaps enamel</li>
-              <li>~30%: butt joint (meet edge-to-edge)</li>
-              <li>~10%: no contact (dentin exposed)</li>
-              <li>Recent fourth: <b>enamel overlaps cementum</b> (occasionally)</li>
-            </ul>
-            <p><b>CDJ</b>: smooth in permanent teeth, sometimes scalloped in deciduous. An <b>intermediate layer</b> (of dentinal origin) may separate dentin from cementum and likely seals root dentin.</p>
-          </div>
-          <div class="ar">
-            <p><b>علاقة CEJ</b>:</p>
-            <ul>
-              <li>≈٦٠٪: الملاط يغطي الميناء</li>
-              <li>≈٣٠٪: اتصال حافّة بحافّة</li>
-              <li>≈١٠٪: لا تلامس (عاج مكشوف)</li>
-              <li>وُصف حديثًا: <b>الميناء يغطي الملاط</b> أحيانًا</li>
-            </ul>
-            <p><b>CDJ</b>: أملس في الدائمة وأحيانًا متعرّج في اللبنية. قد توجد <b>طبقة متوسطة</b> (من منشأ عاجي) تفصل العاج عن الملاط ووظيفتها المحتملة سدّ العاج الجذري.</p>
-          </div>
-        </div>
-        <div class="source-footer">
-          <span class="en">Source pages: 19–22/34</span>
-          <span class="ar">الصفحات المرجعية: ٢٢–١٩/٣٤</span>
-        </div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">No-contact CEJ predisposes to cervical sensitivity due to exposed dentin.</div><div class="ar">انعدام التلامس في CEJ قد يسبب حساسية عنقية بسبب انكشاف العاج.</div></div></div>
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Intermediate layer is structureless and of dentinal origin.</div><div class="ar">الطبقة المتوسطة عديمة البنية ومنشؤها عاجي.</div></div></div>
-          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warning</span><span class="ar">⚠️ تحذير</span></div><div class="body" hidden><div class="en">Be cautious when scaling near CEJ to avoid exposing root dentin.</div><div class="ar">انتبه أثناء القلح قرب CEJ لتجنّب كشف العاج الجذري.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 تلميح</span></div><div class="body" hidden><div class="en">“<b>O-B-N</b>: Overlap–Butt–No contact (60–30–10).”</div><div class="ar">«<b>ت-ح-لا</b>: تغطية–حافة–لا تلامس (٦٠–٣٠–١٠)».</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- Section 7 (Classification) -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head">
-          <span class="en">7) Classification of Cementum</span>
-          <span class="ar">٧) تصنيف الملاط</span>
-        </h2>
-        <div class="sec-body">
-          <div class="en">
-            <p><b>By cells</b>: Acellular vs. Cellular.</p>
-            <p><b>By fibers</b>: Fibrillar (intrinsic/extrinsic) vs. Afibrillar.</p>
-            <p><b>Clinically relevant types</b>:</p>
-            <ul>
-              <li><b>Acellular Afibrillar Cementum (AAC)</b>: thin 1–15 µm on coronal enamel near cervical margin; no cells/no fibers; forms after premature loss of reduced enamel epithelium.</li>
-              <li><b>Acellular Extrinsic Fiber Cementum (AEFC)</b> = <i>Primary</i>: cervical to apical third; 30–230 µm; extrinsic Sharpey’s fibers dominate; slow development during eruption; <b>anchorage</b>.</li>
-              <li><b>Cellular Cementum</b> = <i>Secondary</i>:
-                <ul>
-                  <li><b>Cellular Intrinsic Fiber Cementum (CIFC)</b>: intrinsic fibers only; deposited after ≥½ root formed; fills resorption lacunae; cementocytes in lacunae with canaliculi.</li>
-                  <li><b>Cellular Mixed Stratified Cementum (CMSC)</b>: alternating AEFC + CIFC; mainly apical third and furcations; thickness 100–1000 µm.</li>
-                </ul>
-              </li>
-              <li><b>Intermediate cementum</b>: poorly defined zone near CDJ; often apical halves of molar roots; may trap epithelial rests.</li>
-            </ul>
-          </div>
-          <div class="ar">
-            <p><b>حسب الخلايا</b>: لا خلوي مقابل خلوي.</p>
-            <p><b>حسب الألياف</b>: ليفي (جوهرية/خارجية) مقابل عديم الألياف.</p>
-            <p><b>أنواع مهمة</b>:</p>
-            <ul>
-              <li><b>ملاط لا خلوي عديم الألياف (AAC)</b>: رقيق ١–١٥ ميكرون على الميناء العنقي؛ بلا خلايا/ألياف؛ يتشكل مع الفقد المبكر للطلاء المينائي المختزل.</li>
-              <li><b>ملاط لا خلوي ذو ألياف خارجية (AEFC)</b> = <i>أولي</i>: من عنقي حتى الثلث الذروي؛ ٢٣٠–٣٠ ميكرون؛ ألياف شربي بارزة؛ يتطور ببطء أثناء البزوغ؛ <b>للتثبيت</b>.</li>
-              <li><b>الملاط الخلوي</b> = <i>ثانوي</i>:
-                <ul>
-                  <li><b>CIFC</b>: ألياف جوهرية فقط؛ بعد تكوّن ≥نصف الجذر؛ يملأ فجوات الامتصاص؛ خلايا ملاطية بفجوات وقنيّات.</li>
-                  <li><b>CMSC</b>: تعاقب AEFC وCIFC؛ خاصة الذروي والتشعبات؛ السُمك ١٠٠–١٠٠٠ ميكرون.</li>
-                </ul>
-              </li>
-              <li><b>الملاط البيني</b>: منطقة غير واضحة قرب CDJ؛ غالبًا في أنصاف الجذور الذروية للأرحاء؛ قد يحجز بقايا ظهارية.</li>
-            </ul>
-          </div>
-        </div>
-        <div class="source-footer">
-          <span class="en">Source pages: 23–29/34</span>
-          <span class="ar">الصفحات المرجعية: ٢٩–٢٣/٣٤</span>
-        </div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 الأهمية</span></div><div class="body" hidden><div class="en">Type determines function: AEFC anchors; cellular types adapt/repair.</div><div class="ar">النوع يحدد الوظيفة: AEFC للتثبيت؛ الخلوي للتكيّف/الإصلاح.</div></div></div>
-          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">Resorption lacunae get refilled by CIFC during repair.</div><div class="ar">تمتلئ فجوات الامتصاص بـ CIFC أثناء الإصلاح.</div></div></div>
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">CMSC is thickest in apical and furcation areas.</div><div class="ar">CMSC أكثر سماكة بالثلث الذروي ومناطق التشعب.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 تلميح</span></div><div class="body" hidden><div class="en">Mnemonic: “<b>A</b>nchor = <b>A</b>EFC; <b>C</b>hange/repair = <b>C</b>ellular.”</div><div class="ar">«التثبيت = AEFC؛ التغيير/الإصلاح = الخلوي».</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- Section 8 (Differences table) -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head">
-          <span class="en">8) Acellular vs Cellular Cementum</span>
-          <span class="ar">٨) مقارنة: الملاط اللاخلوي والخلوي</span>
-        </h2>
-        <div class="sec-body">
-          <div class="en"><p>Key differences summarized below.</p></div>
-          <div class="ar"><p>أهم الفروقات مبيّنة في الجدول.</p></div>
-          <div class="table-wrap" aria-label="Comparison table">
-            <table>
-              <thead>
-                <tr>
-                  <th><span class="en">Feature</span><span class="ar">السمة</span></th>
-                  <th><span class="en">Acellular</span><span class="ar">لا خلوي</span></th>
-                  <th><span class="en">Cellular</span><span class="ar">خلوي</span></th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td><span class="en">Time of formation</span><span class="ar">زمن التشكّل</span></td>
-                  <td><span class="en">First formed (primary)</span><span class="ar">يتشكّل أولًا (أولي)</span></td>
-                  <td><span class="en">After acellular (secondary)</span><span class="ar">بعد اللاخلوي (ثانوي)</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">Deposition rate</span><span class="ar">سرعة الترسيب</span></td>
-                  <td><span class="en">Slower</span><span class="ar">أبطأ</span></td>
-                  <td><span class="en">Faster</span><span class="ar">أسرع</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">Cementocytes</span><span class="ar">الخلايا الملاطية المحتجزة</span></td>
-                  <td><span class="en">Absent</span><span class="ar">غير موجودة</span></td>
-                  <td><span class="en">Present</span><span class="ar">موجودة</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">Width pattern</span><span class="ar">نمط السماكة</span></td>
-                  <td><span class="en">More constant</span><span class="ar">أكثر ثباتًا</span></td>
-                  <td><span class="en">Highly variable</span><span class="ar">متغيّر جدًا</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">Location</span><span class="ar">الموقع</span></td>
-                  <td><span class="en">Cervical third</span><span class="ar">الثلث العنقي</span></td>
-                  <td><span class="en">Apical third & furcations</span><span class="ar">الثلث الذروي والتشعبات</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">Sharpey’s fibers</span><span class="ar">ألياف شربي</span></td>
-                  <td><span class="en">Well mineralized</span><span class="ar">معدنة جيدًا</span></td>
-                  <td><span class="en">Partially mineralized</span><span class="ar">معدنة جزئيًا</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">Incremental lines</span><span class="ar">الخطوط التراكمية</span></td>
-                  <td><span class="en">Regular, closely spaced</span><span class="ar">منتظمة ومتقاربة</span></td>
-                  <td><span class="en">Irregular, wider apart</span><span class="ar">غير منتظمة ومتباعدة</span></td>
-                </tr>
-                <tr>
-                  <td><span class="en">Function</span><span class="ar">الوظيفة</span></td>
-                  <td><span class="en">Anchorage</span><span class="ar">التثبيت</span></td>
-                  <td><span class="en">Adaptation & repair</span><span class="ar">التكيّف والإصلاح</span></td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-        <div class="source-footer">
-          <span class="en">Source pages: 30–31/34</span>
-          <span class="ar">الصفحات المرجعية: ٣١–٣٠/٣٤</span>
-        </div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Acellular predominates cervically; cellular thickens apically.</div><div class="ar">السُّوَاد لِلّاخلوي عنقيًا؛ الخلوي يزداد ذروياً.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Memorize</span><span class="ar">💡 احفظ</span></div><div class="body" hidden><div class="en">“Primary = Acellular; Secondary = Cellular.”</div><div class="ar">«الأولي = لا خلوي؛ الثانوي = خلوي».</div></div></div>
-          <div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden><div class="en">CMSC shows alternating bands of AEFC and CIFC.</div><div class="ar">CMSC يبيّن أشرطة متعاقبة من AEFC وCIFC.</div></div></div>
-          <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 الأهمية</span></div><div class="body" hidden><div class="en">Predicts behavior during orthodontics and periodontal repair.</div><div class="ar">يُنبّئ بسلوك الأنسجة أثناء التقويم وإصلاح اللثة.</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- Section 9 (Clinical pearls & functions) -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head">
-          <span class="en">9) Functions & Clinical Pearls</span>
-          <span class="ar">٩) الوظائف ونقاط سريرية</span>
-        </h2>
-        <div class="sec-body">
-          <div class="en">
-            <p><b>Functions</b>: Anchorage (AEFC), adaptation to occlusal wear and eruption, and <b>repair</b> of resorptive defects (cellular cementum).</p>
-            <p><b>Fluoride</b>: Cementum has the highest fluoride content among mineralized tissues.</p>
-            <p><b>Sensitivity</b>: CEJ without contact may expose dentin → sensitivity risk.</p>
-          </div>
-          <div class="ar">
-            <p><b>الوظائف</b>: التثبيت (AEFC)، التكيّف مع الاهتراء والإطباق، و<b>إصلاح</b> عيوب الامتصاص (الملاط الخلوي).</p>
-            <p><b>الفلوريد</b>: للملاط أعلى محتوى فلوريد بين الأنسجة المتكلسة.</p>
-            <p><b>الحساسية</b>: انكشاف العاج عند CEJ غير المتلامس قد يسبب حساسية.</p>
-          </div>
-        </div>
-        <div class="source-footer">
-          <span class="en">Source pages: 32–33/34</span>
-          <span class="ar">الصفحات المرجعية: ٣٣–٣٢/٣٤</span>
-        </div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Root planing should preserve AEFC to maintain Sharpey’s fiber insertion.</div><div class="ar">يُفضّل الحفاظ على AEFC أثناء تسوية الجذور للحفاظ على تثبيت ألياف شربي.</div></div></div>
-          <div class="callout warning"><div class="hdr"><span class="en">⚠️ Warning</span><span class="ar">⚠️ تحذير</span></div><div class="body" hidden><div class="en">Over-instrumentation near CEJ increases dentin sensitivity.</div><div class="ar">المعالجة المفرطة قرب CEJ تزيد حساسية العاج.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 تلميح</span></div><div class="body" hidden><div class="en">Map functions to types: AEFC=anchor; Cellular=change/repair.</div><div class="ar">اربط الوظيفة بالنوع: AEFC تثبيت؛ الخلوي تغيير/إصلاح.</div></div></div>
-          <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 إضافي</span></div><div class="body" hidden><div class="en">Cementum continues forming through life (functional stage).</div><div class="ar">الملاط يستمر بالتشكّل طوال الحياة (مرحلة وظيفية).</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-    <!-- Section 10 (Summary) -->
-    <section class="section">
-      <div class="content-col">
-        <h2 class="sec-head">
-          <span class="en">10) Summary</span>
-          <span class="ar">١٠) الخلاصة</span>
-        </h2>
-        <div class="sec-body">
-          <div class="en">
-            <p>Cementum is a dynamic root covering that anchors PDL fibers, adapts to function, and repairs defects. It is ~50% inorganic, rich in Type I collagen and specific matrix proteins, with the highest fluoride content. Acellular AEFC provides anchorage cervically, while cellular cementum (CIFC/CMSC) predominates apically for adaptation and repair. CEJ relations vary (60–30–10), and an intermediate layer may seal root dentin at the CDJ.</p>
-          </div>
-          <div class="ar">
-            <p>الملاط غطاء جذري ديناميكي يثبّت ألياف الرباط، يتكيّف مع الوظيفة، ويُصلح العيوب. تركيبه يقارب ٥٠٪ غير عضوي مع كولاجين I وبروتينات نوعية، ويملك أعلى محتوى فلوريد. AEFC اللاخلوي يثبّت عنقيًا، بينما يسود الملاط الخلوي (CIFC/CMSC) ذروياً للتكيّف والإصلاح. علاقات CEJ تتنوع (٦٠–٣٠–١٠)، وقد تُوجد طبقة متوسطة تُحكم إغلاق العاج عند CDJ.</p>
-          </div>
-        </div>
-        <div class="source-footer">
-          <span class="en">Source pages: 34/34</span>
-          <span class="ar">الصفحات المرجعية: ٣٤/٣٤</span>
-        </div>
-      </div>
-      <aside class="callouts-col">
-        <div class="callouts">
-          <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory Pack</span><span class="ar">🧠 حزمة تذكّر</span></div><div class="body" hidden><div class="en">O-B-N at CEJ; AEFC=anchor; CIFC/CMSC=repair; Thin@CEJ→Thick@apex.</div><div class="ar">ت-ح-لا في CEJ؛ AEFC=تثبيت؛ CIFC/CMSC=إصلاح؛ رقيق عند CEJ → سميك عند الذروة.</div></div></div>
-          <div class="callout why"><div class="hdr"><span class="en">🎯 Take-home</span><span class="ar">🎯 الخلاصة</span></div><div class="body" hidden><div class="en">Structure–function links explain clinical outcomes in perio/ortho.</div><div class="ar">التركيب والوظيفة يفسّران النتائج السريرية في اللثة والتقويم.</div></div></div>
-          <div class="callout tips"><div class="hdr"><span class="en">💡 Exam Blitz</span><span class="ar">💡 مراجعة سريعة</span></div><div class="body" hidden><div class="en">Know types, fiber sources, CEJ patterns, and functions.</div><div class="ar">احفظ الأنواع، مصدر الألياف، أنماط CEJ، والوظائف.</div></div></div>
-        </div>
-      </aside>
-    </section>
-
-  </div><!-- /sections -->
-
-  <!-- Glossary -->
-  <div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
-  <div class="grid g3x4" id="glossary">
-    <div class="card"><div class="head">Cementum / الملاط</div><div class="content" hidden><div class="en">Mineralized root covering anchoring PDL fibers.</div><div class="ar">غطاء متكلّس للجذر يثبّت ألياف الرباط حول السني.</div></div></div>
-    <div class="card"><div class="head">HERS / غمد الجذر لهيرتفغ</div><div class="content" hidden><div class="en">Epithelial sheath guiding root formation; fragments allow cementogenesis.</div><div class="ar">غلاف ظهاري يوجّه تشكّل الجذر؛ تفككه يتيح تكون الملاط.</div></div></div>
-    <div class="card"><div class="head">Dental Follicle / الجريب السِّني</div><div class="content" hidden><div class="en">Ectomesenchyme surrounding the tooth germ; source of cementoblasts.</div><div class="ar">نسيج خارج ميزنشيمي يحيط بالبرعم السني؛ مصدر الخلايا الملاطية.</div></div></div>
-    <div class="card"><div class="head">Cementoblast / الخلية الملاطية</div><div class="content" hidden><div class="en">Matrix-forming cell producing intrinsic fibers.</div><div class="ar">خلايا مكوِّنة للمصفوفة تنتج الألياف الجوهرية.</div></div></div>
-    <div class="card"><div class="head">Cementocyte / الخلية الملاطية المحتجزة</div><div class="content" hidden><div class="en">Entrapped cell in lacunae with canaliculi for diffusion.</div><div class="ar">خلية محتجزة ضمن فجوات لها قنيّات للتغذية بالانتشار.</div></div></div>
-    <div class="card"><div class="head">Sharpey’s Fibers / ألياف شربي</div><div class="content" hidden><div class="en">Embedded ends of PDL collagen in cementum.</div><div class="ar">نهايات ألياف الرباط المغروسة في الملاط.</div></div></div>
-    <div class="card"><div class="head">Cementoid / الملاط غير المتكلّس</div><div class="content" hidden><div class="en">Unmineralized surface layer that later calcifies.</div><div class="ar">طبقة سطحية غير متكلّسة تتكلّس لاحقًا.</div></div></div>
-    <div class="card"><div class="head">AEFC / ملاط لا خلوي ذو ألياف خارجية</div><div class="content" hidden><div class="en">Primary anchoring cementum with Sharpey’s fibers.</div><div class="ar">الملاط الأولي للتثبيت بألياف شربي.</div></div></div>
-    <div class="card"><div class="head">CIFC / ملاط خلوي ذو ألياف جوهرية</div><div class="content" hidden><div class="en">Repair cementum with intrinsic fibers and cementocytes.</div><div class="ar">ملاط إصلاحي بألياف جوهرية وخلايا ملاطية.</div></div></div>
-    <div class="card"><div class="head">CMSC / ملاط خلوي مختلط الطبقات</div><div class="content" hidden><div class="en">Alternating cellular/intrinsic and acellular/extrinsic layers.</div><div class="ar">تعاقب طبقات جوهرية خلوية وخارجية لا خلوية.</div></div></div>
-    <div class="card"><div class="head">CEJ / اتحاد الميناء بالملاط</div><div class="content" hidden><div class="en">Cervical junction; patterns: overlap, butt, no contact.</div><div class="ar">وصلة عنقية؛ الأنماط: تغطية، حافة، لا تلامس.</div></div></div>
-    <div class="card"><div class="head">CDJ / اتحاد الملاط بالعاج</div><div class="content" hidden><div class="en">Interface between cementum and dentin; may have intermediate layer.</div><div class="ar">الحدّ بين الملاط والعاج؛ قد يحوي طبقة متوسطة.</div></div></div>
-  </div>
-
-  <!-- Flashcards -->
-  <div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
-  <div class="grid g3x4" id="flashcards">
-    <div class="card"><div class="head"><span class="en">1 — What tissue covers the anatomic root?</span><span class="ar">١ — ما النسيج الذي يغطي جذر السن؟</span></div><div class="content" hidden><span class="en">A: Cementum.</span><span class="ar">ج: الملاط.</span></div></div>
-    <div class="card"><div class="head"><span class="en">2 — Thinnest/Thickest cementum sites?</span><span class="ar">٢ — أين أرق/أسمك ملاط؟</span></div><div class="content" hidden><span class="en">A: Thinnest at CEJ (20–50 µm); thickest at apex (150–200 µm).</span><span class="ar">ج: أرق عند CEJ (50–20 ميكرون)؛ أسمك عند الذروة (200–150 ميكرون).</span></div></div>
-    <div class="card"><div class="head"><span class="en">3 — Main function of AEFC?</span><span class="ar">٣ — الوظيفة الرئيسية لـ AEFC؟</span></div><div class="content" hidden><span class="en">A: Anchorage of PDL.</span><span class="ar">ج: تثبيت الرباط حول السني.</span></div></div>
-    <div class="card"><div class="head"><span class="en">4 — Which cementum repairs resorption lacunae?</span><span class="ar">٤ — أي نوع يُصلح فجوات الامتصاص؟</span></div><div class="content" hidden><span class="en">A: Cellular intrinsic fiber cementum (CIFC).</span><span class="ar">ج: الملاط الخلوي ذو الألياف الجوهرية (CIFC).</span></div></div>
-    <div class="card"><div class="head"><span class="en">5 — CEJ pattern percentages?</span><span class="ar">٥ — نسب أنماط CEJ؟</span></div><div class="content" hidden><span class="en">A: ≈60% overlap, ≈30% butt, ≈10% no contact.</span><span class="ar">ج: ≈٦٠٪ تغطية، ≈٣٠٪ حافة، ≈١٠٪ لا تلامس.</span></div></div>
-    <div class="card"><div class="head"><span class="en">6 — Major organic component?</span><span class="ar">٦ — المكوّن العضوي الرئيسي؟</span></div><div class="content" hidden><span class="en">A: Type I collagen.</span><span class="ar">ج: الكولاجين نوع I.</span></div></div>
-    <div class="card"><div class="head"><span class="en">7 — Sharpey’s fibers are from?</span><span class="ar">٧ — مصدر ألياف شربي؟</span></div><div class="content" hidden><span class="en">A: PDL fibroblasts (extrinsic), embedded in cementum.</span><span class="ar">ج: ليفيات الرباط (خارجية) وتُغرس في الملاط.</span></div></div>
-    <div class="card"><div class="head"><span class="en">8 — What is cementoid?</span><span class="ar">٨ — ما هو الملاط غير المتكلّس؟</span></div><div class="content" hidden><span class="en">A: Unmineralized surface matrix that later calcifies.</span><span class="ar">ج: مصفوفة سطحية غير متكلّسة تتكلّس لاحقًا.</span></div></div>
-    <div class="card"><div class="head"><span class="en">9 — Which cementum type is afibrillar?</span><span class="ar">٩ — أي نوع عديم الألياف؟</span></div><div class="content" hidden><span class="en">A: AAC (acellular afibrillar cementum).</span><span class="ar">ج: AAC (ملاط لا خلوي عديم الألياف).</span></div></div>
-    <div class="card"><div class="head"><span class="en">10 — Fluoride content of cementum?</span><span class="ar">١٠ — محتوى الفلوريد بالملاط؟</span></div><div class="content" hidden><span class="en">A: Highest among mineralized tissues.</span><span class="ar">ج: الأعلى بين الأنسجة المتكلسة.</span></div></div>
-  </div>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Summary</span><span class="ar">ملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Cementum is a vital, <strong>avascular</strong>, mineralized tissue that covers the tooth root, essential for tooth anchorage.</p>
+    <p>It is composed of a mineral part (<strong>hydroxyapatite</strong>), an organic part (mainly <strong>Type I collagen</strong>), and cells (<strong>cementoblasts</strong> and <strong>cementocytes</strong>).</p>
+    <p>It is broadly classified into <strong>acellular (primary)</strong> and <strong>cellular (secondary)</strong> cementum.</p>
+    <ul>
+        <li><strong>Acellular cementum (AEFC)</strong> is located on the cervical part of the root and its main function is anchorage.</li>
+        <li><strong>Cellular cementum (CIFC, CMSC)</strong> is found on the apical part of the root and is responsible for adaptation and repair throughout life.</li>
+    </ul>
+    <p>The junction with enamel (CEJ) has three variations, remembered by the mnemonic <strong>OMG (Overlap, Meet, Gap)</strong>.</p>
+</div>
+<div class="ar">
+    <p>الملاط هو نسيج حيوي، <strong>لا وعائي</strong>، ومتمعدن يغطي جذر السن، وهو ضروري لتثبيت السن.</p>
+    <p>يتكون من جزء معدني (<strong>هيدروكسي أباتيت</strong>)، وجزء عضوي (بشكل أساسي <strong>كولاجين النوع الأول</strong>)، وخلايا (<strong>أرومات الملاط</strong> و<strong>خلايا الملاط</strong>).</p>
+    <p>يُصنف بشكل عام إلى ملاط <strong>لاخلوي (أولي)</strong> وملاط <strong>خلوي (ثانوي)</strong>.</p>
+    <ul>
+        <li><strong>الملاط اللاخلوي (AEFC)</strong> يقع في الجزء العنقي من الجذر ووظيفته الرئيسية هي التثبيت.</li>
+        <li><strong>الملاط الخلوي (CIFC, CMSC)</strong> يوجد في الجزء الذروي من الجذر وهو مسؤول عن التكيف والإصلاح طوال الحياة.</li>
+    </ul>
+    <p>الموصل مع المينا (CEJ) له ثلاثة أشكال، يتم تذكرها بالاختصار <strong>OMG (تراكب، التقاء، فجوة)</strong>.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: All Pages of 34</span>
+<span class="ar">الصفحات المرجعية: كل الصفحات من 34</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+    <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Focus on the functional differences between acellular and cellular cementum. This is a high-yield topic for exams. Acellular = Anchorage. Cellular = Adaptation/Repair.</div><div class="ar">ركز على الفروق الوظيفية بين الملاط اللاخلوي والخلوي. هذا موضوع مهم للامتحانات. اللاخلوي = تثبيت. الخلوي = تكيف/إصلاح.</div></div></div>
+    <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding cementum is fundamental for periodontics. Its health is crucial for tooth support, and its regenerative capacity is a key focus in treating periodontal disease.</div><div class="ar">فهم الملاط أمر أساسي في طب دواعم السن. صحته حاسمة لدعم الأسنان، وقدرته على التجدد هي محور أساسي في علاج أمراض اللثة.</div></div></div>
+    <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Cementum = The tooth's Anchor & Adaptor. It anchors the tooth via the PDL and adapts to functional demands over time.</div><div class="ar">الملاط = مرساة السن ومكيفه. يثبت السن عبر رباط اللثة ويتكيف مع المتطلبات الوظيفية بمرور الوقت.</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+    <div class="card"><div class="head">Cementum / الملاط السني</div><div class="content" hidden=""><div class="en">Avascular mineralized connective tissue covering the anatomic roots of human teeth.</div><div class="ar">نسيج ضام معدني لا وعائي يغطي الجذور التشريحية لأسنان الإنسان.</div></div></div>
+    <div class="card"><div class="head">Cementoblast / أرومة الملاط</div><div class="content" hidden=""><div class="en">A cell that forms the cementum on the root of a tooth.</div><div class="ar">خلية تشكل الملاط على جذر السن.</div></div></div>
+    <div class="card"><div class="head">Cementocyte / خلية الملاط</div><div class="content" hidden=""><div class="en">A cementoblast that has become entrapped within the cementum matrix.</div><div class="ar">أرومة ملاط أصبحت محاصرة داخل مصفوفة الملاط.</div></div></div>
+    <div class="card"><div class="head">Sharpey's Fibers / ألياف شاربي</div><div class="content" hidden=""><div class="en">The terminal ends of periodontal ligament fibers that are embedded in the cementum and alveolar bone.</div><div class="ar">النهايات الطرفية لألياف رباط اللثة المنغرسة في الملاط والعظم السنخي.</div></div></div>
+    <div class="card"><div class="head">CEJ / الموصل الملاطي المينائي</div><div class="content" hidden=""><div class="en">Cemento-Enamel Junction; the point at which the enamel of the crown and the cementum of the root meet.</div><div class="ar">النقطة التي يلتقي فيها مينا التاج وملاط الجذر.</div></div></div>
+    <div class="card"><div class="head">CDJ / الموصل العاجي الملاطي</div><div class="content" hidden=""><div class="en">Cementodentinal Junction; the interface between the cementum and the underlying dentin.</div><div class="ar">السطح الفاصل بين الملاط والعاج الذي يقع تحته.</div></div></div>
+    <div class="card"><div class="head">Acellular Cementum / الملاط اللاخلوي</div><div class="content" hidden=""><div class="en">Primary cementum that is free of cells and is formed first, mainly for anchorage.</div><div class="ar">الملاط الأولي الخالي من الخلايا والذي يتكون أولاً، وظيفته الرئيسية هي التثبيت.</div></div></div>
+    <div class="card"><div class="head">Cellular Cementum / الملاط الخلوي</div><div class="content" hidden=""><div class="en">Secondary cementum that contains cementocytes and is involved in adaptation and repair.</div><div class="ar">الملاط الثانوي الذي يحتوي على خلايا ملاطية ويشارك في التكيف والإصلاح.</div></div></div>
+    <div class="card"><div class="head">Lacunae / الجوبات</div><div class="content" hidden=""><div class="en">Small spaces within cellular cementum where cementocytes reside.</div><div class="ar">مساحات صغيرة داخل الملاط الخلوي حيث توجد خلايا الملاط.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+    <div class="card"><div class="head"><span class="en">1 — What is the main function of cementum?</span><span class="ar">١ — ما هي الوظيفة الرئيسية للملاط؟</span></div><div class="content" hidden=""><span class="en">A: To provide attachment for the periodontal ligament fibers, anchoring the tooth.</span><span class="ar">ج: توفير ارتباط لألياف رباط اللثة، وتثبيت السن.</span></div></div>
+    <div class="card"><div class="head"><span class="en">2 — Is cementum vascular or avascular?</span><span class="ar">٢ — هل الملاط وعائي أم لا وعائي؟</span></div><div class="content" hidden=""><span class="en">A: Avascular (it has no blood supply).</span><span class="ar">ج: لا وعائي (لا يحتوي على إمداد دموي).</span></div></div>
+    <div class="card"><div class="head"><span class="en">3 — What are the two main cells of cementum?</span><span class="ar">٣ — ما هي الخليتان الرئيسيتان في الملاط؟</span></div><div class="content" hidden=""><span class="en">A: Cementoblasts (formers) and Cementocytes (trapped cells).</span><span class="ar">ج: أرومات الملاط (المكونة) وخلايا الملاط (الخلايا المحاصرة).</span></div></div>
+    <div class="card"><div class="head"><span class="en">4 — What are Sharpey's fibers?</span><span class="ar">٤ — ما هي ألياف شاربي؟</span></div><div class="content" hidden=""><span class="en">A: The extrinsic collagen fibers from the PDL that are embedded into cementum.</span><span class="ar">ج: ألياف الكولاجين الخارجية من رباط اللثة التي تنغرس في الملاط.</span></div></div>
+    <div class="card"><div class="head"><span class="en">5 — What does the "OMG" rule at the CEJ stand for?</span><span class="ar">٥ — ماذا تعني قاعدة "OMG" في الـ CEJ؟</span></div><div class="content" hidden=""><span class="en">A: 60% Overlap, 30% Meet, 10% Gap.</span><span class="ar">ج: 60% تراكب، 30% التقاء، 10% فجوة.</span></div></div>
+    <div class="card"><div class="head"><span class="en">6 — Which type of cementum is formed first and lacks cells?</span><span class="ar">٦ — أي نوع من الملاط يتكون أولاً ويفتقر إلى الخلايا؟</span></div><div class="content" hidden=""><span class="en">A: Acellular (Primary) Cementum.</span><span class="ar">ج: الملاط اللاخلوي (الأولي).</span></div></div>
+    <div class="card"><div class="head"><span class="en">7 — What is the primary function of cellular cementum?</span><span class="ar">٧ — ما هي الوظيفة الأساسية للملاط الخلوي؟</span></div><div class="content" hidden=""><span class="en">A: Adaptation and repair.</span><span class="ar">ج: التكيف والإصلاح.</span></div></div>
+    <div class="card"><div class="head"><span class="en">8 — Where are cementocytes found?</span><span class="ar">٨ — أين توجد خلايا الملاط؟</span></div><div class="content" hidden=""><span class="en">A: In spaces called lacunae within cellular cementum.</span><span class="ar">ج: في مساحات تسمى الجوبات داخل الملاط الخلوي.</span></div></div>
+    <div class="card"><div class="head"><span class="en">9 — Which mineralized tissue has the highest fluoride content?</span><span class="ar">٩ — أي نسيج متكلس يحتوي على أعلى نسبة من الفلورايد؟</span></div><div class="content" hidden=""><span class="en">A: Cementum.</span><span class="ar">ج: الملاط السني.</span></div></div>
+</div>
 </main>
-
 <script>
   // Language toggle: flip lang visibility + page direction
   const btn=document.getElementById('langBtn');
