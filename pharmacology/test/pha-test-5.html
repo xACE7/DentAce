@@ -113,6 +113,11 @@
 
   .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
   .answer[hidden]{display:none;}
+  .answer table{width:100%;border-collapse:collapse;margin-top:10px;}
+  .answer th, .answer td{border:1px solid var(--card-border);padding:8px;text-align:left;}
+  .answer th{background:rgba(255,255,255,0.05);}
+  .answer ol{padding-left:20px;margin:0;}
+
   .btnrow{display:flex;gap:10px;flex-wrap:wrap}
   .ghost, .primary{
     all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
@@ -180,57 +185,261 @@
 <script>
 // ----------- Data -----------
 const mcqs = [
-    { q: "Which FDA Pregnancy Risk Category indicates that controlled human studies show no fetal risk in any trimester?", opts: ["Category A", "Category B", "Category C", "Category X"], correct: 0, explain: "Category A is the safest, where adequate and well-controlled studies in pregnant women have failed to demonstrate a risk to the fetus." },
-    { q: "The drug Thalidomide, known for causing severe limb defects, belongs to which FDA category?", opts: ["Category C", "Category D", "Category B", "Category X"], correct: 3, explain: "Thalidomide is a classic example of a Category X drug, where the risks involved in use of the drug in pregnant women clearly outweigh potential benefits." },
-    { q: "Exposure to which of the following drugs during pregnancy is associated with skeletal abnormalities and curvature of the spine?", opts: ["Aminoglycosides", "Warfarin", "ACE inhibitors", "Antineoplastics"], correct: 1, explain: "Warfarin (Category D) is known to cause skeletal and limb abnormalities if taken during pregnancy." },
-    { q: "According to the dental drug chart, which antibiotic can cause discoloration of teeth in the developing fetus?", opts: ["Amoxicillin", "Metronidazole", "Tetracycline", "Clindamycin"], correct: 2, explain: "Tetracycline is contraindicated because it can lead to permanent discoloration of the teeth." },
-    { q: "Use of ACE inhibitors during pregnancy is linked to which of the following congenital defects?", opts: ["VIII cranial nerve damage", "Limb defects", "Renal tubular dysplasia", "Cleft palate"], correct: 2, explain: "ACE inhibitors (Category D) are associated with renal tubular dysplasia, as well as skull and pulmonary hypoplasia." },
-    { q: "Which analgesic is specifically contraindicated in the 3rd trimester of pregnancy?", opts: ["Acetaminophen", "Morphine", "Ibuprofen", "Oxycodone"], correct: 2, explain: "Aspirin, Ibuprofen, and Naproxen are to be avoided in the third trimester due to risks like postpartum hemorrhage." },
-    { q: "Which local anesthetic should be used with caution during pregnancy due to a risk of fetal bradycardia?", opts: ["Lidocaine", "Prilocaine", "Mepivacaine", "Etidocaine"], correct: 2, explain: "Mepivacaine and Bupivacaine should be used with caution because they are associated with fetal bradycardia." },
-    { q: "Exposure to which sedative/hypnotic group during pregnancy is associated with a risk of cleft lip/palate?", opts: ["Nitrous oxide", "Barbiturates", "Benzodiazepines", "Prednisolone"], correct: 2, explain: "Benzodiazepines are noted to have a risk of causing cleft lip and/or palate." },
-    { q: "What is the primary risk of using high-dose Aminoglycosides during pregnancy?", opts: ["Cardiac defects", "VIII cranial nerve damage", "Growth retardation", "Pulmonary hypoplasia"], correct: 1, explain: "High doses of Aminoglycosides (Category C) can cause damage to the VIII cranial nerve (auditory nerve)." },
-    { q: "The fetal development stage, occurring from 9 weeks to birth, is primarily associated with the development of:", opts: ["Major anatomical structures", "Implantation", "Neurologic function and growth", "Cellular division only"], correct: 2, explain: "During the fetal stage (9 weeks to birth), development is focused on growth, as well as physiologic, neurologic, and biochemical functioning." },
-    { q: "Which of these antifungals is considered safe to use during pregnancy according to the provided chart?", opts: ["Ketoconazole", "Clotrimazole", "Fluconazole", "Nystatin"], correct: 1, explain: "Clotrimazole is marked as 'YES' for use in pregnancy. Ketoconazole and Fluconazole should be used with caution." },
-    { q: "What potential adverse effect is associated with Chloramphenicol use during pregnancy?", opts: ["Fetal ototoxicity", "Discoloration of teeth", "Maternal toxicity/fetal death", "Skeletal abnormalities"], correct: 2, explain: "The remarks for Chloramphenicol explicitly state 'Maternal toxicity/fetal death'." },
-    { q: "According to the FDA classifications, Category D means:", opts: ["No fetal risk shown in human studies.", "Risk to fetus clearly outweighs any benefits.", "Fetal risk shown in animals, but not in humans.", "Studies show fetal risk, but use may be acceptable."], correct: 3, explain: "Category D indicates there is positive evidence of human fetal risk, but potential benefits may warrant use of the drug in pregnant women despite potential risks." },
-    { q: "Which of the following dental procedures is considered unsafe during pregnancy?", opts: ["Root canals", "Restorations", "Local anesthetics with epinephrine", "None of the above"], correct: 3, explain: "The lecture states that preventive, diagnostic, and restorative dental treatment, including root canals and restorations with local anesthetics, is safe throughout pregnancy." },
-    { q: "What is the main concern with dental personnel's exposure to nitrous oxide during the first trimester?", opts: ["Fetal bradycardia", "Spontaneous abortions", "Renal dysplasia", "Limb abnormalities"], correct: 1, explain: "The chart notes that nitrous oxide is associated with spontaneous abortions and should not be used in the first trimester." },
-    { q: "Which of the following is NOT considered a characteristic of teratogenesis?", opts: ["Structural defects", "Functional defects", "Intrauterine growth retardation", "Enhanced fetal growth"], correct: 3, explain: "Teratogenesis involves defects, growth retardation, and death, not enhanced growth." },
-    { q: "Which drug is mentioned to potentially cause respiratory depression when used with caution during pregnancy?", opts: ["Acetaminophen", "Ibuprofen", "Aspirin", "Morphine"], correct: 3, explain: "The analgesics chart indicates a risk of respiratory depression associated with opioids like Morphine, Oxycodone, etc." },
-    { q: "What is the FDA risk category for Warfarin?", opts: ["Category A", "Category B", "Category C", "Category D"], correct: 3, explain: "Warfarin is listed as a Category D drug due to its known risk of causing skeletal abnormalities." },
-    { q: "Which of these corticosteroids is considered safe to use during pregnancy and lactation?", opts: ["Hydrocortisone", "Dexamethasone", "Prednisolone", "Betamethasone"], correct: 2, explain: "Prednisolone is the only corticosteroid listed, and it is marked 'YES' for use in both pregnancy and lactation." },
-    { q: "In the post-implantation stage (0-8 weeks), a teratogen may produce all of the following EXCEPT:", opts: ["Abortion", "An anatomic defect", "No effect at all", "Only minor functional defects"], correct: 3, explain: "During this critical period, teratogens can cause major anatomic defects, abortion, or no effect. The idea of 'only minor' effects is misleading for this stage." },
-    { q: "Which of the following antibiotics is generally considered safe in pregnancy?", opts: ["Gentamycin", "Tetracycline", "Amoxicillin", "Chloramphenicol"], correct: 2, explain: "Amoxicillin is listed as 'YES' for use in pregnancy. Gentamycin, Tetracycline, and Chloramphenicol have significant fetal risks." },
-    { q: "The term 'transplacental carcinogenesis' refers to:", opts: ["The drug causing cancer in the mother.", "The drug causing cancer in the fetus.", "The drug being unable to cross the placenta.", "The drug preventing cancer development."], correct: 1, explain: "Transplacental carcinogenesis is when a substance crosses the placenta and induces cancer in the fetus." },
-    { q: "Which of the following is a known teratogenic effect of antineoplastic agents?", opts: ["Enhanced VIII cranial nerve function", "Accelerated fetal growth", "Growth retardation and cleft palate", "Improved skeletal formation"], correct: 2, explain: "Antineoplastics (Category D) are associated with a wide range of defects, including growth retardation and cleft palate." },
-    { q: "Fetal toxicity is a specific concern for which antifungal drug?", opts: ["Nystatin", "Clotrimazole", "Ketoconazole", "Amphotericin B"], correct: 2, explain: "The remarks section for antifungals explicitly mentions 'Fetal toxicity with ketoconazole'." },
-    { q: "Barbiturates are contraindicated for use in:", opts: ["Pregnancy only", "Lactation only", "Both pregnancy and lactation", "Neither pregnancy nor lactation"], correct: 2, explain: "The chart for sedatives shows Barbiturates are marked 'NO' for both use in pregnancy and lactation." },
-    { q: "Which class of drugs is associated with pulmonary hypoplasia when used during pregnancy?", opts: ["ACE inhibitors", "Aminoglycosides", "Beta-blockers", "Corticosteroids"], correct: 0, explain: "ACE inhibitors are linked to renal tubular dysplasia, skull hypoplasia, and pulmonary hypoplasia." },
-    { q: "What is the recommendation for Metronidazole use during pregnancy and lactation?", opts: ["NO in both", "YES in both", "YES in pregnancy, NO in lactation", "NO in pregnancy, YES in lactation"], correct: 1, explain: "Metronidazole is listed as 'YES' for use in both pregnancy and lactation." },
-    { q: "Anatomic defects caused by teratogens are most likely to occur during which period?", opts: ["Pre-implantation", "Post-implantation (0-8 weeks)", "Fetal development (9-birth)", "During labor"], correct: 1, explain: "The post-implantation stage is when organogenesis occurs, making the embryo most vulnerable to major structural/anatomic defects." },
-    { q: "FDA Category B implies that:", opts: ["Human studies show no risk.", "Animal studies show risk, not confirmed in humans.", "Risk clearly outweighs benefits.", "Human studies show definite risk."], correct: 1, explain: "Category B means animal reproduction studies have shown a risk but there are no adequate and well-controlled studies in pregnant women." },
-    { q: "Which common analgesic is considered safe throughout pregnancy and lactation?", opts: ["Aspirin", "Ibuprofen", "Naproxen", "Acetaminophen"], correct: 3, explain: "Acetaminophen is the only analgesic listed as 'YES' for use in both pregnancy and lactation without major restrictions." }
+    {
+        q: "What is the primary risk of taking more medications simultaneously?",
+        opts: ["Decreased cost of treatment", "Increased chance of drug interactions", "Faster recovery time", "Reduced need for dental visits"],
+        correct: 1,
+        explain: "The more medications a patient takes, the greater the likelihood that these drugs will interact with each other, potentially causing adverse effects."
+    },
+    {
+        q: "Combining a pain medication like hydrocodone with a sedating antihistamine like diphenhydramine results in what type of effect?",
+        opts: ["Antagonistic drowsiness", "Additive drowsiness", "No change in alertness", "Reduced pain relief"],
+        correct: 1,
+        explain: "Both hydrocodone and diphenhydramine cause drowsiness as a side effect. Taking them together leads to an additive effect, resulting in increased drowsiness."
+    },
+    {
+        q: "Which of the following is NOT a pharmacokinetic phase where drug interactions can occur?",
+        opts: ["Absorption", "Distribution", "Metabolism", "Replication"],
+        correct: 3,
+        explain: "Drug interactions occur during absorption, distribution, metabolism, and elimination. Replication is not a phase of pharmacokinetics."
+    },
+    {
+        q: "Taking tetracyclines with dairy products can lead to:",
+        opts: ["Increased absorption of the drug", "Reduced absorption due to chelation", "Enhanced drug efficacy", "No significant interaction"],
+        correct: 1,
+        explain: "Tetracyclines can chelate (bind) with calcium in dairy products, forming insoluble complexes that reduce the drug's absorption from the GI tract."
+    },
+    {
+        q: "What is the mechanism of interaction when NSAIDs displace warfarin from albumin?",
+        opts: ["Absorption interaction", "Metabolic interaction", "Distribution interaction", "Elimination interaction"],
+        correct: 2,
+        explain: "This is a distribution interaction. Both drugs compete for binding sites on plasma proteins (albumin). NSAIDs can displace warfarin, increasing its free concentration and the risk of bleeding."
+    },
+    {
+        q: "Metronidazole inhibits the metabolism of which of the following drugs, increasing its anticoagulant effect?",
+        opts: ["Aspirin", "Ibuprofen", "Warfarin", "Paracetamol"],
+        correct: 2,
+        explain: "Metronidazole inhibits hepatic enzymes (CYP450) responsible for warfarin metabolism, leading to excessive anticoagulation and an increased risk of bleeding."
+    },
+    {
+        q: "What effect does Rifampicin, a CYP450 inducer, have on other drugs like antifungals?",
+        opts: ["It increases their efficacy", "It has no effect on them", "It reduces their efficacy", "It increases their toxicity"],
+        correct: 2,
+        explain: "Rifampicin induces hepatic enzymes, which accelerates the metabolism of many drugs, including antifungals, thereby reducing their therapeutic efficacy."
+    },
+    {
+        q: "NSAIDs can reduce the renal clearance of methotrexate, leading to:",
+        opts: ["Reduced methotrexate efficacy", "Increased methotrexate toxicity", "No change in methotrexate levels", "Faster elimination of methotrexate"],
+        correct: 1,
+        explain: "NSAIDs can impair renal function by reducing prostaglandin synthesis, which in turn decreases the renal clearance of methotrexate, leading to its accumulation and potential toxicity."
+    },
+    {
+        q: "Combining opioids and benzodiazepines can lead to what pharmacodynamic interaction?",
+        opts: ["Antagonistic effect", "Synergistic or additive effect", "Reduced sedation", "Competitive inhibition"],
+        correct: 1,
+        explain: "Both opioids and benzodiazepines are CNS depressants. When taken together, they have a synergistic/additive effect, leading to enhanced sedation and respiratory depression."
+    },
+    {
+        q: "What is the potential outcome of taking NSAIDs concurrently with corticosteroids?",
+        opts: ["Decreased risk of GI ulcers", "Increased risk of GI ulceration/bleeding", "Improved blood pressure control", "Enhanced analgesic effect"],
+        correct: 1,
+        explain: "Both NSAIDs and corticosteroids can irritate the gastric mucosa. Their combined use increases the risk of developing gastrointestinal ulcers and bleeding."
+    },
+    {
+        q: "How do NSAIDs interact with antihypertensive drugs like β-blockers?",
+        opts: ["They enhance their effect", "They have no interaction", "They antagonize their effect", "They increase their absorption"],
+        correct: 2,
+        explain: "NSAIDs can antagonize the effects of many antihypertensives, including β-blockers, ACE inhibitors, and diuretics, leading to poor blood pressure control."
+    },
+    {
+        q: "Which of the following patient groups is generally considered at lower risk for food-nutrient interactions?",
+        opts: ["Elderly patients", "Pregnant women", "Healthy young adults", "Malnourished patients"],
+        correct: 2,
+        explain: "Patients who are elderly, pregnant, malnourished, or have chronic diseases are at higher risk. Healthy young adults are generally at a lower risk."
+    },
+    {
+        q: "The bioavailability of the antibiotic Ceftin is higher when taken:",
+        opts: ["In a fasting state", "With a glass of water", "After a meal", "With dairy products"],
+        correct: 2,
+        explain: "Food can enhance the absorption of some drugs. The bioavailability of Ceftin is significantly higher (52%) when taken after a meal compared to in a fasting state (37%)."
+    },
+    {
+        q: "To avoid interaction with calcium, iron, or other minerals, when should Ciprofloxacin be administered?",
+        opts: ["Simultaneously with the mineral supplement", "30 minutes before the mineral", "2 hours before or 6 hours after the mineral", "Immediately after the mineral"],
+        correct: 2,
+        explain: "To prevent chelation and reduced absorption, ciprofloxacin or tetracycline should be given 2 hours before or 6 hours after consuming minerals like calcium, iron, zinc, or magnesium."
+    },
+    {
+        q: "What is a likely interaction when Ampicillin is taken with oral contraceptives?",
+        opts: ["Increased contraceptive efficacy", "Failure of contraception", "Risk of hypertension", "Enhanced antibiotic effect"],
+        correct: 1,
+        explain: "Ampicillin can interfere with the gut flora that helps recycle contraceptive hormones, potentially leading to contraceptive failure. Alternative contraception should be advised."
+    },
+    {
+        q: "The interaction between Propranolol and adrenaline (in local anesthetic) can cause:",
+        opts: ["A sudden drop in blood pressure", "A significant rise in blood pressure", "Anaphylactic shock", "No significant change in vitals"],
+        correct: 1,
+        explain: "Propranolol, a non-selective beta-blocker, can block adrenaline's vasodilatory effects, leading to unopposed alpha-receptor stimulation and a potential hypertensive crisis."
+    },
+    {
+        q: "Which process involves drugs competing for binding sites on plasma proteins like albumin?",
+        opts: ["Metabolism", "Elimination", "Absorption", "Distribution"],
+        correct: 3,
+        explain: "Distribution is the process where drugs are transported throughout the body, often bound to plasma proteins. Competition for these binding sites is a common source of drug interactions."
+    },
+    {
+        q: "A drug that increases the activity of CYP450 enzymes is known as an:",
+        opts: ["Inhibitor", "Inducer", "Agonist", "Antagonist"],
+        correct: 1,
+        explain: "An enzyme inducer is a drug that increases the metabolic activity of an enzyme system, such as CYP450, leading to faster metabolism of other drugs."
+    },
+    {
+        q: "Which interaction type occurs at the drug's site of action or via the same physiological systems?",
+        opts: ["Pharmacokinetic", "Pharmacodynamic", "Pharmaceutical", "Physicochemical"],
+        correct: 1,
+        explain: "Pharmacodynamic interactions are those that occur at the receptor or target site, altering the drug's effect without changing its concentration."
+    },
+    {
+        q: "Combining an NSAID with Ciprofloxacin can lead to what adverse effect?",
+        opts: ["Reduced renal function", "Enhanced CNS toxicity and seizures", "Liver damage", "Failure of the antibiotic"],
+        correct: 1,
+        explain: "This combination can lead to enhanced central nervous system toxicity, including an increased risk of seizures."
+    },
+    {
+        q: "Metronidazole can decrease the excretion of which substance, potentially leading to toxicity?",
+        opts: ["Sodium", "Potassium", "Lithium salts", "Calcium"],
+        correct: 2,
+        explain: "Metronidazole can impair the renal excretion of lithium, causing it to accumulate to toxic levels."
+    },
+    {
+        q: "An antagonistic effect is when:",
+        opts: ["Two drugs combine to produce an enhanced effect", "One drug reduces or blocks the effect of another drug", "A drug binds to a mineral, preventing absorption", "A drug's metabolism is slowed down by another drug"],
+        correct: 1,
+        explain: "Antagonism occurs when one drug interferes with the action of another, often by blocking its receptor, resulting in a reduced therapeutic effect."
+    },
+    {
+        q: "Which type of product is well-known for forming insoluble complexes with Ciprofloxacin?",
+        opts: ["High-fiber foods", "Grapefruit juice", "Dairy products", "Foods high in Vitamin K"],
+        correct: 2,
+        explain: "The calcium in dairy products can form insoluble complexes (chelation) with Ciprofloxacin and Tetracycline, significantly reducing their absorption."
+    },
+    {
+        q: "An additive drug effect is best described as:",
+        opts: ["The effect is greater than the sum of the two drugs", "The effect is equal to the sum of the individual effects", "One drug cancels out the other", "One drug has no effect on the other"],
+        correct: 1,
+        explain: "An additive effect is where the combined effect of two drugs is equal to the sum of their individual effects (e.g., 1+1=2)."
+    },
+    {
+        q: "The interaction between two CNS depressants is an example of what?",
+        opts: ["Pharmacokinetic antagonism", "Pharmacodynamic synergism", "Altered drug distribution", "Induced drug metabolism"],
+        correct: 1,
+        explain: "This is a pharmacodynamic interaction where two drugs acting on the CNS produce a combined effect (synergism or addition) that is greater than either drug alone."
+    },
+    {
+        q: "Which of the following is a primary objective for improving awareness of drug interactions?",
+        opts: ["Prescribing more medications", "Evaluating a patient's full medication list", "Focusing only on dental drugs", "Discouraging patient questions"],
+        correct: 1,
+        explain: "A key objective is to thoroughly evaluate all medications a patient is taking, including over-the-counter drugs and supplements, to identify potential interactions."
+    },
+    {
+        q: "What is the consequence of a drug interaction that alters the intended response to a medication?",
+        opts: ["It is always beneficial", "It can lead to therapeutic failure or toxicity", "It only affects nutritional status", "It is therapeutically irrelevant"],
+        correct: 1,
+        explain: "Therapeutically important interactions are those that alter the intended response, which can manifest as either a failure to achieve the desired effect or the development of drug toxicity."
+    },
+    {
+        q: "A drug interaction that increases the blood level and possible toxicity of another drug is likely due to:",
+        opts: ["Enzyme induction", "Enzyme inhibition", "Reduced absorption", "Antagonistic effects"],
+        correct: 1,
+        explain: "Enzyme inhibition slows down the metabolism of a drug, causing its concentration in the blood to rise, which can lead to toxicity."
+    },
+    {
+        q: "Taking Ampicillin with oral anticoagulants like warfarin can lead to:",
+        opts: ["Reduced risk of bleeding", "Increased risk of bleeding", "Failure of the antibiotic", "No interaction"],
+        correct: 1,
+        explain: "Ampicillin can disrupt gut flora that produce Vitamin K, potentially enhancing the effect of oral anticoagulants and increasing the risk of bleeding."
+    },
+    {
+        q: "Drug-drug interactions are considered a preventable cause of:",
+        opts: ["Morbidity", "Genetic disorders", "Congenital defects", "Chronic disease"],
+        correct: 0,
+        explain: "Many adverse drug events caused by drug-drug interactions are preventable through careful medication review and patient education, thus reducing patient harm (morbidity)."
+    }
 ];
 
 const tfs = [
-    { q: "Preventive and restorative dental treatment is considered safe throughout the entire duration of pregnancy.", answer: true, explain: "The lecture explicitly states that preventive, diagnostic, and restorative dental treatment is safe throughout pregnancy." },
-    { q: "Lidocaine with epinephrine is contraindicated for use as a local anesthetic in pregnant patients.", answer: false, explain: "The presentation notes that local anesthetics like lidocaine with epinephrine may be used during pregnancy." },
-    { q: "The use of Tetracycline during pregnancy can lead to fetal ototoxicity (hearing damage).", answer: false, explain: "Tetracycline causes discoloration of teeth. Fetal ototoxicity is associated with Gentamycin (an aminoglycoside)." },
-    { q: "According to the FDA, Category X drugs may be acceptable to use in pregnancy if the benefits are significant.", answer: false, explain: "For Category X drugs, the risk to the fetus clearly outweighs any possible benefits. They are contraindicated." },
-    { q: "The drug Warfarin is classified as an FDA Category D agent.", answer: true, explain: "Warfarin is listed as a Category D drug, known to cause skeletal and limb abnormalities." },
-    { q: "Nitrous oxide is considered safe to use for sedation in a dental patient who is in her first trimester.", answer: false, explain: "The chart indicates that nitrous oxide should NOT be used in the first trimester due to its association with spontaneous abortions." },
-    { q: "All cephalosporin antibiotics are contraindicated during pregnancy.", answer: false, explain: "The chart groups Cephalosporins with Amoxicillin, Metronidazole, and Penicillin as 'YES' for use in pregnancy." },
-    { q: "Exposure to a teratogen during the pre-implantation stage will always result in a severe anatomic defect.", answer: false, explain: "During the pre-implantation stage, a teratogen is more likely to cause an 'all-or-none' effect: either abortion or no effect at all." },
-    { q: "Prednisolone is a corticosteroid that can be safely used during both pregnancy and lactation.", answer: true, explain: "The chart on corticosteroids lists Prednisolone as 'YES' for use in both pregnancy and lactation." }
+    {
+        q: "Drug-drug interactions can only decrease how well medications work.",
+        answer: false,
+        explain: "Interactions can also increase side effects or lead to drug toxicity by increasing blood levels of a drug."
+    },
+    {
+        q: "NSAIDs displacing warfarin from albumin is an example of a metabolic interaction.",
+        answer: false,
+        explain: "This is a distribution interaction, as it relates to competition for plasma protein binding, not metabolism by enzymes."
+    },
+    {
+        q: "Rifampicin induces hepatic enzymes, which can lead to reduced efficacy of other drugs.",
+        answer: true,
+        explain: "As a CYP450 inducer, Rifampicin accelerates the metabolism of many drugs, lowering their concentration and effectiveness."
+    },
+    {
+        q: "Combining NSAIDs with corticosteroids decreases the risk of gastrointestinal bleeding.",
+        answer: false,
+        explain: "This combination significantly increases the risk of GI ulceration and bleeding due to their combined effects on the gastric mucosa."
+    },
+    {
+        q: "Food always decreases the absorption and bioavailability of drugs.",
+        answer: false,
+        explain: "Food can enhance the absorption of some drugs. For example, the bioavailability of Ceftin is higher after a meal."
+    },
+    {
+        q: "A malnourished patient is considered at high risk for food-nutrient interactions.",
+        answer: true,
+        explain: "Malnourished patients, along with the elderly, infants, and those with chronic diseases, are particularly vulnerable to such interactions."
+    },
+    {
+        q: "Taking Ciprofloxacin with a glass of milk is recommended to enhance its absorption.",
+        answer: false,
+        explain: "Calcium in milk chelates with Ciprofloxacin, forming an insoluble complex that significantly reduces its absorption."
+    },
+    {
+        q: "An antagonistic drug interaction results in an enhanced therapeutic response.",
+        answer: false,
+        explain: "An antagonistic interaction is one where a drug's effect is reduced or blocked by another, potentially leading to therapeutic failure."
+    },
+    {
+        q: "Metronidazole can increase the risk of bleeding when taken with warfarin.",
+        answer: true,
+        explain: "Metronidazole inhibits the metabolism of warfarin, leading to higher levels of the anticoagulant and an increased risk of bleeding."
+    }
 ];
 
 const saqs = [
-    { q: "Define teratogenesis as described in the lecture.", a: "Teratogenesis is characterized by structural or functional defects in the developing embryo or fetus. It also includes intrauterine growth retardation, death of the embryo or fetus, and transplacental carcinogenesis." },
-    { q: "List the five FDA Pregnancy Risk Categories, starting from the one with the least demonstrated risk to the one with the highest.", a: "The five categories are:<br>1. <b>Category A:</b> No risk in controlled human studies.<br>2. <b>Category B:</b> No risk in human studies, despite animal findings (or only animal studies showing no risk).<br>3. <b>Category C:</b> Risk shown in animals, but no human studies available.<br>4. <b>Category D:</b> Evidence of human fetal risk, but benefits may outweigh risks.<br>5. <b>Category X:</b> Risk clearly outweighs any benefits; contraindicated." },
-    { q: "Compare the FDA risk categories D and X. What is the key difference in their clinical recommendation?", a: "<b>Category D</b> drugs have shown a risk to the human fetus, but their use may be acceptable if the potential benefits to the mother are great (e.g., for a life-threatening condition).<br><b>Category X</b> drugs have also shown fetal abnormalities and risk, but this risk clearly and unequivocally outweighs any possible benefit. These drugs are contraindicated in women who are or may become pregnant." },
-    { q: "A pregnant patient in her third trimester has a severe dental abscess. The dentist considers prescribing an analgesic. Based on the lecture, which class of common analgesics must be avoided and why?", a: "NSAIDs like Aspirin, Ibuprofen, and Naproxen must be avoided. They are specifically contraindicated in the third trimester due to risks such as causing premature closure of the fetal ductus arteriosus and potential for postpartum hemorrhage." },
-    { q: "List three different teratogenic agents mentioned in the lecture and the primary defect associated with each.", a: "1. <b>Thalidomide:</b> Limb defects.<br>2. <b>Warfarin:</b> Skeletal abnormalities (e.g., curvature of the spine).<br>3. <b>ACE inhibitors:</b> Renal tubular dysplasia and pulmonary hypoplasia." },
-    { q: "Describe the three main stages of intrauterine development discussed and the general effect a teratogen might have in each stage.", a: "1. <b>Pre-implantation/Post-implantation (0-8 weeks):</b> This is the period of organogenesis. Teratogens can produce major anatomical defects, abortion, or have no effect at all.<br>2. <b>Fetal development (9 weeks to birth):</b> This period influences growth, neurologic and functional development. Teratogens can cause functional or metabolic defects, growth retardation, or death of the fetus." }
+    {
+        q: "Define a pharmacodynamic drug interaction and provide one example mentioned in the lecture.",
+        a: "A pharmacodynamic interaction is one that occurs at the drug's site of action or involves interference with the same physiological systems. It alters the drug's effect without changing its concentration. <br><b>Example:</b> Combining CNS depressants like opioids and benzodiazepines, which results in an additive sedative effect."
+    },
+    {
+        q: "A patient is prescribed warfarin (an anticoagulant) for a heart condition. They begin taking an over-the-counter NSAID for dental pain. What is the potential interaction, and what is the underlying mechanism?",
+        a: "The potential interaction is an increased risk of bleeding. The mechanism is a distribution interaction: the NSAID competes with warfarin for binding sites on plasma albumin. This displaces warfarin, increasing the concentration of free, active warfarin in the blood, which enhances its anticoagulant effect."
+    },
+    {
+        q: "List three distinct patient populations that are at a higher risk for food-nutrient interactions.",
+        a: "<ol><li>Elderly patients</li><li>Patients with chronic diseases</li><li>Pregnant women / Fetus / Infant</li><li>Malnourished patients</li></ol>(Any three are correct)"
+    },
+    {
+        q: "Compare and contrast synergistic and antagonistic pharmacodynamic effects using examples.",
+        a: `<table><thead><tr><th>Effect Type</th><th>Description</th><th>Example</th></tr></thead><tbody><tr><td><strong>1. Synergistic/Additive</strong></td><td>The combined effect of two drugs is equal to or greater than the sum of their individual effects.</td><td>Opioids + Benzodiazepines leading to enhanced CNS depression.</td></tr><tr><td><strong>2. Antagonistic</strong></td><td>One drug reduces or blocks the effect of another drug, leading to a diminished response.</td><td>NSAIDs reducing the effectiveness of antihypertensive drugs like β-blockers.</td></tr></tbody></table>`
+    },
+    {
+        q: "Explain the interaction between tetracycline antibiotics and dairy products. What is the mechanism and clinical outcome?",
+        a: "The mechanism is chelation. Calcium ions in dairy products bind to the tetracycline molecule, forming an insoluble complex. This complex cannot be absorbed from the gastrointestinal tract. The clinical outcome is reduced absorption of the antibiotic, leading to lower blood concentrations and potential therapeutic failure."
+    },
+    {
+        q: "Describe the four main stages of pharmacokinetics where drug-drug interactions can occur.",
+        a: `<ol><li><b>Absorption:</b> Interactions in the GI tract that affect how much of a drug is absorbed (e.g., chelation).</li><li><b>Distribution:</b> Competition between drugs for binding sites on plasma proteins like albumin.</li><li><b>Metabolism:</b> One drug inhibiting or inducing the hepatic enzymes (like CYP450) responsible for metabolizing another drug.</li><li><b>Elimination:</b> Competition between drugs for renal excretion pathways, altering how quickly a drug is cleared from the body.</li></ol>`
+    }
 ];
 
 // ----------- State -----------
@@ -418,48 +627,36 @@ saqs.forEach((item, idx)=>{
 
 // ----------- Score + Reset -----------
 function recalc(){
-    // Recalculate MCQ score based on whether the chosen answer was correct
-    const mcqScore = state.mcq.reduce((score, selectedVisualIndex, idx) => {
-        if (selectedVisualIndex === null) return score;
-        const item = mcqs[idx];
-        const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${idx}"]`);
-        const buttons = card.querySelectorAll('.opt-btn');
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
 
-        // Re-derive the correct visual index for this card
-        const originalToVisual = Array(4);
-        const btnLabels = Array.from(buttons).map(b => b.querySelector('.label').textContent);
-        item.opts.forEach((optText, origIdx) => {
-          const visualIdx = btnLabels.findIndex(label => label === optText);
-          originalToVisual[origIdx] = visualIdx;
-        });
-        const correctVisualIndex = originalToVisual[item.correct];
-
-        return score + (selectedVisualIndex === correctVisualIndex ? 1 : 0);
-    }, 0);
-
-    // Recalculate T/F score
-    const tfScore = state.tf.reduce((score, selectedValue, idx) => {
-        if (selectedValue === null) return score;
-        return score + (selectedValue === tfs[idx].answer ? 1 : 0);
-    }, 0);
-
-    const saqScore = state.saq.filter(Boolean).length;
-    const total = mcqScore + tfScore + saqScore;
-
-    const ids = ["sMcq", "sTf", "sSaq", "sTotal", "sMcq2", "sTf2", "sSaq2", "sTotal2"];
-    ids.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        if (id.includes('Mcq')) el.textContent = mcqScore;
-        if (id.includes('Tf')) el.textContent = tfScore;
-        if (id.includes('Saq')) el.textContent = saqScore;
-        if (id.includes('Total')) el.textContent = total;
-    });
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
 }
 
-
 document.getElementById('resetAll').addEventListener('click', ()=>{
-  if (!confirm("Are you sure you want to reset all answers and scores?")) return;
+  if (!confirm("Are you sure you want to reset all answers and scores?")) {
+    return;
+  }
   document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
   document.querySelectorAll('.opt-btn').forEach(b=>{
     b.classList.remove('correct','wrong');

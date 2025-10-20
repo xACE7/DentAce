@@ -1,0 +1,821 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Two-Column Sections</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+  
+  strong { color: #8b5cf6; }
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 7</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">اللهم إني أسألك فهم النبيين وحفظ المرسلين والملائكة المقربين</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Adrenergic Drugs</b></span>
+<span class="ar"><b>الموضوع: الأدوية الأدرينالية</b></span>
+</span>
+</div>
+<div class="sections">
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">The Autonomic Nervous System (ANS)</span><span class="ar">الجهاز العصبي اللاإرادي (ANS)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>The <strong style="color:#8b5cf6;">Autonomic Nervous System (ANS)</strong> is a division of the Peripheral Nervous System (PNS) that controls involuntary bodily functions. These include heart rate, blood pressure, digestion, and glandular secretions. It is not under our conscious control.</p>
+<p>The ANS is divided into two main branches that work in opposition to each other to maintain the body's internal balance, or homeostasis.</p>
+<ul>
+    <li><strong style="color:#8b5cf6;">Sympathetic Division:</strong> This prepares the body for stressful or emergency situations, often called the "fight or flight" response.</li>
+    <li><strong style="color:#8b5cf6;">Parasympathetic Division:</strong> This division dominates during times of rest and relaxation, managing routine activities like digestion. It's known as the "rest and digest" system.</li>
+</ul>
+</div>
+<div class="ar">
+<p>إن <strong style="color:#8b5cf6;">الجهاز العصبي اللاإرادي (ANS)</strong> هو قسم من الجهاز العصبي المحيطي (PNS) يتحكم في وظائف الجسم اللاإرادية. وتشمل هذه الوظائف معدل ضربات القلب، وضغط الدم، والهضم، والإفرازات الغدية. وهو لا يخضع لسيطرتنا الواعية.</p>
+<p>ينقسم الجهاز العصبي اللاإرادي إلى فرعين رئيسيين يعملان في تضاد مع بعضهما البعض للحفاظ على التوازن الداخلي للجسم، أو الاستتباب.</p>
+<ul>
+    <li><strong style="color:#8b5cf6;">القسم الودي (Sympathetic):</strong> يهيئ هذا القسم الجسم للمواقف المجهدة أو الطارئة، وغالبًا ما يطلق عليه استجابة "الكر والفر".</li>
+    <li><strong style="color:#8b5cf6;">القسم نظير الودي (Parasympathetic):</strong> يسود هذا القسم في أوقات الراحة والاسترخاء، ويدير الأنشطة الروتينية مثل الهضم. ويُعرف بنظام "الراحة والهضم".</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 3, 5-6 of 24</span>
+<span class="ar">المصدر: الصفحات 3، 5-6 من 24</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The sympathetic system increases heart rate and blood pressure, while the parasympathetic system slows them down.</div><div class="ar">الجهاز الودي يزيد من معدل ضربات القلب وضغط الدم، بينما الجهاز نظير الودي يبطئهما.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding the ANS is crucial because most drugs we will discuss target either the sympathetic or parasympathetic pathways to produce their effects.</div><div class="ar">فهم الجهاز العصبي اللاإرادي أمر حاسم لأن معظم الأدوية التي سنناقشها تستهدف إما المسارات الودية أو نظيرة الودية لإحداث تأثيراتها.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember: <strong style="color:#8b5cf6;">S</strong>ympathetic for <strong style="color:#8b5cf6;">S</strong>tress. <strong style="color:#8b5cf6;">P</strong>arasympathetic for <strong style="color:#8b5cf6;">P</strong>eace.</div><div class="ar">تذكر: <strong style="color:#8b5cf6;">S</strong>ympathetic للـ <strong style="color:#8b5cf6;">S</strong>tress (الإجهاد). <strong style="color:#8b5cf6;">P</strong>arasympathetic للـ <strong style="color:#8b5cf6;">P</strong>eace (الهدوء).</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Adrenergic Neurotransmitters & Receptors</span><span class="ar">النواقل العصبية والمستقبلات الأدرينالية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>The sympathetic nervous system uses chemical messengers called neurotransmitters to communicate with organs. The primary neurotransmitters are a group of chemicals called <strong style="color:#8b5cf6;">Catecholamines</strong>.</p>
+<ul>
+    <li><strong style="color:#8b5cf6;">Epinephrine (Adrenaline):</strong> Secreted by the adrenal gland and acts as a hormone and neurotransmitter. It's a key player in the "fight or flight" response.</li>
+    <li><strong style="color:#8b5cf6;">Norepinephrine (Noradrenaline):</strong> Primarily acts as a neurotransmitter released from sympathetic nerve endings. It is also stored in and secreted by the adrenal gland.</li>
+</ul>
+<p>These catecholamines bind to specific sites on cells called <strong style="color:#8b5cf6;">Adrenergic Receptors</strong> to produce their effects. There are two main types, which are further subdivided:</p>
+<ul>
+    <li><strong>Alpha (α) Receptors:</strong> α₁ and α₂</li>
+    <li><strong>Beta (β) Receptors:</strong> β₁ and β₂</li>
+</ul>
+</div>
+<div class="ar">
+<p>يستخدم الجهاز العصبي الودي رسلًا كيميائيين يطلق عليهم النواقل العصبية للتواصل مع الأعضاء. النواقل العصبية الأساسية هي مجموعة من المواد الكيميائية تسمى <strong style="color:#8b5cf6;">الكاتيكولامينات</strong>.</p>
+<ul>
+    <li><strong style="color:#8b5cf6;">الإبينفرين (الأدرينالين):</strong> تفرزه الغدة الكظرية ويعمل كهرمون وناقل عصبي. وهو لاعب رئيسي في استجابة "الكر والفر".</li>
+    <li><strong style="color:#8b5cf6;">النورإبينفرين (النورأدرينالين):</strong> يعمل بشكل أساسي كناقل عصبي يتم إطلاقه من النهايات العصبية الودية. كما يتم تخزينه وإفرازه من الغدة الكظرية.</li>
+</ul>
+<p>ترتبط هذه الكاتيكولامينات بمواقع محددة على الخلايا تسمى <strong style="color:#8b5cf6;">المستقبلات الأدرينالية</strong> لإحداث تأثيراتها. هناك نوعان رئيسيان، يتم تقسيمهما فرعيًا:</p>
+<ul>
+    <li><strong>مستقبلات ألفا (α):</strong> α₁ و α₂</li>
+    <li><strong>مستقبلات بيتا (β):</strong> β₁ و β₂</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 4, 8, 10 of 24</span>
+<span class="ar">المصدر: الصفحات 4، 8، 10 من 24</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Different organs have different types and densities of adrenergic receptors, which is why adrenergic drugs can have specific effects on certain tissues.</div><div class="ar">تحتوي الأعضاء المختلفة على أنواع وكثافات مختلفة من المستقبلات الأدرينالية، وهذا هو السبب في أن الأدوية الأدرينالية يمكن أن يكون لها تأثيرات محددة على أنسجة معينة.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">The heart primarily has Beta-1 receptors, while the smooth muscles of the bronchioles in the lungs have mainly Beta-2 receptors.</div><div class="ar">يحتوي القلب بشكل أساسي على مستقبلات بيتا-1، بينما تحتوي العضلات الملساء في القصيبات الهوائية في الرئتين بشكل أساسي على مستقبلات بيتا-2.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">The body regulates neurotransmitter levels through reuptake and enzymatic degradation by enzymes like <strong style="color:#8b5cf6;">MAO</strong> (Monoamine oxidase) and <strong style="color:#8b5cf6;">COMT</strong>. Alpha-2 receptors also act as a feedback control to inhibit further norepinephrine release.</div><div class="ar">ينظم الجسم مستويات النواقل العصبية من خلال إعادة الامتصاص والت降解 الإنزيمي بواسطة إنزيمات مثل <strong style="color:#8b5cf6;">MAO</strong> (أوكسيديز أحادي الأمين) و <strong style="color:#8b5cf6;">COMT</strong>. تعمل مستقبلات ألفا-2 أيضًا كآلية تحكم ارتجاعي لتثبيط إطلاق المزيد من النورإبينفرين.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Dopamine Receptors</span><span class="ar">مستقبلات الدوبامين</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong style="color:#8b5cf6;">Dopamine</strong> is another endogenous catecholamine that has its own set of specific receptors, which are very important in the brain.</p>
+<p>There are several subtypes of dopamine receptors, but the most pharmacologically distinct are:</p>
+<ul>
+    <li><strong style="color:#8b5cf6;">D₁ Receptors:</strong> Often associated with stimulatory effects.</li>
+    <li><strong style="color:#8b5cf6;">D₂ Receptors:</strong> Often associated with inhibitory effects.</li>
+</ul>
+<p>The balance of dopamine activity is critical for motor control and mental health. An imbalance is linked to serious neurological and psychiatric conditions.</p>
+</div>
+<div class="ar">
+<p><strong style="color:#8b5cf6;">الدوبامين</strong> هو كاتيكولامين داخلي آخر له مجموعة خاصة من المستقبلات المحددة، وهي مهمة جدًا في الدماغ.</p>
+<p>هناك عدة أنواع فرعية من مستقبلات الدوبامين، ولكن الأكثر تميزًا من الناحية الدوائية هي:</p>
+<ul>
+    <li><strong style="color:#8b5cf6;">مستقبلات D₁:</strong> غالبًا ما ترتبط بالتأثيرات التحفيزية.</li>
+    <li><strong style="color:#8b5cf6;">مستقبلات D₂:</strong> غالبًا ما ترتبط بالتأثيرات التثبيطية.</li>
+</ul>
+<p>يعتبر توازن نشاط الدوبامين أمرًا بالغ الأهمية للتحكم الحركي والصحة العقلية. يرتبط عدم التوازن بحالات عصبية ونفسية خطيرة.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 9 of 24</span>
+<span class="ar">المصدر: الصفحة 9 من 24</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">A deficiency of dopamine in the brain leads to <strong style="color:#8b5cf6;">Parkinson's disease</strong>, characterized by tremors and motor rigidity. Conversely, an excess of dopamine activity is linked to <strong style="color:#8b5cf6;">schizophrenia</strong>.</div><div class="ar">يؤدي نقص الدوبامين في الدماغ إلى <strong style="color:#8b5cf6;">مرض باركنسون</strong>، الذي يتميز بالرعاش وتصلب الحركة. وعلى العكس من ذلك، يرتبط فرط نشاط الدوبامين بـ <strong style="color:#8b5cf6;">الفصام</strong>.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Dopamine receptors are the target of many antipsychotic drugs and medications used to treat Parkinson's disease.</div><div class="ar">مستقبلات الدوبامين هي الهدف للعديد من الأدوية المضادة للذهان والأدوية المستخدمة في علاج مرض باركنسون.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Medications that alter dopamine levels must be carefully managed, as they can cause significant side effects related to movement and mental state.</div><div class="ar">يجب إدارة الأدوية التي تغير مستويات الدوبامين بعناية، حيث يمكن أن تسبب آثارًا جانبية كبيرة تتعلق بالحركة والحالة العقلية.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Adrenergic Agonists (Sympathomimetics)</span><span class="ar">منبهات المستقبلات الأدرينالية (محاكيات الودي)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong style="color:#8b5cf6;">Adrenergic agonists</strong>, also known as <strong style="color:#8b5cf6;">sympathomimetics</strong>, are drugs that mimic the effects of the sympathetic nervous system by stimulating adrenergic receptors. They can be specific to certain receptor subtypes.</p>
+</div>
+<div class="ar">
+<p><strong style="color:#8b5cf6;">منبهات المستقبلات الأدرينالية</strong>، والمعروفة أيضًا باسم <strong style="color:#8b5cf6;">محاكيات الودي</strong>، هي أدوية تحاكي تأثيرات الجهاز العصبي الودي عن طريق تنشيط المستقبلات الأدرينالية. يمكن أن تكون محددة لأنواع فرعية معينة من المستقبلات.</p>
+</div>
+<div aria-label="Scrollable table" class="table-wrap">
+<table>
+<thead>
+<tr>
+<th><span class="en">Agonist Type</span><span class="ar">نوع المنبه</span></th>
+<th><span class="en">Example Drug</span><span class="ar">مثال الدواء</span></th>
+<th><span class="en">Primary Effect</span><span class="ar">التأثير الأساسي</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="en">Alpha-1 Agonist</span><span class="ar">منبه ألفا-1</span></td>
+<td><span class="en">Phenylephrine</span><span class="ar">فينيل إفرين</span></td>
+<td><span class="en">Increases Blood Pressure (Vasoconstriction)</span><span class="ar">يرفع ضغط الدم (تضيق الأوعية)</span></td>
+</tr>
+<tr>
+<td><span class="en">Alpha-2 Agonist</span><span class="ar">منبه ألفا-2</span></td>
+<td><span class="en">Clonidine</span><span class="ar">كلونيدين</span></td>
+<td><span class="en">Reduces Blood Pressure (Acts Centrally)</span><span class="ar">يخفض ضغط الدم (يعمل مركزيًا)</span></td>
+</tr>
+<tr>
+<td><span class="en">Beta-1 Agonist</span><span class="ar">منبه بيتا-1</span></td>
+<td><span class="en">Dobutamine</span><span class="ar">دوبوتامين</span></td>
+<td><span class="en">Increases Heart Rate & Contractility</span><span class="ar">يزيد معدل ضربات القلب وقوته</span></td>
+</tr>
+<tr>
+<td><span class="en">Beta-2 Agonist</span><span class="ar">منبه بيتا-2</span></td>
+<td><span class="en">Salbutamol</span><span class="ar">سالبوتامول</span></td>
+<td><span class="en">Bronchial Relaxation (Bronchodilation)</span><span class="ar">استرخاء الشعب الهوائية (توسع القصبات)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 11 of 24</span>
+<span class="ar">المصدر: الصفحة 11 من 24</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Alpha-2 agonists like Clonidine are unique. They act on feedback receptors in the brain to <strong style="color:#8b5cf6;">decrease</strong> sympathetic output, thus lowering blood pressure. It's a central effect, not a peripheral one.</div><div class="ar">منبهات ألفا-2 مثل الكلونيدين فريدة من نوعها. فهي تعمل على مستقبلات التغذية الراجعة في الدماغ <strong style="color:#8b5cf6;">لتقليل</strong> الإشارات الودية، وبالتالي خفض ضغط الدم. إنه تأثير مركزي وليس محيطيًا.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en"><strong style="color:#8b5cf6;">Salbutamol</strong> is a very common inhaler medication used to quickly relieve asthma attacks by opening the airways.</div><div class="ar"><strong style="color:#8b5cf6;">السالبوتامول</strong> هو دواء استنشاق شائع جدًا يستخدم للتخفيف السريع من نوبات الربو عن طريق فتح المسالك الهوائية.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en"><strong style="color:#8b5cf6;">Phenylephrine</strong> is often found in over-the-counter nasal decongestant sprays. It constricts blood vessels in the nose to reduce swelling.</div><div class="ar">غالبًا ما يوجد <strong style="color:#8b5cf6;">الفينيل إفرين</strong> في بخاخات إزالة احتقان الأنف المتاحة بدون وصفة طبية. فهو يضيق الأوعية الدموية في الأنف لتقليل التورم.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Pharmacological Effects of Adrenergic Drugs</span><span class="ar">التأثيرات الدوائية للأدوية الأدرينالية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Adrenergic drugs have widespread effects throughout the body:</p>
+<ul>
+    <li><strong>Central Nervous System (CNS):</strong> These drugs cause CNS excitation, leading to alertness. Higher doses can cause anxiety, restlessness, and tremors.</li>
+    <li><strong>Cardiovascular System:</strong> They increase the force and rate of heart contractions, which raises both blood pressure and total peripheral resistance.</li>
+    <li><strong>Eye:</strong> They can cause <strong style="color:#8b5cf6;">mydriasis</strong> (dilation of the pupil) and are used to lower intraocular pressure in some conditions.</li>
+    <li><strong>Respiratory System:</strong> They relax the smooth muscles of the bronchioles, leading to bronchodilation, which is useful for treating asthma.</li>
+    <li><strong>Metabolic Effects:</strong> Beta-receptor stimulation increases <strong style="color:#8b5cf6;">glycogenolysis</strong> (breakdown of glycogen to glucose), which can lead to hyperglycemia (high blood sugar).</li>
+    <li><strong>Salivary Glands:</strong> They cause <strong style="color:#8b5cf6;">vasoconstriction</strong> of the glands, reducing salivary flow and leading to dry mouth (xerostomia).</li>
+</ul>
+</div>
+<div class="ar">
+<p>للأدوية الأدرينالية تأثيرات واسعة النطاق في جميع أنحاء الجسم:</p>
+<ul>
+    <li><strong>الجهاز العصبي المركزي (CNS):</strong> تسبب هذه الأدوية استثارة للجهاز العصبي المركزي، مما يؤدي إلى اليقظة. الجرعات العالية يمكن أن تسبب القلق، والأرق، والرعشة.</li>
+    <li><strong>الجهاز القلبي الوعائي:</strong> تزيد من قوة ومعدل انقباضات القلب، مما يرفع ضغط الدم والمقاومة المحيطية الكلية.</li>
+    <li><strong>العين:</strong> يمكن أن تسبب <strong style="color:#8b5cf6;">توسع الحدقة (mydriasis)</strong> وتستخدم لخفض ضغط العين في بعض الحالات.</li>
+    <li><strong>الجهاز التنفسي:</strong> ترخي العضلات الملساء في القصيبات، مما يؤدي إلى توسع القصبات، وهو أمر مفيد في علاج الربو.</li>
+    <li><strong>التأثيرات الأيضية:</strong> تحفيز مستقبلات بيتا يزيد من <strong style="color:#8b5cf6;">تحلل الجليكوجين</strong> (تكسير الجليكوجين إلى جلوكوز)، مما قد يؤدي إلى ارتفاع السكر في الدم.</li>
+    <li><strong>الغدد اللعابية:</strong> تسبب <strong style="color:#8b5cf6;">تضيق الأوعية</strong> في الغدد، مما يقلل من تدفق اللعاب ويؤدي إلى جفاف الفم (xerostomia).</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 12-13 of 24</span>
+<span class="ar">المصدر: الصفحات 12-13 من 24</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">The CNS excitatory effects mean these drugs can interfere with sleep and cause nervousness.</div><div class="ar">تأثيرات الإثارة على الجهاز العصبي المركزي تعني أن هذه الأدوية يمكن أن تتداخل مع النوم وتسبب العصبية.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">The hyperglycemic effect is a concern for diabetic patients, whose blood sugar levels must be monitored closely if they take adrenergic drugs.</div><div class="ar">تأثير ارتفاع السكر في الدم هو مصدر قلق لمرضى السكري، الذين يجب مراقبة مستويات السكر في دمهم عن كثب إذا كانوا يتناولون الأدوية الأدرينالية.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">In dentistry, the reduction in salivary flow is a significant side effect. It can be used to create a dry field for procedures but also contributes to an increased risk of caries long-term.</div><div class="ar">في طب الأسنان، يعد انخفاض تدفق اللعاب أثرًا جانبيًا مهمًا. يمكن استخدامه لإنشاء مجال جاف للإجراءات ولكنه يساهم أيضًا في زيادة خطر التسوس على المدى الطويل.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Therapeutic Uses of Adrenergic Drugs</span><span class="ar">الاستخدامات العلاجية للأدوية الأدرينالية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Adrenergic drugs are used for several key therapeutic purposes:</p>
+<ol>
+    <li><strong>Vasoconstriction:</strong> This is a primary use in dentistry. Drugs like <strong style="color:#8b5cf6;">epinephrine</strong> are added to <strong style="color:#8b5cf6;">local anesthetics</strong> (e.g., lidocaine, articaine). This constricts local blood vessels, which:
+        <ul>
+            <li>Prolongs the action of the anesthetic by keeping it at the site of injection.</li>
+            <li>Reduces the risk of systemic toxicity by slowing absorption into the bloodstream.</li>
+            <li>Helps create a dry, bloodless field for surgery.</li>
+        </ul>
+    </li>
+    <li><strong>Cardiac Effects:</strong> Used in emergencies to treat cardiac arrest and to raise dangerously low blood pressure.</li>
+    <li><strong>Bronchodilation:</strong> Essential for treating acute asthma attacks and severe allergic reactions (anaphylaxis).</li>
+    <li><strong>Nasal Decongestion:</strong> Used to shrink swollen nasal mucous membranes.</li>
+</ol>
+<p>Adverse reactions are typically an extension of the drug's intended effects, including anxiety, tremors, tachycardia (fast heart rate), and increased blood pressure.</p>
+</div>
+<div class="ar">
+<p>تستخدم الأدوية الأدرينالية لعدة أغراض علاجية رئيسية:</p>
+<ol>
+    <li><strong>تضيق الأوعية:</strong> هذا هو الاستخدام الأساسي في طب الأسنان. تضاف أدوية مثل <strong style="color:#8b5cf6;">الإبينفرين</strong> إلى <strong style="color:#8b5cf6;">المخدرات الموضعية</strong> (مثل الليدوكائين، الأرتيكائين). هذا يضيق الأوعية الدموية الموضعية، مما:
+        <ul>
+            <li>يطيل من مفعول المخدر عن طريق إبقائه في موقع الحقن.</li>
+            <li>يقلل من خطر السمية الجهازية عن طريق إبطاء الامتصاص في مجرى الدم.</li>
+            <li>يساعد في خلق مجال جاف وخالٍ من الدم للجراحة.</li>
+        </ul>
+    </li>
+    <li><strong>التأثيرات القلبية:</strong> تستخدم في حالات الطوارئ لعلاج السكتة القلبية ولرفع ضغط الدم المنخفض بشكل خطير.</li>
+    <li><strong>توسع القصبات:</strong> أساسي لعلاج نوبات الربو الحادة وردود الفعل التحسسية الشديدة (الحساسية المفرطة).</li>
+    <li><strong>إزالة احتقان الأنف:</strong> تستخدم لتقليص الأغشية المخاطية الأنفية المتورمة.</li>
+</ol>
+<p>عادة ما تكون التفاعلات الضائرة امتدادًا للتأثيرات المقصودة للدواء، وتشمل القلق، والرعشة، وتسرع القلب، وارتفاع ضغط الدم.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 14-17 of 24</span>
+<span class="ar">المصدر: الصفحات 14-17 من 24</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The combination of epinephrine with local anesthetics is one of the most important pharmacological concepts in daily dental practice.</div><div class="ar">يعتبر مزيج الإبينفرين مع المخدرات الموضعية من أهم المفاهيم الدوائية في الممارسة اليومية لطب الأسنان.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">High doses of local anesthetics like <strong style="color:#8b5cf6;">lidocaine</strong> can be toxic, causing cardiac arrhythmias and convulsions. Epinephrine helps reduce this risk by limiting systemic absorption.</div><div class="ar">الجرعات العالية من المخدرات الموضعية مثل <strong style="color:#8b5cf6;">الليدوكائين</strong> يمكن أن تكون سامة، مسببة اضطرابات نظم القلب والتشنجات. يساعد الإبينفرين في تقليل هذا الخطر عن طريق الحد من الامتصاص الجهازي.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Epinephrine is the first-line treatment for anaphylactic shock, a life-threatening allergic reaction, because it provides rapid bronchodilation and supports blood pressure.</div><div class="ar">الإبينفرين هو العلاج الأول للصدمة التأقية، وهي رد فعل تحسسي يهدد الحياة، لأنه يوفر توسعًا سريعًا للقصبات الهوائية ويدعم ضغط الدم.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Antiadrenergic Drugs (Sympatholytics)</span><span class="ar">الأدوية المضادة للأدرينالية (حالات الودي)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong style="color:#8b5cf6;">Antiadrenergic drugs</strong>, or <strong style="color:#8b5cf6;">sympatholytics</strong>, block the effects of the sympathetic nervous system. They work by blocking adrenergic receptors, preventing catecholamines from binding. This reduces sympathetic tone, leading to a decrease in blood pressure.</p>
+<p>Their primary use is to treat hypertension. They are also used for peripheral vascular disease and benign prostatic hypertrophy.</p>
+</div>
+<div class="ar">
+<p><strong style="color:#8b5cf6;">الأدوية المضادة للأدرينالية</strong>، أو <strong style="color:#8b5cf6;">حالات الودي</strong>، تمنع تأثيرات الجهاز العصبي الودي. تعمل عن طريق حجب المستقبلات الأدرينالية، مما يمنع الكاتيكولامينات من الارتباط بها. هذا يقلل من النغمة الودية، مما يؤدي إلى انخفاض في ضغط الدم.</p>
+<p>استخدامها الأساسي هو علاج ارتفاع ضغط الدم. كما أنها تستخدم لأمراض الأوعية الدموية الطرفية وتضخم البروستاتا الحميد.</p>
+</div>
+<div aria-label="Scrollable table" class="table-wrap">
+<table>
+<thead>
+<tr>
+<th><span class="en">Blocker Type</span><span class="ar">نوع الحاصر</span></th>
+<th><span class="en">Example Drug</span><span class="ar">مثال الدواء</span></th>
+<th><span class="en">Primary Effect</span><span class="ar">التأثير الأساسي</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="en">Alpha-1 Blocker</span><span class="ar">حاصر ألفا-1</span></td>
+<td><span class="en">Prazosin</span><span class="ar">برازوسين</span></td>
+<td><span class="en">Reduces Blood Pressure</span><span class="ar">يخفض ضغط الدم</span></td>
+</tr>
+<tr>
+<td><span class="en">Alpha-2 Blocker</span><span class="ar">حاصر ألفا-2</span></td>
+<td><span class="en">Yohimbine</span><span class="ar">يوهمبين</span></td>
+<td><span class="en">Increases Blood Pressure</span><span class="ar">يرفع ضغط الدم</span></td>
+</tr>
+<tr>
+<td><span class="en">Beta Blocker (Selective B1)</span><span class="ar">حاصر بيتا (انتقائي لـ B1)</span></td>
+<td><span class="en">Atenolol</span><span class="ar">أتينولول</span></td>
+<td><span class="en">Reduces Blood Pressure</span><span class="ar">يخفض ضغط الدم</span></td>
+</tr>
+<tr>
+<td><span class="en">Beta Blocker (Non-selective)</span><span class="ar">حاصر بيتا (غير انتقائي)</span></td>
+<td><span class="en">Propranolol</span><span class="ar">بروبرانولول</span></td>
+<td><span class="en">Reduces Blood Pressure</span><span class="ar">يخفض ضغط الدم</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 11, 18, 22 of 24</span>
+<span class="ar">المصدر: الصفحات 11، 18، 22 من 24</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Alpha-1 blockers like Prazosin are effective for hypertension and are also used to relieve symptoms of an enlarged prostate by relaxing smooth muscle in the bladder neck and prostate.</div><div class="ar">حاصرات ألفا-1 مثل البرازوسين فعالة لارتفاع ضغط الدم وتستخدم أيضًا لتخفيف أعراض تضخم البروستاتا عن طريق إرخاء العضلات الملساء في عنق المثانة والبروستاتا.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Blocking the Alpha-2 feedback receptor with Yohimbine prevents the "off-switch" for norepinephrine release, causing an increase in sympathetic tone and blood pressure. This is the opposite effect of an Alpha-2 agonist.</div><div class="ar">حجب مستقبل ألفا-2 للتغذية الراجعة باليوهمبين يمنع "إيقاف التشغيل" لإطلاق النورإبينفرين، مما يسبب زيادة في النغمة الودية وضغط الدم. هذا هو التأثير المعاكس لمنبه ألفا-2.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Common side effects of antiadrenergic drugs include drowsiness, fatigue, and <strong style="color:#8b5cf6;">orthostatic hypotension</strong> (a sudden drop in blood pressure upon standing up).</div><div class="ar">تشمل الآثار الجانبية الشائعة للأدوية المضادة للأدرينالية النعاس، والتعب، و<strong style="color:#8b5cf6;">انخفاض ضغط الدم الانتصابي</strong> (انخفاض مفاجئ في ضغط الدم عند الوقوف).</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">A Closer Look at Beta Blockers</span><span class="ar">نظرة فاحصة على حاصرات بيتا</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong style="color:#8b5cf6;">Beta blockers</strong> are a major class of antiadrenergic drugs that primarily target beta receptors. They are widely used to manage cardiovascular conditions like hypertension, angina, and arrhythmias.</p>
+<p>They can be categorized based on their selectivity:</p>
+<ul>
+    <li><strong>Non-selective Beta Blockers:</strong> These block both β₁ and β₂ receptors.
+        <ul><li>Example: <strong style="color:#8b5cf6;">Propranolol</strong>, Nadolol</li></ul>
+        By blocking β₁ in the heart, they reduce heart rate and blood pressure. However, by blocking β₂ in the lungs, they can cause bronchoconstriction, which is dangerous for patients with asthma.
+    </li>
+    <li><strong>Selective Beta-1 Blockers (Cardioselective):</strong> These primarily block β₁ receptors in the heart, with less effect on β₂ receptors in the lungs.
+        <ul><li>Example: <strong style="color:#8b5cf6;">Atenolol</strong>, Metoprolol</li></ul>
+        These are safer for patients with respiratory diseases like asthma because they are less likely to cause bronchoconstriction.
+    </li>
+</ul>
+</div>
+<div class="ar">
+<p><strong style="color:#8b5cf6;">حاصرات بيتا</strong> هي فئة رئيسية من الأدوية المضادة للأدرينالية تستهدف بشكل أساسي مستقبلات بيتا. وتستخدم على نطاق واسع لإدارة الحالات القلبية الوعائية مثل ارتفاع ضغط الدم، والذبحة الصدرية، واضطرابات نظم القلب.</p>
+<p>يمكن تصنيفها بناءً على انتقائيتها:</p>
+<ul>
+    <li><strong>حاصرات بيتا غير الانتقائية:</strong> هذه تحجب كلاً من مستقبلات β₁ و β₂.
+        <ul><li>مثال: <strong style="color:#8b5cf6;">بروبرانولول</strong>، نادولول</li></ul>
+        عن طريق حجب β₁ في القلب، فإنها تقلل من معدل ضربات القلب وضغط الدم. ومع ذلك، عن طريق حجب β₂ في الرئتين، يمكن أن تسبب تضيق القصبات، وهو أمر خطير للمرضى الذين يعانون من الربو.
+    </li>
+    <li><strong>حاصرات بيتا-1 الانتقائية (الانتقائية للقلب):</strong> هذه تحجب بشكل أساسي مستقبلات β₁ في القلب، مع تأثير أقل على مستقبلات β₂ في الرئتين.
+        <ul><li>مثال: <strong style="color:#8b5cf6;">أتينولول</strong>، ميتوبرولول</li></ul>
+        تعتبر هذه أكثر أمانًا للمرضى الذين يعانون من أمراض الجهاز التنفسي مثل الربو لأنها أقل عرضة للتسبب في تضيق القصبات.
+    </li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 20-21 of 24</span>
+<span class="ar">المصدر: الصفحات 20-21 من 24</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Simple trick: You have <strong style="color:#8b5cf6;">one heart (β₁)</strong> and <strong style="color:#8b5cf6;">two lungs (β₂)</strong>. This helps you remember where the receptors are predominantly located.</div><div class="ar">خدعة بسيطة: لديك <strong style="color:#8b5cf6;">قلب واحد (β₁)</strong> و<strong style="color:#8b5cf6;">رئتان (β₂)</strong>. هذا يساعدك على تذكر أين تقع المستقبلات بشكل أساسي.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">A patient with both hypertension and asthma should be prescribed a selective B1 blocker like <strong style="color:#8b5cf6;">Atenolol</strong> instead of a non-selective one like <strong style="color:#8b5cf6;">Propranolol</strong>.</div><div class="ar">المريض الذي يعاني من ارتفاع ضغط الدم والربو يجب أن يوصف له حاصر بيتا-1 انتقائي مثل <strong style="color:#8b5cf6;">الأتينولول</strong> بدلاً من حاصر غير انتقائي مثل <strong style="color:#8b5cf6;">البروبرانولول</strong>.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">A major side effect of beta blockers is <strong style="color:#8b5cf6;">bradycardia</strong> (abnormally slow heart rate). They can also cause fatigue and drowsiness.</div><div class="ar">أحد الآثار الجانبية الرئيسية لحاصرات بيتا هو <strong style="color:#8b5cf6;">بطء القلب</strong> (معدل ضربات قلب بطيء بشكل غير طبيعي). يمكن أن تسبب أيضًا التعب والنعاس.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Lecture Summary</span><span class="ar">ملخص المحاضرة</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>This lecture covered the fundamentals of adrenergic pharmacology. We learned that the sympathetic nervous system ("fight or flight") uses <strong style="color:#8b5cf6;">catecholamines</strong> like epinephrine and norepinephrine to act on <strong style="color:#8b5cf6;">alpha</strong> and <strong style="color:#8b5cf6;">beta</strong> receptors.</p>
+<ul>
+    <li><strong style="color:#8b5cf6;">Adrenergic Agonists (Sympathomimetics)</strong> mimic these effects. They are used for vasoconstriction (e.g., with local anesthetics in dentistry), cardiac stimulation, and bronchodilation (e.g., for asthma).</li>
+    <li><strong style="color:#8b5cf6;">Antiadrenergic Drugs (Sympatholytics)</strong> block these effects and are primarily used to treat hypertension. Beta blockers are a key class, divided into non-selective (Propranolol) and cardioselective (Atenolol).</li>
+    <li>Understanding receptor selectivity (α₁, α₂, β₁, β₂) is key to predicting a drug's effects and side effects, and choosing the right medication for a patient (e.g., avoiding non-selective beta blockers in asthmatics).</li>
+</ul>
+</div>
+<div class="ar">
+<p>غطت هذه المحاضرة أساسيات علم الأدوية الأدرينالية. تعلمنا أن الجهاز العصبي الودي ("الكر والفر") يستخدم <strong style="color:#8b5cf6;">الكاتيكولامينات</strong> مثل الإبينفرين والنورإبينفرين للتأثير على مستقبلات <strong style="color:#8b5cf6;">ألفا</strong> و<strong style="color:#8b5cf6;">بيتا</strong>.</p>
+<ul>
+    <li><strong style="color:#8b5cf6;">المنبهات الأدرينالية (محاكيات الودي)</strong> تحاكي هذه التأثيرات. تستخدم لتضيق الأوعية (على سبيل المثال، مع المخدرات الموضعية في طب الأسنان)، وتحفيز القلب، وتوسيع القصبات (على سبيل المثال، للربو).</li>
+    <li><strong style="color:#8b5cf6;">الأدوية المضادة للأدرينالية (حالات الودي)</strong> تمنع هذه التأثيرات وتستخدم بشكل أساسي لعلاج ارتفاع ضغط الدم. حاصرات بيتا هي فئة رئيسية، مقسمة إلى غير انتقائية (بروبرانولول) وانتقائية للقلب (أتينولول).</li>
+    <li>فهم انتقائية المستقبلات (α₁، α₂، β₁، β₂) هو مفتاح التنبؤ بتأثيرات الدواء وآثاره الجانبية، واختيار الدواء المناسب للمريض (على سبيل المثال، تجنب حاصرات بيتا غير الانتقائية في مرضى الربو).</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: All Pages</span>
+<span class="ar">المصدر: جميع الصفحات</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Focus on the tables summarizing agonists and blockers. Knowing one example drug for each class and its main effect is a high-yield study strategy.</div><div class="ar">ركز على الجداول التي تلخص المنبهات والحاصرات. معرفة دواء مثال واحد لكل فئة وتأثيره الرئيسي هي استراتيجية دراسة عالية المردود.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">As a dentist, you will constantly use local anesthetics with vasoconstrictors and need to be aware of your patient's cardiovascular medications (like beta blockers) to manage potential drug interactions and side effects.</div><div class="ar">كطبيب أسنان، ستستخدم باستمرار المخدرات الموضعية مع مضيقات الأوعية وتحتاج إلى أن تكون على دراية بأدوية القلب والأوعية الدموية لمريضك (مثل حاصرات بيتا) لإدارة التفاعلات الدوائية المحتملة والآثار الجانبية.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">The terms Adrenergic, Sympathetic, and Sympathomimetic are often used interchangeably. Similarly, Cholinergic, Parasympathetic, and Parasympathomimetic are related.</div><div class="ar">غالبًا ما تستخدم المصطلحات الأدرينالية، الودية، ومحاكيات الودي بالتبادل. وبالمثل، فإن المصطلحات الكولينية، نظيرة الودية، ومحاكيات نظير الودي مترابطة.</div></div></div>
+</div>
+</aside>
+</section>
+
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Catecholamines / الكاتيكولامينات</div><div class="content" hidden=""><div class="en">A class of neurotransmitters and hormones, including epinephrine, norepinephrine, and dopamine.</div><div class="ar">فئة من النواقل العصبية والهرمونات، بما في ذلك الإبينفرين والنورإبينفرين والدوبامين.</div></div></div>
+<div class="card"><div class="head">Sympathomimetic / محاكي الودي</div><div class="content" hidden=""><div class="en">A drug that mimics the effects of the sympathetic nervous system (an adrenergic agonist).</div><div class="ar">دواء يحاكي تأثيرات الجهاز العصبي الودي (منبه أدرينالي).</div></div></div>
+<div class="card"><div class="head">Mydriasis / توسع الحدقة</div><div class="content" hidden=""><div class="en">Dilation (widening) of the pupil of the eye.</div><div class="ar">توسع (اتساع) بؤبؤ العين.</div></div></div>
+<div class="card"><div class="head">Vasoconstriction / تضيق الأوعية</div><div class="content" hidden=""><div class="en">The narrowing (constriction) of blood vessels.</div><div class="ar">تضيق (انقباض) الأوعية الدموية.</div></div></div>
+<div class="card"><div class="head">Bronchodilation / توسع القصبات</div><div class="content" hidden=""><div class="en">The widening of the airways (bronchi and bronchioles) in the lungs.</div><div class="ar">اتساع المسالك الهوائية (القصبات والقصيبات) في الرئتين.</div></div></div>
+<div class="card"><div class="head">Tachycardia / تسرع القلب</div><div class="content" hidden=""><div class="en">An abnormally fast heart rate (typically over 100 beats per minute).</div><div class="ar">معدل ضربات قلب سريع بشكل غير طبيعي (عادة فوق 100 نبضة في الدقيقة).</div></div></div>
+<div class="card"><div class="head">Bradycardia / بطء القلب</div><div class="content" hidden=""><div class="en">An abnormally slow heart rate (typically under 60 beats per minute).</div><div class="ar">معدل ضربات قلب بطيء بشكل غير طبيعي (عادة تحت 60 نبضة في الدقيقة).</div></div></div>
+<div class="card"><div class="head">Orthostatic Hypotension / انخفاض ضغط الدم الانتصابي</div><div class="content" hidden=""><div class="en">A sudden drop in blood pressure that occurs when standing up from a sitting or lying position.</div><div class="ar">انخفاض مفاجئ في ضغط الدم يحدث عند الوقوف من وضعية الجلوس أو الاستلقاء.</div></div></div>
+<div class="card"><div class="head">Cardioselective / انتقائي للقلب</div><div class="content" hidden=""><div class="en">A term for drugs that primarily affect the heart (e.g., selective Beta-1 blockers).</div><div class="ar">مصطلح للأدوية التي تؤثر بشكل أساسي على القلب (مثل حاصرات بيتا-1 الانتقائية).</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — Which division of the ANS is called "fight or flight"?</span><span class="ar">١ — أي قسم من الجهاز العصبي اللاإرادي يسمى "الكر والفر"؟</span></div><div class="content" hidden=""><span class="en">A: The Sympathetic division.</span><span class="ar">ج: القسم الودي.</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — What are the two main adrenergic receptors?</span><span class="ar">٢ — ما هما المستقبلان الأدريناليان الرئيسيان؟</span></div><div class="content" hidden=""><span class="en">A: Alpha (α) and Beta (β) receptors.</span><span class="ar">ج: مستقبلات ألفا (α) وبيتا (β).</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — What disease is caused by a dopamine deficiency?</span><span class="ar">٣ — ما هو المرض الذي يسببه نقص الدوبامين؟</span></div><div class="content" hidden=""><span class="en">A: Parkinson's disease.</span><span class="ar">ج: مرض باركنسون.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — Which receptor does Salbutamol target to treat asthma?</span><span class="ar">٤ — أي مستقبل يستهدفه السالبوتامول لعلاج الربو؟</span></div><div class="content" hidden=""><span class="en">A: Beta-2 (β₂) receptors in the lungs.</span><span class="ar">ج: مستقبلات بيتا-2 (β₂) في الرئتين.</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — Why is epinephrine added to local anesthetics?</span><span class="ar">٥ — لماذا يضاف الإبينفرين إلى المخدرات الموضعية؟</span></div><div class="content" hidden=""><span class="en">A: To cause vasoconstriction, prolonging the anesthetic's effect and reducing systemic toxicity.</span><span class="ar">ج: لإحداث تضيق في الأوعية الدموية، مما يطيل من تأثير المخدر ويقلل من السمية الجهازية.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — What is the primary therapeutic use for antiadrenergic drugs?</span><span class="ar">٦ — ما هو الاستخدام العلاجي الأساسي للأدوية المضادة للأدرينالية؟</span></div><div class="content" hidden=""><span class="en">A: To treat hypertension (high blood pressure).</span><span class="ar">ج: لعلاج ارتفاع ضغط الدم.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — Give an example of a non-selective beta blocker.</span><span class="ar">٧ — أعط مثالاً على حاصر بيتا غير انتقائي.</span></div><div class="content" hidden=""><span class="en">A: Propranolol.</span><span class="ar">ج: بروبرانولول.</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — Why is a selective B1 blocker safer for an asthmatic patient?</span><span class="ar">٨ — لماذا يعتبر حاصر بيتا-1 الانتقائي أكثر أمانًا لمريض الربو؟</span></div><div class="content" hidden=""><span class="en">A: Because it has less effect on B2 receptors in the lungs, reducing the risk of bronchoconstriction.</span><span class="ar">ج: لأنه له تأثير أقل على مستقبلات بيتا-2 في الرئتين، مما يقلل من خطر تضيق القصبات.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What side effect related to saliva do adrenergic drugs cause?</span><span class="ar">٩ — ما هو الأثر الجانبي المتعلق باللعاب الذي تسببه الأدوية الأدرينالية؟</span></div><div class="content" hidden=""><span class="en">A: Decreased salivary flow (dry mouth / xerostomia).</span><span class="ar">ج: انخفاض تدفق اللعاب (جفاف الفم).</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>
