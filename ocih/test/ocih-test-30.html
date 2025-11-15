@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Oral Mucous Membrane (30) - Test</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 30</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (Generated from ocih-30.pdf) -----------
+const mcqs = [
+  {
+    q: `What is the variety of epithelium found in the oral mucous membrane?`,
+    opts: [`Stratified squamous`, `Simple cuboidal`, `Stratified columnar`, `Pseudostratified ciliated`],
+    correct: 0,
+    explain: `Page 6 states, "The epithelium of the oral mucous membrane is of the stratified squamous variety."`
+  },
+  {
+    q: `Keratinizing oral epithelium consists of four cell layers. Which of the following is NOT one of them?`,
+    opts: [`Stratum basale`, `Stratum spinosum`, `Stratum granulosum`, `Stratum lucidum`],
+    correct: 3,
+    explain: `Page 7 lists the four layers as Stratum basale, Stratum spinosum, Stratum granulosum, and Stratum corneum. Stratum lucidum (Page 26) is not a standard layer of OMM.`
+  },
+  {
+    q: `In which layer of the epithelium does mitosis (cell proliferation) primarily take place?`,
+    opts: [`Stratum corneum`, `Stratum granulosum`, `Stratum spinosum`, `Stratum basale`],
+    correct: 3,
+    explain: `Page 9 states, "Mitosis takes place in basal cell layer."`
+  },
+  {
+    q: `What is the term for the biochemical and morphologic changes a keratinocyte undergoes as it migrates upward?`,
+    opts: [`Desquamation`, `Differentiation`, `Maturation`, `Proliferation`],
+    correct: 1,
+    explain: `Page 9 defines differentiation as the "biochemical and morphologic changes" the cell undergoes as it migrates.`
+  },
+  {
+    q: `What is the process of shedding surface epithelial cells called?`,
+    opts: [`Desquamation`, `Keratinization`, `Maturation`, `Turnover`],
+    correct: 0,
+    explain: `Page 10: "This process of shedding of surface epithelial cells is called desquamation."`
+  },
+  {
+    q: `How does the turnover time of oral mucosa compare to skin?`,
+    opts: [`Slower than skin`, `Faster than skin`, `Exactly the same as skin`, `It is not comparable`],
+    correct: 1,
+    explain: `Page 10: "The turnover time in oral mucosa is faster than skin."`
+  },
+  {
+    q: `The basal layer (Stratum basale) is also known as:`,
+    opts: [`Stratum germinativum`, `Stratum spinosum`, `Stratum superficiale`, `Stratum intermedium`],
+    correct: 0,
+    explain: `Page 16 states, "Also K/as stratum germinativum."`
+  },
+  {
+    q: `How are cells in the stratum basale attached to the underlying basement membrane?`,
+    opts: [`Desmosomes`, `Hemidesmosomes`, `Tight junctions`, `Gap junctions`],
+    correct: 1,
+    explain: `Page 16: "...and to underlying basement membrane by hemidesmosomes." (Also Page 33)`
+  },
+  {
+    q: `What gives the Stratum spinosum its "prickly" appearance in light microscopy?`,
+    opts: [`Keratohyalin granules`, `"Intercellular bridges" (desmosomes)`, `Odland bodies`, `High rate of mitosis`],
+    correct: 1,
+    explain: `Page 17: "...it appears that the cells are joined by 'intercellular bridges'" which gives a "Prickly app."`
+  },
+  {
+    q: `What is another name for Odland bodies, which are membrane-coating granules found in the spinous layer?`,
+    opts: [`Keratinosome`, `Melanosome`, `Lysosome`, `Birbeck granule`],
+    correct: 0,
+    explain: `Page 17: "Cytoplasm of superfacial cells contain Odland Body (Keratinosome)." Note: Page 17 says "superfacial cells" in context of spinosum.`
+  },
+  {
+    q: `Keratohyaline granules (KHG) are characteristic of which layer in keratinized epithelium?`,
+    opts: [`Stratum basale`, `Stratum spinosum`, `Stratum granulosum`, `Stratum corneum`],
+    correct: 2,
+    explain: `Page 18: "K.St sq epth (st. Granulosum)... Granules are called keratohyaline granules K.H.G"`
+  },
+  {
+    q: `What is the main component of cells in the Stratum corneum?`,
+    opts: [`Living cells with active nuclei`, `Melanin and Langerhans cells`, `Tonofilaments embedded in filaggrin`, `Large keratohyaline granules`],
+    correct: 2,
+    explain: `Page 19: "Cells filled by tonofilaments embeded in fillagrin (soft keratin) that replace the cytoplasm."`
+  },
+  {
+    q: `Nonkeratinized epithelium consists of three layers. Which is NOT one of them?`,
+    opts: [`Stratum basale`, `Stratum intermedium`, `Stratum granulosum`, `Stratum superficiale`],
+    correct: 2,
+    explain: `Page 20 lists the three layers as Stratum basale, Stratum intermedium, and Stratum superficiale. Stratum granulosum is characteristic of keratinized epithelium.`
+  },
+  {
+    q: `What is the key histological difference between orthokeratinized and parakeratinized epithelium?`,
+    opts: [`Presence of stratum basale`, `Presence of Langerhans cells`, `Absence (ortho) vs. Remnants (para) of nuclei in the corneum`, `Thickness of the stratum spinosum`],
+    correct: 2,
+    explain: `Page 23 clearly shows orthokeratinized has "No Nuclei" and parakeratinized has "Remnants of nuclei" in the superficial layer.`
+  },
+  {
+    q: `Non-keratinocytes make up what percentage of the total epithelial cell population?`,
+    opts: [`90%`, `50%`, `10%`, `1%`],
+    correct: 2,
+    explain: `Page 26: "Nonkeratinocytes: 10% of epithelial cell population".`
+  },
+  {
+    q: `Which non-keratinocyte is primarily responsible for antigen trapping and processing?`,
+    opts: [`Melanocyte`, `Merkel cell`, `Langerhans cell`, `Lymphocyte`],
+    correct: 2,
+    explain: `Page 26: "Langerhans cells: ... (function is antigen trapping and processing)".`
+  },
+  {
+    q: `In which layer are Melanocytes typically found?`,
+    opts: [`Stratum corneum`, `Stratum granulosum`, `Stratum spinosum`, `Stratum basale`],
+    correct: 3,
+    explain: `Page 26: "Melanocytes: present in basal cell layer".`
+  },
+  {
+    q: `Which non-keratinocyte functions as a touch receptor?`,
+    opts: [`Melanocyte`, `Merkel cell`, `Langerhans cell`, `Keratinocyte`],
+    correct: 1,
+    explain: `Page 26: "Merkel cells: ... (act as touch receptor)".`
+  },
+  {
+    q: `Melanocytes, Langerhans cells, and Merkel cells are often called 'clear cells' because they:`,
+    opts: [`Are transparent to light`, `Lack cytoplasm and organelles`, `Do not stain well with H&E`, `Are only present in inflammation`],
+    correct: 2,
+    explain: `Page 26 notes they "appear clear cells in hematoxylene and eosin stain". Page 28 reinforces this by stating they are "Not stained so called (Clear... cell)".`
+  },
+  {
+    q: `What are the characteristic rod-like granules found in Langerhans cells called?`,
+    opts: [`Melanosomes`, `Birbeck granules`, `Keratohyaline granules`, `Odland bodies`],
+    correct: 1,
+    explain: `Page 28: "Contain rod like granules (Langerhan's granules) (Bir-beck granules)".`
+  },
+  {
+    q: `The basement membrane zone stains positively with which special stain due to its neutral mucopolysaccharides?`,
+    opts: [`Hematoxylin and Eosin (H&E)`, `Periodic acid-Schiff (PAS)`, `Masson's Trichrome`, `Toluidine Blue`],
+    correct: 1,
+    explain: `Page 30: "This zone stains positively with the periodic acid-Schiff method."`
+  },
+  {
+    q: `Ultrastructurally, the basal lamina is composed of two zones:`,
+    opts: [`Lamina lucida and Lamina densa`, `Lamina propria and Submucosa`, `Stratum basale and Stratum spinosum`, `Papillary layer and Reticular layer`],
+    correct: 0,
+    explain: `Page 30: "The basal lamina is made up of a clear zone (lamina lucida) ... and a dark zone (lamina densa)".`
+  },
+  {
+    q: `The basement membrane contains primarily Protein Laminin and which type of collagen?`,
+    opts: [`Type I collagen`, `Type II collagen`, `Type III collagen`, `Type IV collagen`],
+    correct: 3,
+    explain: `Page 30: "Basement membrane contains Protein Laminin and type IV collagen."`
+  },
+  {
+    q: `Desmosomes, which attach epithelial cells to each other, utilize which transmembrane glycoprotein?`,
+    opts: [`Integrins`, `Cadherins`, `Laminin`, `Filaggrin`],
+    correct: 1,
+    explain: `Page 33: "Desmosomes - Transmembrane glycoprotein: CADHERINS(Desmoglein + desmocollin)".`
+  },
+  {
+    q: `Hemidesmosomes, which attach basal cells to the basement membrane, utilize which transmembrane glycoprotein?`,
+    opts: [`Integrins`, `Cadherins`, `Keratin`, `Desmoglein`],
+    correct: 0,
+    explain: `Page 33: "Hemidesmosomes - Transmembrane glycoprotein: INTEGRINS".`
+  },
+  {
+    q: `Which of the following is classified as Masticatory mucosa?`,
+    opts: [`Cheeks`, `Soft Palate`, `Hard palate`, `Lips`],
+    correct: 2,
+    explain: `Page 1 lists Hard palate, Gingiva, and Dorsal tongue surface as Masticatory mucosa.`
+  },
+  {
+    q: `The lips, soft palate, and cheeks are all classified as:`,
+    opts: [`Masticatory mucosa`, `Lining mucosa`, `Specialised mucosa`, `Oral mucoperiosteum`],
+    correct: 1,
+    explain: `Page 1 lists Lips, Soft Palate, and Cheeks under Lining mucosa.`
+  },
+  {
+    q: `What is a key structural difference between "Oral mucosa" and "Oral mucoperiosteum" as shown in the diagram on Page 4?`,
+    opts: [`Oral mucosa lacks an epithelium.`, `Oral mucoperiosteum lacks a lamina propria.`, `Oral mucosa has a submucosa, while mucoperiosteum does not.`, `Oral mucoperiosteum is thicker than oral mucosa.`],
+    correct: 2,
+    explain: `The diagram on Page 4 clearly shows a "Submucosa" layer in the "Oral mucosa" diagram, which is absent in the "Oral mucoperiosteum" diagram.`
+  },
+  {
+    q: `Fordyce's granules, which appear clinically as yellowish spots on the cheek mucosa, are histologically:`,
+    opts: [`Minor salivary glands`, `Sebaceous glands`, `Lymphoid aggregates`, `Fungal colonies`],
+    correct: 1,
+    explain: `Page 5: "Sebaceous glands in the mucosa of the cheek. A, Clinically, these appear as clusters of yellowish spots called Fordyce's granules."`
+  },
+  {
+    q: `Which type of oral epithelium generally has a faster turnover time?`,
+    opts: [`Keratinized oral epithelium`, `Nonkeratinized oral epithelium`, `Both have the same turnover time`, `Turnover time is unrelated to keratinization`],
+    correct: 1,
+    explain: `Page 10: "Turnover time of nonkeratinized oral epithelium is faster than keratinized oral epithelium."`
+  }
+];
+
+const tfs = [
+  {
+    q: `The epithelium of the oral mucous membrane is of the simple cuboidal variety.`,
+    answer: false,
+    explain: `Page 6: "The epithelium... is of the stratified squamous variety."`
+  },
+  {
+    q: `Differentiation is the process of cell division in the basal layer.`,
+    answer: false,
+    explain: `Page 9: Mitosis is cell division. Differentiation is the "biochemical and morphologic changes" a cell undergoes as it migrates.`
+  },
+  {
+    q: `Maturation is the process of cell migration from the basal layer to the surface.`,
+    answer: true,
+    explain: `Page 10: "The process of cell migration from the basal layer to the surface is called maturation."`
+  },
+  {
+    q: `Cells in the stratum basale are attached to each other by hemidesmosomes.`,
+    answer: false,
+    explain: `Page 16: They are attached to each other by desmosomes and to the basement membrane by hemidesmosomes.`
+  },
+  {
+    q: `Cells in the Stratum corneum are acidophilic and histologically amorphous.`,
+    answer: true,
+    explain: `Page 19: "The layer is acidophilic (dark pink staining...) and is histologically amorphous".`
+  },
+  {
+    q: `Orthokeratinized epithelium is characterized by the presence of pyknotic (remnant) nuclei in the stratum corneum.`,
+    answer: false,
+    explain: `Page 23: Orthokeratinized has "No Nuclei". Parakeratinized has "Remnants of nuclei".`
+  },
+  {
+    q: `Keratinocytes make up approximately 10% of the epithelial cell population.`,
+    answer: false,
+    explain: `Page 26: Keratinocytes are 90%, non-keratinocytes are 10%.`
+  },
+  {
+    q: `Merkel cells are non-keratinocytes that act as touch receptors.`,
+    answer: true,
+    explain: `Page 26: "Merkel cells: present in basal cell layer (act as touch receptor)".`
+  },
+  {
+    q: `Desmosomes use the transmembrane glycoprotein Integrin to attach cells to each other.`,
+    answer: false,
+    explain: `Page 33: Desmosomes use Cadherins. Hemidesmosomes use Integrins.`
+  }
+];
+
+const saqs = [
+  {
+    q: `Describe the four layers of keratinized stratified squamous epithelium, from deep to superficial.`,
+    a: `<ol style="padding-left: 20px; margin: 0;">
+          <li style="margin-bottom: 5px;"><b>Stratum basale (Basal layer):</b> Deepest layer of cuboidal cells where mitosis occurs.</li>
+          <li style="margin-bottom: 5px;"><b>Stratum spinosum (Spinous/Prickle cell layer):</b> Polyhedral cells attached by desmosomes ("intercellular bridges").</li>
+          <li style="margin-bottom: 5px;"><b>Stratum granulosum (Granular layer):</b> Flatter cells containing keratohyaline granules.</li>
+          <li><b>Stratum corneum (Cornified layer):</b> Most superficial layer of dead, flattened, non-nucleated cells (squames) filled with keratin.</li>
+        </ol>
+        <p style="font-size: 0.9em; margin-top: 5px;">(Based on Pages 7, 8, 16-19)</p>`
+  },
+  {
+    q: `What are the three layers of NON-keratinized stratified squamous epithelium, from deep to superficial?`,
+    a: `<ol style="padding-left: 20px; margin: 0;">
+          <li style="margin-bottom: 5px;"><b>Stratum basale (Basal layer):</b> Deepest layer of mitotic cells.</li>
+          <li style="margin-bottom: 5px;"><b>Stratum intermedium (Intermediate layer):</b> Larger, polyhedral cells, equivalent to the spinosum and granulosum layers.</li>
+          <li><b>Stratum superficiale (Superficial layer):</b> Flattened cells that still contain nuclei and organelles.</li>
+        </ol>
+        <p style="font-size: 0.9em; margin-top: 5px;">(Based on Page 20)</p>`
+  },
+  {
+    q: `List the three main types of non-keratinocytes (dendritic/clear cells) in the oral epithelium and their primary function.`,
+    a: `<ol style="padding-left: 20px; margin: 0;">
+          <li style="margin-bottom: 5px;"><b>Melanocytes:</b> Produce melanin pigment (coloration).</li>
+          <li style="margin-bottom: 5px;"><b>Langerhans cells:</b> Immune function (antigen trapping and processing).</li>
+          <li><b>Merkel cells:</b> Sensory function (act as touch receptors).</li>
+        </ol>
+        <p style="font-size: 0.9em; margin-top: 5px;">(Based on Page 26)</p>`
+  },
+  {
+    q: `Present a comparison between keratinized and non-keratinized epithelium regarding their superficial layers and turnover time.`,
+    a: `<div style="overflow-x: auto;"><table style="width:100%; border-collapse: collapse; text-align: left; border: 1px solid var(--card-border);">
+          <thead>
+            <tr style="background:rgba(255,255,255,0.1);">
+              <th style="padding:8px; border:1px solid var(--card-border);">Feature</th>
+              <th style="padding:8px; border:1px solid var(--card-border);">Keratinized Epithelium</th>
+              <th style="padding:8px; border:1px solid var(--card-border);">Non-keratinized Epithelium</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td style="padding:8px; border:1px solid var(--card-border);"><b>Superficial Layer</b></td>
+              <td style="padding:8px; border:1px solid var(--card-border);">Stratum corneum (dead cells, no nuclei*)</td>
+              <td style="padding:8px; border:1px solid var(--card-border);">Stratum superficiale (living cells with nuclei)</td>
+            </tr>
+            <tr>
+              <td style="padding:8px; border:1px solid var(--card-border);"><b>Turnover Time</b></td>
+              <td style="padding:8px; border:1px solid var(--card-border);">Slower</td>
+              <td style="padding:8px; border:1px solid var(--card-border);">Faster</td>
+            </tr>
+          </tbody>
+        </table></div>
+        <p style="font-size:0.9em; margin-top: 8px;">*Note: Parakeratinized is a subtype with nuclear remnants.</p>
+        <p style="font-size: 0.9em; margin-top: 5px;">(Based on Pages 10, 19, 20)</p>`
+  },
+  {
+    q: `A dental student observes asymptomatic, yellowish, spot-like clusters on the inner cheek (buccal mucosa) of a patient. What is the most likely clinical name for these spots, and what do they represent histologically?`,
+    a: `<p><b>Clinical Name:</b> Fordyce's granules (or spots).<br>
+          <b>Histology:</b> Ectopic sebaceous glands (sebaceous glands located in the oral mucosa).</p>
+        <p style="font-size: 0.9em; margin-top: 5px;">(Based on Page 5)</p>`
+  },
+  {
+    q: `Describe the two main types of cellular attachments in the oral epithelium, specifying what they connect and which protein they use.`,
+    a: `<ol style="padding-left: 20px; margin: 0;">
+          <li style="margin-bottom: 5px;"><b>Desmosomes:</b> Connect epithelial cells to <b>each other</b>. They use the transmembrane glycoprotein <b>Cadherin</b>.</li>
+          <li><b>Hemidesmosomes:</b> Connect basal epithelial cells to the <b>underlying basement membrane</b>. They use the transmembrane glycoprotein <b>Integrin</b>.</li>
+        </ol>
+        <p style="font-size: 0.9em; margin-top: 5px;">(Based on Page 33)</p>`
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  // Shuffling logic:
+  // We have 4 options [0, 1, 2, 3]. item.correct is the index of the correct answer (e.g., 0).
+  // We shuffle [0, 1, 2, 3] to get a new visual order, e.g., [2, 0, 3, 1].
+  // visualToOriginal[v] maps visual button index 'v' to original option index.
+  // visualToOriginal[0] is 2
+  // visualToOriginal[1] is 0 (this is the correct answer)
+  // visualToOriginal[2] is 3
+  // visualToOriginal[3] is 1
+  const visualToOriginal = shuffleIndices(4);
+  
+  // originalToVisual[orig] maps original option index 'orig' to visual button index 'v'.
+  // originalToVisual[0] is 1 (visual button 1 is the correct answer)
+  // originalToVisual[1] is 3
+  // originalToVisual[2] is 0
+  // originalToVisual[3] is 2
+  const originalToVisual = Array(4);
+  visualToOriginal.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  
+  // Find the visual index of the *correct* answer
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v); // The visual button index (0-3) that was clicked
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font:15px/1.6 Inter,ui-sans-serif,system-ui;"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  // Recalculate MCQ score based on *visual* selection vs correct *visual* index
+  const mcqScore = state.mcq.reduce((s, selectedVisualIndex, i) => {
+    if(selectedVisualIndex === null) return s;
+    
+    // Need to find the correct visual index for this card
+    const item = mcqs[i];
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const buttons = card.querySelectorAll('.opt-btn');
+    
+    // Find which button has the correct answer
+    // This is a bit reverse, but we can check the feedback text
+    const feedback = card.querySelector('.feedback').innerHTML;
+    if (feedback.startsWith("<b>Correct ✔</b>")) {
+      return s + 1;
+    }
+    return s;
+  }, 0);
+
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').innerHTML;
+    return s + (feedback.startsWith("<b>Correct ✔</b>") ? 1 : 0);
+  },0);
+
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+// Initial calculation
+recalc();
+</script>
+</body>
+</html>

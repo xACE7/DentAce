@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Two-Column Sections</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
+</style>
+</head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 9
+</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">اللهم علّمني ما ينفعني وانفعني بما علّمتني وزدني علماً</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Autacoids</b></span>
+<span class="ar"><b>الموضوع: الأوتاكويدات</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 1: Introduction to Autacoids</span><span class="ar">القسم ١: مقدمة عن الأوتاكويدات</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><b style="color:#8b5cf6;">Autacoids</b> are biological factors that act like <b style="color:#8b5cf6;">local hormones</b>.</p>
+<p>They are involved in regulating various physiological functions.</p>
+<p>Major types include: <b style="color:#8b5cf6;">histamine</b>, <b style="color:#8b5cf6;">serotonin</b>, <b style="color:#8b5cf6;">prostaglandins</b>, and <b style="color:#8b5cf6;">bradykinin</b>.</p>
+<p>Other classes of autocoid drugs include those related to <b style="color:#8b5cf6;">leukotrienes</b> and <b style="color:#8b5cf6;">angiotensin</b>.</p>
+</div>
+<div class="ar">
+<p><b style="color:#8b5cf6;">الأوتاكويدات</b> هي عوامل بيولوجية تعمل <b style="color:#8b5cf6;">كهرمونات موضعية</b>.</p>
+<p>تشارك في تنظيم وظائف فسيولوجية متنوعة.</p>
+<p>تشمل الأنواع الرئيسية: <b style="color:#8b5cf6;">الهستامين</b>، <b style="color:#8b5cf6;">السيروتونين</b>، <b style="color:#8b5cf6;">البروستاجلاندين</b>، <b style="color:#8b5cf6;">والبراديكينين</b>.</p>
+<p>تشمل الفئات الأخرى من أدوية الأوتاكويدات تلك المتعلقة <b style="color:#8b5cf6;">بالليكوترينات</b> <b style="color:#8b5cf6;">والأنجيوتنسين</b>.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 3-4 of 15</span>
+<span class="ar">الصفحات المرجعية: ٣-٤ من ١٥</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Autacoids are central to dentistry because they are involved in <b style="color:#8b5cf6;">inflammation</b>, <b style="color:#8b5cf6;">pain</b>, and <b style="color:#8b5cf6;">tissue repair</b>, all of which are key to dental procedures.</div><div class="ar">الأوتاكويدات أساسية في طب الأسنان لأنها تشارك في <b style="color:#8b5cf6;">الالتهاب</b> <b style="color:#8b5cf6;">والألم</b> <b style="color:#8b5cf6;">وإصلاح الأنسجة</b>، وكلها أمور رئيسية في إجراءات طب الأسنان.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Autacoids help regulate <b style="color:#8b5cf6;">blood flow</b>, inflammatory response, pain, and smooth muscle contraction.</div><div class="ar">تساعد الأوتاكويدات في تنظيم <b style="color:#8b5cf6;">تدفق الدم</b>، والاستجابة الالتهابية، والألم، وتقلص العضلات الملساء.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think of autacoids as "local messengers" or "local hormones" that act near where they are released.</div><div class="ar">فكر في الأوتاكويدات على أنها "رسل محلية" أو "هرمونات موضعية" تعمل بالقرب من مكان إطلاقها.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 2: Histamine & Antihistamines</span><span class="ar">القسم ٢: الهستامين ومضادات الهستامين</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><b style="color:#8b5cf6;">Histamine</b> is a key autacoid involved in <b style="color:#8b5cf6;">allergic reactions</b> and <b style="color:#8b5cf6;">inflammation</b>.</p>
+<p>Its main effects include <b style="color:#8b5cf6;">vasodilation</b> (widening blood vessels) and increased <b style="color:#8b5cf6;">vascular permeability</b> (making vessels leaky).</p>
+<p>It acts on four main receptors:</p>
+<ul>
+<li><b style="color:#8b5cf6;">H1</b>: Causes vasodilation, <b style="color:#8b5cf6;">bronchoconstriction</b> (airway narrowing), and <b style="color:#8b5cf6;">itching</b>.</li>
+<li><b style="color:#8b5cf6;">H2</b>: Primarily responsible for <b style="color:#8b5cf6;">gastric acid secretion</b>.</li>
+<li><b style="color:#8b5cf6;">H3 & H4</b>: Involved in CNS and immune system modulation.</li>
+</ul>
+</div>
+<div class="ar">
+<p><b style="color:#8b5cf6;">الهستامين</b> هو أوتاكويد رئيسي يشارك في <b style="color:#8b5cf6;">ردود الفعل التحسسية</b> <b style="color:#8b5cf6;">والالتهابات</b>.</p>
+<p>تشمل تأثيراته الرئيسية <b style="color:#8b5cf6;">توسع الأوعية الدموية</b> وزيادة <b style="color:#8b5cf6;">نفاذية الأوعية الدموية</b> (جعل الأوعية مسربة).</p>
+<p>يعمل على أربعة مستقبلات رئيسية:</p>
+<ul>
+<li><b style="color:#8b5cf6;">H1</b>: يسبب توسع الأوعية، <b style="color:#8b5cf6;">وتضيق القصبات الهوائية</b>، <b style="color:#8b5cf6;">والحكة</b>.</li>
+<li><b style="color:#8b5cf6;">H2</b>: مسؤول بشكل أساسي عن <b style="color:#8b5cf6;">إفراز حمض المعدة</b>.</li>
+<li><b style="color:#8b5cf6;">H3 و H4</b>: تشارك في تعديل الجهاز العصبي المركزي والجهاز المناعي.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 5 of 15</span>
+<span class="ar">الصفحات المرجعية: ٥ من ١٥</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">H1 blockers like <b style="color:#8b5cf6;">Diphenhydramine</b> are used in dentistry to manage <b style="color:#8b5cf6;">allergic reactions</b> to medications or materials.</div><div class="ar">تُستخدم حاصرات H1 مثل <b style="color:#8b5cf6;">الديفينهيدرامين</b> في طب الأسنان للتحكم في <b style="color:#8b5cf6;">ردود الفعل التحسسية</b> للأدوية أو المواد.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">H2 blockers like <b style="color:#8b5cf6;">Famotidine</b> can be used to <b style="color:#8b5cf6;">reduce gastric acid</b> during surgical procedures, which can be important for patients under sedation.</div><div class="ar">تُستخدم حاصرات H2 مثل <b style="color:#8b5cf6;">الفاموتيدين</b> <b style="color:#8b5cf6;">لتقليل حمض المعدة</b> أثناء الإجراءات الجراحية، وهو أمر قد يكون مهمًا للمرضى تحت التخدير.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember: <b style="color:#8b5cf6;">H1</b> = <b style="color:#8b5cf6;">A</b>llergy/<b>A</b>irway. <b style="color:#8b5cf6;">H2</b> = <b style="color:#8b5cf6;">AciD</b> (Gastric Acid).</div><div class="ar">تذكر: <b style="color:#8b5cf6;">H1</b> = <b style="color:#8b5cf6;">ح</b>ساسية/<b>هـ</b>واء (مسالك هوائية). <b style="color:#8b5cf6;">H2</b> = <b style="color:#8b5cf6;">ح</b>مض (حمض المعدة).</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 3: Prostaglandins (Eicosanoids) & NSAIDs</span><span class="ar">القسم ٣: البروستاجلاندين (الإيكوسانويدات) ومضادات الالتهاب غير الستيرويدية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><b style="color:#8b5cf6;">Prostaglandins</b> (a type of Eicosanoid) are powerful <b style="color:#8b5cf6;">inflammatory mediators</b>.</p>
+<p>They play a crucial role in <b style="color:#8b5cf6;">pain sensitization</b> (making nerves more sensitive to pain) and regulating <b style="color:#8b5cf6;">blood flow</b>.</p>
+<p>Drugs targeting them are very common in dentistry:</p>
+<ul>
+<li><b style="color:#8b5cf6;">NSAIDs</b> (Non-Steroidal Anti-Inflammatory Drugs): These drugs work by <b style="color:#8b5cf6;">inhibiting cyclooxygenase (COX) enzymes</b>, which are needed to make prostaglandins. This reduces both inflammation and pain.</li>
+<li>Common examples include <b style="color:#8b5cf6;">Ibuprofen</b> and <b style="color:#8b5cf6;">Diclofenac</b>.</li>
+</ul>
+</div>
+<div class="ar">
+<p><b style="color:#8b5cf6;">البروستاجلاندينات</b> (نوع من الإيكوسانويدات) هي <b style="color:#8b5cf6;">وسائط التهابية</b> قوية.</p>
+<p>تلعب دورًا حاسمًا في <b style="color:#8b5cf6;">تحسيس الألم</b> (جعل الأعصاب أكثر حساسية للألم) وتنظيم <b style="color:#8b5cf6;">تدفق الدم</b>.</p>
+<p>الأدوية التي تستهدفها شائعة جدًا في طب الأسنان:</p>
+<ul>
+<li><b style="color:#8b5cf6;">مضادات الالتهاب غير الستيرويدية (NSAIDs)</b>: تعمل هذه الأدوية عن طريق <b style="color:#8b5cf6;">تثبيط إنزيمات الأكسدة الحلقية (COX)</b>، اللازمة لإنتاج البروستاجلاندينات. هذا يقلل من الالتهاب والألم.</li>
+<li>تشمل الأمثلة الشائعة <b style="color:#8b5cf6;">الإيبوبروفين</b> <b style="color:#8b5cf6;">والديكلوفيناك</b>.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 6, 13 of 15</span>
+<span class="ar">الصفحات المرجعية: ٦، ١٣ من ١٥</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">NSAIDs are a cornerstone of <b style="color:#8b5cf6;">postoperative pain management</b> in dentistry. They are also used to manage inflammatory conditions of the oral tissues.</div><div class="ar">تعتبر مضادات الالتهاب غير الستيرويدية حجر الزاوية في <b style="color:#8b5cf6;">التحكم في الألم بعد الجراحة</b> في طب الأسنان. كما أنها تستخدم لإدارة الحالات الالتهابية في أنسجة الفم.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en"><b style="color:#8b5cf6;">Misoprostol</b> is a prostaglandin analog used for <b style="color:#8b5cf6;">gastric ulcer prevention</b> (often in patients taking NSAIDs long-term) and also for inducing <b style="color:#8b5cf6;">abortion</b>.</div><div class="ar"><b style="color:#8b5cf6;">الميزوبروستول</b> هو نظير للبروستاجلاندين يُستخدم <b style="color:#8b5cf6;">للوقاية من قرحة المعدة</b> (غالبًا في المرضى الذين يتناولون مضادات الالتهاب غير الستيرويدية لفترة طويلة) وأيضًا <b style="color:#8b5cf6;">لتحفيز الإجهاض</b>.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Be aware of NSAID side effects: <b style="color:#8b5cf6;">Gastrointestinal bleeding</b>, <b style="color:#8b5cf6;">renal impairment</b> (kidney problems), and <b style="color:#8b5cf6;">prolonged bleeding time</b>.</div><div class="ar">كن على دراية بالآثار الجانبية لمضادات الالتهاب غير الستيرويدية: <b style="color:#8b5cf6;">نزيف الجهاز الهضمي</b>، <b style="color:#8b5cf6;">والقصور الكلوي</b> (مشاكل في الكلى)، <b style="color:#8b5cf6;">وإطالة وقت النزيف</b>.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 4: Leukotrienes</span><span class="ar">القسم ٤: الليكوترينات</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><b style="color:#8b5cf6;">Leukotrienes</b> are another class of autacoids involved in <b style="color:#8b5cf6;">inflammation</b> and <b style="color:#8b5cf6;">allergic responses</b>.</p>
+<p>They are particularly known for causing <b style="color:#8b5cf6;">bronchoconstriction</b> (a key feature of asthma).</p>
+<p>Leukotriene inhibitors, like <b style="color:#8b5cf6;">Montelukast</b>, are primarily used to treat <b style="color:#8b5cf6;">asthma</b> and severe <b style="color:#8b5cf6;">allergic reactions</b>.</p>
+</div>
+<div class="ar">
+<p><b style="color:#8b5cf6;">الليكوترينات</b> هي فئة أخرى من الأوتاكويدات تشارك في <b style="color:#8b5cf6;">الالتهاب</b> <b style="color:#8b5cf6;">والاستجابات التحسسية</b>.</p>
+<p>وهي معروفة بشكل خاص بتسببها في <b style="color:#8b5cf6;">تضيق القصبات الهوائية</b> (سمة رئيسية للربو).</p>
+<p>تُستخدم مثبطات الليكوترين، مثل <b style="color:#8b5cf6;">المونتيلوكاست</b>، بشكل أساسي لعلاج <b style="color:#8b5cf6;">الربو</b> <b style="color:#8b5cf6;">وردود الفعل التحسسية</b> الشديدة.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 7 of 15</span>
+<span class="ar">الصفحات المرجعية: ٧ من ١٥</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">These drugs have limited direct use in dentistry. However, they are important to be aware of when treating patients who have <b style="color:#8b5cf6;">asthma</b> or a history of <b style="color:#8b5cf6;">allergic tendencies</b>, especially in response to anesthesia or other drugs.</div><div class="ar">هذه الأدوية لها استخدام مباشر محدود في طب الأسنان. ومع ذلك، من المهم أن تكون على دراية بها عند علاج المرضى الذين يعانون من <b style="color:#8b5cf6;">الربو</b> أو لديهم تاريخ من <b style="color:#8b5cf6;">الميول التحسسية</b>، خاصة كاستجابة للتخدير أو أدوية أخرى.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Leukotrienes are major players in asthma, causing both airway constriction and inflammation.</div><div class="ar">الليكوترينات هي لاعب رئيسي في الربو، حيث تسبب تضيق المسالك الهوائية والالتهاب.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">The main drug in this class is <b style="color:#8b5cf6;">Montelukast</b> (Singulair).</div><div class="ar">الدواء الرئيسي في هذه الفئة هو <b style="color:#8b5cf6;">المونتيلوكاست</b> (Singulair).</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 5: Serotonin (5-HT) & Related Drugs</span><span class="ar">القسم ٥: السيروتونين (5-HT) والأدوية المرتبطة به</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><b style="color:#8b5cf6;">Serotonin (5-HT)</b> is a complex autacoid with many roles: <b style="color:#8b5cf6;">vasoconstriction</b>, <b style="color:#8b5cf6;">platelet aggregation</b> (clotting), and regulation of <b style="color:#8b5cf6;">mood</b>, <b style="color:#8b5cf6;">pain perception</b>, and <b style="color:#8b5cf6;">peristalsis</b> (gut movement).</p>
+<p>Drugs acting on 5-HT receptors are diverse:</p>
+<ul>
+<li><b style="color:#8b5cf6;">SSRIs</b> (Selective Serotonin Reuptake Inhibitors): Used for <b style="color:#8b5cf6;">depression</b>. Dentally relevant because they can <b style="color:#8b5cf6;">increase bleeding risk</b> during surgery.</li>
+<li><b style="color:#8b5cf6;">Agonists</b> (Activators): <b style="color:#8b5cf6;">Sumatriptan</b> is used to treat <b style="color:#8b5cf6;">migraine</b> attacks. <b style="color:#8b5cf6;">Buspirone</b> is an anxiolytic used for <b style="color:#8b5cf6;">anxiety disorders</b>.</li>
+<li><b style="color:#8b5cf6;">Antagonists</b> (Blockers): <b style="color:#8b5cf6;">Ondansetron</b> is a powerful <b style="color:#8b5cf6;">antiemetic</b> (prevents vomiting) by blocking vomiting centers and the CTZ. <b style="color:#8b5cf6;">Metoclopramide</b> also has antiemetic and <b style="color:#8b5cf6;">prokinetic</b> (improves gut motility) actions.</li>
+</ul>
+</div>
+<div class="ar">
+<p><b style="color:#8b5cf6;">السيروتونين (5-HT)</b> هو أوتاكويد معقد له أدوار عديدة: <b style="color:#8b5cf6;">تضييق الأوعية الدموية</b>، <b style="color:#8b5cf6;">تجمع الصفائح الدموية</b> (التخثر)، وتنظيم <b style="color:#8b5cf6;">المزاج</b>، <b style="color:#8b5cf6;">وإدراك الألم</b>، <b style="color:#8b5cf6;">والحركة الدودية</b> (حركة الأمعاء).</p>
+<p>الأدوية التي تعمل على مستقبلات 5-HT متنوعة:</p>
+<ul>
+<li><b style="color:#8b5cf6;">SSRIs</b> (مثبطات امتصاص السيروتونين الانتقائية): تستخدم <b style="color:#8b5cf6;">للاكتئاب</b>. ذات صلة بطب الأسنان لأنها يمكن أن <b style="color:#8b5cf6;">تزيد من خطر النزيف</b> أثناء الجراحة.</li>
+<li><b style="color:#8b5cf6;">الناهضات</b> (المنشطات): <b style="color:#8b5cf6;">السوماتريبتان</b> يُستخدم لعلاج نوبات <b style="color:#8b5cf6;">الصداع النصفي</b>. <b style="color:#8b5cf6;">البوسبيرون</b> هو مزيل للقلق يُستخدم <b style="color:#8b5cf6;">لاضطرابات القلق</b>.</li>
+<li><b style="color:#8b5cf6;">المضادات</b> (الحاصرات): <b style="color:#8b5cf6;">الأوندانسيترون</b> هو <b style="color:#8b5cf6;">مضاد قوي للقىء</b> (يمنع التقيؤ) عن طريق حظر مراكز التقيؤ ومنطقة CTZ. <b style="color:#8b5cf6;">الميتوكلوبراميد</b> له أيضًا تأثيرات مضادة للقىء <b style="color:#8b5cf6;">ومحفزة للحركة</b> (يحسن حركة الأمعاء).</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 8, 9 of 15</span>
+<span class="ar">الصفحات المرجعية: ٨، ٩ من ١٥</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Always ask patients about <b style="color:#8b5cf6;">SSRI</b> use (e.g., for depression). These drugs can <b style="color:#8b5cf6;">increase bleeding risk</b> during surgical dental procedures.</div><div class="ar">اسأل المرضى دائمًا عن استخدام <b style="color:#8b5cf6;">SSRIs</b> (مثل الاكتئاب). هذه الأدوية يمكن أن <b style="color:#8b5cf6;">تزيد من خطر النزيف</b> أثناء إجراءات طب الأسنان الجراحية.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en"><b style="color:#8b5cf6;">Sumatriptan</b> is a 5-HT agonist specifically used to *treat* acute <b style="color:#8b5cf6;">migraine attacks</b>.</div><div class="ar"><b style="color:#8b5cf6;">السوماتريبتان</b> هو ناهض لـ 5-HT يُستخدم خصيصًا *لعلاج* نوبات <b style="color:#8b5cf6;">الصداع النصفي</b> الحادة.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en"><b style="color:#8b5cf6;">Ondansetron</b> is very useful for preventing nausea and vomiting, which can be a side effect of anesthesia or postoperative pain medications.</div><div class="ar"><b style="color:#8b5cf6;">الأوندانسيترون</b> مفيد جدًا للوقاية من الغثيان والقيء، والذي يمكن أن يكون أثرًا جانبيًا للتخدير أو أدوية الألم بعد الجراحة.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 6: Bradykinin</span><span class="ar">القسم ٦: البراديكينين</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><b style="color:#8b5cf6;">Bradykinin</b> is a very <b style="color:#8b5cf6;">potent vasodilator</b>.</p>
+<p>It is a primary mediator of <b style="color:#8b5cf6;">pain</b> and <b style="color:#8b5cf6;">inflammation</b>.</p>
+<p>Its effects include increasing <b style="color:#8b5cf6;">vascular permeability</b> and directly <b style="color:#8b5cf6;">stimulating pain receptors</b>.</p>
+<p>Bradykinin acts on <b style="color:#8b5cf6;">B2 receptors</b> to cause its effects.</p>
+</div>
+<div class="ar">
+<p><b style="color:#8b5cf6;">البراديكينين</b> هو <b style="color:#8b5cf6;">موسع قوي جدًا للأوعية الدموية</b>.</p>
+<p>وهو وسيط أساسي <b style="color:#8b5cf6;">للألم</b> <b style="color:#8b5cf6;">والالتهاب</b>.</p>
+<p>تشمل تأثيراته زيادة <b style="color:#8b5cf6;">النفاذية الوعائية</b> <b style="color:#8b5cf6;">وتحفيز مستقبلات الألم</b> مباشرة.</p>
+<p>يعمل البراديكينين على <b style="color:#8b5cf6;">مستقبلات B2</b> لإحداث تأثيراته.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 10, 14 of 15</span>
+<span class="ar">الصفحات المرجعية: ١٠، ١٤ من ١٥</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">While bradykinin-specific drugs are rare in dentistry, understanding its role is <b style="color:#8b5cf6;">crucial for understanding the pathways of pain and inflammation</b> that dentists manage every day.</div><div class="ar">في حين أن الأدوية الخاصة بالبراديكينين نادرة في طب الأسنان، فإن فهم دوره <b style="color:#8b5cf6;"> أمر حاسم لفهم مسارات الألم والالتهاب</b> التي يديرها أطباء الأسنان يوميًا.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">The drug <b style="color:#8b5cf6;">Icatibant</b> is an antagonist that competitively <b style="color:#8b5cf6;">blocks B2 receptors</b>, preventing bradykinin's effects.</div><div class="ar">دواء <b style="color:#8b5cf6;">الإيكاتيبانت</b> هو مضاد <b style="color:#8b5cf6;">يحجب مستقبلات B2</b> بشكل تنافسي، مما يمنع تأثيرات البراديكينين.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">In hypertension, <b style="color:#8b5cf6;">ACE inhibitors</b> work by *increasing* bradykinin (which causes vasodilation, lowering BP).</div><div class="ar">في حالة ارتفاع ضغط الدم، تعمل <b style="color:#8b5cf6;">مثبطات الإنزيم المحول للأنجيوتنسين</b> عن طريق *زيادة* البراديكينين (مما يسبب توسع الأوعية، وخفض ضغط الدم).</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 7: Angiotensin & ACE Inhibitors</span><span class="ar">القسم ٧: الأنجيوتنسين ومثبطات الإنزيم المحول للأنجيوتنسين</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><b style="color:#8b5cf6;">Angiotensin</b> is an autacoid that primarily regulates <b style="color:#8b5cf6;">blood pressure</b> by <b style="color:#8b5cf6;">constricting blood vessels</b> (vasoconstriction).</p>
+<p><b style="color:#8b5cf6;">ACE (Angiotensin Converting Enzyme) Inhibitors</b> are common drugs used to treat hypertension (high blood pressure).</p>
+<p>Examples include <b style="color:#8b5cf6;">Lisinopril</b> and <b style="color:#8b5cf6;">Enalapril</b>.</p>
+</div>
+<div class="ar">
+<p><b style="color:#8b5cf6;">الأنجيوتنسين</b> هو أوتاكويد ينظم <b style="color:#8b5cf6;">ضغط الدم</b> بشكل أساسي عن طريق <b style="color:#8b5cf6;">تضييق الأوعية الدموية</b>.</p>
+<p><b style="color:#8b5cf6;">مثبطات الإنزيم المحول للأنجيوتنسين (ACE)</b> هي أدوية شائعة تستخدم لعلاج ارتفاع ضغط الدم.</p>
+<p>تشمل الأمثلة <b style="color:#8b5cf6;">الليسينوبريل</b> <b style="color:#8b5cf6;">والإنالابريل</b>.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 11, 13, 14 of 15</span>
+<span class="ar">الصفحات المرجعية: ١١، ١٣، ١٤ من ١٥</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">A very common side effect of <b style="color:#8b5cf6;">ACE Inhibitors</b> is <b style="color:#8b5cf6;">dry mouth (xerostomia)</b>.</div><div class="ar">من الآثار الجانبية الشائعة جدًا <b style="color:#8b5cf6;">لمثبطات الإنزيم المحول للأنجيوتنسين</b> هو <b style="color:#8b5cf6;">جفاف الفم (Xerostomia)</b>.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Dry mouth from these drugs can significantly increase a patient's risk of <b style="color:#8b5cf6;">dental caries</b> (cavities) and <b style="color:#8b5cf6;">oral infections</b>.</div><div class="ar">جفاف الفم الناجم عن هذه الأدوية يمكن أن يزيد بشكل كبير من خطر إصابة المريض <b style="color:#8b5cf6;">بتسوس الأسنان</b> <b style="color:#8b5cf6;">والتهابات الفم</b>.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">ACE inhibitors also work by preventing the breakdown of <b style="color:#8b5cf6;">bradykinin</b>. More bradykinin = more <b style="color:#8b5cf6;">vasodilation</b> = lower blood pressure.</div><div class="ar">تعمل مثبطات الإنزيم المحول للأنجيوتنسين أيضًا عن طريق منع تكسير <b style="color:#8b5cf6;">البراديكينين</b>. المزيد من البراديكينين = المزيد من <b style="color:#8b5cf6;">توسع الأوعية</b> = انخفاض ضغط الدم.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 8: Key Clinical Applications in Dentistry</span><span class="ar">القسم ٨: التطبيقات السريرية الرئيسية في طب الأسنان</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Autacoid-related drugs are used constantly in dental practice.</p>
+<ul>
+<li><b style="color:#8b5cf6;">Pain Management</b>: <b style="color:#8b5cf6;">NSAIDs</b> (like Ibuprofen) are frequently used to manage <b style="color:#8b5cf6;">postoperative pain</b> and inflammation.</li>
+<li><b style="color:#8b5cf6;">Managing Allergic Reactions</b>: <b style="color:#8b5cf6;">Antihistamines</b> (like Diphenhydramine) are critical for treating <b style="color:#8b5cf6;">allergic reactions</b> to dental materials or other medications.</li>
+<li><b style="color:#8b5cf6;">Inflammation Control</b>: Prostaglandin inhibitors (<b style="color:#8b5cf6;">NSAIDs</b>) are essential for controlling inflammation, which aids in faster recovery after procedures.</li>
+</ul>
+</div>
+<div class="ar">
+<p>تُستخدم الأدوية المتعلقة بالأوتاكويدات باستمرار في ممارسة طب الأسنان.</p>
+<ul>
+<li><b style="color:#8b5cf6;">إدارة الألم</b>: تُستخدم <b style="color:#8b5cf6;">مضادات الالتهاب غير الستيرويدية</b> (مثل الإيبوبروفين) بشكل متكرر لإدارة <b style="color:#8b5cf6;">الألم والالتهاب بعد الجراحة</b>.</li>
+<li><b style="color:#8b5cf6;">إدارة ردود الفعل التحسسية</b>: <b style="color:#8b5cf6;">مضادات الهستامين</b> (مثل الديفينهيدرامين) ضرورية لعلاج <b style="color:#8b5cf6;">ردود الفعل التحسسية</b> لمواد طب الأسنان أو الأدوية الأخرى.</li>
+<li><b style="color:#8b5cf6;">السيطرة على الالتهاب</b>: مثبطات البروستاجلاندين (<b style="color:#8b5cf6;">مضادات الالتهاب غير الستيرويدية</b>) ضرورية للسيطرة على الالتهاب، مما يساعد في الشفاء بشكل أسرع بعد الإجراءات.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 12, 13 of 15</span>
+<span class="ar">الصفحات المرجعية: ١٢، ١٣ من ١٥</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">NSAID Risks: <b style="color:#8b5cf6;">Gastrointestinal bleeding</b>, <b style="color:#8b5cf6;">renal impairment</b>, and <b style="color:#8b5cf6;">prolonged bleeding time</b>.</div><div class="ar">مخاطر مضادات الالتهاب غير الستيرويدية: <b style="color:#8b5cf6;">نزيف الجهاز الهضمي</b>، <b style="color:#8b5cf6;">والقصور الكلوي</b>، <b style="color:#8b5cf6;">وإطالة وقت النزيف</b>.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Antihistamine Side Effects: <b style="color:#8b5cf6;">Xerostomia</b> (dry mouth) and <b style="color:#8b5cf6;">drowsiness</b>.</div><div class="ar">الآثار الجانبية لمضادات الهستامين: <b style="color:#8b5cf6;">جفاف الفم (Xerostomia)</b> <b style="color:#8b5cf6;">والنعاس</b>.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">ACE Inhibitor Side Effect: <b style="color:#8b5cf6;">Dry mouth</b> (xerostomia), which can lead to oral health complications.</div><div class="ar">الأثر الجانبي لمثبطات الإنزيم المحول للأنجيوتنسين: <b style="color:#8b5cf6;">جفاف الفم (xerostomia)</b>، مما قد يؤدي إلى مضاعفات في صحة الفم.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 9: Summary Table</span><span class="ar">القسم ٩: جدول الملخص</span></h2>
+<div class="sec-body">
+<div class="en"><p>This table summarizes the key autacoids, their related conditions, and common drugs.</p></div>
+<div class="ar"><p>يلخص هذا الجدول الأوتاكويدات الرئيسية، والحالات المرتبطة بها، والأدوية الشائعة.</p></div>
+<div aria-label="Scrollable table" class="table-wrap">
+<table>
+<thead>
+<tr>
+<th><span class="en">Condition</span><span class="ar">الحالة</span></th>
+<th><span class="en">Key Autacoid</span><span class="ar">الأوتاكويد الرئيسي</span></th>
+<th><span class="en">Drug/Target</span><span class="ar">الدواء/الهدف</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="en">Allergy</span><span class="ar">الحساسية</span></td>
+<td><span class="en">Histamine</span><span class="ar">الهستامين</span></td>
+<td><span class="en">Antihistamines</span><span class="ar">مضادات الهستامين</span></td>
+</tr>
+<tr>
+<td><span class="en">Asthma</span><span class="ar">الربو</span></td>
+<td><span class="en">Leukotrienes</span><span class="ar">الليكوترينات</span></td>
+<td><span class="en">Montelukast</span><span class="ar">المونتيلوكاست</span></td>
+</tr>
+<tr>
+<td><span class="en">Peptic ulcer</span><span class="ar">القرحة الهضمية</span></td>
+<td><span class="en">Histamine ($H_{2}$)</span><span class="ar">الهستامين ($H_{2}$)</span></td>
+<td><span class="en">Ranitidine / Famotidine</span><span class="ar">الرانيتيدين / الفاموتيدين</span></td>
+</tr>
+<tr>
+<td><span class="en">Migraine</span><span class="ar">الصداع النصفي</span></td>
+<td><span class="en">Serotonin</span><span class="ar">السيروتونين</span></td>
+<td><span class="en">Sumatriptan</span><span class="ar">السوماتريبتان</span></td>
+</tr>
+<tr>
+<td><span class="en">Hypertension</span><span class="ar">ارتفاع ضغط الدم</span></td>
+<td><span class="en">Bradykinin</span><span class="ar">البراديكينين</span></td>
+<td><span class="en">ACE inhibitors (↑bradykinin)</span><span class="ar">مثبطات الإنزيم المحول للأنجيوتنسين (↑ البراديكينين)</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 14 of 15</span>
+<span class="ar">الصفحات المرجعية: ١٤ من ١٥</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding these drugs helps in the <b style="color:#8b5cf6;">effective management of pain, inflammation</b>, and other common dental conditions.</div><div class="ar">فهم هذه الأدوية يساعد في <b style="color:#8b5cf6;">الإدارة الفعالة للألم والالتهاب</b> وحالات الأسنان الشائعة الأخرى.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember the 3 main "bad guys" in dental pain/inflammation: <b style="color:#8b5cf6;">Histamine</b>, <b style="color:#8b5cf6;">Prostaglandins</b>, and <b style="color:#8b5cf6;">Bradykinin</b>.</div><div class="ar">تذكر "الأشرار" الثلاثة الرئيسيين في ألم الأسنان والتهابها: <b style="color:#8b5cf6;">الهستامين</b>، <b style="color:#8b5cf6;">والبروستاجلاندين</b>، <b style="color:#8b5cf6;">والبراديكينين</b>.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Always check for patient use of <b style="color:#8b5cf6;">NSAIDs</b>, <b style="color:#8b5cf6;">SSRIs</b> (bleeding risk), and <b style="color:#8b5cf6;">ACE Inhibitors</b> (dry mouth).</div><div class="ar">تحقق دائمًا من استخدام المريض <b style="color:#8b5cf6;">لمضادات الالتهاب غير الستيرويدية</b>، <b style="color:#8b5cf6;">ومثبطات امتصاص السيروتونين الانتقائية</b> (خطر النزيف)، <b style="color:#8b5cf6;">ومثبطات الإنزيم المحول للأنجيوتنسين</b> (جفاف الفم).</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Autacoids/الأوتاكويدات</div><div class="content" hidden=""><div class="en">Biological factors that act like <b style="color:#8b5cf6;">local hormones</b> to regulate physiological functions.</div><div class="ar">عوامل بيولوجية تعمل <b style="color:#8b5cf6;">كهرمونات موضعية</b> لتنظيم الوظائف الفسيولوجية.</div></div></div>
+<div class="card"><div class="head">Histamine/الهستامين</div><div class="content" hidden=""><div class="en">Autacoid involved in <b style="color:#8b5cf6;">allergic reactions</b>, <b style="color:#8b5cf6;">inflammation</b>, and <b style="color:#8b5cf6;">gastric acid secretion</b>.</div><div class="ar">أوتاكويد يشارك في <b style="color:#8b5cf6;">الحساسية</b> <b style="color:#8b5cf6;">والالتهابات</b> <b style="color:#8b5cf6;">وإفراز حمض المعدة</b>.</div></div></div>
+<div class="card"><div class="head">Prostaglandins/البروستاجلاندينات</div><div class="content" hidden=""><div class="en">Inflammatory mediators that also cause <b style="color:#8b5cf6;">pain sensitization</b> and regulate blood flow.</div><div class="ar">وسائط التهابية تسبب أيضًا <b style="color:#8b5cf6;">تحسيس الألم</b> وتنظم تدفق الدم.</div></div></div>
+<div class="card"><div class="head">NSAIDs/مضادات الالتهاب غير الستيرويدية</div><div class="content" hidden=""><div class="en">Non-Steroidal Anti-Inflammatory Drugs; <b style="color:#8b5cf6;">inhibit COX enzymes</b> to reduce pain and inflammation.</div><div class="ar">أدوية مضادة للالتهابات غير ستيرويدية؛ <b style="color:#8b5cf6;">تثبط إنزيمات COX</b> لتقليل الألم والالتهاب.</div></div></div>
+<div class="card"><div class="head">Serotonin (5-HT)/السيروتونين</div><div class="content" hidden=""><div class="en">Autacoid regulating <b style="color:#8b5cf6;">mood</b>, <b style="color:#8b5cf6;">pain perception</b>, <b style="color:#8b5cf6;">platelet aggregation</b>, and <b style="color:#8b5cf6;">vasoconstriction</b>.</div><div class="ar">أوتاكويد ينظم <b style="color:#8b5cf6;">المزاج</b> <b style="color:#8b5cf6;">وإدراك الألم</b> <b style="color:#8b5cf6;">وتجمع الصفائح الدموية</b> <b style="color:#8b5cf6;">وتضييق الأوعية</b>.</div></div></div>
+<div class="card"><div class="head">Leukotrienes/الليكوترينات</div><div class="content" hidden=""><div class="en">Autacoid involved in <b style="color:#8b5cf6;">bronchoconstriction</b> (asthma) and <b style="color:#8b5cf6;">allergic responses</b>.</div><div class="ar">أوتاكويد يشارك في <b style="color:#8b5cf6;">تضيق القصبات الهوائية</b> (الربو) <b style="color:#8b5cf6;">والاستجابات التحسسية</b>.</div></div></div>
+<div class="card"><div class="head">Bradykinin/البراديكينين</div><div class="content" hidden=""><div class="en">A potent <b style="color:#8b5cf6;">vasodilator</b> and a primary mediator of <b style="color:#8b5cf6;">pain and inflammation</b>.</div><div class="ar"><b style="color:#8b5cf6;">موسع أوعية</b> قوي ووسيط أساسي <b style="color:#8b5cf6;">للألم والالتهاب</b>.</div></div></div>
+<div class="card"><div class="head">ACE Inhibitors/مثبطات الإنزيم المحول للأنجيوتنسين</div><div class="content" hidden=""><div class="en">Drugs (e.g., <b style="color:#8b5cf6;">Lisinopril</b>) that block Angiotensin Converting Enzyme, used for <b style="color:#8b5cf6;">hypertension</b>.</div><div class="ar">أدوية (مثل <b style="color:#8b5cf6;">الليسينوبريل</b>) تمنع الإنزيم المحول للأنجيوتنسين، وتستخدم <b style="color:#8b5cf6;">لعلاج ارتفاع ضغط الدم</b>.</div></div></div>
+<div class="card"><div class="head">Xerostomia/جفاف الفم</div><div class="content" hidden=""><div class="en">The medical term for <b style="color:#8b5cf6;">dry mouth</b>, a common side effect of antihistamines and ACE inhibitors.</div><div class="ar">المصطلح الطبي <b style="color:#8b5cf6;">لجفاف الفم</b>، وهو أثر جانبي شائع لمضادات الهستامين ومثبطات الإنزيم المحول للأنجيوتنسين.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — What is the main function of H1 receptors?</span><span class="ar">١ — ما هي الوظيفة الرئيسية لمستقبلات H1؟</span></div><div class="content" hidden=""><span class="en">A: <b style="color:#8b5cf6;">Vasodilation</b>, <b style="color:#8b5cf6;">bronchoconstriction</b>, and <b style="color:#8b5cf6;">itching</b> (allergic reactions).</span><span classar">ج: <b style="color:#8b5cf6;">توسع الأوعية</b>، <b style="color:#8b5cf6;">تضيق القصبات</b>، <b style="color:#8b5cf6;">والحكة</b> (ردود الفعل التحسسية).</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — What is the main function of H2 receptors?</span><span class="ar">٢ — ما هي الوظيفة الرئيسية لمستقبلات H2؟</span></div><div class="content" hidden=""><span class="en">A: <b style="color:#8b5cf6;">Gastric acid secretion</b>.</span><span class="ar">ج: <b style="color:#8b5cf6;">إفراز حمض المعدة</b>.</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — How do NSAIDs (like Ibuprofen) work?</span><span class="ar">٣ — كيف تعمل مضادات الالتهاب غير الستيرويدية (مثل الإيبوبروفين)؟</span></div><div class="content" hidden=""><span class="en">A: They <b style="color:#8b5cf6;">inhibit cyclooxygenase (COX) enzymes</b>, which stops the production of prostaglandins.</span><span class="ar">ج: <b style="color:#8b5cf6;">تثبط إنزيمات الأكسدة الحلقية (COX)</b>، مما يوقف إنتاج البروستاجلاندينات.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — What is a major dental consideration for patients taking SSRIs?</span><span class="ar">٤ — ما هو الاعتبار الرئيسي لطب الأسنان للمرضى الذين يتناولون SSRIs؟</span></div><div class="content" hidden=""><span class="en">A: <b style="color:#8b5cf6;">Increased risk of bleeding</b> during surgery.</span><span class="ar">ج: <b style="color:#8b5cf6;">زيادة خطر النزيف</b> أثناء الجراحة.</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — What drug treats acute migraine by acting on serotonin?</span><span class="ar">٥ — ما هو الدواء الذي يعالج الصداع النصفي الحاد عن طريق العمل على السيروتونين؟</span></div><div class="content" hidden=""><span class="en">A: <b style="color:#8b5cf6;">Sumatriptan</b> (a 5-HT agonist).</span><span class="ar">ج: <b style="color:#8b5cf6;">السوماتريبتان</b> (ناهض 5-HT).</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — What drug is an antiemetic that blocks 5-HT receptors?</span><span class="ar">٦ — ما هو الدواء المضاد للقىء الذي يحجب مستقبلات 5-HT؟</span></div><div class="content" hidden=""><span class="en">A: <b style="color:#8b5cf6;">Ondansetron</b>.</span><span class="ar">ج: <b style="color:#8b5cf6;">الأوندانسيترون</b>.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — What is the primary role of Bradykinin?</span><span class="ar">٧ — ما هو الدور الأساسي للبراديكينين؟</span></div><div class="content" hidden=""><span class="en">A: It is a potent <b style="color:#8b5cf6;">vasodilator</b> and a mediator of <b style="color:#8b5cf6;">pain and inflammation</b>.</span><span classar">ج: هو <b style="color:#8b5cf6;">موسع أوعية</b> قوي ووسيط <b style="color:#8b5cf6;">للألم والالتهاب</b>.</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — What is a major dental side effect of ACE Inhibitors?</span><span class="ar">٨ — ما هو الأثر الجانبي الرئيسي في طب الأسنان لمثبطات الإنزيم المحول للأنجيوتنسين؟</span></div><div class="content" hidden=""><span class="en">A: <b style="color:#8b5cf6;">Dry mouth (Xerostomia)</b>.</span><span class="ar">ج: <b style="color:#8b5cf6;">جفاف الفم (Xerostomia)</b>.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What autacoid group does Montelukast target?</span><span class="ar">٩ — ما هي مجموعة الأوتاكويدات التي يستهدفها المونتيلوكاست؟</span></div><div class="content" hidden=""><span class="en">A: It targets <b style="color:#8b5cf6;">Leukotrienes</b> and is used for <b style="color:#8b5cf6;">asthma</b> and <b style="color:#8b5cf6;">allergic reactions</b>.</span><span class="ar">ج: يستهدف <b style="color:#8b5cf6;">الليكوترينات</b> ويستخدم <b style="color:#8b5cf6;">للربو</b> <b style="color:#8b5cf6;">وردود الفعل التحسسية</b>.</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify:content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+
+  /* Styles for table in SAQ */
+  .answer table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    background: rgba(255, 255, 255, 0.02);
+  }
+  .answer th, .answer td {
+    border: 1px solid var(--card-border);
+    padding: 10px;
+    text-align: left;
+  }
+  .answer th {
+    background: rgba(255, 255, 255, 0.05);
+    font-weight: 600;
+  }
+  .answer tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.03);
+  }
+</style>
+</head>
+
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 28</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (Generated from ocih-28.pdf) -----------
+const mcqs = [
+  {
+    q: "Which of the following structures appears as a thin radiolucent line with radiopaque borders in the midline between the maxillary central incisors?",
+    opts: ["Incisive Foramen", "Intermaxillary Suture", "Nasal Septum", "Anterior Nasal Spine"],
+    correct: 1,
+    explain: "The Intermaxillary Suture is a thin radiolucent line in the midline between the two portions of the maxilla."
+  },
+  {
+    q: "What is the typical radiographic appearance of the Incisive Foramen?",
+    opts: ["A small radiopaque dot", "An ovoid radiolucent area between the central incisor roots", "A V-shaped radiopaque structure", "A diffuse radiolucent line extending to the nasal fossa"],
+    correct: 1,
+    explain: "The Incisive Foramen appears as an ovoid radiolucent area in the midline between the roots of the central incisors."
+  },
+  {
+    q: "An Incisive Foramen larger than what size should arouse suspicion of an incisive canal cyst?",
+    opts: ["1 cm", "5 mm", "2 cm", "1.5 cm"],
+    correct: 0,
+    explain: "A size greater than 1 cm for the incisive foramen should arouse suspicion of an incisive canal cyst."
+  },
+  {
+    q: "The Anterior Nasal Spine typically appears as a:",
+    opts: ["Radiolucent circle", "Radiopaque inverted triangle shape", "Radiopaque horizontal line", "Radiolucent U-shape"],
+    correct: 1,
+    explain: "The Anterior Nasal Spine appears as a radiopaque structure, often V-shaped or an inverted triangle, in the midline above the alveolar crest."
+  },
+  {
+    q: "What structure appears as a radiopaque band in the midline above the apices of the incisors?",
+    opts: ["Nasal Septum", "Intermaxillary Suture", "Incisive Foramen", "Tip of the Nose"],
+    correct: 0,
+    explain: "The Nasal Septum appears as a radiopaque band in the midline above the apices of the incisors."
+  },
+  {
+    q: "The Nasal Fossae (nasal cavity) appear radiographically as:",
+    opts: ["Radiopaque spaces on either side of the nasal septum", "Radiolucent spaces on either side of the nasal septum", "Small radiopaque dots below the anterior nasal spine", "A single, large radiolucent area above all incisors"],
+    correct: 1,
+    explain: "The Nasal Fossae are air-filled cavities, so they appear as radiolucent spaces on either side of the radiopaque nasal septum."
+  },
+  {
+    q: "What landmark is formed by the superimposition of the floor of the sinus and the floor of the nasal cavity in canine projections?",
+    opts: ["Zygomatic Process", "Inverted Y-line of Enis", "Hamular Process", "Mylohyoid Ridge"],
+    correct: 1,
+    explain: "The Inverted Y-line of Enis is formed in canine projections by the superimposition of the floor of the maxillary sinus and the floor of the nasal cavity."
+  },
+  {
+    q: "The Zygomatic Process of the maxilla often appears as what shape in the first and second molar region?",
+    opts: ["A 'J' or 'U' shaped radiopaque line", "A straight radiopaque band", "A circular radiolucent area", "A diffuse radiopaque shadow"],
+    correct: 0,
+    explain: "The Zygomatic Process of the maxilla appears as a 'J' or 'U' shaped radiopaque line, often superimposed over the roots of the first and second molars."
+  },
+  {
+    q: "The Maxillary Sinus appears radiographically as a:",
+    opts: ["Radiopaque cavity with radiolucent borders", "Radiolucent area with thin, delicate radiopaque borders", "Homogenous radiopaque area", "Mixed-density lesion"],
+    correct: 1,
+    explain: "The Maxillary Sinus is an air-filled cavity, making it appear radiolucent, with its borders (thin cortical bone) appearing as radiopaque lines."
+  },
+  {
+    q: "Which structure is a radiopaque shadow of the maxilla seen distal to the last molar?",
+    opts: ["Pterygoid Plate", "Hamular Process", "Maxillary Tuberosity", "Coronoid Process"],
+    correct: 2,
+    explain: "The Maxillary Tuberosity is the radiopaque shadow of the maxilla located next to (distal to) the last molar."
+  },
+  {
+    q: "What structure extends inferiorly from the medial pterygoid plate and appears radiopaque?",
+    opts: ["Hamular Process", "Maxillary Tuberosity", "Zygomatic Arch", "Styloid Process"],
+    correct: 0,
+    explain: "The Hamular Process is a radiopaque structure seen extending inferiorly from the medial pterygoid plate."
+  },
+  {
+    q: "When a radiograph is made with the mouth closed, which mandibular structure can appear as a triangular opacity superimposed over the maxillary third molar region?",
+    opts: ["Condylar Head", "Mental Ridge", "Coronoid Process", "Gonial Angle"],
+    correct: 2,
+    explain: "The Coronoid Process of the mandible can be superimposed over the maxillary tuberosity/third molar region, appearing as a triangular opacity."
+  },
+  {
+    q: "Nutrient canals in the mandible appear as:",
+    opts: ["Radiopaque lines running vertically", "Radiolucent lines running vertically", "Small, distinct radiolucent dots", "Wide, diffuse radiopaque bands"],
+    correct: 1,
+    explain: "Nutrient canals are channels in bone and appear as radiolucent lines of fairly uniform width, often running vertically."
+  },
+  {
+    q: "The Genial Tubercles appear radiographically as a:",
+    opts: ["Radiolucent dot in the midline", "Radiopaque ring-like shadow in the midline below incisor roots", "Radiopaque horizontal line below the molars", "Diffuse radiolucent area in the premolar region"],
+    correct: 1,
+    explain: "The Genial Tubercles appear as a radiopaque ring-like shadow in the midline, below the roots of the mandibular incisors."
+  },
+  {
+    q: "What structure appears as a small radiolucent dot surrounded by the genial tubercles?",
+    opts: ["Mental Foramen", "Mandibular Foramen", "Incisive Foramen", "Lingual Foramen"],
+    correct: 3,
+    explain: "The Lingual Foramen is a small radiolucent dot seen in the center of the radiopaque ring of the genial tubercles."
+  },
+  {
+    q: "The inferior border of the mandible is characterized as a:",
+    opts: ["Thin, radiolucent line", "Dense, radiopaque band of bone", "Scalloped radiolucent border", "Mixed-density, ill-defined line"],
+    correct: 1,
+    explain: "The inferior border of the mandible is composed of dense cortical bone and appears as a dense, radiopaque band."
+  },
+  {
+    q: "What is the Mental Foramen?",
+    opts: ["A radiolucent structure usually seen below the apices of the premolars", "A radiopaque structure seen between the central incisors", "A radiolucent structure located on the ramus", "A radiopaque dot below the incisor roots"],
+    correct: 0,
+    explain: "The Mental Foramen is a radiolucent structure (an opening in the bone) typically seen below the apices of the mandibular premolars."
+  },
+  {
+    q: "Which structure appears as a radiopaque band near the alveolar crest in the third molar region, representing the continuation of the anterior border of the ramus?",
+    opts: ["Mylohyoid Ridge", "External Oblique Ridge", "Mental Ridge", "Inferior Border of Mandible"],
+    correct: 1,
+    explain: "The External Oblique Ridge is a radiopaque band near the alveolar crest in the third molar region, being the continuation of the anterior border of the ramus."
+  },
+  {
+    q: "The Mandibular Canal is described radiographically as a:",
+    opts: ["Radiopaque line below molar roots", "Dark shadow (RL) with thin radiopaque superior and inferior borders", "Wide radiopaque band running vertically", "Series of small, disconnected radiolucent dots"],
+    correct: 1,
+    explain: "The Mandibular Canal appears as a dark (radiolucent) shadow below the molar roots, bounded by two thin radiopaque lines (the cortical bone of the canal)."
+  },
+  {
+    q: "Which structure appears as a radiopaque band running diagonally downward and forward from the third molar area to the premolar region?",
+    opts: ["Mylohyoid Ridge (Internal Oblique Ridge)", "External Oblique Ridge", "Mandibular Canal", "Mental Ridge"],
+    correct: 0,
+    explain: "The Mylohyoid Ridge (or Internal Oblique Ridge) is a radiopaque band that runs diagonally downward and forward on the lingual aspect of the mandible."
+  },
+  {
+    q: "The Submandibular Gland Fossa appears as a:",
+    opts: ["Radiopaque area below the mylohyoid ridge", "Radiolucent area representing a concavity in the bone", "Well-defined radiopaque circle", "Mixed-density area above the mandibular canal"],
+    correct: 1,
+    explain: "The Submandibular Gland Fossa is a depression in the bone to accommodate the gland, appearing as a radiolucent area with sparse trabeculae."
+  },
+  {
+    q: "How do gold crowns and amalgam restorations typically appear on a radiograph?",
+    opts: ["Radiolucent", "Radiopaque", "Partially radiolucent", "Depends on the X-ray angle"],
+    correct: 1,
+    explain: "Restorative materials with high object density, like gold and amalgam, are highly radiopaque (white)."
+  },
+  {
+    q: "Older composite restorative materials are most likely to appear:",
+    opts: ["Radiopaque, similar to amalgam", "Radiolucent, and can be mistaken for caries", "Mixed density", "Radiopaque, but less so than gold"],
+    correct: 1,
+    explain: "Older composites and bonding agents have lower object density and often appear radiolucent, which can mimic the appearance of dental caries."
+  },
+  {
+    q: "Which of the following restorative materials is radiopaque?",
+    opts: ["Older composites", "Bonding agents", "Gutta percha", "Incipient caries"],
+    correct: 2,
+    explain: "Gutta percha, used in root canals, is radiopaque. Older composites and bonding agents are typically radiolucent."
+  },
+  {
+    q: "Which of the following is NOT a supporting structure of the tooth seen on a radiograph?",
+    opts: ["Alveolar process", "Periodontal ligament space", "Enamel", "Cortical bone"],
+    correct: 2,
+    explain: "Enamel is part of the tooth itself, not a supporting structure. The supporting structures include the alveolar process, PDL space, and cortical bone."
+  },
+  {
+    q: "Which is the most radiopaque structure of a tooth?",
+    opts: ["Enamel", "Dentin", "Pulp chamber", "Root canal"],
+    correct: 0,
+    explain: "Enamel is the most calcified and dense structure of the tooth, making it the most radiopaque."
+  },
+  {
+    q: "The pulp chamber and root canal of a tooth appear:",
+    opts: ["Radiopaque", "Radiolucent", "Mixed density", "The same density as dentin"],
+    correct: 1,
+    explain: "The pulp chamber and root canal contain soft tissue (nerves and blood vessels) and are therefore radiolucent (dark)."
+  },
+  {
+    q: "The periodontal ligament (PDL) space appears as a:",
+    opts: ["Radiopaque line around the root", "Radiolucent line around the root", "Radiopaque space between tooth and bone", "Missing space in healthy teeth"],
+    correct: 1,
+    explain: "The PDL is soft tissue, so it appears as a thin, continuous radiolucent line or space between the tooth root and the alveolar bone."
+  },
+  {
+    q: "What is the radiographic appearance of the Mental Ridge?",
+    opts: ["A radiolucent line in the midline", "A radiopaque line extending from the premolar to the incisor region", "A radiolucent area below the premolars", "A radiopaque line in the third molar region"],
+    correct: 1,
+    explain: "The Mental Ridge is a radiopaque line of bone seen on the facial aspect of the mandible, extending from the premolar to the incisor region."
+  },
+  {
+    q: "Which of these structures is found in the Maxillary Posterior Region?",
+    opts: ["Genial Tubercles", "Mental Foramen", "Intermaxillary Suture", "Hamular Process"],
+    correct: 3,
+    explain: "The Hamular Process is seen posterior to the maxillary tuberosity. The other options are in the mandibular anterior or maxillary anterior regions."
+  }
+];
+
+const tfs = [
+  {
+    q: "The Intermaxillary Suture is a radiopaque line in the midline.",
+    answer: false,
+    explain: "The suture itself is radiolucent (a thin line), though it may have radiopaque borders."
+  },
+  {
+    q: "The Nasal Fossae are air-filled cavities and appear radiolucent.",
+    answer: true,
+    explain: "Correct. Air-filled spaces like the nasal fossae and maxillary sinus are radiolucent (dark)."
+  },
+  {
+    q: "The 'Inverted Y-line of Enis' is located in the mandibular premolar region.",
+    answer: false,
+    explain: "False. It is seen in the maxillary canine projection, formed by the floors of the nasal cavity and maxillary sinus."
+  },
+  {
+    q: "The Zygomatic Process of the maxilla often appears as a 'J' or 'U' shaped radiopaque line.",
+    answer: true,
+    explain: "Correct. It is a dense, radiopaque structure that often superimposes over the maxillary molar roots."
+  },
+  {
+    q: "The Coronoid Process is part of the maxilla.",
+    answer: false,
+    explain: "False. The Coronoid Process is part of the mandible (ramus)."
+  },
+  {
+    q: "The Lingual Foramen is a radiopaque dot in the center of the genial tubercles.",
+    answer: false,
+    explain: "False. The foramen (opening) itself is radiolucent (a dark dot). The genial tubercles surrounding it are radiopaque."
+  },
+  {
+    q: "The Mental Foramen is most commonly found below the apices of the mandibular premolars.",
+    answer: true,
+    explain: "Correct. This is its typical anatomical location."
+  },
+  {
+    q: "The External Oblique Ridge is located inferior to the Mylohyoid Ridge.",
+    answer: false,
+    explain: "The External Oblique Ridge is generally superior (closer to the alveolar crest) to the Mylohyoid Ridge on a radiograph."
+  },
+  {
+    q: "Older composite restorations often appear radiolucent and can be mistaken for caries.",
+    answer: true,
+    explain: "Correct. Unlike modern composites, older formulations lacked radiopaque fillers, making them appear dark."
+  }
+];
+
+const saqs = [
+  {
+    q: "A patient's radiograph of the mandibular anterior region shows a radiopaque, ring-like shadow in the midline, below the incisor roots, with a small radiolucent dot in its center. What are these two structures?",
+    a: "This is a case-based scenario. The radiopaque ring is the <strong>Genial Tubercles</strong>. The small radiolucent dot in the center is the <strong>Lingual Foramen</strong>."
+  },
+  {
+    q: "Define the radiographic appearance of the Mandibular Canal.",
+    a: "Direct Answer: The Mandibular Canal appears as a dark (radiolucent) shadow of variable width running below the roots of the mandibular molars. It is bordered by thin, radiopaque superior and inferior lines, which represent the cortical bone lining the canal."
+  },
+  {
+    q: "List three radiopaque structures found in the Maxillary Anterior Region.",
+    a: "List:<br>1. <strong>Anterior Nasal Spine</strong> (a V-shaped or inverted triangle opacity in the midline).<br>2. <strong>Nasal Septum</strong> (a vertical radiopaque band above the incisors).<br>3. <strong>Inferior Border of the Nasal Fossae</strong> (a radiopaque line extending bilaterally from the anterior nasal spine)."
+  },
+  {
+    q: "Describe the 'Inverted Y-line of Enis' and state where it is located.",
+    a: "Direct Answer: The 'Inverted Y-line of Enis' is a radiographic landmark seen in the maxillary canine projection. It is not a true anatomical structure but an appearance formed by the superimposition of two radiopaque lines: the floor of the maxillary sinus and the floor of the nasal cavity."
+  },
+  {
+    q: "List three radiolucent structures common to both the maxilla and mandible (or their associated structures).",
+    a: "List:<br>1. <strong>Pulp Chamber and Root Canal</strong> (containing soft tissue inside the tooth).<br>2. <strong>Periodontal Ligament (PDL) Space</strong> (the thin space between the tooth root and alveolar bone).<br>3. <strong>Foramina</strong> (openings in bone), such as the Incisive Foramen (maxilla) or Mental Foramen (mandible)."
+  },
+  {
+    q: "Compare the radiographic appearance of the External Oblique Ridge and the Mylohyoid Ridge in the mandibular molar region.",
+    a: "Comparison:<br><style>.saq-table{width:100%;border-collapse:collapse;margin-top:8px;}.saq-table th, .saq-table td{border:1px solid var(--card-border);padding:8px;text-align:left;}.saq-table th{background:rgba(255,255,255,0.1);}</style>" +
+      "<table class='saq-table'>" +
+      "<thead><tr><th>Feature</th><th>External Oblique Ridge</th><th>Mylohyoid Ridge (Internal)</th></tr></thead>" +
+      "<tbody>" +
+      "<tr><td><strong>Appearance</strong></td><td>A radiopaque band.</td><td>A radiopaque band.</td></tr>" +
+      "<tr><td><strong>Location / Path</strong></td><td>Continuation of the anterior border of the ramus. Runs along the buccal aspect.</td><td>Runs along the lingual aspect of the mandible.</td></tr>" +
+      "<tr><td><strong>Radiographic Position</strong></td><td>Typically appears more superior, near the alveolar crest in the 3rd molar region.</td><td>Typically appears more inferior, running diagonally downward and forward from the molar to premolar region.</td></tr>" +
+      "</tbody></table>"
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font:16px/1.65 Inter,ui-sans-serif,system-ui;"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

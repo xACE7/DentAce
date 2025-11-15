@@ -1,0 +1,665 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .answer ol { padding-left: 20px; margin: 0; }
+  .answer ol li { margin-bottom: 8px; }
+
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <!-- CONTENT INJECTION: Subtitle updated -->
+      <p class="subtitle">Test based on Lecture 8</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (CONTENT INJECTED FROM pharma-8.pdf) -----------
+const mcqs = [
+  {
+    q: "What is the primary neurotransmitter in the parasympathetic (cholinergic) nervous system?",
+    opts: ["Acetylcholine", "Norepinephrine", "Dopamine", "Serotonin"],
+    correct: 0,
+    explain: "Page 3 states that Acetylcholine (ACh) is the neurotransmitter for the parasympathetic nervous system."
+  },
+  {
+    q: "What enzyme is responsible for breaking down acetylcholine to limit its response?",
+    opts: ["Monoamine Oxidase", "Acetylcholinesterase (AchE)", "Catechol-O-methyltransferase (COMT)", "Lipase"],
+    correct: 1,
+    explain: "Page 4 identifies Acetylcholinesterase (AchE) as the enzyme that breaks down Acetylcholine."
+  },
+  {
+    q: "Stimulation of the parasympathetic nervous system results in which response?",
+    opts: ["'Fight or flight'", "'Rest and digest'", "Increased heart rate", "Bronchodilation"],
+    correct: 1,
+    explain: "Page 3 notes that parasympathetic stimulation results in 'rest and digest'."
+  },
+  {
+    q: "Cholinergic drugs are defined as drugs that...",
+    opts: ["Block acetylcholine receptors", "Mimic or enhance the action of acetylcholine", "Increase the breakdown of acetylcholine", "Only bind to nicotinic receptors"],
+    correct: 1,
+    explain: "Page 5 defines cholinergic drugs as those that mimic or enhance the action of acetylcholine."
+  },
+  {
+    q: "Which of the following is a main classification of cholinergic drugs?",
+    opts: ["Direct-acting cholinergic agonists", "Beta-blockers", "ACE inhibitors", "SSRIs"],
+    correct: 0,
+    explain: "Page 5 lists the two classifications: Direct-acting cholinergic agonists and Indirect-acting cholinergic agents."
+  },
+  {
+    q: "Which drug is a direct-acting cholinergic agonist specifically mentioned for treating dry mouth (xerostomia) in dentistry?",
+    opts: ["Atropine", "Scopolamine", "Pilocarpine", "Neostigmine"],
+    correct: 2,
+    explain: "Page 6 lists Pilocarpine as an example used to treat dry mouth in dentistry."
+  },
+  {
+    q: "How do direct-acting cholinergic agonists work?",
+    opts: ["By inhibiting acetylcholinesterase", "By directly stimulating cholinergic receptors", "By blocking muscarinic receptors", "By increasing ACh production"],
+    correct: 1,
+    explain: "Page 6 states their mechanism: 'Mimic acetylcholine by directly stimulating cholinergic receptors.'"
+  },
+  {
+    q: "Sjögren's syndrome, a condition treated by some cholinergic drugs, is characterized by...",
+    opts: ["Excessive salivation", "Dry eyes and dry mouth", "Chronic muscle weakness", "Hypertension"],
+    correct: 1,
+    explain: "Page 6 shows an image illustrating Sjögren's syndrome, with 'DRY EYES' and 'DRY MOUTH' as key symptoms."
+  },
+  {
+    q: "Which of the following is an example of an *indirect-acting* cholinergic agent (cholinesterase inhibitor)?",
+    opts: ["Pilocarpine", "Bethanechol", "Neostigmine", "Acetylcholine"],
+    correct: 2,
+    explain: "Page 7 lists Neostigmine and Physostigmine as examples of indirect-acting agents."
+  },
+  {
+    q: "What is the mechanism of action for indirect-acting cholinergic agents?",
+    opts: ["They mimic ACh at the receptor", "They inhibit acetylcholinesterase", "They block ACh receptors", "They increase ACh synthesis in the nerve ending"],
+    correct: 1,
+    explain: "Page 7 states their mechanism: 'Inhibit acetylcholinesterase, increasing acetylcholine levels.'"
+  },
+  {
+    q: "In dentistry, what is a clinical relevance of agents like neostigmine?",
+    opts: ["Managing xerostomia", "Managing muscle relaxation post-anesthesia", "Treating glaucoma", "Reducing salivation"],
+    correct: 1,
+    explain: "Page 7 lists 'Managing muscle relaxation post-anesthesia' as a clinical relevance in dentistry."
+  },
+  {
+    q: "Cholinergic drugs are contraindicated (should be used with caution) in patients with which condition?",
+    opts: ["Sjögren's syndrome", "Glaucoma", "Myasthenia gravis", "Asthma"],
+    correct: 3,
+    explain: "Page 8 lists asthma, peptic ulcer, and heart conditions as contraindications."
+  },
+  {
+    q: "Which of the following is a common adverse effect of cholinergic drugs?",
+    opts: ["Dry mouth", "Constipation", "Tachycardia (fast heart rate)", "Diarrhea"],
+    correct: 3,
+    explain: "Page 9 lists 'Diarrhea', 'Excess salivation', 'Sweating', and 'Bradycardia' as common side effects."
+  },
+  {
+    q: "A cholinergic crisis is caused by an overdose of cholinergic agents. What is a key symptom?",
+    opts: ["Respiratory depression", "Severe dry mouth", "Hyperactivity", "Dilated pupils"],
+    correct: 0,
+    explain: "Page 10 lists 'Muscle weakness', 'Respiratory depression', and 'Excessive secretion' as symptoms of a cholinergic crisis."
+  },
+  {
+    q: "What is the primary emergency management drug for a cholinergic crisis?",
+    opts: ["Pilocarpine", "Neostigmine", "Atropine", "Pralidoxime"],
+    correct: 2,
+    explain: "Page 10 states the emergency management is the 'Use of anticholinergic drugs like atropine.'"
+  },
+  {
+    q: "Which of the following is an *anticholinergic* drug used in dentistry?",
+    opts: ["Pilocarpine", "Atropine", "Bethanechol", "Physostigmine"],
+    correct: 1,
+    explain: "Page 11 lists Atropine and Scopolamine as examples of anticholinergic drugs."
+  },
+  {
+    q: "What is a primary use of anticholinergic drugs like atropine in dentistry?",
+    opts: ["To increase salivation", "To reduce saliva during surgery", "To treat glaucoma", "To reverse muscle relaxation"],
+    correct: 1,
+    explain: "Page 11 states they 'Reduce saliva' and are 'used during surgery'."
+  },
+  {
+    q: "How do organophosphate insecticides (like Malathion) cause toxicity?",
+    opts: ["By reversibly inhibiting AchE", "By irreversibly inhibiting AchE", "By directly stimulating ACh receptors", "By blocking ACh receptors"],
+    correct: 1,
+    explain: "Page 12 states that these compounds 'irreversibly inhibits enzyme acetylcholinesterase (AchE)'."
+  },
+  {
+    q: "What is the specific antidote used to *reactivate* AchE after organophosphate poisoning?",
+    opts: ["Atropine", "Pilocarpine", "Pralidoxime", "Neostigmine"],
+    correct: 2,
+    explain: "Page 12 lists the treatment as 'Pralidoxime (Reactivates AchE enzyme)' and Atropine."
+  },
+  {
+    q: "In the treatment of organophosphate poisoning, what is the role of Atropine?",
+    opts: ["It reactivates the AchE enzyme", "It blocks muscarinic receptors", "It stimulates nicotinic receptors", "It increases ACh levels"],
+    correct: 1,
+    explain: "Page 12 states the treatment includes 'Atropine (Blocks muscarinic receptors)'."
+  },
+  {
+    q: "Which of these is NOT listed as a symptom of a cholinergic crisis?",
+    opts: ["Muscle weakness", "Excessive secretion", "Respiratory depression", "Tachycardia (fast heart rate)"],
+    correct: 3,
+    explain: "Page 10 lists muscle weakness, respiratory depression, and excessive secretion. Bradycardia (slow heart rate), not tachycardia, is a common cholinergic effect (Page 9)."
+  },
+  {
+    q: "Bethanechol is classified as a...",
+    opts: ["Direct-acting cholinergic agonist", "Indirect-acting cholinergic agent", "Anticholinergic drug", "Organophosphate"],
+    correct: 0,
+    explain: "Page 6 lists Bethanechol as an example of a direct-acting cholinergic agonist."
+  },
+  {
+    q: "Physostigmine and Neostigmine are examples of...",
+    opts: ["Anticholinergic drugs", "Cholinesterase inhibitors (Indirect-acting)", "Direct-acting agonists", "Nerve agents"],
+    correct: 1,
+    explain: "Page 7 lists Neostigmine and Physostigmine as examples of indirect-acting agents, also called cholinesterase inhibitors (Page 5)."
+  },
+  {
+    q: "Which condition is a clinical application for direct-acting cholinergic agonists?",
+    opts: ["Peptic ulcer", "Glaucoma", "Bradycardia", "Asthma"],
+    correct: 1,
+    explain: "Page 6 lists 'Glaucoma treatment' as a clinical application for direct-acting agonists."
+  },
+  {
+    q: "The 'rest and digest' response includes all of the following EXCEPT:",
+    opts: ["Increased salivation", "Increased heart rate", "Increased digestion", "Constricted pupils"],
+    correct: 1,
+    explain: "The parasympathetic ('rest and digest') response causes bradycardia (slow heart rate), as seen on Page 9. Increased heart rate (tachycardia) is a sympathetic response."
+  },
+  {
+    q: "Acetylcholine (ACh) binds to which receptor sites?",
+    opts: ["Adrenergic receptors", "Cholinergic receptor sites", "Dopamine receptors", "All of the above"],
+    correct: 1,
+    explain: "Page 3 states that 'Acetylcholine (ACh) binds to Cholinergic receptor sites'."
+  },
+  {
+    q: "Besides dry eyes and mouth, what is another key symptom of Sjögren's syndrome shown in the diagram?",
+    opts: ["Swollen salivary glands", "Hair loss", "Weight gain", "High blood pressure"],
+    correct: 0,
+    explain: "The diagram on Page 6 explicitly labels 'SWOLLEN SALIVARY GLANDS' as a symptom."
+  },
+  {
+    q: "What is a common adverse effect of cholinergic drugs related to the heart?",
+    opts: ["Tachycardia (fast heart rate)", "Arrhythmia", "Bradycardia (slow heart rate)", "Hypertension"],
+    correct: 2,
+    explain: "Page 9 lists 'Bradycardia' as a common side effect."
+  },
+  {
+    q: "Sarin is explicitly mentioned as an example of an...",
+    opts: ["Anticholinergic drug", "Direct-acting cholinergic agonist", "Organophosphate-containing nerve agent", "Reversible cholinesterase inhibitor"],
+    correct: 2,
+    explain: "Page 12 lists 'Organophosphate-containing nerve agents (Sarin)' as examples of compounds that irreversibly inhibit AchE."
+  },
+  {
+    q: "How do anticholinergic drugs like scopolamine contrast with cholinergic drugs?",
+    opts: ["They increase salivation", "They are used to treat glaucoma", "They reduce saliva and manage bradycardia", "They are used to treat myasthenia gravis"],
+    correct: 2,
+    explain: "Page 11 notes that anticholinergic drugs 'Reduce saliva' and 'manage bradycardia', the opposite effects of cholinergic drugs."
+  }
+];
+
+const tfs = [
+  {
+    q: "Acetylcholine is the primary neurotransmitter for the sympathetic nervous system.",
+    answer: false,
+    explain: "Page 3 states Acetylcholine is the neurotransmitter for the parasympathetic (cholinergic) nervous system."
+  },
+  {
+    q: "Acetylcholinesterase (AchE) is an enzyme that *produces* acetylcholine.",
+    answer: false,
+    explain: "Page 4 states that Acetylcholinesterase *breaks down* acetylcholine."
+  },
+  {
+    q: "Pilocarpine is an example of an indirect-acting cholinergic agent.",
+    answer: false,
+    explain: "Page 6 lists Pilocarpine as a *direct-acting* cholinergic agonist."
+  },
+  {
+    q: "Indirect-acting cholinergic agents work by inhibiting acetylcholinesterase.",
+    answer: true,
+    explain: "Page 7 states their mechanism is to 'Inhibit acetylcholinesterase, increasing acetylcholine levels.'"
+  },
+  {
+    q: "Neostigmine can be used in dentistry to manage muscle relaxation post-anesthesia.",
+    answer: true,
+    explain: "Page 7 lists this as a 'Clinical Relevance in Dentistry' for indirect-acting agents like Neostigmine."
+  },
+  {
+    q: "Cholinergic drugs are a recommended treatment for patients with active peptic ulcers.",
+    answer: false,
+    explain: "Page 8 lists 'peptic ulcer' as a contraindication for cholinergic drugs."
+  },
+  {
+    q: "Excess salivation is a common adverse effect of cholinergic drugs.",
+    answer: true,
+    explain: "Page 9 lists 'Excess salivation' as a common side effect."
+  },
+  {
+    q: "A cholinergic crisis is defined as an *under*-stimulation of cholinergic receptors.",
+    answer: false,
+    explain: "Page 10 defines it as an 'Overstimulation of cholinergic receptors.'"
+  },
+  {
+    q: "Atropine is an anticholinergic drug used as an emergency treatment for a cholinergic crisis.",
+    answer: true,
+    explain: "Page 10 confirms emergency management includes the 'Use of anticholinergic drugs like atropine.'"
+  }
+];
+
+const saqs = [
+  {
+    q: "Define cholinergic drugs and state their two main classifications.",
+    a: "Cholinergic drugs are drugs that mimic or enhance the action of acetylcholine (ACh), a neurotransmitter.<br><br><b>Classifications:</b><ol><li>Direct-acting cholinergic agonists</li><li>Indirect-acting cholinergic agents (Cholinesterase inhibitors)</li></ol>"
+  },
+  {
+    q: "List four common adverse effects of cholinergic drugs mentioned in the lecture.",
+    a: "The four common adverse effects listed are:<ol><li>Excess salivation</li><li>Sweating</li><li>Diarrhea</li><li>Bradycardia (slow heart rate)</li></ol>"
+  },
+  {
+    q: "Compare the primary mechanism and a key dental use of Pilocarpine vs. Atropine.",
+    a: "<ol><li><b>Pilocarpine:</b> Is a <b>direct-acting cholinergic agonist</b>. It <em>stimulates</em> cholinergic receptors to <em>increase</em> salivation, used to treat xerostomia (dry mouth).</li><li><b>Atropine:</b> Is an <b>anticholinergic drug</b>. It <em>blocks</em> cholinergic receptors to <em>reduce</em> salivation, often used during surgery.</li></ol>"
+  },
+  {
+    q: "What is a cholinergic crisis, and what is the primary emergency management drug?",
+    a: "A cholinergic crisis is the <b>overstimulation of cholinergic receptors</b>, leading to symptoms like muscle weakness, respiratory depression, and excessive secretions.<br><br>The primary emergency management drug is <b>atropine</b>."
+  },
+  {
+    q: "A patient with Sjögren's syndrome complains of severe dry mouth. Which specific <em>direct-acting</em> cholinergic agonist from the lecture would be most appropriate to prescribe for this symptom?",
+    a: "<b>Pilocarpine.</b> (Page 6 mentions it is used to treat dry mouth and for Sjögren's syndrome)."
+  },
+  {
+    q: "What are the two main treatments for irreversible acetylcholinesterase inhibition (e.g., organophosphate poisoning), and what does each one do?",
+    a: "The two treatments mentioned on Page 12 are:<ol><li><b>Pralidoxime:</b> Reactivates the AchE enzyme.</li><li><b>Atropine:</b> Blocks the muscarinic receptors to manage the symptoms of excess acetylcholine.</li></ol>"
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;font-size:15px;"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

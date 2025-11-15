@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .answer ol, .answer ul { padding-left: 20px; margin: 5px 0; }
+  .answer p { margin: 5px 0; }
+
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 9</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (Generated from pharma-9.pdf) -----------
+const mcqs = [
+  {
+    q: "Which histamine receptor primarily mediates gastric acid secretion?",
+    opts: ["H1", "H2", "H3", "H4"],
+    correct: 1,
+    explain: "H2 receptors are responsible for gastric acid secretion, while H1 receptors mediate vasodilation, bronchoconstriction, and itching."
+  },
+  {
+    q: "Stimulation of H1 histamine receptors primarily causes:",
+    opts: ["Vasoconstriction and decreased vascular permeability", "Vasodilation and increased vascular permeability", "Gastric acid secretion", "CNS modulation only"],
+    correct: 1,
+    explain: "H1 receptors are key mediators of allergic and inflammatory responses, leading to vasodilation, bronchoconstriction, and itching."
+  },
+  {
+    q: "Diphenhydramine is a common H1 blocker used in dentistry for:",
+    opts: ["Reducing gastric acid", "Managing allergic reactions", "Postoperative pain management", "Treating migraine"],
+    correct: 1,
+    explain: "Diphenhydramine is a first-generation H1 antihistamine used to treat allergic reactions."
+  },
+  {
+    q: "Famotidine, an H2 blocker, is used to:",
+    opts: ["Manage allergic reactions", "Reduce inflammation", "Reduce gastric acid secretion", "Prevent platelet aggregation"],
+    correct: 2,
+    explain: "H2 blockers like Famotidine specifically target H2 receptors to reduce gastric acid, which can be useful during surgery."
+  },
+  {
+    q: "Prostaglandins (eicosanoids) function as key mediators of:",
+    opts: ["Mood regulation", "Blood pressure regulation", "Inflammation and pain sensitization", "Bronchodilation"],
+    correct: 2,
+    explain: "Prostaglandins are well-known inflammatory mediators that also sensitize pain receptors."
+  },
+  {
+    q: "NSAIDs like Ibuprofen work by inhibiting which enzyme?",
+    opts: ["Cyclooxygenase (COX)", "Leukotriene synthase", "Angiotensin-Converting Enzyme (ACE)", "Histamine decarboxylase"],
+    correct: 0,
+    explain: "NSAIDs inhibit COX enzymes (COX-1 and COX-2) to reduce the production of prostaglandins, thereby reducing inflammation and pain."
+  },
+  {
+    q: "Misoprostol, a prostaglandin analog, is clinically used for:",
+    opts: ["Treating asthma", "Gastric ulcer prevention", "Managing allergic reactions", "Reducing blood pressure"],
+    correct: 1,
+    explain: "Misoprostol is mentioned as being used for gastric ulcer prevention and also for abortion."
+  },
+  {
+    q: "Leukotrienes are primarily involved in:",
+    opts: ["Gastric acid secretion", "Pain sensitization", "Bronchoconstriction and allergic responses", "Vasoconstriction"],
+    correct: 2,
+    explain: "Leukotrienes are key factors in asthma and allergic reactions, causing bronchoconstriction and inflammation."
+  },
+  {
+    q: "Montelukast is an example of a:",
+    opts: ["Leukotriene inhibitor", "H1 blocker", "Proton pump inhibitor", "5-HT agonist"],
+    correct: 0,
+    explain: "Montelukast is a leukotriene inhibitor used in the management of asthma and allergic rhinitis."
+  },
+  {
+    q: "Which of the following is a primary role of Serotonin (5-HT)?",
+    opts: ["Vasodilation and pain desensitization", "Vasoconstriction and platelet aggregation", "Bronchodilation and mood suppression", "Gastric acid inhibition"],
+    correct: 1,
+    explain: "Serotonin (5-HT) has multiple roles, including vasoconstriction, platelet aggregation, and regulation of mood and pain."
+  },
+  {
+    q: "What is a major dental consideration for a patient taking an SSRI?",
+    opts: ["Increased risk of xerostomia", "Increased bleeding risk during surgery", "High risk of allergic reaction to local anesthetic", "Reduced effectiveness of NSAIDs"],
+    correct: 1,
+    explain: "SSRIs can impair platelet aggregation, leading to an increased risk of bleeding during surgical procedures."
+  },
+  {
+    q: "Sumatriptan is a 5-HT agonist specifically used to treat:",
+    opts: ["Anxiety disorders", "Nausea and vomiting", "Migraine attacks", "Depression"],
+    correct: 2,
+    explain: "Sumatriptan is a first-line treatment for acute migraine attacks, acting as a serotonin receptor agonist."
+  },
+  {
+    q: "Ondansetron is a 5-HT antagonist primarily used as an:",
+    opts: ["Anxiolytic", "Antiemetic", "Antihypertensive", "Anti-inflammatory drug"],
+    correct: 1,
+    explain: "Ondansetron blocks 5-HT receptors in the vomiting centers (CTZ), making it a powerful antiemetic."
+  },
+  {
+    q: "The 5-HT agonist Buspirone is used clinically as an:",
+    opts: ["Antiemetic", "Anxiolytic", "Migraine treatment", "Prokinetic agent"],
+    correct: 1,
+    explain: "Buspirone is a 5-HT agonist used in the treatment of anxiety disorders."
+  },
+  {
+    q: "Metoclopramide is known for having both antiemetic and _____ actions.",
+    opts: ["Anxiolytic", "Anti-inflammatory", "Prokinetic", "Antihypertensive"],
+    correct: 2,
+    explain: "Metoclopramide acts as both an antiemetic (blocking vomiting centers) and a prokinetic agent (improving gastric motility)."
+  },
+  {
+    q: "Bradykinin is a potent:",
+    opts: ["Vasoconstrictor and pain inhibitor", "Vasodilator and mediator of pain", "Bronchodilator", "Leukotriene inhibitor"],
+    correct: 1,
+    explain: "Bradykinin is a powerful vasodilator that increases vascular permeability and stimulates pain receptors."
+  },
+  {
+    q: "Bradykinin exerts its effects, such as vasodilation and pain, by acting on:",
+    opts: ["H1 receptors", "B2 receptors", "COX enzymes", "5-HT receptors"],
+    correct: 1,
+    explain: "The lecture states that Bradykinin acts on B2 receptors to cause its primary effects."
+  },
+  {
+    q: "The drug Icatibant functions as a:",
+    opts: ["Bradykinin agonist", "Bradykinin (B2) receptor antagonist", "ACE inhibitor", "5-HT antagonist"],
+    correct: 1,
+    explain: "Icatibant competitively blocks B2 receptors, thereby preventing the effects of bradykinin."
+  },
+  {
+    q: "What is the primary physiological role of Angiotensin?",
+    opts: ["Mediate inflammation", "Regulate blood pressure by constricting blood vessels", "Increase gastric acid secretion", "Mediate allergic reactions"],
+    correct: 1,
+    explain: "Angiotensin is a key component of the RAAS system, regulating blood pressure primarily through vasoconstriction."
+  },
+  {
+    q: "Lisinopril and Enalapril belong to which class of drugs?",
+    opts: ["NSAIDs", "H2 Blockers", "ACE Inhibitors", "SSRIs"],
+    correct: 2,
+    explain: "These are common examples of Angiotensin-Converting Enzyme (ACE) Inhibitors, used to treat hypertension."
+  },
+  {
+    q: "A common oral side effect of ACE inhibitors, highly relevant to dentistry, is:",
+    opts: ["Gingival hyperplasia", "Prolonged bleeding time", "Xerostomia (dry mouth)", "Black hairy tongue"],
+    correct: 2,
+    explain: "ACE inhibitors are known to cause dry mouth (xerostomia), which increases the risk for dental caries and oral infections."
+  },
+  {
+    q: "Autacoids are best defined as biological factors that:",
+    opts: ["Act like systemic hormones traveling via the bloodstream", "Exclusively mediate pain and inflammation", "Act like local hormones to regulate physiological functions", "Are only synthesized in the central nervous system"],
+    correct: 2,
+    explain: "The definition given is that autacoids act like local hormones, regulating functions like blood flow, inflammation, and pain."
+  },
+  {
+    q: "Which of the following is NOT listed as a major class of autacoid or related drug?",
+    opts: ["Histamine-related drugs", "Prostaglandins", "Beta-blockers", "Serotonin-related drugs"],
+    correct: 2,
+    explain: "The major classes listed are Histamine, Serotonin, Prostaglandins/Leukotrienes, Bradykinin, and Angiotensin. Beta-blockers are not in this group."
+  },
+  {
+    q: "What is the most frequently used drug class for managing postoperative dental pain?",
+    opts: ["Antihistamines", "NSAIDs", "ACE Inhibitors", "Leukotriene inhibitors"],
+    correct: 1,
+    explain: "NSAIDs (prostaglandin inhibitors) are the primary choice for managing postoperative pain and inflammation in dentistry."
+  },
+  {
+    q: "Which drug class is critical for managing acute allergic reactions to dental materials?",
+    opts: ["NSAIDs", "Antihistamines", "SSRIs", "ACE Inhibitors"],
+    correct: 1,
+    explain: "Antihistamines (like H1 blockers) are essential for treating allergic reactions by blocking the effects of histamine."
+  },
+  {
+    q: "Which of the following is a major side effect associated with NSAIDs?",
+    opts: ["Xerostomia", "Gastrointestinal bleeding", "Increased gastric acid secretion", "Bronchodilation"],
+    correct: 1,
+    explain: "NSAIDs can cause gastrointestinal bleeding, renal impairment, and prolonged bleeding time."
+  },
+  {
+    q: "A common side effect of first-generation antihistamines like diphenhydramine is:",
+    opts: ["Gastrointestinal bleeding", "Hypertension", "Drowsiness and xerostomia", "Increased bleeding risk"],
+    correct: 2,
+    explain: "First-generation H1 blockers are known for their sedative (drowsiness) and anticholinergic (dry mouth) side effects."
+  },
+  {
+    q: "Which histamine receptors are primarily involved in CNS and immune modulation?",
+    opts: ["H1 and H2", "H2 and H3", "H3 and H4", "H1 and H4"],
+    correct: 2,
+    explain: "The lecture states that H3 and H4 receptors are involved in CNS and immune modulation."
+  },
+  {
+    q: "Dentists must be cautious when performing surgery on patients taking SSRIs primarily due to:",
+    opts: ["Risk of prolonged bleeding", "Risk of severe allergic reaction", "Drug interaction with local anesthetic", "Severe xerostomia"],
+    correct: 0,
+    explain: "SSRIs can increase bleeding risk, which is a significant consideration for any surgical dental procedure."
+  },
+  {
+    q: "According to the summary table, Sumatriptan targets serotonin to treat:",
+    opts: ["Allergy", "Asthma", "Peptic ulcer", "Migraine"],
+    correct: 3,
+    explain: "The summary table explicitly links Serotonin, Sumatriptan, and the condition of Migraine."
+  }
+];
+
+const tfs = [
+  {
+    q: "Autacoids are systemic hormones that travel long distances through the bloodstream to act on remote organs.",
+    answer: false,
+    explain: "False. Autacoids are defined as factors that act like *local* hormones, not systemic ones."
+  },
+  {
+    q: "Histamine causes vasoconstriction and decreased vascular permeability.",
+    answer: false,
+    explain: "False. Histamine is a potent vasodilator and *increases* vascular permeability, leading to edema."
+  },
+  {
+    q: "H2 receptors are the primary mediators of gastric acid secretion.",
+    answer: true,
+    explain: "True. H2 receptors are found on parietal cells in the stomach and stimulate acid secretion."
+  },
+  {
+    q: "NSAIDs reduce inflammation by stimulating the activity of cyclooxygenase (COX) enzymes.",
+    answer: false,
+    explain: "False. NSAIDs *inhibit* COX enzymes to prevent the synthesis of prostaglandins."
+  },
+  {
+    q: "Montelukast is a leukotriene inhibitor used in the management of asthma.",
+    answer: true,
+    explain: "True. Montelukast blocks leukotriene receptors, which is effective in treating asthma and allergic reactions."
+  },
+  {
+    q: "SSRIs can decrease the risk of bleeding during dental surgery due to their effect on platelets.",
+    answer: false,
+    explain: "False. SSRIs can *increase* the bleeding risk by impairing platelet aggregation."
+  },
+  {
+    q: "Ondansetron is a 5-HT agonist used to treat anxiety disorders.",
+    answer: false,
+    explain: "False. Ondansetron is a 5-HT *antagonist* used as an antiemetic (to prevent vomiting)."
+  },
+  {
+    q: "Bradykinin is a potent vasoconstrictor that helps increase blood pressure.",
+    answer: false,
+    explain: "False. Bradykinin is a potent *vasodilator* and mediator of pain and inflammation."
+  },
+  {
+    q: "A common side effect of ACE inhibitors like Lisinopril is xerostomia (dry mouth).",
+    answer: true,
+    explain: "True. ACE inhibitors are known to cause dry mouth, which is a significant concern for oral health."
+  }
+];
+
+const saqs = [
+  {
+    q: "Define 'autacoids' and briefly describe their general function in the body.",
+    a: "<p><b>Definition:</b> Autacoids are biological factors (like hormones or neurotransmitters) that act like local hormones.</p><p><b>Function:</b> They regulate local physiological functions, such as blood flow, inflammatory response, pain, and smooth muscle contraction.</p>"
+  },
+  {
+    q: "List three major classes of autacoids or related drugs discussed in the lecture.",
+    a: "<p>Three major classes mentioned are:</p><ol><li>Histamine-related drugs</li><li>Serotonin-related drugs</li><li>Prostaglandins and leukotrienes</li></ol><p>(Bradykinin and Angiotensin were also mentioned).</p>"
+  },
+  {
+    q: "Compare the primary physiological roles of H1 and H2 histamine receptors.",
+    a: "<p><b>H1 Receptors:</b> Mediate allergic and inflammatory responses. Their stimulation causes vasodilation, increased vascular permeability, bronchoconstriction, and itching.</p><p><b>H2 Receptors:</b> Primarily mediate the secretion of gastric acid in the stomach.</p>"
+  },
+  {
+    q: "A patient scheduled for dental extraction reports taking an 'ACE inhibitor' for high blood pressure. What specific oral side effect should you advise them about, and why is it a dental concern?",
+    a: "<p><b>Side Effect:</b> Xerostomia (dry mouth).</p><p><b>Dental Concern:</b> This is a concern because a persistent dry mouth increases the patient's risk of developing dental caries (cavities) and other oral infections due to the reduced protective effects of saliva.</p>"
+  },
+  {
+    q: "Explain the mechanism of action for NSAIDs (e.g., Ibuprofen) and state their main clinical application in dentistry.",
+    a: "<p><b>Mechanism:</b> NSAIDs work by inhibiting cyclooxygenase (COX) enzymes.</p><p><b>Effect:</b> This inhibition reduces the production of prostaglandins, which are key mediators of inflammation and pain.</p><p><b>Dental Application:</b> Their primary use in dentistry is for postoperative pain management and controlling inflammation.</p>"
+  },
+  {
+    q: "List three different clinical uses for drugs that target serotonin (5-HT) receptors, and provide one example drug for each use.",
+    a: "<p>Three different uses and examples are:</p><ol><li><b>Migraine Treatment:</b> Sumatriptan (a 5-HT agonist)</li><li><b>Antiemetic (anti-vomiting):</b> Ondansetron (a 5-HT antagonist)</li><li><b>Anxiety Treatment:</b> Buspirone (a 5-HT agonist)</li></ol><p>(Other correct answers include: Depression (SSRIs), Prokinetic (Metoclopramide)).</p>"
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font:inherit;"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

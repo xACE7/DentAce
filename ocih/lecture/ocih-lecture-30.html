@@ -1,0 +1,819 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Two-Column Sections</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
+  /* Custom style for bolded keywords */
+  strong {
+    color: #8b5cf6;
+  }
+
+</style>
+</head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 30
+</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِنْ لِسَانِي يَفْقَهُوا قَوْلِي</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Oral Mucous Membrane (Part 2): Epithelium</b></span>
+<span class="ar"><b>الموضوع: الغشاء المخاطي الفموي (الجزء 2): الظهارة</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 1: Structure of the Oral Epithelium</span><span class="ar">القسم 1: بنية الظهارة الفموية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>The epithelium of the oral mucous membrane is of the <strong style="color: #8b5cf6;">stratified squamous</strong> variety.</p>
+<p>It can be <strong style="color: #8b5cf6;">keratinized</strong> (orthokeratinized or parakeratinized) or <strong style="color: #8b5cf6;">nonkeratinized</strong>, depending on its location and functional demands.</p>
+<p>Both types of epithelium consist of two main groups of cells :</p>
+<ul>
+<li><strong>Keratinocytes (90%)</strong>: The principal cells that form the stratified layers.</li>
+<li><strong>Nonkeratinocytes (10%)</strong>: Specialized cells interspersed among the keratinocytes.</li>
+</ul>
+</div>
+<div class="ar">
+<p>ظهارة الغشاء المخاطي الفموي هي من النوع <strong style="color: #8b5cf6;">الحرشفية الطبقية</strong>.</p>
+<p>يمكن أن تكون <strong style="color: #8b5cf6;">متقرنة</strong> (إما بتقرن كامل أو نظير تقرن) أو <strong style="color: #8b5cf6;">غير متقرنة</strong>، اعتمادًا على موقعها ومتطلباتها الوظيفية.</p>
+<p>يتكون كلا النوعين من الظهارة من مجموعتين رئيسيتين من الخلايا :</p>
+<ul>
+<li><strong>الخلايا الكيراتينية (90%)</strong>: الخلايا الرئيسية التي تشكل الطبقات.</li>
+<li><strong>الخلايا غير الكيراتينية (10%)</strong>: خلايا متخصصة تتخلل الخلايا الكيراتينية.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 6, 25, 26 of 45</span>
+<span class="ar">الصفحات المرجعية: 6, 25, 26 من 45</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The oral epithelium is specifically <strong style="color: #8b5cf6;">stratified squamous epithelium</strong>.</div><div class="ar">الظهارة الفموية هي تحديدًا <strong style="color: #8b5cf6;">ظهارة حرشفية طبقية</strong>.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Two main cell types: <strong style="color: #8b5cf6;">Keratinocytes</strong> (90%) and <strong style="color: #8b5cf6;">Nonkeratinocytes</strong> (10%).</div><div class="ar">نوعان رئيسيان من الخلايا: <strong style="color: #8b5cf6;">الخلايا الكيراتينية</strong> (90%) و <strong style="color: #8b5cf6;">الخلايا غير الكيراتينية</strong> (10%).</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The type of epithelium (keratinized vs. nonkeratinized) depends on the location and its functional demands, such as mastication (chewing) which requires toughness, versus flexibility needed for speech and swallowing.</div><div class="ar">يعتمد نوع الظهارة (متقرنة أو غير متقرنة) على الموقع ومتطلباته الوظيفية، مثل المضغ الذي يتطلب صلابة، مقابل المرونة اللازمة للكلام والبلع.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 2: Keratinized Epithelium Layers</span><span class="ar">القسم 2: طبقات الظهارة المتقرنة</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Keratinizing oral epithelium has its keratinocytes arranged in four distinct cell layers:</p>
+<ol>
+<li><strong>Stratum Basale (Basal Layer)</strong>: The deepest layer, made of cuboidal cells. This is the site of <strong style="color: #8b5cf6;">mitosis</strong> (cell division), providing new cells. It is also known as the <strong style="color: #8b5cf6;">stratum germinativum</strong>.</li>
+<li><strong>Stratum Spinosum (Prickle/Spinous Layer)</strong>: Composed of irregularly polyhedral cells that are larger than basal cells. The cells appear to be joined by "intercellular bridges" (desmosomes).</li>
+<li><strong>Stratum Granulosum (Granular Layer)</strong>: Cells in this layer contain prominent <strong style="color: #8b5cf6;">keratohyaline granules (K.H.G)</strong>.</li>
+<li><strong>Stratum Corneum (Cornified Layer)</strong>: The outermost layer. Cells are <strong style="color: #8b5cf6;">dehydrated</strong>, dead, and have lost their nuclei and organelles. They are filled with densely packed <strong style="color: #8b5cf6;">soft keratin</strong>. This layer is acidophilic (stains pink).</li>
+</ol>
+</div>
+<div class="ar">
+<p>تحتوي الظهارة الفموية المتقرنة على خلايا كيراتينية مرتبة في أربع طبقات خلوية متميزة:</p>
+<ol>
+<li><strong>الطبقة القاعدية (Stratum Basale)</strong>: أعمق طبقة، مكونة من خلايا مكعبة. هذا هو موقع <strong style="color: #8b5cf6;">الانقسام الفتيلي (Mitosis)</strong>، مما يوفر خلايا جديدة. تُعرف أيضًا باسم <strong style="color: #8b5cf6;">الطبقة المنبتة (Stratum Germinativum)</strong>.</li>
+<li><strong>الطبقة الشائكة (Stratum Spinosum)</strong>: تتكون من خلايا متعددة السطوح غير منتظمة وأكبر من الخلايا القاعدية. تبدو الخلايا مرتبطة بـ "جسور بين خلوية" (الجسيمات الرابطة).</li>
+<li><strong>الطبقة الحبيبية (Stratum Granulosum)</strong>: تحتوي الخلايا في هذه الطبقة على <strong style="color: #8b5cf6;">حبيبات كيراتوهيالين (K.H.G)</strong> بارزة.</li>
+<li><strong>الطبقة المتقرنة (Stratum Corneum)</strong>: الطبقة الخارجية. الخلايا <strong style="color: #8b5cf6;">مجففة</strong>، ميتة، وفقدت أنويتها وعضياتها. تمتلئ <strong style="color: #8b5cf6;">بالكيراتين الرخو</strong> المكدس بكثافة. هذه الطبقة حمضية (تُصبغ باللون الوردي).</li>
+</ol>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 7, 8, 9, 11, 16, 17, 18, 19 of 45</span>
+<span class="ar">الصفحات المرجعية: 7, 8, 9, 11, 16, 17, 18, 19 من 45</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Mnemonic for the layers (from deep to superficial):<br/>"<strong>B</strong>oy <strong>S</strong>couts <strong>G</strong>o <strong>C</strong>amping"<br/>(<strong>B</strong>asale, <strong>S</strong>pinosum, <strong>G</strong>ranulosum, <strong>C</strong>orneum).</div><div class="ar">لتذكر الطبقات (من العمق إلى السطح):<br/>"<strong>ق</strong>اعد <strong>ش</strong>اب <strong>ح</strong>امل <strong>ق</strong>رن"<br/>(<strong>ق</strong>اعدية، <strong>ش</strong>ائكة، <strong>ح</strong>بيبية، <strong>ق</strong>رنية).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The <strong style="color: #8b5cf6;">Stratum Basale</strong> is the only layer where <strong style="color: #8b5cf6;">mitosis</strong> (cell division) occurs.</div><div class="ar"><strong style="color: #8b5cf6;">الطبقة القاعدية</strong> هي الطبقة الوحيدة التي يحدث فيها <strong style="color: #8b5cf6;">الانقسام الفتيلي</strong>.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">The "prickly" appearance of the <strong style="color: #8b5cf6;">stratum spinosum</strong> is actually an artifact from tissue preparation. The cells shrink, but they remain attached at their desmosomes, creating the spiny look.</div><div class="ar">المظهر "الشائك" <strong style="color: #8b5cf6;">للطبقة الشائكة</strong> هو في الواقع نتيجة لعملية تحضير الأنسجة. تنكمش الخلايا، لكنها تظل متصلة عند جسيماتها الرابطة (الديسموسومات)، مما يخلق المظهر الشائك.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The <strong style="color: #8b5cf6;">stratum corneum</strong> is filled with densely packed protein (keratin) and has a toughened cell membrane.</div><div class="ar"><strong style="color: #8b5cf6;">الطبقة المتقرنة</strong> مليئة بالبروتين المكدس (الكيراتين) ولها غشاء خلوي مقوى.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 3: Nonkeratinized Epithelium Layers</span><span class="ar">القسم 3: طبقات الظهارة غير المتقرنة</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Nonkeratinized epithelium is thicker and consists of three main layers:</p>
+<ol>
+<li><strong>Stratum Basale (Basal Layer)</strong>: Identical to the basal layer in keratinized epithelium. It is the site of proliferation.</li>
+<li><strong>Stratum Intermedium (Intermediate Layer)</strong>: This layer corresponds to the spinosum and granulosum layers of keratinized epithelium. The cells are larger and have more space between them compared to the spinosum layer.</li>
+<li><strong>Stratum Superficiale (Superficial Layer)</strong>: The outermost layer. Unlike the stratum corneum, these cells are flattened but are <strong style="color: #8b5cf6;">living cells that retain their nuclei</strong> and some organelles.</li>
+</ol>
+</div>
+<div class="ar">
+<p>الظهارة غير المتقرنة تكون أكثر سمكًا وتتكون من ثلاث طبقات رئيسية:</p>
+<ol>
+<li><strong>الطبقة القاعدية (Stratum Basale)</strong>: مطابقة للطبقة القاعدية في الظهارة المتقرنة. وهي موقع التكاثر الخلوي.</li>
+<li><strong>الطبقة المتوسطة (Stratum Intermedium)</strong>: هذه الطبقة تقابل الطبقة الشائكة والحبيبية في الظهارة المتقرنة. الخلايا أكبر ولها مسافات بينية أكبر مقارنة بالطبقة الشائكة.</li>
+<li><strong>الطبقة السطحية (Stratum Superficiale)</strong>: الطبقة الخارجية. على عكس الطبقة المتقرنة، هذه الخلايا مسطحة ولكنها <strong style="color: #8b5cf6;">خلايا حية تحتفظ بأنويتها</strong> وبعض العضيات.</li>
+</ol>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 17, 18, 20, 22 of 45</span>
+<span class="ar">الصفحات المرجعية: 17, 18, 20, 22 من 45</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The main difference: <strong style="color: #8b5cf6;">Nonkeratinized</strong> epithelium has a <strong style="color: #8b5cf6;">Stratum Intermedium</strong> and <strong style="color: #8b5cf6;">Stratum Superficiale</strong> instead of a Granulosum and Corneum.</div><div class="ar">الفرق الرئيسي: الظهارة <strong style="color: #8b5cf6;">غير المتقرنة</strong> تحتوي على <strong style="color: #8b5cf6;">طبقة متوسطة</strong> و <strong style="color: #8b5cf6;">طبقة سطحية</strong> بدلاً من الطبقة الحبيبية والمتقرنة.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The <strong style="color: #8b5cf6;">stratum superficiale</strong> retains its nuclei. This makes the tissue more flexible and less tough than keratinized mucosa, which is ideal for areas like the cheeks and soft palate.</div><div class="ar"><strong style="color: #8b5cf6;">الطبقة السطحية</strong> تحتفظ بأنويتها. هذا يجعل النسيج أكثر مرونة وأقل صلابة من الغشاء المخاطي المتقرن، وهو مثالي لمناطق مثل الخدين والحنك الرخو.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think "B.I.S." for the layers of nonkeratinized epithelium:<br/><strong>B</strong>asale, <strong>I</strong>ntermedium, <strong>S</strong>uperficiale.</div><div class="ar">تذكر "ق.م.س" لطبقات الظهارة غير المتقرنة:<br/><strong>ق</strong>اعدية، <strong>م</strong>توسطة، <strong>س</strong>طحية.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 4: Types of Keratinization</span><span class="ar">القسم 4: أنواع التقرن</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Keratinized epithelium can be classified into two main types based on the state of the stratum corneum:</p>
+<ul>
+<li><strong>Orthokeratinized Epithelium</strong>: This is "true" or complete keratinization.
+<ul>
+<li>It shows a <strong style="color: #8b5cf6;">complete loss of nuclei</strong> in the stratum corneum.</li>
+<li>A prominent <strong style="color: #8b5cf6;">stratum granulosum</strong> with many keratohyalin granules is present underneath.</li>
+</ul>
+</li>
+<li><strong>Parakeratinized Epithelium</strong>: This is a form of incomplete keratinization.
+<ul>
+<li>It is characterized by the <strong style="color: #8b5cf6;">retention of nuclear remnants</strong> (pyknotic nuclei) in the stratum corneum.</li>
+<li>The <strong style="color: #8b5cf6;">stratum granulosum</strong> is often less distinct or may appear to be absent .</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="ar">
+<p>يمكن تصنيف الظهارة المتقرنة إلى نوعين رئيسيين بناءً على حالة الطبقة المتقرنة:</p>
+<ul>
+<li><strong>الظهارة كاملة التقرن (Orthokeratinized)</strong>: هذا هو التقرن "الحقيقي" أو الكامل.
+<ul>
+<li>يُظهر <strong style="color: #8b5cf6;">فقدانًا كاملاً للأنوية</strong> في الطبقة المتقرنة.</li>
+<li>توجد <strong style="color: #8b5cf6;">طبقة حبيبية</strong> بارزة تحتوي على العديد من حبيبات الكيراتوهيالين تحتها.</li>
+</ul>
+</li>
+<li><strong>الظهارة نظيرة التقرن (Parakeratinized)</strong>: هذا شكل من أشكال التقرن غير الكامل.
+<ul>
+<li>تتميز <strong style="color: #8b5cf6;">بالاحتفاظ ببقايا نووية</strong> (أنوية متكثفة) في الطبقة المتقرنة.</li>
+<li><strong style="color: #8b5cf6;">الطبقة الحبيبية</strong> غالبًا ما تكون أقل وضوحًا أو قد تبدو غائبة .</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 23, 24 of 45</span>
+<span class="ar">الصفحات المرجعية: 23, 24 من 45</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en"><strong style="color: #8b5cf6;">Ortho</strong> = "Correct/True". It has <strong style="color: #8b5cf6;">No Nuclei</strong> in the stratum corneum.</div><div class="ar"><strong style="color: #8b5cf6;">Ortho (كامل)</strong> = "صحيح/حقيقي". <strong style="color: #8b5cf6;">لا توجد أنوية</strong> في الطبقة المتقرنة.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en"><strong style="color: #8b5cf6;">Para</strong> = "Beside/Beyond". It has <strong style="color: #8b5cf6;">Remnants of nuclei</strong> in the stratum corneum.</div><div class="ar"><strong style="color: #8b5cf6;">Para (نظير)</strong> = "بجانب/ما وراء". تحتوي على <strong style="color: #8b5cf6;">بقايا أنوية</strong> في الطبقة المتقرنة.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Parakeratinization is commonly found on the <strong style="color: #8b5cf6;">gingiva</strong> (gums) and is considered normal there. However, its presence in other areas that are normally orthokeratinized can be a sign of irritation, friction, or pathology.</div><div class="ar">يُوجد التقرن النظير بشكل شائع في <strong style="color: #8b5cf6;">اللثة</strong> ويعتبر طبيعيًا هناك. ومع ذلك، فإن وجوده في مناطق أخرى تكون عادةً كاملة التقرن يمكن أن يكون علامة على التهيج أو الاحتكاك أو وجود مرض.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 5: Epithelial Cell Dynamics (Turnover)</span><span class="ar">القسم 5: ديناميكيات خلايا الظهارة (التجدد)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>The epithelium is in a constant state of renewal through a balanced process:</p>
+<ul>
+<li><strong>Proliferation</strong>: New cells are produced by <strong style="color: #8b5cf6;">mitosis</strong> in the <strong style="color: #8b5cf6;">stratum basale</strong>.</li>
+<li><strong>Differentiation & Maturation</strong>: As cells are pushed upwards, they undergo programmed biochemical and morphological changes. This entire process of change from a basal cell to a keratinized squama is called <strong style="color: #8b5cf6;">keratinization</strong>.</li>
+<li><strong>Desquamation</strong>: Once cells reach the surface, they are shed or cast off.</li>
+<li><strong>Turnover Time</strong>: This is the time it takes for a cell to divide and pass through the entire thickness of the epithelium.</li>
+</ul>
+</div>
+<div class="ar">
+<p>الظهارة في حالة تجدد مستمر من خلال عملية متوازنة:</p>
+<ul>
+<li><strong>التكاثر (Proliferation)</strong>: يتم إنتاج خلايا جديدة عن طريق <strong style="color: #8b5cf6;">الانقسام الفتيلي</strong> في <strong style="color: #8b5cf6;">الطبقة القاعدية</strong>.</li>
+<li><strong>التمايز والنضج (Differentiation & Maturation)</strong>: مع دفع الخلايا للأعلى، فإنها تخضع لتغيرات كيميائية حيوية وشكلية مبرمجة. هذه العملية الكاملة للتغيير من خلية قاعدية إلى حرشفة متقرنة تسمى <strong style="color: #8b5cf6;">التقرن</strong>.</li>
+<li><strong>التوسف (Desquamation)</strong>: بمجرد وصول الخلايا إلى السطح، يتم التخلص منها أو طرحها.</li>
+<li><strong>وقت التجدد (Turnover Time)</strong>: هو الوقت الذي تستغرقه الخلية للانقسام والمرور عبر سماكة الظهارة بأكملها.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 9, 10, 11, 12, 13, 14 of 45</span>
+<span class="ar">الصفحات المرجعية: 9, 10, 11, 12, 13, 14 من 45</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The <strong style="color: #8b5cf6;">turnover time</strong> in the oral mucosa is <strong style="color: #8b5cf6;">faster than in the skin</strong>.</div><div class="ar">وقت تجدد الخلايا في الغشاء المخاطي الفموي <strong style="color: #8b5cf6;">أسرع منه في الجلد</strong>.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en"><strong style="color: #8b5cf6;">Nonkeratinized</strong> oral epithelium has a <strong style="color: #8b5cf6;">faster turnover time</strong> than <strong style="color: #8b5cf6;">keratinized</strong> oral epithelium.</div><div class="ar">الظهارة الفموية <strong style="color: #8b5cf6;">غير المتقرنة</strong> لها وقت تجدد <strong style="color: #8b5cf6;">أسرع</strong> من الظهارة الفموية <strong style="color: #8b5cf6;">المتقرنة</strong>.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">This rapid turnover is why oral injuries, like a cheek bite or a burn from hot pizza, often heal much faster than a comparable injury on your skin.</div><div class="ar">هذا التجدد السريع هو السبب في أن إصابات الفم، مثل عضة الخد أو الحرق من البيتزا الساخنة، غالبًا ما تلتئم أسرع بكثير من إصابة مماثلة على جلدك.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 6: Non-Keratinocytes (The 10%)</span><span class="ar">القسم 6: الخلايا غير الكيراتينية (نسبة 10%)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>These are specialized cells that make up about 10% of the epithelial population. They are often called "clear cells" or <strong style="color: #8b5cf6;">dendritic cells</strong> (due to their cytoplasmic projections) .</p>
+<ul>
+<li><strong>Melanocytes</strong>: Located in the <strong style="color: #8b5cf6;">basal layer</strong>. Their function is to produce <strong style="color: #8b5cf6;">melanin</strong> pigment, which gives color to the mucosa.</li>
+<li><strong>Langerhans cells</strong>: Located higher up in the <strong style="color: #8b5cf6;">stratum spinosum</strong> (suprabasal). They are part of the immune system, functioning in <strong style="color: #8b5cf6;">antigen trapping and processing</strong> .</li>
+<li><strong>Merkel cells</strong>: Located in the <strong style="color: #8b5cf6;">basal layer</strong>. They function as <strong style="color: #8b5cf6;">touch receptors</strong>.</li>
+<li><strong>Lymphocytes</strong>: These are inflammatory cells and are typically only present in the epithelium during <strong style="color: #8b5cf6;">inflammation</strong> .</li>
+</ul>
+</div>
+<div class="ar">
+<p>هذه خلايا متخصصة تشكل حوالي 10% من سكان الظهارة. غالبًا ما تسمى "الخلايا الصافية" أو <strong style="color: #8b5cf6;">الخلايا المتغصنة</strong> (بسبب بروزاتها السيتوبلازمية) .</p>
+<ul>
+<li><strong>الخلايا الميلانينية (Melanocytes)</strong>: تقع في <strong style="color: #8b5cf6;">الطبقة القاعدية</strong>. وظيفتها إنتاج صبغة <strong style="color: #8b5cf6;">الميلانين</strong>، التي تعطي اللون للغشاء المخاطي.</li>
+<li><strong>خلايا لانغرهانس (Langerhans cells)</strong>: تقع في مستوى أعلى في <strong style="color: #8b5cf6;">الطبقة الشائكة</strong> (فوق القاعدية). هي جزء من الجهاز المناعي، وتعمل في <strong style="color: #8b5cf6;">التقاط المستضدات ومعالجتها</strong> .</li>
+<li><strong>خلايا ميركل (Merkel cells)</strong>: تقع في <strong style="color: #8b5cf6;">الطبقة القاعدية</strong>. تعمل <strong style="color: #8b5cf6;">كمستقبلات للمس</strong>.</li>
+<li><strong>الخلايا الليمفاوية (Lymphocytes)</strong>: هذه خلايا التهابية ولا توجد عادة في الظهارة إلا أثناء <strong style="color: #8b5cf6;">الالتهاب</strong> .</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 5, 25, 26, 27, 28 of 45</span>
+<span class="ar">الصفحات المرجعية: 5, 25, 26, 27, 28 من 45</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The main non-keratinocytes are <strong style="color: #8b5cf6;">Melanocytes</strong>, <strong style="color: #8b5cf6;">Langerhans cells</strong>, and <strong style="color: #8b5cf6;">Merkel cells</strong>.</div><div class="ar">الخلايا غير الكيراتينية الرئيسية هي <strong style="color: #8b5cf6;">الخلايا الميلانينية</strong>، و <strong style="color: #8b5cf6;">خلايا لانغرهانس</strong>، و <strong style="color: #8b5cf6;">خلايا ميركل</strong>.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">
+<ul>
+<li><strong>M</strong>elanocyte = <strong>M</strong>elanin (Basal)</li>
+<li><strong>L</strong>angerhans = <strong>L</strong>ooks for antigens (Spinosum)</li>
+<li><strong>M</strong>erkel = <strong>M</strong>echanical/Touch (Basal)</li>
+</ul>
+</div><div class="ar">
+<ul>
+<li><strong>م</strong>يلانينية = <strong>م</strong>يلانين (قاعدية)</li>
+<li><strong>ل</strong>انغرهانس = <strong>ل</strong>لبحث عن مستضدات (شائكة)</li>
+<li><strong>م</strong>يركل = <strong>م</strong>يكانيكي/لمس (قاعدية)</li>
+</ul>
+</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en"><strong style="color: #8b5cf6;">Fordyce's granules</strong> are clusters of yellowish spots seen clinically, often on the cheeks. Histologically, these are normal <strong style="color: #8b5cf6;">sebaceous glands</strong> (oil glands) that are trapped in the oral mucosa. They are a harmless anatomical variation.</div><div class="ar"><strong style="color: #8b5cf6;">حبيبات فوردايس</strong> هي تجمعات من البقع الصفراء التي تُرى سريريًا، غالبًا على الخدين. نسيجيًا، هذه هي <strong style="color: #8b5cf6;">غدد دهنية</strong> طبيعية (غدد زيتية) محاصرة في الغشاء المخاطي الفموي. وهي تغيير تشريحي غير ضار.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 7: The Basement Membrane (BM)</span><span class="ar">القسم 7: الغشاء القاعدي (BM)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>The <strong style="color: #8b5cf6;">Basement Membrane (BM)</strong> is the <strong style="color: #8b5cf6;">interface</strong> between the epithelium and the underlying connective tissue (lamina propria).</p>
+<p><strong>Under a Light Microscope:</strong></p>
+<ul>
+<li>It appears as a 1-4 µm wide, cell-free zone.</li>
+<li>It contains neutral mucopolysaccharides and stains <strong style="color: #8b5cf6;">positive with the Periodic Acid-Schiff (PAS) method</strong>, appearing as a magenta line.</li>
+</ul>
+<p><strong>Under an Electron Microscope (Ultrastructure):</strong></p>
+<ul>
+<li>At this level, it's called the <strong style="color: #8b5cf6;">Basal Lamina</strong>.</li>
+<li>It consists of two parts:
+<ol>
+<li><strong>Lamina Lucida</strong>: A clear zone just below the epithelial cells.</li>
+<li><strong>Lamina Densa</strong>: A dark (dense) zone adjacent to the connective tissue.</li>
+</ol>
+</li>
+<li>The BM is composed of key proteins, including <strong style="color: #8b5cf6;">Laminin</strong> and <strong style="color: #8b5cf6;">Type IV Collagen</strong>.</li>
+</ul>
+</div>
+<div class="ar">
+<p><strong style="color: #8b5cf6;">الغشاء القاعدي (BM)</strong> هو <strong style="color: #8b5cf6;">السطح البيني</strong> بين الظهارة والنسيج الضام الأساسي (الصفيحة المخصوصة).</p>
+<p><strong>تحت المجهر الضوئي:</strong></p>
+<ul>
+<li>يظهر كمنطقة خالية من الخلايا بعرض 1-4 ميكرومتر.</li>
+<li>يحتوي على عديدات السكاريد المخاطية المتعادلة ويُصبغ <strong style="color: #8b5cf6;">بشكل إيجابي بطريقة حمض البيروديك-شيف (PAS)</strong>، ليظهر كخط أرجواني.</li>
+</ul>
+<p><strong>تحت المجهر الإلكتروني (البنية التحتية):</strong></p>
+<ul>
+<li>عند هذا المستوى، يطلق عليه اسم <strong style="color: #8b5cf6;">الصفيحة القاعدية (Basal Lamina)</strong>.</li>
+<li>تتكون من جزأين:
+<ol>
+<li><strong>الصفيحة الشافية (Lamina Lucida)</strong>: منطقة صافية أسفل الخلايا الظهارية مباشرة.</li>
+<li><strong>الصفيحة الكثيفة (Lamina Densa)</strong>: منطقة داكنة (كثيفة) مجاورة للنسيج الضام.</li>
+</ol>
+</li>
+<li>يتكون الغشاء القاعدي من بروتينات رئيسية، بما في ذلك <strong style="color: #8b5cf6;">لامينين</strong> و <strong style="color: #8b5cf6;">كولاجين من النوع الرابع</strong>.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 11, 30, 31, 32 of 45</span>
+<span class="ar">الصفحات المرجعية: 11, 30, 31, 32 من 45</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Under an electron microscope, the BM is called the <strong style="color: #8b5cf6;">Basal Lamina</strong> and has two layers: <strong style="color: #8b5cf6;">Lamina Lucida</strong> and <strong style="color: #8b5cf6;">Lamina Densa</strong>.</div><div class="ar">تحت المجهر الإلكتروني، يسمى الغشاء القاعدي <strong style="color: #8b5cf6;">الصفيحة القاعدية</strong> وله طبقتان: <strong style="color: #8b5cf6;">الصفيحة الشافية</strong> و <strong style="color: #8b5cf6;">الصفيحة الكثيفة</strong>.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The BM is rich in <strong style="color: #8b5cf6;">Type IV Collagen</strong> and <strong style="color: #8b5cf6;">Laminin</strong>.</div><div class="ar">الغشاء القاعدي غني <strong style="color: #8b5cf6;">بالكولاجين من النوع الرابع</strong> و <strong style="color: #8b5cf6;">اللامينين</strong>.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">The <strong style="color: #8b5cf6;">PAS stain</strong> is used in histology to specifically highlight basement membranes, which appear as a distinct pink/magenta line. This helps identify the boundary between epithelium and connective tissue.</div><div class="ar">تُستخدم <strong style="color: #8b5cf6;">صبغة PAS</strong> في علم الأنسجة لتسليط الضوء بشكل خاص على الأغشية القاعدية، والتي تظهر كخط وردي/أرجواني مميز. يساعد هذا في تحديد الحدود بين الظهارة والنسيج الضام.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 8: Cellular Attachments</span><span class="ar">القسم 8: الارتباطات الخلوية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Cells are held together and to the basement membrane by specialized junctions:</p>
+<ul>
+<li><strong>Desmosomes</strong>:
+<ul>
+<li><strong>Function</strong>: Attach <strong style="color: #8b5cf6;">epithelial cells to each other</strong>.</li>
+<li><strong>Location</strong>: Found in stratum basale, spinosum, and granulosum.</li>
+<li><strong>Protein</strong>: The transmembrane glycoprotein is <strong style="color: #8b5cf6;">Cadherin</strong> (specifically Desmoglein and Desmocollin) .</li>
+</ul>
+</li>
+<li><strong>Hemidesmosomes</strong>:
+<ul>
+<li><strong>Function</strong>: Attach <strong style="color: #8b5cf6;">basal cells to the basement membrane</strong> .</li>
+<li><strong>Location</strong>: Found only at the base of the stratum basale.</li>
+<li><strong>Protein</strong>: The transmembrane glycoprotein is <strong style="color: #8b5cf6;">Integrin</strong>.</li>
+</ul>
+</li>
+</ul>
+</div>
+<div class="ar">
+<p>ترتبط الخلايا ببعضها البعض وبالغشاء القاعدي عن طريق تقاطعات متخصصة:</p>
+<ul>
+<li><strong>الجسيمات الرابطة (Desmosomes)</strong>:
+<ul>
+<li><strong>الوظيفة</strong>: تربط <strong style="color: #8b5cf6;">الخلايا الظهارية ببعضها البعض</strong>.</li>
+<li><strong>الموقع</strong>: توجد في الطبقة القاعدية والشائكة والحبيبية.</li>
+<li><strong>البروتين</strong>: البروتين السكري عبر الغشائي هو <strong style="color: #8b5cf6;">الكادهيرين</strong> (تحديداً ديسموغلين وديسموكولين) .</li>
+</ul>
+</li>
+<li><strong>الجسيمات الرابطة النصفية (Hemidesmosomes)</strong>:
+<ul>
+<li><strong>الوظيفة</strong>: تربط <strong style="color: #8b5cf6;">الخلايا القاعدية بالغشاء القاعدي</strong> .</li>
+<li><strong>الموقع</strong>: توجد فقط عند قاعدة الطبقة القاعدية.</li>
+<li><strong>البروتين</strong>: البروتين السكري عبر الغشائي هو <strong style="color: #8b5cf6;">الإنتغرين</strong>.</li>
+</ul>
+</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 8, 16, 33, 34 of 45</span>
+<span class="ar">الصفحات المرجعية: 8, 16, 33, 34 من 45</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en"><strong style="color: #8b5cf6;">Desmosomes</strong> = Cell-to-Cell attachment (using <strong style="color: #8b5cf6;">Cadherins</strong>).</div><div class="ar"><strong style="color: #8b5cf6;">الجسيمات الرابطة</strong> = ارتباط خلية بخلية (باستخدام <strong style="color: #8b5cf6;">الكادهيرينات</strong>).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en"><strong style="color: #8b5cf6;">Hemidesmosomes</strong> = Cell-to-Basement Membrane attachment (using <strong style="color: #8b5cf6;">Integrins</strong>).</div><div class="ar"><strong style="color: #8b5cf6;">الجسيمات الرابطة النصفية</strong> = ارتباط خلية بالغشاء القاعدي (باستخدام <strong style="color: #8b5cf6;">الإنتغرينات</strong>).</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong style="color: #8b5cf6;">Hemi</strong>-desmosome means "half" a desmosome. It anchors the cell to the "floor" (the BM), while a full desmosome anchors it to a "neighbor" (another cell).</div><div class="ar"><strong style="color: #8b5cf6;">Hemi</strong> (نصفي) يعني "نصف" جسيم رابط. يثبت الخلية "بالأرضية" (الغشاء القاعدي)، بينما الجسيم الرابط الكامل يثبتها "بجار" (خلية أخرى).</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Diseases like <strong style="color: #8b5cf6;">Pemphigus Vulgaris</strong> are autoimmune disorders that attack <strong style="color: #8b5cf6;">desmosomes</strong> (specifically Desmoglein). This causes cells to separate, leading to severe, painful blistering of the oral mucosa and skin.</div><div class="ar">أمراض مثل <strong style="color: #8b5cf6;">الفقاع الشائع (Pemphigus Vulgaris)</strong> هي اضطرابات مناعة ذاتية تهاجم <strong style="color: #8b5cf6;">الجسيمات الرابطة</strong> (تحديداً ديسموغلين). يؤدي هذا إلى انفصال الخلايا، مما يسبب تقرحات مؤلمة وشديدة في الغشاء المخاطي الفموي والجلد.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">Section 9: Summary</span><span class="ar">القسم 9: الملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+<ul>
+<li>Oral epithelium is <strong style="color: #8b5cf6;">stratified squamous</strong>, either <strong style="color: #8b5cf6;">keratinized</strong> or <strong style="color: #8b5cf6;">nonkeratinized</strong>.</li>
+<li><strong>Keratinized Layers</strong>: Stratum Basale, Spinosum, Granulosum, Corneum.</li>
+<li><strong>Nonkeratinized Layers</strong>: Stratum Basale, Intermedium, Superficiale.</li>
+<li>Keratinization can be <strong style="color: #8b5cf6;">ortho-</strong> (no nuclei) or <strong style="color: #8b5cf6;">para-</strong> (nuclear remnants).</li>
+<li>Cell renewal involves <strong style="color: #8b5cf6;">mitosis</strong> (proliferation) in the basal layer, upward <strong style="color: #8b5cf6;">migration</strong> (maturation), and <strong style="color: #8b5cf6;">shedding</strong> (desquamation).</li>
+<li>The oral mucosa has a <strong style="color: #8b5cf6;">faster turnover time</strong> than skin.</li>
+<li><strong style="color: #8b5cf6;">Non-keratinocytes</strong> (10%) include <strong style="color: #8b5cf6;">Melanocytes</strong> (pigment), <strong style="color: #8b5cf6;">Langerhans cells</strong> (immune), and <strong style="color: #8b5cf6;">Merkel cells</strong> (touch).</li>
+<li><strong style="color: #8b5cf6;">Desmosomes</strong> (Cadherin) link cell-to-cell, while <strong style="color: #8b5cf6;">Hemidesmosomes</strong> (Integrin) link basal cells to the <strong style="color: #8b5cf6;">Basement Membrane</strong>.</li>
+<li>The <strong style="color: #8b5cf6;">Basement Membrane</strong> (Basal Lamina) is made of Lamina Lucida and Lamina Densa, contains <strong style="color: #8b5cf6;">Type IV collagen</strong>, and stains with <strong style="color: #8b5cf6;">PAS</strong>.</li>
+</ul>
+</div>
+<div class="ar">
+<ul>
+<li>الظهارة الفموية هي <strong style="color: #8b5cf6;">حرشفية طبقية</strong>، إما <strong style="color: #8b5cf6;">متقرنة</strong> أو <strong style="color: #8b5cf6;">غير متقرنة</strong>.</li>
+<li><strong>الطبقات المتقرنة</strong>: القاعدية، الشائكة، الحبيبية، المتقرنة.</li>
+<li><strong>الطبقات غير المتقرنة</strong>: القاعدية، المتوسطة، السطحية.</li>
+<li>يمكن أن يكون التقرن <strong style="color: #8b5cf6;">كاملاً (ortho)</strong> (بدون أنوية) أو <strong style="color: #8b5cf6;">نظير (para)</strong> (بقايا نووية).</li>
+<li>يشمل تجديد الخلايا <strong style="color: #8b5cf6;">الانقسام الفتيلي</strong> (التكاثر) في الطبقة القاعدية، <strong style="color: #8b5cf6;">والهجرة</strong> للأعلى (النضج)، <strong style="color: #8b5cf6;">والتوسف</strong> (السقوط).</li>
+<li>الغشاء المخاطي الفموي له <strong style="color: #8b5cf6;">وقت تجدد أسرع</strong> من الجلد.</li>
+<li><strong style="color: #8b5cf6;">الخلايا غير الكيراتينية</strong> (10%) تشمل <strong style="color: #8b5cf6;">الخلايا الميلانينية</strong> (صبغة)، <strong style="color: #8b5cf6;">خلايا لانغرهانس</strong> (مناعة)، و <strong style="color: #8b5cf6;">خلايا ميركل</strong> (لمس).</li>
+<li><strong style="color: #8b5cf6;">الجسيمات الرابطة (Desmosomes)</strong> (كادهيرين) تربط خلية بخلية، بينما <strong style="color: #8b5cf6;">الجسيمات الرابطة النصفية (Hemidesmosomes)</strong> (إنتغرين) تربط الخلايا القاعدية <strong style="color: #8b5cf6;">بالغشاء القاعدي</strong>.</li>
+<li><strong style="color: #8b5cf6;">الغشاء القاعدي</strong> (الصفيحة القاعدية) يتكون من الصفيحة الشافية والصفيحة الكثيفة، ويحتوي على <strong style="color: #8b5cf6;">كولاجين من النوع الرابع</strong>، ويُصبغ بـ <strong style="color: #8b5cf6;">PAS</strong>.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: All pages</span>
+<span class="ar">الصفحات المرجعية: جميع الصفحات</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong>Key Layers:</strong><br/>Keratinized (B-S-G-C)<br/>Nonkeratinized (B-I-S)</div><div class="ar"><strong>الطبقات الرئيسية:</strong><br/>متقرنة (ق-ش-ح-م)<br/>غير متقرنة (ق-م-س)</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong>Key Junctions:</strong><br/>Desmosome (Cell-Cell)<br/>Hemidesmosome (Cell-BM)</div><div class="ar"><strong>الارتباطات الرئيسية:</strong><br/>جسيم رابط (خلية-خلية)<br/>جسيم رابط نصفي (خلية-غشاء قاعدي)</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong>Key Cells:</strong><br/>Keratinocytes (90%)<br/>Non-Keratinocytes (10% - Melanocyte, Langerhans, Merkel)</div><div class="ar"><strong>الخلايا الرئيسية:</strong><br/>خلايا كيراتينية (90%)<br/>خلايا غير كيراتينية (10% - ميلانينية، لانغرهانس، ميركل)</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Stratum Basale / الطبقة القاعدية</div><div class="content" hidden=""><div class="en">The deepest layer of the epithelium where cell division (mitosis) occurs. Also called Stratum Germinativum.</div><div class="ar">أعمق طبقة في الظهارة حيث يحدث انقسام الخلايا (الانقسام الفتيلي). تسمى أيضًا الطبقة المنبتة.</div></div></div>
+<div class="card"><div class="head">Stratum Spinosum / الطبقة الشائكة</div><div class="content" hidden=""><div class="en">The "prickle cell layer" above the basal layer; cells are rich in desmosomes.</div><div class="ar">"طبقة الخلايا الشائكة" فوق الطبقة القاعدية؛ الخلايا غنية بالجسيمات الرابطة (الديسموسومات).</div></div></div>
+<div class="card"><div class="head">Stratum Granulosum / الطبقة الحبيبية</div><div class="content" hidden=""><div class="en">Layer containing keratohyaline granules; present in keratinized epithelium.</div><div class="ar">طبقة تحتوي على حبيبات الكيراتوهيالين؛ توجد في الظهارة المتقرنة.</div></div></div>
+<div class="card"><div class="head">Stratum Corneum / الطبقة المتقرنة</div><div class="content" hidden=""><div class="en">The outermost, dehydrated, dead layer of keratinized epithelium; cells have no nuclei (in ortho).</div><div class="ar">الطبقة الخارجية، المجففة، والميتة في الظهارة المتقرنة؛ الخلايا لا تحتوي على أنوية (في التقرن الكامل).</div></div></div>
+<div class="card"><div class="head">Stratum Intermedium / الطبقة المتوسطة</div><div class="content" hidden=""><div class="en">The layer in nonkeratinized epithelium situated between the basal and superficial layers.</div><div class="ar">الطبقة في الظهارة غير المتقرنة التي تقع بين الطبقات القاعدية والسطحية.</div></div></div>
+<div class="card"><div class="head">Stratum Superficiale / الطبقة السطحية</div><div class="content" hidden=""><div class="en">The outermost layer of nonkeratinized epithelium; cells are alive and retain their nuclei.</div><div class="ar">الطبقة الخارجية للظهارة غير المتقرنة؛ الخلايا حية وتحتفظ بأنويتها.</div></div></div>
+<div class="card"><div class="head">Desmosome / الجسيم الرابط</div><div class="content" hidden=""><div class="en">A cellular junction that attaches one epithelial cell to another, using Cadherin proteins.</div><div class="ar">ارتباط خلوي يربط خلية ظهارية بأخرى، باستخدام بروتينات الكادهيرين.</div></div></div>
+<div class="card"><div class="head">Hemidesmosome / الجسيم الرابط النصفي</div><div class="content" hidden=""><div class="en">A cellular junction that attaches a basal epithelial cell to the basement membrane, using Integrin proteins.</div><div class="ar">ارتباط خلوي يربط خلية ظهارية قاعدية بالغشاء القاعدي، باستخدام بروتينات الإنتغرين.</div></div></div>
+<div class="card"><div class="head">Langerhans Cell / خلية لانغرهانس</div><div class="content" hidden=""><div class="en">A non-keratinocyte (dendritic cell) in the stratum spinosum that functions in antigen trapping and immune response.</div><div class="ar">خلية غير كيراتينية (خلية متغصنة) في الطبقة الشائكة تعمل على التقاط المستضدات والاستجابة المناعية.</div></div></div>
+<div class="card"><div class="head">Merkel Cell / خلية ميركل</div><div class="content" hidden=""><div class="en">A non-keratinocyte in the basal layer that functions as a touch receptor.</div><div class="ar">خلية غير كيراتينية في الطبقة القاعدية تعمل كمستقبل للمس.</div></div></div>
+<div class="card"><div class="head">Melanocyte / الخلية الميلانينية</div><div class="content" hidden=""><div class="en">A non-keratinocyte in the basal layer that produces melanin pigment.</div><div class="ar">خلية غير كيراتينية في الطبقة القاعدية تنتج صبغة الميلانين.</div></div></div>
+<div class="card"><div class="head">Basal Lamina / الصفيحة القاعدية</div><div class="content" hidden=""><div class="en">The ultrastructural term for the basement membrane, consisting of the lamina lucida and lamina densa.</div><div class="ar">المصطلح الخاص بالبنية التحتية للغشاء القاعدي، ويتكون من الصفيحة الشافية والصفيحة الكثيفة.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — What are the 4 layers of keratinized epithelium?</span><span class="ar">١ — ما هي الطبقات الأربع للظهارة المتقرنة؟</span></div><div class="content" hidden=""><span class="en">A: Stratum Basale, Spinosum, Granulosum, Corneum.</span><span class="ar">ج: الطبقة القاعدية، الشائكة، الحبيبية، المتقرنة.</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — What are the 3 layers of nonkeratinized epithelium?</span><span class="ar">٢ — ما هي الطبقات الثلاث للظهارة غير المتقرنة؟</span></div><div class="content" hidden=""><span class="en">A: Stratum Basale, Intermedium, Superficiale.</span><span class="ar">ج: الطبقة القاعدية، المتوسطة، السطحية.</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — In which layer does mitosis (cell division) occur?</span><span class="ar">٣ — في أي طبقة يحدث الانقسام الفتيلي (انقسام الخلية)؟</span></div><div class="content" hidden=""><span class="en">A: Stratum Basale (also called Stratum Germinativum).</span><span class="ar">ج: الطبقة القاعدية (وتسمى أيضًا الطبقة المنبتة).</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — What is the main difference between Ortho- and Parakeratinization?</span><span class="ar">٤ — ما هو الفرق الرئيسي بين التقرن الكامل والتقرن النظير؟</span></div><div class="content" hidden=""><span class="en">A: Orthokeratinized = no nuclei in stratum corneum. Parakeratinized = remnants of nuclei are present.</span><span class="ar">ج: التقرن الكامل = لا توجد أنوية في الطبقة المتقرنة. التقرن النظير = توجد بقايا أنوية.</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — What junction attaches a basal cell to the basement membrane?</span><span class="ar">٥ — ما هو الارتباط الذي يربط الخلية القاعدية بالغشاء القاعدي؟</span></div><div class="content" hidden=""><span class="en">A: Hemidesmosome (uses Integrins).</span><span class="ar">ج: الجسيم الرابط النصفي (يستخدم الإنتغرينات).</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — What junction attaches two epithelial cells together?</span><span class="ar">٦ — ما هو الارتباط الذي يربط خليتين ظهاريتين ببعضهما؟</span></div><div class="content" hidden=""><span class="en">A: Desmosome (uses Cadherins).</span><span class="ar">ج: الجسيم الرابط (يستخدم الكادهيرينات).</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — What is the function of a Langerhans cell?</span><span class="ar">٧ — ما هي وظيفة خلية لانغرهانس؟</span></div><div class="content" hidden=""><span class="en">A: Antigen trapping and processing (immune defense).</span><span class="ar">ج: التقاط المستضدات ومعالجتها (دفاع مناعي).</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — What is the function of a Merkel cell?</span><span class="ar">٨ — ما هي وظيفة خلية ميركل؟</span></div><div class="content" hidden=""><span class="en">A: It acts as a touch receptor.</span><span class="ar">ج: تعمل كمستقبل للمس.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — Which has a faster turnover time: skin or oral mucosa?</span><span class="ar">٩ — أيهما له وقت تجدد أسرع: الجلد أم الغشاء المخاطي الفموي؟</span></div><div class="content" hidden=""><span class="en">A: Oral mucosa.</span><span class="ar">ج: الغشاء المخاطي الفموي.</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>
