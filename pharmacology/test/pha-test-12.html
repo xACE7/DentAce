@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 12</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+  {
+    q: "Hemostasis involves all of the following processes EXCEPT:",
+    opts: ["Increasing blood fluidity to promote leakage", "Maintaining fluidity of blood", "Repairing vascular injury", "Limiting blood loss"],
+    correct: 0,
+    explain: "Hemostasis aims to limit blood loss and repair injury while maintaining necessary fluidity, not increasing leakage."
+  },
+  {
+    q: "Which ion is designated as Coagulation Factor IV?",
+    opts: ["Calcium", "Potassium", "Sodium", "Magnesium"],
+    correct: 0,
+    explain: "Factor IV is Ca++ (Calcium), which is essential for multiple steps in the coagulation cascade."
+  },
+  {
+    q: "Which of the following forms of Vitamin K is synthesized by intestinal bacteria?",
+    opts: ["Vitamin K2", "Vitamin K1", "Vitamin K3", "Vitamin K4"],
+    correct: 0,
+    explain: "Vitamin K2 is synthesized by intestinal bacteria (e.g., E. coli). K1 is found in food."
+  },
+  {
+    q: "Vitamin K is essential for the synthesis of which set of clotting factors?",
+    opts: ["II, VII, IX, X", "I, II, V, VIII", "XI, XII, XIII, I", "III, IV, V, VI"],
+    correct: 0,
+    explain: "Vitamin K is necessary for the synthesis of Factors II (Prothrombin), VII, IX, and X in the liver."
+  },
+  {
+    q: "Which agent is considered a systemic coagulant used as an anti-fibrinolytic?",
+    opts: ["Tranexamic Acid", "Thrombin", "Bone Wax", "Cellulose"],
+    correct: 0,
+    explain: "Tranexamic Acid is a systemic agent that produces an anti-fibrinolytic effect. The others are topical or mechanical agents."
+  },
+  {
+    q: "Which of the following is a topical hemostatic agent fabricated from bovine collagen?",
+    opts: ["Hemostatic Collagen", "Bone Wax", "Tranexamic Acid", "Warfarin"],
+    correct: 0,
+    explain: "Hemostatic collagen products are fabricated from bovine collagen and are nontoxic and nonpyrogenic."
+  },
+  {
+    q: "What is the primary mechanism of action of Heparin?",
+    opts: ["Activates Antithrombin III", "Inhibits Vitamin K epoxide reductase", "Inactivates Cyclooxygenase", "Converts Plasminogen to Plasmin"],
+    correct: 0,
+    explain: "Heparin works by activating Antithrombin III, which then inhibits clotting factors."
+  },
+  {
+    q: "Warfarin acts as an anticoagulant by interfering with the metabolism of:",
+    opts: ["Vitamin K", "Calcium", "Fibrinogen", "Plasminogen"],
+    correct: 0,
+    explain: "Warfarin is a Vitamin K antagonist, interfering with the synthesis of Vitamin K-dependent clotting factors."
+  },
+  {
+    q: "Which drug irreversibly inactivates the platelet enzyme cyclooxygenase?",
+    opts: ["Aspirin", "Heparin", "Streptokinase", "Tranexamic Acid"],
+    correct: 0,
+    explain: "Aspirin, in small doses, irreversibly inactivates platelet cyclooxygenase for the life of the platelet."
+  },
+  {
+    q: "Streptokinase is used clinically to:",
+    opts: ["Lyse clots by converting plasminogen to plasmin", "Promote clot formation in hemophilia", "Inhibit platelet aggregation", "Reverse the effects of Heparin"],
+    correct: 0,
+    explain: "Streptokinase is a fibrinolytic agent that converts plasminogen to plasmin to lyse clots."
+  },
+  {
+    q: "Which factor is also known as the 'Christmas Factor'?",
+    opts: ["Factor IX", "Factor VIII", "Factor X", "Factor VII"],
+    correct: 0,
+    explain: "Factor IX is known as Antihemophilic B factor or Christmas factor."
+  },
+  {
+    q: "What is the function of Factor XIII in the coagulation cascade?",
+    opts: ["Stabilizes fibrin by cross-linking", "Converts Prothrombin to Thrombin", "Initiates the extrinsic pathway", "Activates platelets"],
+    correct: 0,
+    explain: "Factor XIII is the Fibrin Stabilizing Factor which creates cross-linked fibrin polymers."
+  },
+  {
+    q: "Menadione is a synthetic analogue of which vitamin?",
+    opts: ["Vitamin K", "Vitamin C", "Vitamin B12", "Vitamin A"],
+    correct: 0,
+    explain: "Menadione is a Vitamin K analogue."
+  },
+  {
+    q: "Which of the following is a water-soluble synthetic form of Vitamin K?",
+    opts: ["Vitamin K3", "Vitamin K1", "Vitamin K2", "Phytomenadione"],
+    correct: 0,
+    explain: "Vitamin K3 and K4 are synthetic water-soluble forms, whereas K1 and K2 are fat-soluble."
+  },
+  {
+    q: "Bone Wax is a sterile mixture primarily containing:",
+    opts: ["Beeswax", "Collagen", "Cellulose", "Fibrin"],
+    correct: 0,
+    explain: "Bone Wax is a sterile mixture of beeswax, paraffin, and isopropyl palmitate."
+  },
+  {
+    q: "Which agent stimulates the release of von Willebrand factor and Factor VIII?",
+    opts: ["Desmopressin Acetate", "Warfarin", "Aspirin", "Heparin"],
+    correct: 0,
+    explain: "Desmopressin produces a dose-related increase in circulating Factors (specifically VIII and vWF)."
+  },
+  {
+    q: "Which anticoagulant is administered via subcutaneous injection?",
+    opts: ["Low-molecular-weight heparin", "Warfarin", "Dicumarol", "Aspirin"],
+    correct: 0,
+    explain: "Heparin and Low-molecular-weight heparin are parenteral anticoagulants administered by injection (SC)."
+  },
+  {
+    q: "The most common side effect of Warfarin therapy is:",
+    opts: ["Bleeding", "Hypertension", "Thrombosis", "Hyperkalemia"],
+    correct: 0,
+    explain: "The most common side effect of warfarin is bleeding due to the inhibition of clotting factors."
+  },
+  {
+    q: "Which factor is known as Fibrinogen?",
+    opts: ["Factor I", "Factor II", "Factor III", "Factor IV"],
+    correct: 0,
+    explain: "Factor I is Fibrinogen."
+  },
+  {
+    q: "Dicumarol acts similarly to which other drug?",
+    opts: ["Warfarin", "Heparin", "Aspirin", "Streptokinase"],
+    correct: 0,
+    explain: "Dicumarol is a potent oral anticoagulant that acts by inhibiting Vitamin K, similar to Warfarin."
+  },
+  {
+    q: "What is the role of Plasmin in hemostasis?",
+    opts: ["Breaks down fibrin clots", "Converts Fibrinogen to Fibrin", "Activates Platelets", "Stabilizes the clot"],
+    correct: 0,
+    explain: "Plasmin is the enzyme responsible for fibrinolysis, breaking down fibrin clots into degradation products."
+  },
+  {
+    q: "Which of the following is NOT a Vitamin K dependent factor?",
+    opts: ["Factor V", "Factor II", "Factor VII", "Factor X"],
+    correct: 0,
+    explain: "Vitamin K affects Factors II, VII, IX, and X. Factor V is not Vitamin K dependent."
+  },
+  {
+    q: "Topical Thrombin is used to:",
+    opts: ["Control post-surgical bleeding", "Dissolve existing clots", "Prevent deep vein thrombosis systematically", "Treat hemophilia A systemically"],
+    correct: 0,
+    explain: "Topical Thrombin is a coagulant used for hemostasis, such as controlling post-surgical bleeding."
+  },
+  {
+    q: "Which of the following drugs is a Direct Oral Anticoagulant (DOAC)?",
+    opts: ["Rivaroxaban", "Warfarin", "Heparin", "Aspirin"],
+    correct: 0,
+    explain: "Rivaroxaban and Dabigatran are examples of Direct Oral Anticoagulants."
+  },
+  {
+    q: "The effect of Aspirin on platelets lasts for:",
+    opts: ["The life of the platelet", "24 hours", "4-6 hours", "Until Vitamin K is administered"],
+    correct: 0,
+    explain: "Aspirin inactivates cyclooxygenase irreversibly, lasting for the life of the platelet (approx 7-10 days)."
+  },
+  {
+    q: "Zeolites are used as:",
+    opts: ["Adsorbent chemicals for sealing severe injuries", "Systemic anticoagulants", "Vitamin K supplements", "Fibrinolytic agents"],
+    correct: 0,
+    explain: "Zeolites are adsorbent chemicals used as hemostatic agents to seal severe injuries quickly."
+  },
+  {
+    q: "Which factor is naturally produced by basophils and mast cells?",
+    opts: ["Heparin", "Warfarin", "Aspirin", "Dicumarol"],
+    correct: 0,
+    explain: "Heparin is a naturally occurring anticoagulant produced by basophils and mast cells."
+  },
+  {
+    q: "Factor II is also known as:",
+    opts: ["Prothrombin", "Fibrinogen", "Tissue Factor", "Proaccelerin"],
+    correct: 0,
+    explain: "Factor II is Prothrombin."
+  },
+  {
+    q: "In the coagulation cascade, Prothrombin is converted to:",
+    opts: ["Thrombin", "Fibrin", "Fibrinogen", "Plasmin"],
+    correct: 0,
+    explain: "Prothrombin is converted to Thrombin, which then converts Fibrinogen to Fibrin."
+  },
+  {
+    q: "A patient on Warfarin requires dental extraction. What is a key consideration?",
+    opts: ["Monitoring INR and risk of bleeding", "Administering Heparin immediately", "Stopping all medication without consultation", "Prescribing Aspirin post-op"],
+    correct: 0,
+    explain: "Patients on Warfarin require monitoring (INR) and assessment of bleeding risk; therapy adjustment may be needed."
+  }
+];
+
+const tfs = [
+  {
+    q: "Vitamin K1 and K2 are water-soluble.",
+    answer: false,
+    explain: "Vitamin K1 and K2 are fat-soluble; K3 and K4 are water-soluble."
+  },
+  {
+    q: "Tranexamic acid diffuses across the placenta.",
+    answer: true,
+    explain: "Tranexamic acid is widely distributed and diffuses across the placenta."
+  },
+  {
+    q: "Heparin can be administered orally.",
+    answer: false,
+    explain: "Heparin is a parenteral anticoagulant administered by injection (IV or SC), not orally."
+  },
+  {
+    q: "Aspirin reversibly inhibits platelet cyclooxygenase.",
+    answer: false,
+    explain: "Aspirin causes *irreversible* inactivation of the enzyme."
+  },
+  {
+    q: "The intrinsic and extrinsic pathways both lead to the activation of Factor X.",
+    answer: true,
+    explain: "Both pathways converge at the activation of Factor X (Stuart factor)."
+  },
+  {
+    q: "Streptokinase is an anticoagulant agent.",
+    answer: false,
+    explain: "Streptokinase is a *fibrinolytic* agent (clot buster), not an anticoagulant (clot preventer)."
+  },
+  {
+    q: "Vitamin K is required for the absorption of bile salts.",
+    answer: false,
+    explain: "It is the other way around: Bile salts are required for the absorption of fat-soluble Vitamin K."
+  },
+  {
+    q: "Gelatin sponges are resorbable and porous.",
+    answer: true,
+    explain: "Gelatin sponges are porous and absorbable, used for minor bleeding."
+  },
+  {
+    q: "Low-molecular-weight heparin is more cost-effective than standard heparin.",
+    answer: true,
+    explain: "Lecture notes state LMWH is more convenient and cost-effective with similar results."
+  }
+];
+
+const saqs = [
+  {
+    q: "Define Hemostasis.",
+    a: "Hemostasis is the finely regulated dynamic process of maintaining fluidity of the blood, repairing vascular injury, and limiting blood loss while avoiding vessel occlusion."
+  },
+  {
+    q: "List the four coagulation factors that require Vitamin K for their synthesis.",
+    a: "1. Factor II (Prothrombin)<br>2. Factor VII<br>3. Factor IX<br>4. Factor X"
+  },
+  {
+    q: "Compare Heparin and Warfarin based on their Route of Administration and Onset/Mechanism.",
+    a: "<table border='1' style='width:100%; border-collapse: collapse; margin-top:5px; color:var(--text);'><tr><th>Feature</th><th>Heparin</th><th>Warfarin</th></tr><tr><td><b>Route</b></td><td>Parenteral (Injection)</td><td>Oral</td></tr><tr><td><b>Mechanism</b></td><td>Activates Antithrombin III</td><td>Vitamin K Antagonist</td></tr></table>"
+  },
+  {
+    q: "A patient taking Warfarin needs a tooth extraction. What management steps should be considered?",
+    a: "1. Evaluate risk of bleeding.<br>2. Monitor INR levels.<br>3. Adjust anticoagulant therapy pre-procedure if required (consult physician).<br>4. Use local hemostatic measures (sutures, pressure, tranexamic acid)."
+  },
+  {
+    q: "List three types of topical hemostatic agents used in dentistry.",
+    a: "1. Fibrin glue / Thrombin<br>2. Gelatin sponges<br>3. Bone Wax<br>(Also: Cellulose, Collagen)"
+  },
+  {
+    q: "Explain the mechanism of action of Aspirin as an antiplatelet drug.",
+    a: "In small doses, Aspirin irreversibly inactivates the platelet enzyme cyclooxygenase. This prevents the formation of thromboxane A2, inhibiting platelet aggregation for the life of the platelet."
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

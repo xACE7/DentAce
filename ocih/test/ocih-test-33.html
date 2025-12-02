@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 33</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (Extracted from ocih-33.pdf) -----------
+const mcqs = [
+  {
+    q: "What percentage of the total surface area of the oral mucosa does specialized mucosa cover?",
+    opts: ["15%", "25%", "60%", "75%"],
+    correct: 0,
+    explain: "Specialized mucosa covers 15% of the total area (dorsum of tongue). Lining mucosa is 60%, and masticatory mucosa is 25%."
+  },
+  {
+    q: "Which structure divides the dorsum of the tongue into an anterior 2/3 and a posterior 1/3?",
+    opts: ["Median sulcus", "Sulcus terminalis", "Foramen cecum", "Vallate papillae"],
+    correct: 1,
+    explain: "The Sulcus terminalis is an inverted V-shaped groove that divides the dorsum into the anterior 2/3 and posterior 1/3."
+  },
+  {
+    q: "The nerve supply for taste sensation to the anterior 2/3 of the tongue is provided by which nerve?",
+    opts: ["Glossopharyngeal nerve", "Vagus nerve", "Chorda tympani branch of facial nerve", "Lingual branch of trigeminal nerve"],
+    correct: 2,
+    explain: "The anterior 2/3 receives taste supply from the chorda tympani branch of the facial nerve."
+  },
+  {
+    q: "Which type of lingual papillae is the most numerous on the dorsal surface of the tongue?",
+    opts: ["Fungiform papillae", "Vallate papillae", "Foliate papillae", "Filiform papillae"],
+    correct: 3,
+    explain: "Filiform papillae are the most numerous type and cover the entire anterior 2/3 of the tongue."
+  },
+  {
+    q: "Which of the following papillae do NOT contain taste buds?",
+    opts: ["Filiform papillae", "Fungiform papillae", "Vallate papillae", "Foliate papillae"],
+    correct: 0,
+    explain: "Filiform papillae are the only type listed that do not contain taste buds; their function is mechanical."
+  },
+  {
+    q: "Where are Vallate (Circumvallate) papillae located?",
+    opts: ["At the apex of the tongue", "On the lateral borders of the tongue", "In front of the sulcus terminalis", "Behind the foramen cecum"],
+    correct: 2,
+    explain: "Vallate papillae are located immediately in front of the sulcus terminalis in a V-shaped row."
+  },
+  {
+    q: "What type of glands are Von Ebner's glands?",
+    opts: ["Pure mucous", "Pure serous", "Mixed serous and mucous", "Sebaceous"],
+    correct: 1,
+    explain: "Von Ebner's glands are minor salivary glands that secrete a serous fluid to wash out the troughs of Vallate papillae."
+  },
+  {
+    q: "Which papillae appear as discrete pink pinheads on the tongue?",
+    opts: ["Filiform papillae", "Fungiform papillae", "Vallate papillae", "Foliate papillae"],
+    correct: 1,
+    explain: "Fungiform papillae appear as reddish/pink pinheads due to their thin, non-keratinized epithelium and vascular core."
+  },
+  {
+    q: "Where are the taste buds located on Fungiform papillae?",
+    opts: ["On the lateral walls", "In the circular sulcus", "On the superior surface", "At the base"],
+    correct: 2,
+    explain: "Fungiform papillae have taste buds present on their superior (upper) surface."
+  },
+  {
+    q: "Which taste sensation is best perceived at the tip of the tongue?",
+    opts: ["Bitter", "Sour", "Salt", "Sweet"],
+    correct: 3,
+    explain: "Sweet taste is best perceived at the tip of the tongue."
+  },
+  {
+    q: "Where is the bitter taste sensation best perceived?",
+    opts: ["Tip of the tongue", "Lateral borders anteriorly", "Posterior part in the middle area", "Posterior part in the lateral area"],
+    correct: 2,
+    explain: "Bitter taste is best perceived in the posterior part of the tongue in the middle area (near Vallate papillae)."
+  },
+  {
+    q: "Foliate papillae are located on which part of the tongue?",
+    opts: ["Tip", "Mid-dorsal surface", "Lateral surface (borders)", "Ventral surface"],
+    correct: 2,
+    explain: "Foliate papillae are present on the lateral surface of the posterior part of the tongue as parallel ridges."
+  },
+  {
+    q: "The epithelium covering Filiform papillae is:",
+    opts: ["Non-keratinized", "Keratinized", "Parakeratinized", "Pseudostratified"],
+    correct: 1,
+    explain: "Filiform papillae are covered by keratinized epithelium, which provides protection and a roughened surface."
+  },
+  {
+    q: "How many Vallate papillae are typically found on the tongue?",
+    opts: ["2-4", "8-12", "20-30", "Hundreds"],
+    correct: 1,
+    explain: "There are typically 8 to 12 Vallate papillae arranged in a V-shape."
+  },
+  {
+    q: "Which cells in a taste bud have a high turnover rate?",
+    opts: ["Neuroepithelial cells", "Supporting cells", "Basal cells", "Gustatory hairs"],
+    correct: 2,
+    explain: "Basal cells are the stem cells responsible for replacing the other cell types and have a high turnover rate."
+  },
+  {
+    q: "The posterior 1/3 of the tongue is also known as the:",
+    opts: ["Oral part", "Body", "Pharyngeal part", "Apical part"],
+    correct: 2,
+    explain: "The posterior 1/3 is the root of the tongue, also known as the Pharyngeal part."
+  },
+  {
+    q: "What is the specific function of the Von Ebner glands secretion?",
+    opts: ["Lubricate the throat", "Digest carbohydrates", "Wash out grooves for new taste perception", "Protect against bacteria only"],
+    correct: 2,
+    explain: "The serous secretion washes out the grooves (moats) around the papillae to allow for new taste perception."
+  },
+  {
+    q: "Which papillae are described as 'mushroom-shaped'?",
+    opts: ["Filiform", "Fungiform", "Vallate", "Foliate"],
+    correct: 1,
+    explain: "Fungiform papillae are mushroom-shaped with a rounded head and narrower base."
+  },
+  {
+    q: "Where are taste buds located on Vallate papillae?",
+    opts: ["Superior surface", "Lateral walls", "Base of the trough", "They do not have taste buds"],
+    correct: 1,
+    explain: "Taste buds on Vallate papillae are present on the lateral side (walls) of the papilla and the vallum."
+  },
+  {
+    q: "Tongue Tie is clinically known as:",
+    opts: ["Macroglossia", "Microglossia", "Ankyloglossia", "Geographic tongue"],
+    correct: 2,
+    explain: "Tongue tie, where the frenulum extends towards the tip, is known as Ankyloglossia."
+  },
+  {
+    q: "Why is the sublingual route used for medications like Nitroglycerine?",
+    opts: ["Thick keratinized mucosa", "Presence of taste buds", "Thin permeable mucous membrane", "High salivary flow"],
+    correct: 2,
+    explain: "The sublingual mucosa is thin and non-keratinized, allowing lipid-soluble drugs to diffuse quickly into the blood."
+  },
+  {
+    q: "The core of the tongue consists of which type of muscle?",
+    opts: ["Smooth muscle", "Skeletal striated muscle", "Cardiac muscle", "Non-striated muscle"],
+    correct: 1,
+    explain: "The tongue contains a core of skeletal striated muscles running in all directions (longitudinal, transverse, vertical)."
+  },
+  {
+    q: "The nerve supply to the epiglottis and pharynx comes from:",
+    opts: ["Facial nerve", "Trigeminal nerve", "Vagus nerve", "Hypoglossal nerve"],
+    correct: 2,
+    explain: "The Vagus nerve supplies the epiglottis and pharynx."
+  },
+  {
+    q: "Which papillae usually appear as parallel ridges?",
+    opts: ["Filiform", "Foliate", "Fungiform", "Vallate"],
+    correct: 1,
+    explain: "Foliate papillae appear as vertical parallel ridges on the lateral posterior sides of the tongue."
+  },
+  {
+    q: "The shape of a taste bud is often described as:",
+    opts: ["Pyramidal", "Barrel-shaped", "Cuboidal", "Flat"],
+    correct: 1,
+    explain: "Taste buds are described as barrel-shaped bodies found in the oral epithelium."
+  },
+  {
+    q: "Where is the sour taste sensation best perceived?",
+    opts: ["Tip", "Anterior lateral borders", "Posterior part in the lateral area", "Middle dorsal surface"],
+    correct: 2,
+    explain: "Sour taste is best perceived in the posterior part of the lateral area."
+  },
+  {
+    q: "Which papillae have pointed tips directed towards the throat?",
+    opts: ["Vallate", "Foliate", "Fungiform", "Filiform"],
+    correct: 3,
+    explain: "Filiform papillae have pointed tips directed backward towards the throat to assist in moving food."
+  },
+  {
+    q: "The nerve supply to the posterior 1/3 of the tongue is:",
+    opts: ["Chorda tympani", "Glossopharyngeal nerve", "Lingual nerve", "Hypoglossal nerve"],
+    correct: 1,
+    explain: "The Glossopharyngeal nerve supplies the posterior 1/3 of the tongue."
+  },
+  {
+    q: "The depression located at the apex of the sulcus terminalis is called:",
+    opts: ["Vallecula", "Foramen cecum", "Lingual tonsil", "Median sulcus"],
+    correct: 1,
+    explain: "The Foramen cecum is the small pit located at the apex of the V-shaped sulcus terminalis."
+  },
+  {
+    q: "Which of the following is NOT a cell type found in a taste bud?",
+    opts: ["Supporting cell", "Neuroepithelial cell", "Basal cell", "Keratinocyte"],
+    correct: 3,
+    explain: "The three types of cells in a taste bud are Supporting (sustentacular), Neuroepithelial (taste), and Basal cells."
+  }
+];
+
+const tfs = [
+  {
+    q: "Filiform papillae contain the highest number of taste buds among all papillae.",
+    answer: false,
+    explain: "Filiform papillae contain NO taste buds; they are mechanical in function."
+  },
+  {
+    q: "The sulcus terminalis divides the tongue into an anterior 1/3 and posterior 2/3.",
+    answer: false,
+    explain: "It divides the tongue into an anterior 2/3 and a posterior 1/3."
+  },
+  {
+    q: "Fungiform papillae are usually non-keratinized or thinly keratinized.",
+    answer: true,
+    explain: "They are covered with thin non-keratinized epithelium, which makes them appear red."
+  },
+  {
+    q: "Von Ebner's glands secrete a mucous fluid.",
+    answer: false,
+    explain: "They secrete a SEROUS fluid to wash out the trenches of Vallate papillae."
+  },
+  {
+    q: "Vallate papillae are located anterior to the sulcus terminalis.",
+    answer: true,
+    explain: "They are arranged in a V-shape just in front (anterior) of the sulcus terminalis."
+  },
+  {
+    q: "Ankyloglossia (tongue tie) can interfere with normal speech.",
+    answer: true,
+    explain: "The restricted movement of the tongue caused by the short frenulum can affect articulation."
+  },
+  {
+    q: "Taste buds are found in the pharynx and larynx.",
+    answer: true,
+    explain: "Taste buds are found in tongue papillae, soft palate, epiglottis, larynx, and pharynx."
+  },
+  {
+    q: "The salt taste sensation is best perceived at the tip of the tongue.",
+    answer: false,
+    explain: "Salt is best perceived at the lateral borders of the tongue body; Sweet is at the tip."
+  },
+  {
+    q: "Basal cells in the taste bud are stem cells with a high turnover rate.",
+    answer: true,
+    explain: "They differentiate to replace the neuroepithelial and supporting cells."
+  }
+];
+
+const saqs = [
+  {
+    q: "1. Define Specialized Mucosa and state its primary location.",
+    a: "Specialized mucosa is a type of oral mucosa that covers 15% of the total oral surface area. It is specifically located on the dorsum of the tongue and includes the taste buds."
+  },
+  {
+    q: "2. List the four types of lingual papillae found on the tongue.",
+    a: "<ol><li>Filiform papillae</li><li>Fungiform papillae</li><li>Vallate (Circumvallate) papillae</li><li>Foliate papillae</li></ol>"
+  },
+  {
+    q: "3. Compare Filiform and Fungiform papillae based on Shape, Taste Buds, and Keratinization.",
+    a: "<table border='1' style='width:100%; border-collapse:collapse; color:var(--text); text-align:left;'><tr><th>Feature</th><th>Filiform</th><th>Fungiform</th></tr><tr><td>Shape</td><td>Conical / Finger-like</td><td>Mushroom shaped</td></tr><tr><td>Taste Buds</td><td>Absent</td><td>Present (Superior surface)</td></tr><tr><td>Keratinization</td><td>Keratinized</td><td>Non-keratinized (thin)</td></tr></table>"
+  },
+  {
+    q: "4. A patient presents with difficulty lifting the tongue tip and speech articulation issues. Examination reveals the frenulum extends towards the tip of the tongue. What is the diagnosis?",
+    a: "The diagnosis is Tongue Tie or Ankyloglossia."
+  },
+  {
+    q: "5. Describe the structure of a Taste Bud.",
+    a: "A taste bud is a barrel-shaped body found in the oral epithelium. It consists of three cell types: <br>1. Supporting (sustentacular) cells at the periphery.<br>2. Neuroepithelial (taste) cells with villi projecting into a taste pore.<br>3. Basal cells at the base (high turnover).<br>It opens to the surface via a taste pore."
+  },
+  {
+    q: "6. Compare the nerve supply of the Anterior 2/3 and Posterior 1/3 of the tongue.",
+    a: "<table border='1' style='width:100%; border-collapse:collapse; color:var(--text); text-align:left;'><tr><th>Region</th><th>Nerve Supply</th></tr><tr><td>Anterior 2/3</td><td>Chorda tympani branch of Facial nerve (Taste)</td></tr><tr><td>Posterior 1/3</td><td>Glossopharyngeal nerve</td></tr></table>"
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

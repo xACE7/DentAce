@@ -1,0 +1,742 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — ocih-31</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
+</style>
+</head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 31</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">اللهم لا سهل إلا ما جعلته سهلاً، وأنت تجعل الحزن إذا شئت سهلاً</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Histology of Buccal Mucosa & Lip</b></span>
+<span class="ar"><b>الموضوع: أنسجة الغشاء المخاطي الخدي والشفاه</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">1. Buccal Mucosa: Epithelium</span><span class="ar">١. الغشاء المخاطي الخدي: الظهارة</span></h2>
+<div class="sec-body">
+<div class="en">
+  <p>The buccal mucosa lines the cheeks and is composed of <strong style="color:#8b5cf6">stratified squamous epithelium</strong>. This epithelium is <strong style="color:#8b5cf6">non-keratinized</strong>, meaning it lacks a tough outer layer of keratin. The interface between the epithelium and the underlying tissue is characterized by <strong style="color:#8b5cf6">rete ridges</strong> which are typically short, few in number, and blunt (wide at the base).</p>
+  <ul>
+    <li><strong>Layers:</strong> Consists of Stratum basale, Stratum intermedium, and Stratum superficiale.</li>
+  </ul>
+</div>
+<div class="ar">
+  <p>يبطن الغشاء المخاطي الخدي الخدين ويتكون من <strong style="color:#8b5cf6">ظهارة حرشفية طبقية</strong>. هذه الظهارة <strong style="color:#8b5cf6">غير متقرنة</strong>، مما يعني أنها تفتقر إلى طبقة خارجية صلبة من الكيراتين. تتميز المنطقة الفاصلة بين الظهارة والنسيج الأساسي بوجود <strong style="color:#8b5cf6">نتوءات شبكية (rete ridges)</strong> والتي تكون عادةً قصيرة، قليلة العدد، وغير حادة (عريضة عند القاعدة).</p>
+  <ul>
+    <li><strong>الطبقات:</strong> تتكون من الطبقة القاعدية، والطبقة المتوسطة، والطبقة السطحية.</li>
+  </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 4, 7, 9, 10</span>
+<span class="ar">المصدر: الصفحات ٤، ٧، ٩، ١٠</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The epithelium is non-keratinized stratified squamous.</div><div class="ar">الظهارة هي حرشفية طبقية غير متقرنة.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember: Rete ridges here are "Short and Blunt".</div><div class="ar">تذكر: النتوءات الشبكية هنا "قصيرة وغير حادة".</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">The lining is soft and pliable, suitable for movement during chewing.</div><div class="ar">البطانة ناعمة ومرنة، مما يجعلها مناسبة للحركة أثناء المضغ.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">2. Buccal Mucosa: Connective Tissue</span><span class="ar">٢. الغشاء المخاطي الخدي: النسيج الضام</span></h2>
+<div class="sec-body">
+<div class="en">
+  <p>Beneath the epithelium lies the <strong style="color:#8b5cf6">Lamina Propria</strong>, which is highly vascular. Below this is the <strong style="color:#8b5cf6">Submucosa</strong>, which firmly attaches the mucosa to the underlying muscle. The submucosa contains significant structures:</p>
+  <ul>
+    <li><strong>Fat cells:</strong> Provide cushioning.</li>
+    <li><strong>Minor Salivary Glands:</strong> These are mixed glands (secreting both mucous and serous fluid) often embedded within the connective tissue or muscle.</li>
+  </ul>
+</div>
+<div class="ar">
+  <p>تحت الظهارة تقع <strong style="color:#8b5cf6">الصفيحة الخاصة (Lamina Propria)</strong>، والتي تكون غنية بالأوعية الدموية. أسفلها توجد <strong style="color:#8b5cf6">تحت المخاطية (Submucosa)</strong>، والتي تربط الغشاء المخاطي بقوة بالعضلة الموجودة تحته. تحتوي تحت المخاطية على تراكيب مهمة:</p>
+  <ul>
+    <li><strong>خلايا دهنية:</strong> توفر التوسيد.</li>
+    <li><strong>غدد لعابية صغيرة:</strong> وهي غدد مختلطة (تفرز سوائل مخاطية ومصلية) وغالباً ما تكون مغمورة داخل النسيج الضام أو العضلات.</li>
+  </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 5, 6, 7, 12, 13</span>
+<span class="ar">المصدر: الصفحات ٥، ٦، ٧، ١٢، ١٣</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The submucosa contains minor salivary glands and fat.</div><div class="ar">تحتوي تحت المخاطية على غدد لعابية صغيرة ودهون.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">The Lamina Propria is vascular, supporting the epithelium.</div><div class="ar">الصفيحة الخاصة غنية بالأوعية الدموية لدعم الظهارة.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Associate "Buccal" with "Fat and Mixed Glands".</div><div class="ar">اربط كلمة "خدّي" بـ "الدهون والغدد المختلطة".</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">3. Anatomy of the Lip: Overview</span><span class="ar">٣. تشريح الشفاه: نظرة عامة</span></h2>
+<div class="sec-body">
+<div class="en">
+  <p>The lip is a complex structure with a core of skeletal muscle known as the <strong style="color:#8b5cf6">Orbicularis Oris</strong> muscle. Histologically, the lip represents a transition between the skin of the face and the mucous membrane of the oral cavity. It has three distinct zones:</p>
+  <ol>
+    <li><strong>Skin Aspect:</strong> The outer surface.</li>
+    <li><strong>Vermilion Zone:</strong> The transitional "red" zone.</li>
+    <li><strong>Mucosal Aspect (Labial Mucosa):</strong> The inner surface facing the teeth.</li>
+  </ol>
+</div>
+<div class="ar">
+  <p>الشفاه عبارة عن هيكل معقد يحتوي على لب من العضلات الهيكلية المعروفة باسم عضلة <strong style="color:#8b5cf6">الفم الدائرية (Orbicularis Oris)</strong>. نسيجياً، تمثل الشفة انتقالاً بين جلد الوجه والغشاء المخاطي للتجويف الفموي. ولها ثلاث مناطق مميزة:</p>
+  <ol>
+    <li><strong>جانب الجلد:</strong> السطح الخارجي.</li>
+    <li><strong>منطقة القرمزي (Vermilion Zone):</strong> المنطقة الانتقالية "الحمراء".</li>
+    <li><strong>الجانب المخاطي (Labial Mucosa):</strong> السطح الداخلي المواجه للأسنان.</li>
+  </ol>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 10, 11, 12</span>
+<span class="ar">المصدر: الصفحات ١٠، ١١، ١٢</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The core muscle is the Orbicularis Oris.</div><div class="ar">العضلة الأساسية هي العضلة الدائرية الفموية.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Do not confuse the three surfaces; they have distinct histology.</div><div class="ar">لا تخلط بين الأسطح الثلاثة؛ فلكل منها تركيب نسيجي مميز.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding the transition helps identify pathology like cancer.</div><div class="ar">فهم هذا الانتقال يساعد في تحديد الأمراض مثل السرطان.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">4. External Surface: The Skin</span><span class="ar">٤. السطح الخارجي: الجلد</span></h2>
+<div class="sec-body">
+<div class="en">
+  <p>The outer aspect of the lip is covered by <strong style="color:#8b5cf6">thin skin</strong>. This surface is composed of:</p>
+  <ul>
+    <li><strong style="color:#8b5cf6">Epidermis:</strong> Keratinized stratified squamous epithelium.</li>
+    <li><strong style="color:#8b5cf6">Dermis:</strong> Dense connective tissue containing skin appendages.</li>
+  </ul>
+  <p>Unique features include the presence of <strong>hair follicles</strong>, <strong>sebaceous glands</strong>, and <strong>sweat glands</strong>.</p>
+</div>
+<div class="ar">
+  <p>يغطى الجانب الخارجي للشفة بـ <strong style="color:#8b5cf6">جلد رقيق</strong>. يتكون هذا السطح من:</p>
+  <ul>
+    <li><strong style="color:#8b5cf6">البشرة (Epidermis):</strong> ظهارة حرشفية طبقية متقرنة.</li>
+    <li><strong style="color:#8b5cf6">الأدمة (Dermis):</strong> نسيج ضام كثيف يحتوي على ملحقات الجلد.</li>
+  </ul>
+  <p>تشمل الميزات الفريدة وجود <strong>بصيلات الشعر</strong>، و<strong>الغدد الدهنية</strong>، و<strong>الغدد العرقية</strong>.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 12, 13, 16, 17, 18, 19</span>
+<span class="ar">المصدر: الصفحات ١٢، ١٣، ١٦، ١٧، ١٨، ١٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Contains hair follicles and sweat glands.</div><div class="ar">يحتوي على بصيلات شعر وغدد عرقية.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Skin = Keratinized + Appendages.</div><div class="ar">الجلد = متقرن + ملحقات.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">This is typical thin skin histology found elsewhere on the body.</div><div class="ar">هذا هو علم الأنسجة النموذجي للجلد الرقيق الموجود في أماكن أخرى من الجسم.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">5. Vermilion Zone (Transitional Zone)</span><span class="ar">٥. منطقة القرمزي (المنطقة الانتقالية)</span></h2>
+<div class="sec-body">
+<div class="en">
+  <p>This is the red part of the lip. It forms the mucocutaneous junction. Key histological features include:</p>
+  <ul>
+    <li><strong>Epithelium:</strong> Thin and translucent, allowing blood color to show through.</li>
+    <li><strong>Rete Ridges:</strong> Very <strong style="color:#8b5cf6">long</strong>, bringing capillaries close to the surface.</li>
+    <li><strong>Eleidin:</strong> A translucent protein present in the cells.</li>
+    <li><strong>Absence of Appendages:</strong> No hair follicles and no sweat/salivary glands, making this area prone to drying out.</li>
+  </ul>
+</div>
+<div class="ar">
+  <p>هذا هو الجزء الأحمر من الشفة. يشكل الوصل المخاطي الجلدي. تشمل الميزات النسيجية الرئيسية:</p>
+  <ul>
+    <li><strong>الظهارة:</strong> رقيقة وشفافة، مما يسمح بظهور لون الدم من خلالها.</li>
+    <li><strong>النتوءات الشبكية:</strong> <strong style="color:#8b5cf6">طويلة</strong> جداً، مما يقرب الشعيرات الدموية من السطح.</li>
+    <li><strong>إليدين (Eleidin):</strong> بروتين شفاف موجود في الخلايا.</li>
+    <li><strong>غياب الملحقات:</strong> لا توجد بصيلات شعر ولا غدد عرقية/لعابية، مما يجعل هذه المنطقة عرضة للجفاف.</li>
+  </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 11, 12, 13, 15</span>
+<span class="ar">المصدر: الصفحات ١١، ١٢، ١٣، ١٥</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The lack of glands explains why lips chap easily.</div><div class="ar">عدم وجود الغدد يفسر سبب تشقق الشفاه بسهولة.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Red color is due to vascularity and eleidin.</div><div class="ar">اللون الأحمر يرجع إلى الأوعية الدموية والإليدين.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Long rete ridges are a hallmark of this zone.</div><div class="ar">النتوءات الشبكية الطويلة هي السمة المميزة لهذه المنطقة.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">6. Internal Surface: Labial Mucosa</span><span class="ar">٦. السطح الداخلي: الغشاء المخاطي الشفوي</span></h2>
+<div class="sec-body">
+<div class="en">
+  <p>The inner aspect of the lip is lined by the <strong style="color:#8b5cf6">Labial Mucosa</strong>. Its structure is very similar to the buccal mucosa:</p>
+  <ul>
+    <li><strong>Epithelium:</strong> Thick <strong style="color:#8b5cf6">non-keratinized</strong> stratified squamous epithelium.</li>
+    <li><strong>Lamina Propria:</strong> Connective tissue supporting the epithelium.</li>
+    <li><strong>Submucosa:</strong> Contains <strong style="color:#8b5cf6">minor mixed salivary glands</strong> and connects to the orbicularis oris muscle strands.</li>
+  </ul>
+</div>
+<div class="ar">
+  <p>يبطن الجانب الداخلي للشفة <strong style="color:#8b5cf6">الغشاء المخاطي الشفوي</strong>. هيكله مشابه جداً للغشاء المخاطي الخدي:</p>
+  <ul>
+    <li><strong>الظهارة:</strong> ظهارة حرشفية طبقية سميكة <strong style="color:#8b5cf6">غير متقرنة</strong>.</li>
+    <li><strong>الصفيحة الخاصة:</strong> نسيج ضام يدعم الظهارة.</li>
+    <li><strong>تحت المخاطية:</strong> تحتوي على <strong style="color:#8b5cf6">غدد لعابية مختلطة صغيرة</strong> وتتصل بخيوط عضلة الفم الدائرية.</li>
+  </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 11, 13, 14</span>
+<span class="ar">المصدر: الصفحات ١١، ١٣، ١٤</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Labial Mucosa = Non-keratinized + Salivary Glands.</div><div class="ar">الغشاء المخاطي الشفوي = غير متقرن + غدد لعابية.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Contains mixed salivary glands in the submucosa.</div><div class="ar">يحتوي على غدد لعابية مختلطة في تحت المخاطية.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">It is kept moist by saliva, unlike the vermilion zone.</div><div class="ar">يبقى رطباً بواسطة اللعاب، على عكس منطقة القرمزي.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">7. Histological Appendages (Skin Side)</span><span class="ar">٧. الملحقات النسيجية (جانب الجلد)</span></h2>
+<div class="sec-body">
+<div class="en">
+  <p>The skin side of the lip contains specific appendages in the dermis that are absent in the mucosal and vermilion zones:</p>
+  <ul>
+    <li><strong>Hair Follicle:</strong> Contains a hair bulb (base) and hair shaft.</li>
+    <li><strong>Sebaceous Gland:</strong> Oil-producing glands usually attached to hair follicles.</li>
+    <li><strong>Sweat Gland:</strong> Coiled tubular glands involved in thermoregulation.</li>
+  </ul>
+</div>
+<div class="ar">
+  <p>يحتوي جانب الجلد من الشفة على ملحقات محددة في الأدمة والتي تغيب في المناطق المخاطية والقرمزية:</p>
+  <ul>
+    <li><strong>بصيلة الشعر:</strong> تحتوي على بصلة الشعر (القاعدة) وساق الشعر.</li>
+    <li><strong>الغدة الدهنية:</strong> غدد منتجة للزيت ترتبط عادةً ببصيلات الشعر.</li>
+    <li><strong>الغدة العرقية:</strong> غدد أنبوبية ملفوفة تشارك في التنظيم الحراري.</li>
+  </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 17, 18, 19</span>
+<span class="ar">المصدر: الصفحات ١٧، ١٨، ١٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">You will NEVER see hair follicles in Labial Mucosa.</div><div class="ar">لن ترى أبداً بصيلات شعر في الغشاء المخاطي الشفوي.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Sebaceous glands secrete sebum to lubricate the skin.</div><div class="ar">تفرز الغدد الدهنية الزهم لتليين الجلد.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Acne can occur on the skin side due to clogged sebaceous glands.</div><div class="ar">يمكن أن يحدث حب الشباب على جانب الجلد بسبب انسداد الغدد الدهنية.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">8. Comparison: Zones of the Lip</span><span class="ar">٨. مقارنة: مناطق الشفاه</span></h2>
+<div class="sec-body">
+<div class="en"><p>Comparison of the three distinct zones of the lip.</p></div>
+<div class="ar"><p>مقارنة بين المناطق الثلاث المميزة للشفة.</p></div>
+<div aria-label="Scrollable table" class="table-wrap">
+<table>
+<thead>
+<tr>
+<th><span class="en">Feature</span><span class="ar">الميزة</span></th>
+<th><span class="en">Skin Aspect</span><span class="ar">جانب الجلد</span></th>
+<th><span class="en">Vermilion Zone</span><span class="ar">منطقة القرمزي</span></th>
+<th><span class="en">Labial Mucosa</span><span class="ar">الغشاء المخاطي الشفوي</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="en">Epithelium</span><span class="ar">الظهارة</span></td>
+<td><span class="en">Keratinized</span><span class="ar">متقرنة</span></td>
+<td><span class="en">Thin, Parakeratinized</span><span class="ar">رقيقة، نظيرة التقرن</span></td>
+<td><span class="en">Non-Keratinized</span><span class="ar">غير متقرنة</span></td>
+</tr>
+<tr>
+<td><span class="en">Rete Ridges</span><span class="ar">النتوءات الشبكية</span></td>
+<td><span class="en">Present</span><span class="ar">موجودة</span></td>
+<td><span class="en">Long & Narrow</span><span class="ar">طويلة وضيقة</span></td>
+<td><span class="en">Short & Blunt</span><span class="ar">قصيرة وغير حادة</span></td>
+</tr>
+<tr>
+<td><span class="en">Hair Follicles</span><span class="ar">بصيلات الشعر</span></td>
+<td><span class="en">Present</span><span class="ar">موجودة</span></td>
+<td><span class="en">Absent</span><span class="ar">غائبة</span></td>
+<td><span class="en">Absent</span><span class="ar">غائبة</span></td>
+</tr>
+<tr>
+<td><span class="en">Salivary Glands</span><span class="ar">الغدد اللعابية</span></td>
+<td><span class="en">Absent</span><span class="ar">غائبة</span></td>
+<td><span class="en">Absent</span><span class="ar">غائبة</span></td>
+<td><span class="en">Present (Mixed)</span><span class="ar">موجودة (مختلطة)</span></td>
+</tr>
+<tr>
+<td><span class="en">Sweat Glands</span><span class="ar">الغدد العرقية</span></td>
+<td><span class="en">Present</span><span class="ar">موجودة</span></td>
+<td><span class="en">Absent</span><span class="ar">غائبة</span></td>
+<td><span class="en">Absent</span><span class="ar">غائبة</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Summary of Pages 10-19</span>
+<span class="ar">المصدر: ملخص الصفحات ١٠-١٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Use this table to distinguish slides in the practical exam.</div><div class="ar">استخدم هذا الجدول لتمييز الشرائح في الامتحان العملي.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">The Vermilion zone is "dry" (no glands).</div><div class="ar">منطقة القرمزي "جافة" (لا توجد غدد).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Only Labial Mucosa has salivary glands.</div><div class="ar">فقط الغشاء المخاطي الشفوي يحتوي على غدد لعابية.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">9. Summary</span><span class="ar">٩. الملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+  <p>The oral cavity in health presents distinct histological variations adapted to function. The <strong style="color:#8b5cf6">buccal mucosa</strong> is lined by non-keratinized stratified squamous epithelium with short rete ridges and a submucosa containing fat and mixed glands. The <strong style="color:#8b5cf6">lip</strong> acts as a transitional organ with three zones: the keratinized, hair-bearing <strong>skin</strong>; the glandular, non-keratinized <strong>labial mucosa</strong>; and the transitional, highly vascular <strong>vermilion zone</strong> which lacks glands and hair.</p>
+</div>
+<div class="ar">
+  <p>يُظهر التجويف الفموي في الحالة الصحية تنوعات نسيجية مميزة تتكيف مع الوظيفة. يبطن <strong style="color:#8b5cf6">الغشاء المخاطي الخدي</strong> ظهارة حرشفية طبقية غير متقرنة ذات نتوءات شبكية قصيرة وتحت مخاطية تحتوي على دهون وغدد مختلطة. تعمل <strong style="color:#8b5cf6">الشفة</strong> كعضو انتقالي بثلاث مناطق: <strong>الجلد</strong> المتقرن الحامل للشعر؛ و<strong>الغشاء المخاطي الشفوي</strong> الغدي غير المتقرن؛ و<strong>منطقة القرمزي</strong> الانتقالية الغنية بالأوعية الدموية والتي تفتقر إلى الغدد والشعر.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: All Pages</span>
+<span class="ar">المصدر: جميع الصفحات</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout check"><div class="hdr"><span class="en">✅ Key Point</span><span class="ar">✅ نقطة رئيسية</span></div><div class="body" hidden=""><div class="en">Buccal & Labial mucosa are histologically similar.</div><div class="ar">الغشاء المخاطي الخدي والشفوي متشابهان نسيجياً.</div></div></div>
+<div class="callout check"><div class="hdr"><span class="en">✅ Key Point</span><span class="ar">✅ نقطة رئيسية</span></div><div class="body" hidden=""><div class="en">Orbicularis Oris is the muscle of the lip.</div><div class="ar">عضلة الفم الدائرية هي عضلة الشفاه.</div></div></div>
+<div class="callout check"><div class="hdr"><span class="en">✅ Key Point</span><span class="ar">✅ نقطة رئيسية</span></div><div class="body" hidden=""><div class="en">Skin side has hair; Mucosa side has glands.</div><div class="ar">جانب الجلد به شعر؛ الجانب المخاطي به غدد.</div></div></div>
+</div>
+</aside>
+</section>
+
+</div>
+
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Buccal Mucosa / الغشاء المخاطي الخدي</div><div class="content" hidden=""><div class="en">The mucous membrane lining the inside of the cheeks.</div><div class="ar">الغشاء المخاطي المبطن لداخل الخدين.</div></div></div>
+<div class="card"><div class="head">Rete Ridges / النتوءات الشبكية</div><div class="content" hidden=""><div class="en">Extensions of the epithelium that project into the underlying connective tissue.</div><div class="ar">امتدادات من الظهارة تبرز داخل النسيج الضام الأساسي.</div></div></div>
+<div class="card"><div class="head">Lamina Propria / الصفيحة الخاصة</div><div class="content" hidden=""><div class="en">The vascular connective tissue layer situated immediately beneath the epithelium.</div><div class="ar">طبقة النسيج الضام الوعائية الموجودة مباشرة تحت الظهارة.</div></div></div>
+<div class="card"><div class="head">Submucosa / تحت المخاطية</div><div class="content" hidden=""><div class="en">Layer beneath the lamina propria containing fat, glands, and muscle.</div><div class="ar">الطبقة الموجودة تحت الصفيحة الخاصة وتحتوي على الدهون، والغدد، والعضلات.</div></div></div>
+<div class="card"><div class="head">Orbicularis Oris / العضلة الدائرية الفموية</div><div class="content" hidden=""><div class="en">The skeletal muscle forming the core of the lips.</div><div class="ar">العضلة الهيكلية التي تشكل لب الشفاه.</div></div></div>
+<div class="card"><div class="head">Vermilion Zone / منطقة القرمزي</div><div class="content" hidden=""><div class="en">The red transitional zone of the lip between skin and mucosa.</div><div class="ar">المنطقة الانتقالية الحمراء من الشفة بين الجلد والغشاء المخاطي.</div></div></div>
+<div class="card"><div class="head">Sebaceous Gland / الغدة الدهنية</div><div class="content" hidden=""><div class="en">Glands that secrete oil (sebum), found on the skin side of the lip.</div><div class="ar">غدد تفرز الزيت (الزهم)، توجد في جانب الجلد من الشفة.</div></div></div>
+<div class="card"><div class="head">Keratinized / متقرن</div><div class="content" hidden=""><div class="en">Containing keratin, a tough protein; typical of the skin surface.</div><div class="ar">يحتوي على الكيراتين، وهو بروتين صلب؛ نموذجي لسطح الجلد.</div></div></div>
+<div class="card"><div class="head">Non-keratinized / غير متقرن</div><div class="content" hidden=""><div class="en">Lacking a keratin layer; typical of the wet oral mucosa.</div><div class="ar">يفتقر لطبقة الكيراتين؛ نموذجي للغشاء المخاطي الفموي الرطب.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — What type of epithelium lines the buccal mucosa?</span><span class="ar">١ — ما نوع الظهارة التي تبطن الغشاء المخاطي الخدي؟</span></div><div class="content" hidden=""><span class="en">A: Non-keratinized stratified squamous epithelium.</span><span class="ar">ج: ظهارة حرشفية طبقية غير متقرنة.</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — What structures are found in the buccal submucosa?</span><span class="ar">٢ — ما التراكيب الموجودة في تحت المخاطية الخدية؟</span></div><div class="content" hidden=""><span class="en">A: Fat cells and minor mixed salivary glands.</span><span class="ar">ج: خلايا دهنية وغدد لعابية مختلطة صغيرة.</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — Name the muscle forming the core of the lip.</span><span class="ar">٣ — سمِّ العضلة التي تشكل لب الشفة.</span></div><div class="content" hidden=""><span class="en">A: Orbicularis Oris muscle.</span><span class="ar">ج: العضلة الدائرية الفموية.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — Which zone of the lip contains hair follicles?</span><span class="ar">٤ — أي منطقة من الشفة تحتوي على بصيلات الشعر؟</span></div><div class="content" hidden=""><span class="en">A: The Skin Aspect (external surface).</span><span class="ar">ج: جانب الجلد (السطح الخارجي).</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — Why is the Vermilion zone red?</span><span class="ar">٥ — لماذا تكون منطقة القرمزي حمراء؟</span></div><div class="content" hidden=""><span class="en">A: Thin epithelium and long rete ridges bring capillaries close to the surface.</span><span class="ar">ج: الظهارة الرقيقة والنتوءات الشبكية الطويلة تقرب الشعيرات الدموية من السطح.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — Does the Vermilion zone have sweat glands?</span><span class="ar">٦ — هل تحتوي منطقة القرمزي على غدد عرقية؟</span></div><div class="content" hidden=""><span class="en">A: No, it lacks glands and hair follicles.</span><span class="ar">ج: لا، فهي تفتقر إلى الغدد وبصيلات الشعر.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — Describe the Rete Ridges in Buccal Mucosa.</span><span class="ar">٧ — صف النتوءات الشبكية في الغشاء المخاطي الخدي.</span></div><div class="content" hidden=""><span class="en">A: Short, few, and blunt.</span><span class="ar">ج: قصيرة، قليلة، وغير حادة.</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — What is the type of salivary gland in Labial Mucosa?</span><span class="ar">٨ — ما نوع الغدد اللعابية في الغشاء المخاطي الشفوي؟</span></div><div class="content" hidden=""><span class="en">A: Minor mixed salivary glands.</span><span class="ar">ج: غدد لعابية مختلطة صغيرة.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What protein is found in the Vermilion zone cells?</span><span class="ar">٩ — ما البروتين الموجود في خلايا منطقة القرمزي؟</span></div><div class="content" hidden=""><span class="en">A: Eleidin (transparent).</span><span class="ar">ج: الإليدين (شفاف).</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

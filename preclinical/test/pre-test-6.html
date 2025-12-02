@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Dental Composites</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dental Composites</h1>
+      <p class="subtitle">Test based on Lecture 6</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+  {
+    q: "Who introduced the acid-etching technique in 1955?",
+    opts: ["M.G. Buonocore", "R.L. Bowen", "G.V. Black", "Pierre Fauchard"],
+    correct: 0,
+    explain: "M.G. Buonocore introduced the acid-etching technique in 1955, a major advance in restorative dentistry."
+  },
+  {
+    q: "What is the primary organic component of the composite resin matrix developed by Dr. R.L. Bowen?",
+    opts: ["Bis-GMA", "PMMA", "Zinc Phosphate", "Glass Ionomer"],
+    correct: 0,
+    explain: "Bis-GMA (Bowen's resin) is the polymer based on methacrylate chemistry developed by Dr. R.L. Bowen in 1962."
+  },
+  {
+    q: "Which of the following is a diluent monomer added to reduce viscosity?",
+    opts: ["TEGDMA", "Bis-GMA", "UDMA", "Benzoyl Peroxide"],
+    correct: 0,
+    explain: "TEGDMA is a low viscosity monomer added to dilute the viscous Bis-GMA."
+  },
+  {
+    q: "Which component promotes adhesion between the inorganic filler and the organic resin matrix?",
+    opts: ["Coupling agent", "Activator", "Inhibitor", "Optical modifier"],
+    correct: 0,
+    explain: "Coupling agents (commonly Organosilanes) promote adhesion between the hydrophilic inorganic filler and hydrophobic organic resin."
+  },
+  {
+    q: "What is the most commonly used coupling agent in dental composites?",
+    opts: ["Organosilanes", "Benzoyl peroxide", "Camphorquinone", "Titanium dioxide"],
+    correct: 0,
+    explain: "Organosilanes are the most commonly used coupling agents to bond filler particles to the matrix."
+  },
+  {
+    q: "What is the function of Butylated Hydroxytoluene (BHT) in composite resins?",
+    opts: ["Inhibitor", "Activator", "Filler", "Coupling Agent"],
+    correct: 0,
+    explain: "BHT acts as an inhibitor to extend storage life and increase working time."
+  },
+  {
+    q: "Which inorganic filler type was used in early generations but was difficult to polish?",
+    opts: ["Quartz", "Zirconium dioxide", "Nano-silica", "Barium glass"],
+    correct: 0,
+    explain: "Quartz was used in early macrofilled composites but was difficult to polish due to its hardness and size."
+  },
+  {
+    q: "What is the particle size range for Macrofilled composites?",
+    opts: ["10 to 100 μm", "1 to 10 μm", "0.1 to 1 μm", "0.01 to 0.1 μm"],
+    correct: 0,
+    explain: "Macrofilled composites have a large filler particle size ranging between 10 to 100 μm."
+  },
+  {
+    q: "Which composite classification features a particle size range of 0.01 to 0.1 μm?",
+    opts: ["Microfilled", "Midifill", "Minifill", "Macrofilled"],
+    correct: 0,
+    explain: "Microfilled composites contain particles ranging from 0.01 to 0.1 μm, allowing for high polishability."
+  },
+  {
+    q: "Hybrid composites typically have a filler size range of:",
+    opts: ["0.4 to 1 μm", "10 to 100 μm", "0.005 to 0.01 μm", "8 to 12 μm"],
+    correct: 0,
+    explain: "Hybrid composites generally fall in the range of 0.6 - 1 μm (or roughly 0.4 to 1 μm), combining properties of conventional and microfilled."
+  },
+  {
+    q: "What is the primary photo-initiator used in light-cured composites?",
+    opts: ["Camphorquinone", "Benzoyl peroxide", "Tertiary amine", "Hydroquinone"],
+    correct: 0,
+    explain: "Camphorquinone is the photosensitizer/initiator used in light-activated composites, sensitive to blue light (468-470 nm)."
+  },
+  {
+    q: "In chemical activated composites, what serves as the activator?",
+    opts: ["Aromatic tertiary amine", "Blue light", "Benzoyl peroxide", "Camphorquinone"],
+    correct: 0,
+    explain: "In self-cure (chemical) systems, the activator is an aromatic tertiary amine which reacts with the benzoyl peroxide initiator."
+  },
+  {
+    q: "Which wavelength range of visible blue light activates the camphorquinone initiator?",
+    opts: ["400 - 500 nm", "200 - 300 nm", "600 - 700 nm", "800 - 900 nm"],
+    correct: 0,
+    explain: "Camphorquinone is activated by visible blue light with a wavelength between 400 and 500 nm (specifically ~468-470 nm)."
+  },
+  {
+    q: "Flowable composites are characterized by which of the following?",
+    opts: ["Low viscosity and lower filler content", "High viscosity and high filler content", "Similar handling to amalgam", "Zero polymerization shrinkage"],
+    correct: 0,
+    explain: "Flowable composites have low viscosity (high flow) and generally lower filler content compared to conventional composites."
+  },
+  {
+    q: "Packable composites were developed to mimic the handling properties of which material?",
+    opts: ["Amalgam", "Glass Ionomer", "Gold foil", "Zinc Phosphate"],
+    correct: 0,
+    explain: "Packable composites are designed to have a stiff consistency similar to amalgam for easier restoration of proximal contacts."
+  },
+  {
+    q: "Which of the following is a disadvantage of Macrofilled composites?",
+    opts: ["Difficult to polish", "High polymerization shrinkage", "Low strength", "Excessive flow"],
+    correct: 0,
+    explain: "Macrofilled composites have large particles that make the surface rough and difficult to polish."
+  },
+  {
+    q: "What is a major clinical indication for Microfilled composites?",
+    opts: ["Class III and V restorations (Anterior aesthetics)", "Class I stress bearing", "Core build-up", "Splinting"],
+    correct: 0,
+    explain: "Microfilled composites offer excellent surface finish and esthetics, making them ideal for anterior Class III and V restorations."
+  },
+  {
+    q: "The setting reaction of composite resins is known as:",
+    opts: ["Polymerization", "Chelation", "Acid-base reaction", "Crystallization"],
+    correct: 0,
+    explain: "The setting reaction is a free-radical polymerization reaction converting monomers into polymers."
+  },
+  {
+    q: "What is the role of Optical Modifiers like Titanium Dioxide?",
+    opts: ["To achieve natural tooth-like appearance", "To initiate the reaction", "To reduce viscosity", "To prevent polymerization"],
+    correct: 0,
+    explain: "Optical modifiers and pigments (like Titanium Dioxide) are added to mimic the opacity and shade of natural teeth."
+  },
+  {
+    q: "Which composite type generally exhibits the highest polymerization shrinkage?",
+    opts: ["Flowable composites", "Packable composites", "Hybrid composites", "Macrofilled composites"],
+    correct: 0,
+    explain: "Flowable composites have lower filler content and higher resin content, leading to higher polymerization shrinkage."
+  },
+  {
+    q: "Nanofill particles fall into which size range?",
+    opts: ["0.005 to 0.01 μm", "0.1 to 1.0 μm", "1 to 10 μm", "10 to 100 μm"],
+    correct: 0,
+    explain: "Nanofill particles are extremely small, ranging between 0.005 to 0.01 μm."
+  },
+  {
+    q: "What is the function of inorganic fillers regarding radiopacity?",
+    opts: ["Increases radiopacity", "Decreases radiopacity", "Has no effect", "Makes the tooth invisible"],
+    correct: 0,
+    explain: "Fillers (like barium, strontium, zinc, or zirconium glasses) are added to increase radiopacity for diagnostic purposes."
+  },
+  {
+    q: "What happens to the curing depth as filler particle size decreases and opacity increases?",
+    opts: ["Decreases curing depth", "Increases curing depth", "Remains unchanged", "Causes instant setting"],
+    correct: 0,
+    explain: "Smaller particles cause more light scattering and opacity, which typically decreases the depth of cure."
+  },
+  {
+    q: "Dual-cure composites require which activation methods?",
+    opts: ["Both chemical and light activation", "Heat and light activation", "Pressure and chemical activation", "Only light activation"],
+    correct: 0,
+    explain: "Dual-cure composites contain initiators for both light-curing and self-curing (chemical) reactions."
+  },
+  {
+    q: "Which monomer has a higher viscosity: Bis-GMA or TEGDMA?",
+    opts: ["Bis-GMA", "TEGDMA", "They are equal", "UDMA is lowest"],
+    correct: 0,
+    explain: "Bis-GMA is extremely viscous due to hydrogen bonding, which is why TEGDMA is added as a diluent."
+  },
+  {
+    q: "A 'White line' visible at the margin of a restoration is often a sign of:",
+    opts: ["Polymerization shrinkage gap", "Excessive polishing", "Too much filler", "Use of flowable composite"],
+    correct: 0,
+    explain: "White lines at margins usually indicate a microscopic gap or enamel fracture caused by polymerization shrinkage stress."
+  },
+  {
+    q: "Which composite is recommended for Class V abfraction lesions due to its modulus of elasticity?",
+    opts: ["Flowable composite", "Packable composite", "Macrofilled composite", "Core composite"],
+    correct: 0,
+    explain: "Flowable composites flex with the tooth, making them suitable for Class V abfraction lesions despite lower strength."
+  },
+  {
+    q: "What is the 'dispersed phase' in a dental composite?",
+    opts: ["Inorganic fillers", "Resin matrix", "Coupling agent", "Initiator system"],
+    correct: 0,
+    explain: "The composite consists of a continuous resin matrix phase and a dispersed phase of inorganic fillers."
+  },
+  {
+    q: "Which year did Dr. R.L. Bowen develop the Bis-GMA resin?",
+    opts: ["1962", "1955", "1970", "1980"],
+    correct: 0,
+    explain: "Dr. R.L. Bowen developed the Bis-GMA polymer system in 1962."
+  },
+  {
+    q: "What is the primary disadvantage of Microfilled composites compared to Hybrids?",
+    opts: ["Lower tensile strength/wear resistance", "Poor polishability", "Rough surface texture", "High radiopacity"],
+    correct: 0,
+    explain: "Microfilled composites have lower filler loading, resulting in lower tensile strength and lower wear resistance."
+  }
+];
+
+const tfs = [
+  {
+    q: "Composites are a 3-dimensional combination of at least two chemically different materials with a distinct interface.",
+    answer: true,
+    explain: "This is the standard definition of a composite material."
+  },
+  {
+    q: "Bis-GMA is known as 'Bowen's resin'.",
+    answer: true,
+    explain: "Dr. R.L. Bowen developed Bis-GMA, which is widely referred to as Bowen's resin."
+  },
+  {
+    q: "TEGDMA is added to Bis-GMA to increase its viscosity.",
+    answer: false,
+    explain: "TEGDMA is a diluent monomer added to *decrease* the viscosity of Bis-GMA."
+  },
+  {
+    q: "Coupling agents bind the resin matrix to the inorganic fillers.",
+    answer: true,
+    explain: "Silane coupling agents create a chemical bond between the organic resin and inorganic filler."
+  },
+  {
+    q: "Macrofilled composites are known for their excellent polishability.",
+    answer: false,
+    explain: "Macrofilled composites have large particles (10-100μm) that result in a rough surface and poor polishability."
+  },
+  {
+    q: "Flowable composites generally have higher filler content than Packable composites.",
+    answer: false,
+    explain: "Flowable composites have lower filler content to achieve lower viscosity, whereas packable composites have high filler content."
+  },
+  {
+    q: "Camphorquinone is the initiator used in self-cure composites.",
+    answer: false,
+    explain: "Camphorquinone is the photo-initiator for light-cure composites. Benzoyl peroxide is used for self-cure."
+  },
+  {
+    q: "Packable composites are recommended for restoration of proximal contacts in Class II preparations.",
+    answer: true,
+    explain: "Their high viscosity and amalgam-like handling make them suitable for establishing proximal contacts."
+  },
+  {
+    q: "Larger filler particles generally result in a smoother surface texture.",
+    answer: false,
+    explain: "Larger particles result in a rougher surface texture; smaller particles (microfill/nano) create smoother surfaces."
+  }
+];
+
+const saqs = [
+  {
+    q: "Define 'Composite Resin' in dentistry.",
+    a: "It is a 3-dimensional combination of two or more chemically different materials with a distinct interface between them. The combination's properties are superior to those of the individual components."
+  },
+  {
+    q: "List the 3 major components of a dental composite.",
+    a: "1. Resin Matrix (Organic phase)<br>2. Inorganic Fillers (Dispersed phase)<br>3. Coupling Agent (Interface)"
+  },
+  {
+    q: "Compare the filler particle sizes of Macrofill, Midifill, and Microfill composites.",
+    a: "<table style='width:100%; border-collapse:collapse; margin-top:5px;'><tr><th style='border:1px solid #555; padding:4px;'>Type</th><th style='border:1px solid #555; padding:4px;'>Size (μm)</th></tr><tr><td style='border:1px solid #555; padding:4px;'>Macrofill</td><td style='border:1px solid #555; padding:4px;'>10 - 100</td></tr><tr><td style='border:1px solid #555; padding:4px;'>Midifill</td><td style='border:1px solid #555; padding:4px;'>1 - 10</td></tr><tr><td style='border:1px solid #555; padding:4px;'>Microfill</td><td style='border:1px solid #555; padding:4px;'>0.01 - 0.1</td></tr></table>"
+  },
+  {
+    q: "A patient presents with a Class V abfraction lesion. Which specific type of composite variation is commonly indicated and why?",
+    a: "<strong>Flowable Composite.</strong><br>Because it has a low modulus of elasticity (it flexes with the tooth) and its low viscosity allows it to flow into the irregular defects."
+  },
+  {
+    q: "List 4 functions of inorganic fillers in composite resins.",
+    a: "1. Decreases wear<br>2. Increases hardness<br>3. Reduces polymerization shrinkage<br>4. Increases radiopacity<br>5. Contributes to esthetics"
+  },
+  {
+    q: "A dentist needs to restore a deep Class II cavity and wants a material that packs like amalgam to ensure a good contact point. Which type of composite should be selected?",
+    a: "<strong>Packable Composite.</strong><br>It has high viscosity and handling properties similar to amalgam, aiding in the establishment of proximal contacts."
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

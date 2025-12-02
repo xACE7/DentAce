@@ -1,0 +1,879 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>pharma-12</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
+</style>
+</head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 12
+</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">اللهم لا سهل إلا ما جعلته سهلاً، وأنت تجعل الحزن إذا شئت سهلاً</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Coagulants and Anticoagulants</b></span>
+<span class="ar"><b>الموضوع: مخثرات الدم ومضادات التخثر</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">1. Introduction to Hemostasis</span><span class="ar">١. مقدمة عن الإرقاء (وقف النزيف)</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><b style="color:#8b5cf6">Hemostasis</b> is a finely regulated dynamic process that maintains the fluidity of blood, repairs vascular injury, and limits blood loss. It prevents two extremes: excessive bleeding and vessel occlusion (<b style="color:#8b5cf6">thrombosis</b>).</p>
+    <p>Breakdown in hemostasis leads to disorders like bleeding or thrombosis. The formation of a blood clot involves the adhesion and activation of <b style="color:#8b5cf6">platelets</b> to form a plug, reinforced by <b style="color:#8b5cf6">fibrin</b>. The two major facets of clotting are the platelets and the <b style="color:#8b5cf6">thrombin</b> system.</p>
+</div>
+<div class="ar">
+    <p><b style="color:#8b5cf6">الإرقاء (Hemostasis)</b> هو عملية ديناميكية منظمة بدقة تحافظ على سيولة الدم، وتصلح الأوعية الدموية المصابة، وتحد من فقدان الدم. يمنع الإرقاء حدوث النقيضين: النزيف المفرط وانسداد الأوعية الدموية (<b style="color:#8b5cf6">الخثرة/Thrombosis</b>).</p>
+    <p>يؤدي الخلل في عملية الإرقاء إلى اضطرابات مثل النزيف أو التجلط. يتضمن تكوين جلطة الدم التصاق وتنشيط <b style="color:#8b5cf6">الصفائح الدموية</b> لتشكيل سدادة، يتم تعزيزها بواسطة <b style="color:#8b5cf6">الفايبرين (Fibrin)</b>. الجانبان الرئيسيان للتجلط هما الصفائح الدموية ونظام <b style="color:#8b5cf6">الثرومبين (Thrombin)</b>.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 3-5 of 29</span>
+<span class="ar">المصدر: الصفحات ٣-٥ من ٢٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">A blood clot consists of platelets meshed into a web-like accumulation of fibrin strands with Red Blood Cells.</div><div class="ar">تتكون الجلطة الدموية من صفائح دموية متشابكة في تراكم شبكي من خيوط الفايبرين مع خلايا الدم الحمراء.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think of hemostasis as a balance scale: one side prevents bleeding, the other prevents clotting. Both must be equal.</div><div class="ar">تخيل الإرقاء كميزان: جانب يمنع النزيف والآخر يمنع التجلط. يجب أن يكون كلاهما متوازناً.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding this balance is crucial for dentists to manage post-extraction bleeding or identify patients at risk of thrombosis.</div><div class="ar">فهم هذا التوازن أمر بالغ الأهمية لأطباء الأسنان لإدارة النزيف بعد القلع أو تحديد المرضى المعرضين لخطر التجلط.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">2. Coagulation Factors</span><span class="ar">٢. عوامل التخثر</span></h2>
+<div class="sec-body">
+<div class="en"><p>The clotting mechanism relies on specific coagulation factors found in the plasma.</p></div>
+<div class="ar"><p>تعتمد آلية التجلط على عوامل تخثر محددة موجودة في البلازما.</p></div>
+<div aria-label="Scrollable table" class="table-wrap">
+<table>
+<thead>
+<tr>
+<th><span class="en">Factor</span><span class="ar">العامل</span></th>
+<th><span class="en">Name</span><span class="ar">الاسم</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="en">I</span><span class="ar">I</span></td>
+<td><span class="en">Fibrinogen</span><span class="ar">الفيبرينوجين</span></td>
+</tr>
+<tr>
+<td><span class="en">II</span><span class="ar">II</span></td>
+<td><span class="en">Prothrombin</span><span class="ar">البروثرومبين</span></td>
+</tr>
+<tr>
+<td><span class="en">III</span><span class="ar">III</span></td>
+<td><span class="en">Tissue Factor (Thromboplastin)</span><span class="ar">عامل الأنسجة (ثرومبوبلاستين)</span></td>
+</tr>
+<tr>
+<td><span class="en">IV</span><span class="ar">IV</span></td>
+<td><span class="en">Calcium (Ca++)</span><span class="ar">الكالسيوم</span></td>
+</tr>
+<tr>
+<td><span class="en">V</span><span class="ar">V</span></td>
+<td><span class="en">Proaccelerin</span><span class="ar">بروآكسيليرين</span></td>
+</tr>
+<tr>
+<td><span class="en">VII</span><span class="ar">VII</span></td>
+<td><span class="en">Proconvertin</span><span class="ar">بروكونفيرتين</span></td>
+</tr>
+<tr>
+<td><span class="en">VIII</span><span class="ar">VIII</span></td>
+<td><span class="en">Antihemophilic A factor</span><span class="ar">عامل مضاد للهيموفيليا أ</span></td>
+</tr>
+<tr>
+<td><span class="en">IX</span><span class="ar">IX</span></td>
+<td><span class="en">Antihemophilic B (Christmas factor)</span><span class="ar">عامل مضاد للهيموفيليا ب (عامل كريسماس)</span></td>
+</tr>
+<tr>
+<td><span class="en">X</span><span class="ar">X</span></td>
+<td><span class="en">Stuart-Prower factor</span><span class="ar">عامل ستيوارت-براور</span></td>
+</tr>
+<tr>
+<td><span class="en">XI</span><span class="ar">XI</span></td>
+<td><span class="en">Plasma thromboplastin antecedent</span><span class="ar">سلف ثرومبوبلاستين البلازما</span></td>
+</tr>
+<tr>
+<td><span class="en">XII</span><span class="ar">XII</span></td>
+<td><span class="en">Hageman factor (Contact factor)</span><span class="ar">عامل هاجمان (عامل الاتصال)</span></td>
+</tr>
+<tr>
+<td><span class="en">XIII</span><span class="ar">XIII</span></td>
+<td><span class="en">Fibrin stabilizing factor</span><span class="ar">عامل تثبيت الفايبرين</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 6 of 29</span>
+<span class="ar">المصدر: الصفحة ٦ من ٢٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Factor I is Fibrinogen (First essential protein). Factor II is Prothrombin.</div><div class="ar">العامل الأول هو الفيبرينوجين. العامل الثاني هو البروثرومبين.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Calcium (Factor IV) is essential for multiple steps in the coagulation cascade.</div><div class="ar">الكالسيوم (العامل الرابع) ضروري لخطوات متعددة في شلال التخثر.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Prekallikrein and High-molecular-weight kininogen are also involved in the initial phases.</div><div class="ar">يشارك البريكاليكرين والكينينوجين عالي الوزن الجزيئي أيضًا في المراحل الأولية.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">3. The Coagulation Cascade</span><span class="ar">٣. شلال التخثر</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>The coagulation process follows a cascade of events leading to a stable clot:</p>
+    <ul>
+        <li><b style="color:#8b5cf6">Prothrombin</b> is converted into <b style="color:#8b5cf6">Thrombin</b>.</li>
+        <li>Thrombin converts <b style="color:#8b5cf6">Fibrinogen</b> into <b style="color:#8b5cf6">Fibrin Monomers</b>.</li>
+        <li>Fibrin Monomers polymerize into Fibrin Polymers.</li>
+        <li><b style="color:#8b5cf6">Factor XIIIa</b> cross-links the polymers to create <b style="color:#8b5cf6">Cross-linked Fibrin</b> (strong clot).</li>
+    </ul>
+    <p>Simultaneously, the fibrinolytic system is activated where Plasminogen is converted to <b style="color:#8b5cf6">Plasmin</b>, which breaks down fibrin into Fibrin Degradation Products.</p>
+</div>
+<div class="ar">
+    <p>تتبع عملية التخثر سلسلة من الأحداث تؤدي إلى جلطة مستقرة:</p>
+    <ul>
+        <li>يتحول <b style="color:#8b5cf6">البروثرومبين</b> إلى <b style="color:#8b5cf6">ثرومبين</b>.</li>
+        <li>يحول الثرومبين <b style="color:#8b5cf6">الفيبرينوجين</b> إلى <b style="color:#8b5cf6">مونومرات فايبرين</b>.</li>
+        <li>تتبلمر مونومرات الفايبرين لتشكل بوليمرات الفايبرين.</li>
+        <li>يقوم <b style="color:#8b5cf6">العامل XIIIa</b> بربط البوليمرات لتكوين <b style="color:#8b5cf6">فايبرين متشابك</b> (جلطة قوية).</li>
+    </ul>
+    <p>في نفس الوقت، يتم تنشيط نظام انحلال الفايبرين حيث يتحول البلازمينوجين إلى <b style="color:#8b5cf6">بلازمين</b>، الذي يكسر الفايبرين إلى منتجات تحلل الفايبرين.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 7 of 29</span>
+<span class="ar">المصدر: الصفحة ٧ من ٢٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The cross-linking by Factor XIII is what gives the blood clot its physical strength to stop bleeding.</div><div class="ar">الربط المتشابك بواسطة العامل XIII هو ما يعطي الجلطة الدموية قوتها الفيزيائية لوقف النزيف.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">The system balances itself; Plasmin ensures the clot doesn't grow uncontrollably.</div><div class="ar">يوازن النظام نفسه؛ يضمن البلازمين عدم نمو الجلطة بشكل لا يمكن السيطرة عليه.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Plasminogen is the inactive precursor of Plasmin.</div><div class="ar">البلازمينوجين هو السلف غير النشط للبلازمين.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">4. Coagulants: Vitamin K</span><span class="ar">٤. المخثرات: فيتامين ك</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><b style="color:#8b5cf6">Coagulants</b> are agents that promote blood clotting.</p>
+    <ul>
+        <li><b style="color:#8b5cf6">Systemic Coagulants:</b> Include Vitamin K and Tranexamic Acid.</li>
+    </ul>
+    <p><b>Vitamin K Details:</b></p>
+    <ul>
+        <li><b>Natural Forms:</b> $Vit.K_{1}$ and $K_{2}$ (fat-soluble). $K_{1}$ is in food; $K_{2}$ is synthesized by intestinal bacteria like <i>E.coli</i>. Both require bile salts for absorption.</li>
+        <li><b>Synthetic Forms:</b> $Vit.K_{3}$ and $K_{4}$ (water-soluble).</li>
+        <li><b>Mechanism:</b> Essential for the final synthesis of clotting factors <b>II, VII, IX, and X</b> in the liver.</li>
+        <li><b>Therapeutic Uses:</b> Dietary deficiency, chronic antimicrobial therapy (kills gut bacteria), malabsorption, liver disease, and overdose of oral anticoagulants.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><b style="color:#8b5cf6">المخثرات</b> هي عوامل تعزز تجلط الدم.</p>
+    <ul>
+        <li><b style="color:#8b5cf6">المخثرات الجهازية:</b> تشمل فيتامين ك وحمض الترانيكساميك.</li>
+    </ul>
+    <p><b>تفاصيل فيتامين ك:</b></p>
+    <ul>
+        <li><b>الأشكال الطبيعية:</b> فيتامين $K_{1}$ و $K_{2}$ (قابلة للذوبان في الدهون). يوجد $K_{1}$ في الطعام؛ ويصنع $K_{2}$ بواسطة بكتيريا الأمعاء مثل <i>الإشريكية القولونية</i>. كلاهما يتطلب أملاح الصفراء للامتصاص.</li>
+        <li><b>الأشكال الاصطناعية:</b> فيتامين $K_{3}$ و $K_{4}$ (قابلة للذوبان في الماء).</li>
+        <li><b>آلية العمل:</b> ضروري للمرحلة النهائية من تصنيع عوامل التخثر <b>II و VII و IX و X</b> في الكبد.</li>
+        <li><b>الاستخدامات العلاجية:</b> النقص الغذائي، العلاج بمضادات الميكروبات المزمنة (يقتل بكتيريا الأمعاء)، سوء الامتصاص، أمراض الكبد، والجرعة الزائدة من مضادات التخثر الفموية.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 9-11 of 29</span>
+<span class="ar">المصدر: الصفحات ٩-١١ من ٢٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Remember "1972" for Vitamin K dependent factors: 10 (X), 9 (IX), 7 (VII), 2 (II).</div><div class="ar">تذكر العوامل المعتمدة على فيتامين ك بالأرقام: ٢، ٧، ٩، ١٠.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Dose: 0.5 to 1.0 mg intramuscularly. Vitamin K analogues include Menadione.</div><div class="ar">الجرعة: ٠.٥ إلى ١.٠ مجم في العضل. تشمل نظائر فيتامين ك الميناديون.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Vitamin K is the specific antidote for Warfarin overdose.</div><div class="ar">فيتامين ك هو الترياق المحدد للجرعة الزائدة من الوارفارين.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">5. Tranexamic Acid & Other Agents</span><span class="ar">٥. حمض الترانيكساميك وعوامل أخرى</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><b style="color:#8b5cf6">Tranexamic Acid:</b> Produces an <b style="color:#8b5cf6">antifibrinolytic</b> effect (prevents clot breakdown).</p>
+    <ul>
+        <li><b>Distribution:</b> Widely distributed, crosses placenta and into breast milk.</li>
+        <li><b>Adverse Effects:</b> GI disturbances, vision disturbances, and <b style="color:#8b5cf6">hypotension</b> (especially after rapid IV).</li>
+        <li><b>Use:</b> Prophylaxis and control of bleeding after dental extraction.</li>
+    </ul>
+    <p><b>Other Systemic Agents:</b></p>
+    <ul>
+        <li><b>Desmopressin Acetate:</b> Increases circulating Factors (used for hereditary deficiency).</li>
+        <li><b>Botropase/Ethamsylate:</b> For primary/secondary postoperative hemorrhage.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><b style="color:#8b5cf6">حمض الترانيكساميك:</b> له تأثير <b style="color:#8b5cf6">مضاد لانحلال الفايبرين</b> (يمنع تفكك الجلطة).</p>
+    <ul>
+        <li><b>التوزيع:</b> يتوزع على نطاق واسع، ويعبر المشيمة ويصل إلى حليب الثدي.</li>
+        <li><b>الآثار الجانبية:</b> اضطرابات الجهاز الهضمي، اضطرابات الرؤية، و<b style="color:#8b5cf6">انخفاض ضغط الدم</b> (خاصة بعد الحقن الوريدي السريع).</li>
+        <li><b>الاستخدام:</b> الوقاية من النزيف والسيطرة عليه بعد قلع الأسنان.</li>
+    </ul>
+    <p><b>عوامل جهازية أخرى:</b></p>
+    <ul>
+        <li><b>ديسموبريسين أسيتات:</b> يزيد من العوامل المنتشرة في الدم (يستخدم للنقص الوراثي).</li>
+        <li><b>بوتروباز/إيثامسيلات:</b> للنزيف الأولي/الثانوي بعد الجراحة.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 12-13 of 29</span>
+<span class="ar">المصدر: الصفحات ١٢-١٣ من ٢٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Rapid IV administration of Tranexamic Acid can cause hypotension.</div><div class="ar">الحقن الوريدي السريع لحمض الترانيكساميك قد يسبب انخفاض ضغط الدم.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Tranexamic acid is often used as a mouthwash in dental practice for local bleeding control.</div><div class="ar">غالباً ما يستخدم حمض الترانيكساميك كغسول للفم في عيادات الأسنان للسيطرة الموضعية على النزيف.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Desmopressin is unique for producing a dose-related increase in circulating clotting factors.</div><div class="ar">يتميز الديسموبريسين بإنتاج زيادة في عوامل التخثر تعتمد على الجرعة.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">6. Topical Hemostatic Agents</span><span class="ar">٦. عوامل وقف النزيف الموضعية</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>These are applied directly to the bleeding site.</p>
+    <ul>
+        <li><b>Fibrin Glue & Thrombin:</b> Topical coagulants.</li>
+        <li><b>Hemostatic Collagen:</b> Made from bovine collagen, highly absorbent, nontoxic.</li>
+        <li><b>Gelatin Sponge:</b> Porous sponge, commonly used for minor bleeding.</li>
+        <li><b>Bone Wax:</b> Sterile mixture of beeswax, paraffin, and isopropyl palmitate.</li>
+        <li><b>Cellulose:</b> Resorbable material.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p>تُطبق هذه العوامل مباشرة على موقع النزيف.</p>
+    <ul>
+        <li><b>غراء الفايبرين والثرومبين:</b> مخثرات موضعية.</li>
+        <li><b>الكولاجين الموقف للنزيف:</b> مصنوع من كولاجين بقري، عالي الامتصاص وغير سام.</li>
+        <li><b>اسفنجة الجيلاتين:</b> اسفنجة مسامية، تستخدم عادة للنزيف البسيط.</li>
+        <li><b>شمع العظم (Bone Wax):</b> خليط معقم من شمع العسل والبارافين وإيزوبروبيل بالميتات.</li>
+        <li><b>السليلوز:</b> مادة قابلة للامتصاص.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 9, 15 of 29</span>
+<span class="ar">المصدر: الصفحات ٩، ١٥ من ٢٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">Gelatin sponges and Bone Wax are physical barriers often placed in extraction sockets.</div><div class="ar">اسفنجات الجيلاتين وشمع العظم هي حواجز فيزيائية توضع غالباً في تجاويف القلع.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Adsorbent chemicals like zeolites are also used to seal severe injuries quickly.</div><div class="ar">تستخدم المواد الكيميائية الماصة مثل الزيوليت لإغلاق الإصابات الشديدة بسرعة.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Bone wax acts mechanically to plug bleeding from bone channels.</div><div class="ar">يعمل شمع العظم ميكانيكياً لسد النزيف من القنوات العظمية.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">7. Anticoagulants: Heparin</span><span class="ar">٧. مضادات التخثر: الهيبارين</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><b style="color:#8b5cf6">Anticoagulants</b> prevent blood clot formation and are used for conditions like Deep Vein Thrombosis (DVT), Pulmonary Embolism (PE), and heart surgery.</p>
+    <p><b>Heparin (Parenteral):</b></p>
+    <ul>
+        <li><b>Origin:</b> Naturally produced by basophils and mast cells.</li>
+        <li><b>Mechanism:</b> Inhibits clotting factors by activating <b style="color:#8b5cf6">Antithrombin III</b>.</li>
+        <li><b>Administration:</b> Subcutaneous injection.</li>
+        <li><b>LMWH:</b> <b style="color:#8b5cf6">Low-molecular-weight heparin</b> (e.g., Enoxaparin) is more convenient and cost-effective.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><b style="color:#8b5cf6">مضادات التخثر</b> تمنع تكون جلطات الدم وتستخدم في حالات مثل تجلط الأوردة العميقة (DVT)، الانسداد الرئوي (PE)، وجراحة القلب.</p>
+    <p><b>الهيبارين (عن طريق الحقن):</b></p>
+    <ul>
+        <li><b>الأصل:</b> يُنتج طبيعياً بواسطة الخلايا القاعدية والخلايا الصارية.</li>
+        <li><b>الآلية:</b> يثبط عوامل التخثر عن طريق تنشيط <b style="color:#8b5cf6">مضاد الثرومبين III</b>.</li>
+        <li><b>الإعطاء:</b> حقن تحت الجلد.</li>
+        <li><b>LMWH:</b> <b style="color:#8b5cf6">الهيبارين منخفض الوزن الجزيئي</b> (مثل الإينوكسابارين) أكثر ملاءمة وفعالية من حيث التكلفة.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 18-20 of 29</span>
+<span class="ar">المصدر: الصفحات ١٨-٢٠ من ٢٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Heparin acts rapidly compared to Warfarin.</div><div class="ar">يعمل الهيبارين بسرعة مقارنة بالوارfarin.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Heparin is administered parenterally (injection), not orally.</div><div class="ar">يتم إعطاء الهيبارين عن طريق الحقن، وليس عن طريق الفم.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">The most common side effect is bleeding.</div><div class="ar">الآثار الجانبية الأكثر شيوعاً هي النزيف.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">8. Anticoagulants: Warfarin & Dicumarol</span><span class="ar">٨. مضادات التخثر: الوارفارين والدايكومارول</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><b>Warfarin (Oral):</b></p>
+    <ul>
+        <li><b>Mechanism:</b> Vitamin K antagonist. It inhibits the synthesis of factors <b style="color:#8b5cf6">II, VII, IX, and X</b>.</li>
+        <li><b>Function:</b> Stops existing clots from growing and prevents emboli.</li>
+        <li><b>Side Effect:</b> Bleeding.</li>
+    </ul>
+    <p><b>Dicumarol:</b></p>
+    <ul>
+        <li>Potent oral anticoagulant, acts similarly by inhibiting synthesis of Vit K-dependent factors.</li>
+        <li>Used to prevent/treat thromboembolic disease.</li>
+    </ul>
+    <p><b>Direct Oral Anticoagulants (DOACs):</b> Include Dabigatran and Rivaroxaban.</p>
+</div>
+<div class="ar">
+    <p><b>الوارفارين (فموي):</b></p>
+    <ul>
+        <li><b>الآلية:</b> مضاد لفيتامين ك. يثبط تصنيع العوامل <b style="color:#8b5cf6">II و VII و IX و X</b>.</li>
+        <li><b>الوظيفة:</b> يوقف نمو الجلطات الموجودة ويمنع الانصمام.</li>
+        <li><b>الأثر الجانبي:</b> النزيف.</li>
+    </ul>
+    <p><b>الدايكومارول:</b></p>
+    <ul>
+        <li>مضاد تخثر فموي قوي، يعمل بشكل مشابه عن طريق تثبيط تصنيع العوامل المعتمدة على فيتامين ك.</li>
+        <li>يستخدم لمنع/علاج أمراض الجلطات الدموية.</li>
+    </ul>
+    <p><b>مضادات التخثر الفموية المباشرة (DOACs):</b> تشمل دابيجاتران وريفاروكسابان.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 21-22 of 29</span>
+<span class="ar">المصدر: الصفحات ٢١-٢٢ من ٢٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Warfarin requires monitoring (INR) because its effect is affected by diet (Vitamin K intake).</div><div class="ar">يتطلب الوارفارين مراقبة (INR) لأن مفعوله يتأثر بالنظام الغذائي (تناول فيتامين ك).</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Warfarin inhibits the same factors that Vitamin K activates (1972: 10, 9, 7, 2).</div><div class="ar">يثبط الوارفارين نفس العوامل التي ينشطها فيتامين ك (١٠، ٩، ٧، ٢).</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Overdose of oral anticoagulants is treated with Vitamin K.</div><div class="ar">يتم علاج الجرعة الزائدة من مضادات التخثر الفموية بفيتامين ك.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">9. Fibrinolytics & Platelet Inhibitors</span><span class="ar">٩. حالات الفايبرين ومثبطات الصفائح</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><b style="color:#8b5cf6">Fibrinolytics:</b> Agents used to lyse (break) clots to recanalize occluded vessels (e.g., coronary arteries).</p>
+    <ul>
+        <li><b>Streptokinase:</b> Converts Plasminogen to Plasmin. Parenteral, short half-life.</li>
+    </ul>
+    <p><b style="color:#8b5cf6">Platelet Inhibiting Drugs:</b></p>
+    <ul>
+        <li><b style="color:#8b5cf6">Aspirin:</b> In small doses, it <b style="color:#8b5cf6">irreversibly</b> inactivates platelet cyclooxygenase.</li>
+        <li><b>Duration:</b> Effect lasts for the life of the platelet (7-10 days).</li>
+        <li><b>Uses:</b> Prophylaxis for Myocardial Infarction (MI), coronary bypass, ischemic attack.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><b style="color:#8b5cf6">حالات الفايبرين (Fibrinolytics):</b> عوامل تستخدم لتحليل (تكسير) الجلطات لإعادة فتح الأوعية المسدودة (مثل الشرايين التاجية).</p>
+    <ul>
+        <li><b>ستربتوكيناز:</b> يحول البلازمينوجين إلى بلازمين. يعطى بالحقن، وله عمر نصفي قصير.</li>
+    </ul>
+    <p><b style="color:#8b5cf6">الأدوية المثبطة للصفائح الدموية:</b></p>
+    <ul>
+        <li><b style="color:#8b5cf6">الأسبرين:</b> بجرعات صغيرة، يعطل إنزيم الأكسدة الحلقية في الصفائح الدموية بشكل <b style="color:#8b5cf6">غير قابل للعكس</b>.</li>
+        <li><b>المدة:</b> يستمر التأثير طوال حياة الصفيحة الدموية (٧-١٠ أيام).</li>
+        <li><b>الاستخدامات:</b> الوقاية من احتشاء عضلة القلب (MI)، المجازة التاجية، والنوبة الإقفارية.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 24-26 of 29</span>
+<span class="ar">المصدر: الصفحات ٢٤-٢٦ من ٢٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Aspirin's effect is irreversible; new platelets must be made to restore clotting function.</div><div class="ar">تأثير الأسبرين غير قابل للعكس؛ يجب تصنيع صفائح دموية جديدة لاستعادة وظيفة التجلط.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Fibrinolytics are "Clot Busters" used in emergencies like heart attacks.</div><div class="ar">تعتبر حالات الفايبرين "محطمة للجلطات" وتستخدم في حالات الطوارئ مثل النوبات القلبية.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Dental patients on Aspirin may have prolonged bleeding, but it is usually manageable.</div><div class="ar">قد يعاني مرضى الأسنان الذين يتناولون الأسبرين من نزيف طويل الأمد، لكن عادة ما يمكن السيطرة عليه.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">10. Dental Considerations & Management</span><span class="ar">١٠. الاعتبارات السنية والإدارة</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><b>Management Steps for Intraoperative Bleeding:</b></p>
+    <ol>
+        <li>Review Medical History.</li>
+        <li>Local vasoconstriction (Epinephrine injection).</li>
+        <li>Local measures: Pressure, Sutures, Topical agents.</li>
+        <li>Tranexamic acid mouthwash.</li>
+        <li>Emergency: Medical facility for transfusion/anticoagulant reversal.</li>
+    </ol>
+    <p><b>Specific Risks:</b></p>
+    <ul>
+        <li><b>Anticoagulants:</b> Risk of bleeding. Monitor/Adjust therapy if needed (Consult physician).</li>
+        <li><b>Coagulants:</b> Complications like clot migration.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><b>خطوات إدارة النزيف أثناء الجراحة:</b></p>
+    <ol>
+        <li>مراجعة التاريخ الطبي.</li>
+        <li>تضييق الأوعية موضعياً (حقن إبينفرين).</li>
+        <li>تدابير محلية: الضغط، الخياطة، العوامل الموضعية.</li>
+        <li>غسول فم حمض الترانيكساميك.</li>
+        <li>الطوارئ: نقل إلى منشأة طبية لنقل الدم/عكس مضادات التخثر.</li>
+    </ol>
+    <p><b>مخاطر محددة:</b></p>
+    <ul>
+        <li><b>مضادات التخثر:</b> خطر النزيف. مراقبة/تعديل العلاج إذا لزم الأمر (استشارة الطبيب).</li>
+        <li><b>المخثرات:</b> مضاعفات مثل انتقال الجلطة.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 16, 27-28 of 29</span>
+<span class="ar">المصدر: الصفحات ١٦، ٢٧-٢٨ من ٢٩</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Always consult the physician before altering a patient's anticoagulant regimen.</div><div class="ar">استشر الطبيب دائماً قبل تغيير نظام مضادات التخثر للمريض.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Severe bleeding requires immediate life support and reversal agents.</div><div class="ar">يتطلب النزيف الشديد دعماً فورياً للحياة وعوامل عكس المفعول.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Epinephrine provides temporary reduction of bleeding via vasoconstriction.</div><div class="ar">يوفر الإبينفرين انخفاضاً مؤقتاً في النزيف عن طريق تضييق الأوعية الدموية.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">11. Summary</span><span class="ar">١١. الملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Hemostasis is the balance between clotting and bleeding. <b>Vitamin K</b> is essential for synthesizing factors II, VII, IX, and X. <b>Warfarin</b> inhibits these factors, acting as an oral anticoagulant. <b>Heparin</b> activates Antithrombin III for rapid anticoagulation. <b>Tranexamic acid</b> prevents clot breakdown. <b>Aspirin</b> irreversibly inhibits platelets. Dentists must manage bleeding risks through local measures and medical consultation.</p>
+</div>
+<div class="ar">
+    <p>الإرقاء هو التوازن بين التجلط والنزيف. <b>فيتامين ك</b> ضروري لتصنيع العوامل II و VII و IX و X. يثبط <b>الوارفارين</b> هذه العوامل، ويعمل كمضاد تخثر فموي. ينشط <b>الهيبارين</b> مضاد الثرومبين III لإحداث تأثير سريع مضاد للتخثر. يمنع <b>حمض الترانيكساميك</b> تفكك الجلطة. يثبط <b>الأسبرين</b> الصفائح الدموية بشكل غير قابل للعكس. يجب على أطباء الأسنان إدارة مخاطر النزيف من خلال التدابير المحلية والاستشارة الطبية.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: All Pages</span>
+<span class="ar">المصدر: كل الصفحات</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Warfarin = Vitamin K Antagonist (Slow). Heparin = Antithrombin III Activator (Fast).</div><div class="ar">الوارفارين = مضاد فيتامين ك (بطيء). الهيبارين = منشط مضاد الثرومبين III (سريع).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Local hemostatics include Gelfoam, Bone Wax, and Thrombin.</div><div class="ar">تشمل مرقيات الدم الموضعية الجيلفوم، وشمع العظم، والثرومبين.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Review the coagulation cascade to understand where each drug acts.</div><div class="ar">راجع شلال التخثر لفهم أين يعمل كل دواء.</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Hemostasis / الإرقاء</div><div class="content" hidden=""><div class="en">Process of maintaining blood fluidity and preventing blood loss.</div><div class="ar">عملية الحفاظ على سيولة الدم ومنع فقدان الدم.</div></div></div>
+<div class="card"><div class="head">Thrombosis / الخثرة</div><div class="content" hidden=""><div class="en">Formation of a blood clot inside a blood vessel, obstructing flow.</div><div class="ar">تكون جلطة دموية داخل الأوعية الدموية، مما يعيق التدفق.</div></div></div>
+<div class="card"><div class="head">Fibrin / الفايبرين</div><div class="content" hidden=""><div class="en">Protein strands that mesh with platelets to form a strong clot.</div><div class="ar">خيوط بروتينية تتشابك مع الصفائح الدموية لتكوين جلطة قوية.</div></div></div>
+<div class="card"><div class="head">Warfarin / الوارفارين</div><div class="content" hidden=""><div class="en">Oral anticoagulant that antagonizes Vitamin K.</div><div class="ar">مضاد تخثر فموي يعاكس عمل فيتامين ك.</div></div></div>
+<div class="card"><div class="head">Heparin / الهيبارين</div><div class="content" hidden=""><div class="en">Parenteral anticoagulant that activates Antithrombin III.</div><div class="ar">مضاد تخثر يؤخذ بالحقن وينشط مضاد الثرومبين III.</div></div></div>
+<div class="card"><div class="head">Streptokinase / ستربتوكيناز</div><div class="content" hidden=""><div class="en">A fibrinolytic agent that converts plasminogen to plasmin.</div><div class="ar">عامل محلل للفايبرين يحول البلازمينوجين إلى بلازمين.</div></div></div>
+<div class="card"><div class="head">Aspirin / الأسبرين</div><div class="content" hidden=""><div class="en">Antiplatelet drug that irreversibly inhibits cyclooxygenase.</div><div class="ar">دواء مضاد للصفائح يثبط إنزيم الأكسدة الحلقية بشكل غير قابل للعكس.</div></div></div>
+<div class="card"><div class="head">Vitamin K / فيتامين ك</div><div class="content" hidden=""><div class="en">Essential for synthesis of factors II, VII, IX, and X.</div><div class="ar">ضروري لتصنيع العوامل II و VII و IX و X.</div></div></div>
+<div class="card"><div class="head">Desmopressin / ديسموبريسين</div><div class="content" hidden=""><div class="en">Agent that increases circulating clotting factors.</div><div class="ar">عامل يزيد من عوامل التخثر المنتشرة في الدم.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — Which factors are Vitamin K dependent?</span><span class="ar">١ — ما هي العوامل المعتمدة على فيتامين ك؟</span></div><div class="content" hidden=""><span class="en">Factors II, VII, IX, and X.</span><span class="ar">العوامل II (٢) و VII (٧) و IX (٩) و X (١٠).</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — What is the mechanism of Aspirin?</span><span class="ar">٢ — ما هي آلية عمل الأسبرين؟</span></div><div class="content" hidden=""><span class="en">Irreversible inhibition of platelet cyclooxygenase.</span><span class="ar">تثبيط غير قابل للعكس لإنزيم الأكسدة الحلقية في الصفائح الدموية.</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — What is the antidote for Warfarin overdose?</span><span class="ar">٣ — ما هو ترياق الجرعة الزائدة من الوارفارين؟</span></div><div class="content" hidden=""><span class="en">Vitamin K.</span><span class="ar">فيتامين ك.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — How does Heparin work?</span><span class="ar">٤ — كيف يعمل الهيبارين؟</span></div><div class="content" hidden=""><span class="en">It activates Antithrombin III.</span><span class="ar">ينشط مضاد الثرومبين III.</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — Which factor is Fibrinogen?</span><span class="ar">٥ — أي عامل هو الفيبرينوجين؟</span></div><div class="content" hidden=""><span class="en">Factor I.</span><span class="ar">العامل الأول (I).</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — What does Tranexamic Acid do?</span><span class="ar">٦ — ماذا يفعل حمض الترانيكساميك؟</span></div><div class="content" hidden=""><span class="en">It is an antifibrinolytic (prevents clot breakdown).</span><span class="ar">هو مضاد لانحلال الفايبرين (يمنع تفكك الجلطة).</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — Which clotting pathway does Calcium affect?</span><span class="ar">٧ — ما هو مسار التخثر الذي يؤثر عليه الكالسيوم؟</span></div><div class="content" hidden=""><span class="en">Calcium (Factor IV) is involved in multiple steps.</span><span class="ar">يشارك الكالسيوم (العامل الرابع) في خطوات متعددة.</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — What is the risk of rapid IV Tranexamic Acid?</span><span class="ar">٨ — ما هو خطر الحقن الوريدي السريع لحمض الترانيكساميك؟</span></div><div class="content" hidden=""><span class="en">Hypotension.</span><span class="ar">انخفاض ضغط الدم.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What reinforces the platelet plug?</span><span class="ar">٩ — ما الذي يعزز سدادة الصفائح الدموية؟</span></div><div class="content" hidden=""><span class="en">Fibrin (cross-linked).</span><span class="ar">الفايبرين (المتشابك).</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

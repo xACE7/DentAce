@@ -1,0 +1,711 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Two-Column Sections</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
+</style>
+</head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 34</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">اللهم لا سهل إلا ما جعلته سهلاً وأنت تجعل الحزن إذا شئت سهلاً</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Histology of the Tongue</b></span>
+<span class="ar"><b>الموضوع: علم الأنسجة للسان</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">1. Tongue Structure & Musculature</span><span class="ar">١. بنية اللسان وعضلاته</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>The tongue is primarily a mass of interlacing <strong style="color:#8b5cf6">striated muscle</strong> fibers running in different directions. This complex arrangement allows for the high mobility required for speech and chewing.</p>
+    <p>The surface is covered by mucosa. The dorsal (top) surface is rough due to the presence of projections called <strong style="color:#8b5cf6">papillae</strong>.</p>
+</div>
+<div class="ar">
+    <p>اللسان عبارة عن كتلة من ألياف <strong style="color:#8b5cf6">العضلات المخططة</strong> المتداخلة التي تمتد في اتجاهات مختلفة. يسمح هذا الترتيب المعقد بالحركة العالية المطلوبة للكلام والمضغ.</p>
+    <p>يغطى السطح بغشاء مخاطي. السطح الظهري (العلوي) خشن بسبب وجود نتوءات تسمى <strong style="color:#8b5cf6">الحليمات</strong>.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 1, 5, 8 of 16</span>
+<span class="ar">المصدر: الصفحات ١، ٥، ٨ من ١٦</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The tongue consists of skeletal (voluntary) muscle fibers arranged in longitudinal, transverse, and vertical planes.</div><div class="ar">يتكون اللسان من ألياف عضلية هيكلية (إرادية) مرتبة في مستويات طولية وعرضية وعمودية.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">The spaces between muscle fibers often contain loose connective tissue and fat.</div><div class="ar">غالباً ما تحتوي المسافات بين الألياف العضلية على نسيج ضام رخو ودهون.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The multidirectional muscles allow the tongue to change shape precisely for phonation (speech) and swallowing.</div><div class="ar">تسمح العضلات متعددة الاتجاهات للسان بتغيير شكله بدقة من أجل النطق (الكلام) والبلع.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">2. Filiform Papillae</span><span class="ar">٢. الحليمات الخيطية</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong style="color:#8b5cf6">Filiform papillae</strong> are the <strong style="color:#8b5cf6">most numerous</strong> type of papilla. They are cone-shaped projections that cover the entire dorsal surface of the tongue.</p>
+    <ul>
+        <li>They are lined by <strong style="color:#8b5cf6">keratinized</strong> stratified squamous epithelium.</li>
+        <li>They <strong style="color:#8b5cf6">lack taste buds</strong>.</li>
+        <li>Their primary function is mechanical, providing friction for moving food.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><strong style="color:#8b5cf6">الحليمات الخيطية</strong> هي النوع <strong style="color:#8b5cf6">الأكثر عدداً</strong> من الحليمات. وهي نتوءات مخروطية الشكل تغطي السطح الظهري للسان بالكامل.</p>
+    <ul>
+        <li>وهي مبطنة بظهارة حرشفية مطبقة <strong style="color:#8b5cf6">متقرنة</strong>.</li>
+        <li>وهي <strong style="color:#8b5cf6">تفتقر إلى براعم التذوق</strong>.</li>
+        <li>وظيفتها الأساسية ميكانيكية، وتوفر الاحتكاك لتحريك الطعام.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 3, 5, 12 of 16</span>
+<span class="ar">المصدر: الصفحات ٣، ٥، ١٢ من ١٦</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">"Filiform" = Filament/Thread-like. They are pointy and abrasive like a cat's tongue.</div><div class="ar">"Filiform" تعني خيطية. وهي مدببة وكاشطة مثل لسان القطة.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">They have a connective tissue core derived from the lamina propria.</div><div class="ar">لديها لب من النسيج الضام مشتق من الصفيحة المخصوصة.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Changes in filiform papillae (e.g., atrophy) can be a sign of nutritional deficiencies (like iron or vitamin B).</div><div class="ar">التغيرات في الحليمات الخيطية (مثل الضمور) يمكن أن تكون علامة على نقص التغذية (مثل الحديد أو فيتامين ب).</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">3. Fungiform Papillae</span><span class="ar">٣. الحليمات الفطرية</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong style="color:#8b5cf6">Fungiform papillae</strong> are mushroom-shaped structures scattered among the filiform papillae.</p>
+    <ul>
+        <li>They are <strong style="color:#8b5cf6">less numerous</strong> than filiform papillae.</li>
+        <li>They are primarily located on the <strong style="color:#8b5cf6">tip and sides</strong> of the tongue.</li>
+        <li>Crucially, they contain <strong style="color:#8b5cf6">taste buds</strong> on their superior surface.</li>
+        <li>They are lined by <strong style="color:#8b5cf6">non-keratinized</strong> epithelium, making them appear red clinically due to the underlying vascular core.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><strong style="color:#8b5cf6">الحليمات الفطرية</strong> هي هياكل تشبه الفطر متناثرة بين الحليمات الخيطية.</p>
+    <ul>
+        <li>وهي <strong style="color:#8b5cf6">أقل عدداً</strong> من الحليمات الخيطية.</li>
+        <li>تقع في الغالب على <strong style="color:#8b5cf6">مقدمة وجوانب</strong> اللسان.</li>
+        <li>بشكل حاسم، تحتوي على <strong style="color:#8b5cf6">براعم تذوق</strong> على سطحها العلوي.</li>
+        <li>وهي مبطنة بظهارة <strong style="color:#8b5cf6">غير متقرنة</strong>، مما يجعلها تبدو حمراء سريرياً بسبب اللب الوعائي الأساسي.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 5, 6, 13 of 16</span>
+<span class="ar">المصدر: الصفحات ٥، ٦، ١٣ من ١٦</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Fungiform = Fungus (Mushroom). They look like little mushrooms popping up.</div><div class="ar">Fungiform = فطر (Mushroom). تبدو وكأنها فطر صغير يظهر.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Do not confuse the epithelium type: Filiform is keratinized (hard/white), Fungiform is non-keratinized (soft/red).</div><div class="ar">لا تخلط بين نوع الظهارة: الخيطية متقرنة (صلبة/بيضاء)، الفطرية غير متقرنة (ناعمة/حمراء).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">They possess a connective tissue core rich in blood vessels.</div><div class="ar">تمتلك لباً من النسيج الضام غنياً بالأوعية الدموية.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">4. Comparison: Filiform vs. Fungiform</span><span class="ar">٤. مقارنة: الخيطية مقابل الفطرية</span></h2>
+<div class="sec-body">
+<div class="en"><p>Key differences summarized from the histological slides.</p></div>
+<div class="ar"><p>الفروق الرئيسية ملخصة من الشرائح النسيجية.</p></div>
+<div aria-label="Scrollable table" class="table-wrap">
+<table>
+<thead>
+<tr>
+<th><span class="en">Feature</span><span class="ar">السمة</span></th>
+<th><span class="en">Filiform Papillae</span><span class="ar">الحليمات الخيطية</span></th>
+<th><span class="en">Fungiform Papillae</span><span class="ar">الحليمات الفطرية</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="en">Shape</span><span class="ar">الشكل</span></td>
+<td><span class="en">Cone-shaped</span><span class="ar">مخروطية الشكل</span></td>
+<td><span class="en">Mushroom-shaped</span><span class="ar">تشبه الفطر</span></td>
+</tr>
+<tr>
+<td><span class="en">Quantity</span><span class="ar">الكمية</span></td>
+<td><span class="en">Most numerous</span><span class="ar">الأكثر عدداً</span></td>
+<td><span class="en">Less numerous</span><span class="ar">أقل عدداً</span></td>
+</tr>
+<tr>
+<td><span class="en">Location</span><span class="ar">الموقع</span></td>
+<td><span class="en">All over dorsal surface</span><span class="ar">كامل السطح الظهري</span></td>
+<td><span class="en">Tip and sides</span><span class="ar">المقدمة والجوانب</span></td>
+</tr>
+<tr>
+<td><span class="en">Taste Buds</span><span class="ar">براعم التذوق</span></td>
+<td><span class="en">Absent</span><span class="ar">غائبة</span></td>
+<td><span class="en">Present</span><span class="ar">موجودة</span></td>
+</tr>
+<tr>
+<td><span class="en">Epithelium</span><span class="ar">الظهارة</span></td>
+<td><span class="en">Keratinized</span><span class="ar">متقرنة</span></td>
+<td><span class="en">Non-keratinized</span><span class="ar">غير متقرنة</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 5, 12, 13 of 16</span>
+<span class="ar">المصدر: الصفحات ٥، ١٢، ١٣ من ١٦</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Use the table to memorize the opposites. If Filiform is keratinized, Fungiform is not. If Filiform has no taste, Fungiform does.</div><div class="ar">استخدم الجدول لحفظ الأضداد. إذا كانت الخيطية متقرنة، فالفطرية ليست كذلك. وإذا كانت الخيطية بلا طعم، فالفطرية تحتوي عليه.</div></div></div>
+<div class="callout example"><div class="hdr"><span class="en">🔍 Example</span><span class="ar">🔍 مثال</span></div><div class="body" hidden=""><div class="en">In histology slides, Filiform looks like sharp waves or flames; Fungiform looks like a round knob.</div><div class="ar">في الشرائح النسيجية، تبدو الخيطية مثل موجات حادة أو لهب؛ بينما تبدو الفطرية مثل مقبض دائري.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Both types have a connective tissue core.</div><div class="ar">كلا النوعين يحتويان على لب من النسيج الضام.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">5. Circumvallate Papillae</span><span class="ar">٥. الحليمات الكأسية</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong style="color:#8b5cf6">Circumvallate papillae</strong> are large structures located at the back of the tongue. In cross-section, they appear distinct because they are surrounded by a deep circular furrow or <strong style="color:#8b5cf6">"V" shaped trough</strong>.</p>
+    <ul>
+        <li>The superficial surface is lined by <strong style="color:#8b5cf6">keratinized</strong> stratified squamous epithelium.</li>
+        <li>The lateral (side) walls are lined by <strong style="color:#8b5cf6">non-keratinized</strong> epithelium containing numerous <strong style="color:#8b5cf6">taste buds</strong>.</li>
+        <li>The taste buds open directly into the lumen of the trough.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><strong style="color:#8b5cf6">الحليمات الكأسية</strong> هي هياكل كبيرة تقع في مؤخرة اللسان. في المقطع العرضي، تبدو مميزة لأنها محاطة بأخدود دائري عميق أو <strong style="color:#8b5cf6">شق على شكل حرف "V"</strong>.</p>
+    <ul>
+        <li>السطح السطحي مبطن بظهارة حرشفية مطبقة <strong style="color:#8b5cf6">متقرنة</strong>.</li>
+        <li>الجدران الجانبية مبطنة بظهارة <strong style="color:#8b5cf6">غير متقرنة</strong> تحتوي على العديد من <strong style="color:#8b5cf6">براعم التذوق</strong>.</li>
+        <li>تفتح براعم التذوق مباشرة في تجويف الشق.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 7, 9, 14 of 16</span>
+<span class="ar">المصدر: الصفحات ٧، ٩، ١٤ من ١٦</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">"Circumvallate" = "Walled around". Think of a castle surrounded by a moat (the trough).</div><div class="ar">"Circumvallate" = "محاطة بسور". فكر في قلعة محاطة بخندق (الشق).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">These are the largest type of papillae but the fewest in number (typically 8-12 in humans).</div><div class="ar">هذه هي أكبر أنواع الحليمات ولكنها الأقل عدداً (عادة ٨-١٢ في البشر).</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Due to their posterior location, examining them often triggers the gag reflex.</div><div class="ar">بسبب موقعها الخلفي، غالباً ما يثير فحصها منعكس التقيؤ (gag reflex).</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">6. Von Ebner's Glands</span><span class="ar">٦. غدد فون إبنر</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Associated with the circumvallate papillae are <strong style="color:#8b5cf6">Von Ebner's glands</strong> (also known as lingual salivary glands).</p>
+    <ul>
+        <li>These are purely <strong style="color:#8b5cf6">serous glands</strong> located in the connective tissue/submucosa beneath the papilla.</li>
+        <li>Their ducts open into the base of the <strong style="color:#8b5cf6">trough</strong> (furrow) surrounding the papilla.</li>
+        <li><strong>Function:</strong> They secrete watery saliva to <strong style="color:#8b5cf6">wash away</strong> food particles and dissolved substances from the taste buds, allowing new tastes to be perceived.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p>ترتبط بالحليمات الكأسية <strong style="color:#8b5cf6">غدد فون إبنر</strong> (المعروفة أيضاً باسم الغدد اللعابية اللسانية).</p>
+    <ul>
+        <li>هذه <strong style="color:#8b5cf6">غدد مصلية</strong> نقية تقع في النسيج الضام/تحت المخاطية أسفل الحليمة.</li>
+        <li>تفتح قنواتها في قاعدة <strong style="color:#8b5cf6">الشق</strong> (الأخدود) المحيط بالحليمة.</li>
+        <li><strong>الوظيفة:</strong> تفرز لعاباً مائياً <strong style="color:#8b5cf6">لغسل</strong> جزيئات الطعام والمواد المذابة من براعم التذوق، مما يسمح بإدراك مذاقات جديدة.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 9, 14 of 16</span>
+<span class="ar">المصدر: الصفحات ٩، ١٤ من ١٦</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Without these glands, taste buds would remain saturated with the previous food, and you couldn't taste the next bite clearly.</div><div class="ar">بدون هذه الغدد، ستظل براعم التذوق مشبعة بالطعام السابق، ولن تتمكن من تذوق اللقمة التالية بوضوح.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Von Ebner's glands are unique because they are minor salivary glands that are purely serous (most minor glands are mucous).</div><div class="ar">غدد فون إبنر فريدة من نوعها لأنها غدد لعابية صغيرة مصلية بحتة (معظم الغدد الصغيرة مخاطية).</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Think of Von Ebner's glands as a "car wash" for your taste buds.</div><div class="ar">فكر في غدد فون إبنر على أنها "مغسلة سيارات" لبراعم التذوق لديك.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">7. Taste Buds Histology</span><span class="ar">٧. أنسجة براعم التذوق</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong style="color:#8b5cf6">Taste buds</strong> are barrel-shaped intra-epithelial organs that appear paler than the surrounding epithelium.</p>
+    <ul>
+        <li><strong>Location:</strong> Found on Fungiform and Circumvallate papillae.</li>
+        <li><strong>Taste Receptor Cells:</strong> Neuroepithelial cells responsible for taste sensation.</li>
+        <li><strong>Basal Cells:</strong> Stem cells located at the base, responsible for replacing old receptor cells.</li>
+        <li><strong>Afferent Nerve:</strong> Connected to the base of the bud to transmit signals to the brain.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><strong style="color:#8b5cf6">براعم التذوق</strong> هي أعضاء برميلية الشكل داخل الظهارة تبدو أكثر شحوباً من الظهارة المحيطة بها.</p>
+    <ul>
+        <li><strong>الموقع:</strong> توجد في الحليمات الفطرية والكأسية.</li>
+        <li><strong>خلايا مستقبلات التذوق:</strong> خلايا ظهارية عصبية مسؤولة عن الإحساس بالتذوق.</li>
+        <li><strong>الخلايا القاعدية:</strong> خلايا جذعية تقع في القاعدة، مسؤولة عن استبدال الخلايا المستقبلة القديمة.</li>
+        <li><strong>العصب الوارد:</strong> متصل بقاعدة البرعم لنقل الإشارات إلى الدماغ.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 10, 11 of 16</span>
+<span class="ar">المصدر: الصفحات ١٠، ١١ من ١٦</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Look for "pale onions" within the darker epithelium to identify taste buds in slides.</div><div class="ar">ابحث عن "بصل شاحب" داخل الظهارة الداكنة لتحديد براعم التذوق في الشرائح.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Taste buds open to the oral cavity via a small opening called the "taste pore".</div><div class="ar">تفتح براعم التذوق على تجويف الفم عبر فتحة صغيرة تسمى "مسام التذوق".</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Cells within the taste bud are constantly renewed, with a lifespan of about 10-14 days.</div><div class="ar">يتم تجديد الخلايا داخل برعم التذوق باستمرار، ويبلغ عمرها حوالي ١٠-١٤ يوماً.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">8. Summary</span><span class="ar">٨. الملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+    <ul>
+        <li>The tongue is a muscular organ covered in specialized mucosa.</li>
+        <li><strong style="color:#8b5cf6">Filiform papillae</strong> are mechanical, keratinized, pointed, and lack taste buds.</li>
+        <li><strong style="color:#8b5cf6">Fungiform papillae</strong> are sensory, non-keratinized, mushroom-shaped, and contain taste buds.</li>
+        <li><strong style="color:#8b5cf6">Circumvallate papillae</strong> are large, V-shaped, have deep troughs, contain taste buds on lateral walls, and are associated with <strong style="color:#8b5cf6">Von Ebner's</strong> serous glands.</li>
+        <li><strong style="color:#8b5cf6">Taste buds</strong> contain receptor cells and basal (stem) cells.</li>
+    </ul>
+</div>
+<div class="ar">
+    <ul>
+        <li>اللسان عضو عضلي مغطى بغشاء مخاطي متخصص.</li>
+        <li><strong style="color:#8b5cf6">الحليمات الخيطية</strong> ميكانيكية، متقرنة، مدببة، وتفتقر إلى براعم التذوق.</li>
+        <li><strong style="color:#8b5cf6">الحليمات الفطرية</strong> حسية، غير متقرنة، تشبه الفطر، وتحتوي على براعم تذوق.</li>
+        <li><strong style="color:#8b5cf6">الحليمات الكأسية</strong> كبيرة، على شكل حرف V، ولها شقوق عميقة، وتحتوي على براعم تذوق على الجدران الجانبية، وترتبط بغدد <strong style="color:#8b5cf6">فون إبنر</strong> المصلية.</li>
+        <li><strong style="color:#8b5cf6">براعم التذوق</strong> تحتوي على خلايا مستقبلة وخلايا قاعدية (جذعية).</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: All pages</span>
+<span class="ar">المصدر: جميع الصفحات</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Review the images to distinguish the "pointed" filiform from the "round" fungiform and the "massive" circumvallate.</div><div class="ar">راجع الصور للتمييز بين الخيطية "المدببة" والفطرية "الدائرية" والكأسية "الضخمة".</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Filiform = Friction (Mechanical). Fungiform = Flavor (Taste).</div><div class="ar">Filiform = احتكاك (ميكانيكي). Fungiform = نكهة (تذوق).</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Remember that Von Ebner's glands are serous only, not mucous.</div><div class="ar">تذكر أن غدد فون إبنر مصلية فقط، وليست مخاطية.</div></div></div>
+</div>
+</aside>
+</section>
+</div>
+
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Filiform Papillae / حليمات خيطية</div><div class="content" hidden=""><div class="en">The most numerous, cone-shaped papillae on the tongue; keratinized and lack taste buds.</div><div class="ar">الحليمات الأكثر عدداً ومخروطية الشكل على اللسان؛ متقرنة وتفتقر إلى براعم التذوق.</div></div></div>
+<div class="card"><div class="head">Fungiform Papillae / حليمات فطرية</div><div class="content" hidden=""><div class="en">Mushroom-shaped papillae found at the tip/sides; contain taste buds and are non-keratinized.</div><div class="ar">حليمات تشبه الفطر توجد في المقدمة/الجوانب؛ تحتوي على براعم تذوق وهي غير متقرنة.</div></div></div>
+<div class="card"><div class="head">Circumvallate Papillae / حليمات كأسية</div><div class="content" hidden=""><div class="en">Large papillae at the back of the tongue surrounded by a trough; contain taste buds laterally.</div><div class="ar">حليمات كبيرة في مؤخرة اللسان محاطة بشق؛ تحتوي على براعم تذوق جانبياً.</div></div></div>
+<div class="card"><div class="head">Von Ebner's Glands / غدد فون إبنر</div><div class="content" hidden=""><div class="en">Pure serous salivary glands that open into the trough of circumvallate papillae to wash taste buds.</div><div class="ar">غدد لعابية مصلية نقية تفتح في شق الحليمات الكأسية لغسل براعم التذوق.</div></div></div>
+<div class="card"><div class="head">Taste Bud / برعم تذوق</div><div class="content" hidden=""><div class="en">Pale, barrel-shaped sensory organ within the epithelium containing receptor cells.</div><div class="ar">عضو حسي شاحب برميلي الشكل داخل الظهارة يحتوي على خلايا مستقبلة.</div></div></div>
+<div class="card"><div class="head">Keratinized Epithelium / ظهارة متقرنة</div><div class="content" hidden=""><div class="en">Tough, protective outer layer found on filiform papillae (and superficial circumvallate).</div><div class="ar">طبقة خارجية صلبة واقية توجد في الحليمات الخيطية (والكأسية السطحية).</div></div></div>
+<div class="card"><div class="head">Basal Cell / خلية قاعدية</div><div class="content" hidden=""><div class="en">Stem cells located at the base of the taste bud responsible for cell renewal.</div><div class="ar">خلايا جذعية تقع في قاعدة برعم التذوق مسؤولة عن تجديد الخلايا.</div></div></div>
+<div class="card"><div class="head">Striated Muscle / عضلة مخططة</div><div class="content" hidden=""><div class="en">The type of voluntary muscle tissue that makes up the core of the tongue.</div><div class="ar">نوع النسيج العضلي الإرادي الذي يشكل لب اللسان.</div></div></div>
+<div class="card"><div class="head">Serous Glands / غدد مصلية</div><div class="content" hidden=""><div class="en">Glands that secrete a watery fluid (rich in enzymes), such as Von Ebner's glands.</div><div class="ar">الغدد التي تفرز سائل مائي (غني بالإنزيمات)، مثل غدد فون إبنر.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — Which papillae are most numerous?</span><span class="ar">١ — أي الحليمات هي الأكثر عدداً؟</span></div><div class="content" hidden=""><span class="en">Filiform papillae.</span><span class="ar">الحليمات الخيطية.</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — Which papillae lack taste buds?</span><span class="ar">٢ — أي الحليمات تفتقر لبراعم التذوق؟</span></div><div class="content" hidden=""><span class="en">Filiform papillae.</span><span class="ar">الحليمات الخيطية.</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — Where are fungiform papillae found?</span><span class="ar">٣ — أين توجد الحليمات الفطرية؟</span></div><div class="content" hidden=""><span class="en">On the tip and sides of the tongue.</span><span class="ar">على مقدمة وجوانب اللسان.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — What type of glands are Von Ebner's?</span><span class="ar">٤ — ما هو نوع غدد فون إبنر؟</span></div><div class="content" hidden=""><span class="en">Pure serous salivary glands.</span><span class="ar">غدد لعابية مصلية نقية.</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — What is the function of filiform papillae?</span><span class="ar">٥ — ما هي وظيفة الحليمات الخيطية؟</span></div><div class="content" hidden=""><span class="en">Mechanical function (friction).</span><span class="ar">وظيفة ميكانيكية (الاحتكاك).</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — Where are taste buds on circumvallate papillae?</span><span class="ar">٦ — أين تقع براعم التذوق في الحليمات الكأسية؟</span></div><div class="content" hidden=""><span class="en">On the lateral walls lining the trough.</span><span class="ar">على الجدران الجانبية المبطنة للشق.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — Which epithelium lines fungiform papillae?</span><span class="ar">٧ — أي ظهارة تبطن الحليمات الفطرية؟</span></div><div class="content" hidden=""><span class="en">Non-keratinized epithelium.</span><span class="ar">ظهارة غير متقرنة.</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — What is the function of Von Ebner's glands?</span><span class="ar">٨ — ما هي وظيفة غدد فون إبنر؟</span></div><div class="content" hidden=""><span class="en">To wash the trough and taste buds.</span><span class="ar">لغسل الشق وبراعم التذوق.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What muscle type forms the tongue?</span><span class="ar">٩ — ما نوع العضلات التي تشكل اللسان؟</span></div><div class="content" hidden=""><span class="en">Striated (skeletal) muscle.</span><span class="ar">عضلة مخططة (هيكلية).</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

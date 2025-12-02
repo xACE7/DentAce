@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Test based on Lecture 10</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+  
+  /* Table styling for SAQs */
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem; }
+  th, td { border: 1px solid rgba(255,255,255,0.2); padding: 8px; text-align: left; }
+  th { background: rgba(255,255,255,0.1); }
+  ol { padding-left: 20px; margin: 5px 0; }
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 10</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data based on Lecture 10 -----------
+const mcqs = [
+  {
+    q: "Which of the following is considered the most common main irritant to the pulp?",
+    opts: ["Caries", "Cavity preparation procedure", "Restorative materials used", "Microleakage"],
+    correct: 0,
+    explain: "Caries is listed as the most common main irritant to the pulp."
+  },
+  {
+    q: "According to the Journal of Operative Dentistry, what is the defined thickness for a cavity liner?",
+    opts: ["Less than 0.5 mm", "0.5 mm to 1.0 mm", "1.0 mm to 2.0 mm", "Greater than 2.0 mm"],
+    correct: 0,
+    explain: "A cavity liner is defined as a coating with minimal thickness, usually less than 0.5 mm."
+  },
+  {
+    q: "Which material has been considered the 'gold standard' lining material for a long time?",
+    opts: ["Calcium Hydroxide", "Zinc Oxide Eugenol", "Glass Ionomer Cement", "Zinc Phosphate"],
+    correct: 0,
+    explain: "Calcium hydroxide has been considered the gold standard for a long time and enjoys the greatest popularity."
+  },
+  {
+    q: "What is the pH range of Calcium Hydroxide?",
+    opts: ["9.2 – 11.7 (Alkaline)", "6.5 – 7.5 (Neutral)", "3.5 – 5.5 (Acidic)", "1.0 – 2.0 (Highly Acidic)"],
+    correct: 0,
+    explain: "Calcium Hydroxide has a high alkaline pH ranging from 9.2 to 11.7."
+  },
+  {
+    q: "What is a primary beneficial action of Calcium Hydroxide on the pulp?",
+    opts: ["Stimulates reparative dentin formation", "Creates a chemical bond with enamel", "Provides high thermal insulation", "Releases fluoride ions continuously"],
+    correct: 0,
+    explain: "The high pH of Calcium Hydroxide stimulates odontoblasts to form reparative dentin."
+  },
+  {
+    q: "What is the primary composition of cavity varnish?",
+    opts: ["Natural gum (copal) or resin dissolved in a solvent", "Calcium hydroxide powder in water", "Zinc oxide powder in eugenol", "Glass powder in polyacrylic acid"],
+    correct: 0,
+    explain: "Cavity varnish is a solution of one or more resins (like organic copal) dissolved in a solvent like ether or chloroform."
+  },
+  {
+    q: "Under which restorative material is cavity varnish CONTRAINDICATED?",
+    opts: ["Composite resin", "Amalgam", "Zinc Phosphate Cement", "Gold foil"],
+    correct: 0,
+    explain: "Cavity varnish interferes with the polymerization of composite resins and should not be used under them."
+  },
+  {
+    q: "What is the typical thickness of a cavity base?",
+    opts: ["0.5 – 1.0 mm", "Less than 0.5 mm", "0.01 – 0.05 mm", "Greater than 4.0 mm"],
+    correct: 0,
+    explain: "A base is typically applied in a thickness of 0.5 – 1 mm to provide thermal protection and support."
+  },
+  {
+    q: "What is the main function of a high-strength base?",
+    opts: ["Provide mechanical support and thermal protection", "Stimulate secondary dentin only", "Act as a mucosal barrier", "Provide only chemical adhesion"],
+    correct: 0,
+    explain: "High-strength bases (like Zn Phosphate, GIC) are used to provide mechanical support for the restoration and thermal protection for the pulp."
+  },
+  {
+    q: "Who introduced Glass Ionomer Cement in 1972?",
+    opts: ["Wilson and Kent", "Bowen", "Buonocore", "Black"],
+    correct: 0,
+    explain: "Glass Ionomer material was introduced by Wilson and Kent in 1972."
+  },
+  {
+    q: "According to Skinner's classification, what is Type I Glass Ionomer used for?",
+    opts: ["Luting", "Restorative", "Liners and Bases", "Fissure Sealant"],
+    correct: 0,
+    explain: "Type I GIC is classified as a Luting agent."
+  },
+  {
+    q: "According to Skinner's classification, what is Type II Glass Ionomer used for?",
+    opts: ["Restorative", "Luting", "Liners and Bases", "Endodontic Sealer"],
+    correct: 0,
+    explain: "Type II GIC is classified as a Restorative material."
+  },
+  {
+    q: "What is the basic component of Glass Ionomer powder?",
+    opts: ["Fluoroaluminosilicate glass", "Zinc Oxide", "Calcium Hydroxide", "Silicon Dioxide only"],
+    correct: 0,
+    explain: "The powder basically consists of fluoroaluminosilicate glass."
+  },
+  {
+    q: "Which acid in the GIC liquid is responsible for the formation of the cement matrix?",
+    opts: ["Polyacrylic acid", "Phosphoric acid", "Hydrofluoric acid", "Sulfuric acid"],
+    correct: 0,
+    explain: "Polyacrylic acid (40%) is responsible for the formation of the cement matrix."
+  },
+  {
+    q: "What is the function of Itaconic acid in the GIC liquid?",
+    opts: ["Decrease viscosity of the liquid", "Increase working time", "Increase setting time", "Provide radiopacity"],
+    correct: 0,
+    explain: "Itaconic acid (5%) is added to decrease the viscosity of the liquid."
+  },
+  {
+    q: "What is the function of Tartaric acid in the GIC liquid?",
+    opts: ["Increases working time and sharpens setting time", "Decreases the strength", "Increases viscosity", "Acts as a filler"],
+    correct: 0,
+    explain: "Tartaric acid (5-15%) helps to increase working time and sharpen the setting reaction."
+  },
+  {
+    q: "The setting reaction of Glass Ionomer Cement is best described as:",
+    opts: ["An acid-base reaction", "A polymerization reaction", "A chelation reaction only", "An oxidation-reduction reaction"],
+    correct: 0,
+    explain: "The setting reaction is an acid-base reaction between polyacrylic acid and the fluoroaluminosilicate powder."
+  },
+  {
+    q: "What is the first stage of the GIC setting reaction?",
+    opts: ["Dissolution", "Precipitation of salts", "Gelation", "Hardening"],
+    correct: 0,
+    explain: "The reaction has three overlapping stages, starting with Stage 1: Dissolution."
+  },
+  {
+    q: "What is the recommended mixing time for hand-mixed GIC?",
+    opts: ["30 to 60 seconds", "10 to 15 seconds", "2 minutes", "5 minutes"],
+    correct: 0,
+    explain: "The mixing time for GIC is typically 30 to 60 seconds."
+  },
+  {
+    q: "Which type of spatula is recommended for mixing GIC?",
+    opts: ["Agate or plastic spatula", "Stainless steel spatula", "Wooden spatula", "Iron spatula"],
+    correct: 0,
+    explain: "Agate or plastic spatulas are used; stainless steel is avoided to prevent abrasion/contamination."
+  },
+  {
+    q: "What is the mechanism of GIC adhesion to tooth structure?",
+    opts: ["Chemical bond", "Micromechanical retention only", "Macromechanical retention only", "Shrinkage fit"],
+    correct: 0,
+    explain: "GIC materials have good chemical adhesion to tooth structure."
+  },
+  {
+    q: "Which property of GIC makes it beneficial for patients with high caries activity?",
+    opts: ["Fluoride release", "High compressive strength", "High esthetics", "Low solubility"],
+    correct: 0,
+    explain: "GIC acts as a reservoir of fluoride ions, providing an anticariogenic property."
+  },
+  {
+    q: "In which of the following situations is GIC CONTRAINDICATED?",
+    opts: ["High stress bearing areas (e.g., Class IV)", "Class V carious lesions", "Primary teeth restoration", "Luting of indirect restorations"],
+    correct: 0,
+    explain: "GIC is brittle and has less fracture resistance, so it is contraindicated in high stress bearing areas like Class IV or large Class II lesions."
+  },
+  {
+    q: "What is a major mechanical disadvantage of Glass Ionomer Cement?",
+    opts: ["Brittle and low fracture resistance", "High thermal expansion", "Exothermic setting reaction", "Toxic to pulp"],
+    correct: 0,
+    explain: "GIC is brittle and has low fracture resistance compared to composites."
+  },
+  {
+    q: "Miracle Mix is an example of which type of cement?",
+    opts: ["Metal modified Glass Ionomer", "Resin modified GIC", "Zinc Phosphate", "Polycarboxylate"],
+    correct: 0,
+    explain: "Miracle Mix and Cermet cement are examples of Metal modified Glass Ionomers."
+  },
+  {
+    q: "What is the relationship between Remaining Dentin Thickness (RDT) and pulp damage?",
+    opts: ["More RDT means less damage to pulp", "Less RDT means less damage to pulp", "RDT has no effect on pulp damage", "RDT increases pulp sensitivity"],
+    correct: 0,
+    explain: "The text states: 'More RDT, less damage to pulp'."
+  },
+  {
+    q: "What is a disadvantage of Calcium Hydroxide as a liner?",
+    opts: ["High solubility and low strength", "Does not stimulate dentin", "Highly acidic", "Cannot be used in deep cavities"],
+    correct: 0,
+    explain: "Calcium Hydroxide has low strength and high solubility, which can lead to dissolution under restorations."
+  },
+  {
+    q: "How many coats of cavity varnish should be applied?",
+    opts: ["Two coats", "One coat", "Three coats", "Five coats"],
+    correct: 0,
+    explain: "Two coats of varnish should be applied to ensure sufficient wetting and prevent voids."
+  },
+  {
+    q: "What is the visual cue for the correct consistency of Type II GIC?",
+    opts: ["Glossy appearance", "Stringy (3-4 cm lift)", "Matte/Dull appearance", "Crumbly texture"],
+    correct: 0,
+    explain: "For Type II (Restorative), the mix should have a glossy appearance."
+  },
+  {
+    q: "When using GIC capsules, when should the capsule be activated?",
+    opts: ["Just before mixing", "1 hour before mixing", "After mixing", "During placement"],
+    correct: 0,
+    explain: "The capsule should be activated just before mixing and used immediately."
+  }
+];
+
+const tfs = [
+  {
+    q: "Calcium hydroxide has high compressive strength.",
+    answer: false,
+    explain: "Calcium hydroxide has low compressive strength."
+  },
+  {
+    q: "Cavity varnish is applied below amalgam restorations to reduce microleakage.",
+    answer: true,
+    explain: "Indication #1 for cavity varnish is below amalgam to reduce microleakage."
+  },
+  {
+    q: "Glass Ionomer Cement bonds chemically to tooth structure.",
+    answer: true,
+    explain: "A major advantage of GIC is its chemical bond to the tooth."
+  },
+  {
+    q: "Type III GIC is used for luting crowns.",
+    answer: false,
+    explain: "Type I is for Luting. Type III is for Liners and Bases."
+  },
+  {
+    q: "GIC is moisture sensitive during its setting phase.",
+    answer: true,
+    explain: "A disadvantage of GIC is that it is moisture sensitive while setting."
+  },
+  {
+    q: "Itaconic acid increases the viscosity of the GIC liquid.",
+    answer: false,
+    explain: "Itaconic acid is added to DECREASE the viscosity of the liquid."
+  },
+  {
+    q: "Calcium hydroxide stimulates the formation of reparative dentin.",
+    answer: true,
+    explain: "The alkaline pH of Calcium hydroxide acts as a mild stimulus for reparative dentin formation."
+  },
+  {
+    q: "Cavity liners are typically applied in thicknesses greater than 1mm.",
+    answer: false,
+    explain: "Cavity liners have minimal thickness, usually less than 0.5 mm."
+  },
+  {
+    q: "GIC is the material of choice for Class IV fracture restorations.",
+    answer: false,
+    explain: "GIC is contraindicated in high stress bearing areas like Class IV fractures."
+  }
+];
+
+const saqs = [
+  {
+    q: "Define 'Cavity Liner' according to the Journal of Operative Dentistry.",
+    a: "Cavity liner is a dental cement or resin coating with minimal thickness (usually less than 0.5 mm) to achieve a physical barrier to bacteria or use as a therapeutic effect."
+  },
+  {
+    q: "List 3 ideal requirements of pulp protecting agents.",
+    a: "<ol><li>Biocompatible</li><li>Set/Harden quick</li><li>Low solubility in saliva</li><li>Should withstand condensation forces</li><li>Stability and decrease dentin permeability</li></ol>"
+  },
+  {
+    q: "Compare Calcium Hydroxide and Glass Ionomer based on the following properties: Adhesion, Solubility, Strength.",
+    a: "<table><tr><th>Property</th><th>Calcium Hydroxide</th><th>Glass Ionomer</th></tr><tr><td>Adhesion</td><td>No chemical bond</td><td>Chemical bond</td></tr><tr><td>Solubility</td><td>High</td><td>Lower</td></tr><tr><td>Strength</td><td>Low</td><td>Higher</td></tr></table>"
+  },
+  {
+    q: "A patient presents with a deep cavity approaching the pulp. Which material is considered the gold standard for direct pulp capping in this scenario?",
+    a: "Calcium Hydroxide (e.g., Dycal)"
+  },
+  {
+    q: "List the three stages of the Glass Ionomer setting reaction.",
+    a: "<ol><li>Stage 1: Dissolution</li><li>Stage 2: Precipitation of salt and gelation</li><li>Stage 3: Hardening and slow maturation</li></ol>"
+  },
+  {
+    q: "Why is cavity varnish contraindicated under composite resins?",
+    a: "It interferes with the polymerization of the resin."
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

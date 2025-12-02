@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>ocih-35</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
+</style>
+</head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 35</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">رَبِّ اشْرَحْ لِي صَدْرِي وَيَسِّرْ لِي أَمْرِي وَاحْلُلْ عُقْدَةً مِّن لِّسَانِي يَفْقَهُوا قَوْلِي</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Oral Mucous Membrane & Gingiva</b></span>
+<span class="ar"><b>الموضوع: الغشاء المخاطي للفم واللثة</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">1. Classification of Oral Mucosa</span><span class="ar">١. تصنيف الغشاء المخاطي للفم</span></h2>
+<div class="sec-body">
+<div class="en">
+  <p>The oral cavity is lined by mucous membranes classified into three main types based on their location and function:</p>
+  <ul>
+    <li><strong style="color:#8b5cf6">Masticatory Mucosa:</strong> Covers the <strong style="color:#8b5cf6">Gingiva</strong> and <strong style="color:#8b5cf6">Hard Palate</strong>. These are keratinized areas designed to withstand friction.</li>
+    <li><strong style="color:#8b5cf6">Lining Mucosa:</strong> Covers the Lips, Cheeks, Soft Palate, Floor of the Mouth, and Alveolar Mucosa. These areas are generally non-keratinized.</li>
+    <li><strong style="color:#8b5cf6">Specialized Mucosa:</strong> Found on the <strong style="color:#8b5cf6">Dorsal Tongue Surface</strong>, containing various papillae (Circumvallate, Folate, Fungiform, Filiform).</li>
+  </ul>
+</div>
+<div class="ar">
+  <p>يبطن تجويف الفم أغشية مخاطية تُصنف إلى ثلاثة أنواع رئيسية بناءً على موقعها ووظيفتها:</p>
+  <ul>
+    <li><strong style="color:#8b5cf6">الغشاء المخاطي الماضغ:</strong> يغطي <strong style="color:#8b5cf6">اللثة</strong> و<strong style="color:#8b5cf6">الحنك الصلب</strong>. هذه مناطق متقرنة مصممة لتحمل الاحتكاك.</li>
+    <li><strong style="color:#8b5cf6">الغشاء المخاطي المبطن:</strong> يغطي الشفاه، والخدين، والحنك الرخو، وقاع الفم، والغشاء المخاطي السنخي. هذه المناطق عادة ما تكون غير متقرنة.</li>
+    <li><strong style="color:#8b5cf6">الغشاء المخاطي المتخصص:</strong> يوجد على <strong style="color:#8b5cf6">السطح الظهري للسان</strong>، ويحتوي على حليمات مختلفة (الكمئية، الورقية، الفطرية، الخيطية).</li>
+  </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 1-2 of 22</span>
+<span class="ar">المصدر: الصفحات ١-٢ من ٢٢</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The Vermilion Border is a transient structure found between the skin and the oral mucosa.</div><div class="ar">الحد القرمزي هو بنية انتقالية توجد بين الجلد والغشاء المخاطي للفم.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong>Masticatory</strong> = Hard Palate + Gingiva (Hard surfaces for chewing).</div><div class="ar"><strong>الماضغ</strong> = الحنك الصلب + اللثة (أسطح صلبة للمضغ).</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Keratinized areas include the Masticatory Mucosa and the Vermilion Border.</div><div class="ar">تشمل المناطق المتقرنة الغشاء المخاطي الماضغ والحد القرمزي.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">2. Characteristics of Masticatory Mucosa</span><span class="ar">٢. خصائص الغشاء المخاطي الماضغ</span></h2>
+<div class="sec-body">
+<div class="en">
+  <p>The Masticatory Mucosa has specific structural features to support the forces of chewing:</p>
+  <ul>
+    <li>It is subjected to <strong style="color:#8b5cf6">friction and pressure</strong> during mastication.</li>
+    <li>It is <strong style="color:#8b5cf6">firmly attached</strong> to the underlying bone.</li>
+    <li>It does <strong style="color:#8b5cf6">not stretch</strong>.</li>
+  </ul>
+  <p>Conversely, the <strong>Vermilion Border</strong> acts as a transient structure between the skin and the mucosa.</p>
+</div>
+<div class="ar">
+  <p>يتمتع الغشاء المخاطي الماضغ بخصائص هيكلية محددة لدعم قوى المضغ:</p>
+  <ul>
+    <li>يتعرض <strong style="color:#8b5cf6">للاحتكاك والضغط</strong> أثناء المضغ.</li>
+    <li>يكون <strong style="color:#8b5cf6">ملتصقاً بإحكام</strong> بالعظم تحته.</li>
+    <li>إنه <strong style="color:#8b5cf6">لا يتمدد</strong>.</li>
+  </ul>
+  <p>في المقابل، يعمل <strong>الحد القرمزي</strong> كبنية انتقالية بين الجلد والغشاء المخاطي.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 3 of 22</span>
+<span class="ar">المصدر: الصفحة ٣ من ٢٢</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Firm attachment prevents the tissue from moving during chewing, which protects it from injury.</div><div class="ar">الالتصاق المحكم يمنع الأنسجة من التحرك أثناء المضغ، مما يحميها من الإصابة.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Unlike lining mucosa, masticatory mucosa is keratinized and lacks elasticity.</div><div class="ar">على عكس الغشاء المخاطي المبطن، فإن الغشاء المخاطي الماضغ متقرن ويفتقر إلى المرونة.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Keratinized areas are thicker to resist mechanical stress.</div><div class="ar">المناطق المتقرنة تكون أكثر سماكة لمقاومة الإجهاد الميكانيكي.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">3. Parts of the Gingiva</span><span class="ar">٣. أجزاء اللثة</span></h2>
+<div class="sec-body">
+<div class="en">
+  <p>The gingiva is divided into three main parts: <strong style="color:#8b5cf6">Free (Marginal) Gingiva</strong>, <strong style="color:#8b5cf6">Attached Gingiva</strong>, and <strong style="color:#8b5cf6">Interdental Papilla</strong>.</p>
+  <p>Key demarcations include:</p>
+  <ul>
+    <li><strong style="color:#8b5cf6">Free Gingival Groove:</strong> Separates free gingiva from attached gingiva.</li>
+    <li><strong style="color:#8b5cf6">Mucogingival Junction:</strong> Separates attached gingiva from alveolar mucosa.</li>
+  </ul>
+</div>
+<div class="ar">
+  <p>تنقسم اللثة إلى ثلاثة أجزاء رئيسية: <strong style="color:#8b5cf6">اللثة الحرة (الحفافية)</strong>، و<strong style="color:#8b5cf6">اللثة الملتصقة</strong>، و<strong style="color:#8b5cf6">الحليمة بين السنية</strong>.</p>
+  <p>تشمل الحدود الرئيسية:</p>
+  <ul>
+    <li><strong style="color:#8b5cf6">ثلم اللثة الحر:</strong> يفصل اللثة الحرة عن اللثة الملتصقة.</li>
+    <li><strong style="color:#8b5cf6">الملتقى المخاطي اللثوي:</strong> يفصل اللثة الملتصقة عن الغشاء المخاطي السنخي.</li>
+  </ul>
+</div>
+<div aria-label="Scrollable table" class="table-wrap">
+<table>
+<thead>
+<tr>
+<th><span class="en">Feature</span><span class="ar">الخاصية</span></th>
+<th><span class="en">Free Gingiva</span><span class="ar">اللثة الحرة</span></th>
+<th><span class="en">Attached Gingiva</span><span class="ar">اللثة الملتصقة</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="en">Definition</span><span class="ar">التعريف</span></td>
+<td><span class="en">Movable part forming a margin at the neck of the tooth</span><span class="ar">جزء متحرك يشكل حافة عند عنق السن</span></td>
+<td><span class="en">Attached to the tooth by Junctional Epithelium</span><span class="ar">ملتصقة بالسن بواسطة الظهارة الوصلية</span></td>
+</tr>
+<tr>
+<td><span class="en">Surface</span><span class="ar">السطح</span></td>
+<td><span class="en">Keratinized, Not Stippled</span><span class="ar">متقرنة، غير منقرة</span></td>
+<td><span class="en">Keratinized, Stippled (Orange peel appearance)</span><span class="ar">متقرنة، منقرة (مظهر قشر البرتقال)</span></td>
+</tr>
+<tr>
+<td><span class="en">Boundaries</span><span class="ar">الحدود</span></td>
+<td><span class="en">Inner: Gingival Sulcus<br>Apical: Free Gingival Groove</span><span class="ar">الداخلي: التلم اللثوي<br>القمي: ثلم اللثة الحر</span></td>
+<td><span class="en">Between Free Gingival Groove and Alveolar Mucosa</span><span class="ar">بين ثلم اللثة الحر والغشاء المخاطي السنخي</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 4-9 of 22</span>
+<span class="ar">المصدر: الصفحات ٤-٩ من ٢٢</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">The mucogingival junction disappears with inflammation when the gingiva becomes red and swollen.</div><div class="ar">يختفي الملتقى المخاطي اللثوي مع الالتهاب عندما تصبح اللثة حمراء ومتورمة.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Attached gingiva shows stippling (orange peel appearance), which is a sign of health.</div><div class="ar">تظهر اللثة الملتصقة تنقيرًا (مظهر قشر البرتقال)، وهو علامة على الصحة.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Remember: Free gingiva is smooth; Attached gingiva is stippled.</div><div class="ar">تذكر: اللثة الحرة ملساء؛ اللثة الملتصقة منقرة.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">4. Interdental Papilla & The Col</span><span class="ar">٤. الحليمة بين السنية والسَرْج (Col)</span></h2>
+<div class="sec-body">
+<div class="en">
+  <p>The <strong style="color:#8b5cf6">Interdental Papilla</strong> fills the space between two adjacent teeth apical to the contact point.</p>
+  <ul>
+    <li><strong style="color:#8b5cf6">Shape:</strong> Triangular from oral/vestibular view.</li>
+    <li><strong style="color:#8b5cf6">The Col:</strong> A central concave area fitting below the contact area (tent shape in 3D). It connects the facial and lingual papillae.</li>
+  </ul>
+  <p>Crucially, the Col is covered by <strong style="color:#8b5cf6">thin, non-keratinized epithelium</strong>. It is the only part of the gingiva covered by non-keratinized mucosa.</p>
+</div>
+<div class="ar">
+  <p>تملأ <strong style="color:#8b5cf6">الحليمة بين السنية</strong> المسافة بين سنين متجاورين في الاتجاه القمي لنقطة التلامس.</p>
+  <ul>
+    <li><strong style="color:#8b5cf6">الشكل:</strong> مثلثي من المنظر الفموي/الدهليزي.</li>
+    <li><strong style="color:#8b5cf6">السَرْج (The Col):</strong> منطقة مقعرة مركزية تقع أسفل منطقة التلامس (شكل الخيمة في الأبعاد الثلاثة). يربط الحليمات الوجهية واللسانية.</li>
+  </ul>
+  <p>بشكل حاسم، يُغطى السَرْج بواسطة <strong style="color:#8b5cf6">ظهارة رقيقة غير متقرنة</strong>. وهو الجزء الوحيد من اللثة المغطى بغشاء مخاطي غير متقرن.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 10 of 22</span>
+<span class="ar">المصدر: الصفحة ١٠ من ٢٢</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">The Col is non-keratinized, making it a weak area susceptible to inflammation.</div><div class="ar">منطقة السرج غير متقرنة، مما يجعلها منطقة ضعيفة عرضة للالتهاب.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong>Col</strong> = Concave valley between peaks of the papilla.</div><div class="ar"><strong>السَرْج (Col)</strong> = وادٍ مقعر بين قمم الحليمة.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Gingiva is generally keratinized except for the Gingival Sulcus and the Col.</div><div class="ar">اللثة بشكل عام متقرنة باستثناء التلم اللثوي والسَرْج (Col).</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">5. Dentogingival Junction & Biologic Width</span><span class="ar">٥. الملتقى السني اللثوي والعرض الحيوي</span></h2>
+<div class="sec-body"><div class="chart-wrap" style="width:100%;overflow:hidden"><div class="en">
+<p>The <strong style="color:#8b5cf6">Dentogingival Junction (DGJ)</strong> is the junction between the tooth and gingival tissue. It consists of the Junctional Epithelium (JE) and Connective Tissue attachment. Disturbance here leads to pocket formation.</p>
+<svg class="chart-svg" viewBox="0 0 860 240">
+  <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="158" x2="820" y1="200" y2="200"></line>
+  <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="160" x2="160" y1="55" y2="201"></line>
+
+  <text x="150" y="85" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">Connective Tissue</text>
+  <text x="150" y="130" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">Epithelial Attachment</text>
+  <text x="150" y="175" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">Sulcus Depth</text>
+
+  <rect fill="#60a5fa" height="28" opacity="0.95" rx="6" ry="6" width="150" x="165" y="155"></rect> <rect fill="#22d3ee" height="28" opacity="0.95" rx="6" ry="6" width="210" x="165" y="110"></rect> <rect fill="#a78bfa" height="28" opacity="0.95" rx="6" ry="6" width="230" x="165" y="65"></rect>  <text x="325" y="175" fill="#fff" font-size="12" font-weight="bold">0.69 mm</text>
+  <text x="385" y="130" fill="#fff" font-size="12" font-weight="bold">0.97 mm</text>
+  <text x="405" y="85" fill="#fff" font-size="12" font-weight="bold">1.07 mm</text>
+
+  <text x="480" y="230" fill="#a6afc6" font-size="14" text-anchor="middle">Average Biologic Width Components</text>
+</svg>
+</div><div class="ar">
+<p><strong style="color:#8b5cf6">الملتقى السني اللثوي (DGJ)</strong> هو نقطة الاتصال بين السن وأنسجة اللثة. يتكون من الظهارة الوصلية (JE) والارتباط النسيجي الضام. يؤدي الخلل هنا إلى تشكل الجيوب اللثوية.</p>
+<svg class="chart-svg" viewBox="0 0 860 240">
+  <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="158" x2="820" y1="200" y2="200"></line>
+  <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="160" x2="160" y1="55" y2="201"></line>
+
+  <text x="150" y="85" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">ارتباط نسيج ضام</text>
+  <text x="150" y="130" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">ارتباط ظهاري</text>
+  <text x="150" y="175" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">عمق التلم</text>
+
+  <rect fill="#60a5fa" height="28" opacity="0.95" rx="6" ry="6" width="150" x="165" y="155"></rect> <rect fill="#22d3ee" height="28" opacity="0.95" rx="6" ry="6" width="210" x="165" y="110"></rect> <rect fill="#a78bfa" height="28" opacity="0.95" rx="6" ry="6" width="230" x="165" y="65"></rect>  <text x="325" y="175" fill="#fff" font-size="12" font-weight="bold">٠.٦٩ ملم</text>
+  <text x="385" y="130" fill="#fff" font-size="12" font-weight="bold">٠.٩٧ ملم</text>
+  <text x="405" y="85" fill="#fff" font-size="12" font-weight="bold">١.٠٧ ملم</text>
+
+  <text x="480" y="230" fill="#a6afc6" font-size="14" text-anchor="middle">مكونات العرض الحيوي المتوسط</text>
+</svg>
+</div></div></div>
+<div class="source-footer">
+<span class="en">Source: Pages 8, 11-12 of 22</span>
+<span class="ar">المصدر: الصفحات ٨، ١١-١٢ من ٢٢</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Biologic Width = Epithelial Attachment (0.97mm) + Connective Tissue Attachment (1.07mm) ≈ 2.04mm.</div><div class="ar">العرض الحيوي = الارتباط الظهاري (٠.٩٧ ملم) + الارتباط النسيجي الضام (١.٠٧ ملم) ≈ ٢.٠٤ ملم.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Junctional Epithelium forms the floor of the gingival sulcus.</div><div class="ar">تشكل الظهارة الوصلية قاع التلم اللثوي.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Junctional epithelium is attached to the tooth by hemidesmosomes.</div><div class="ar">ترتبط الظهارة الوصلية بالسن بواسطة جسيمات رابطة نصفية (Hemidesmosomes).</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+  <div class="content-col">
+    <h2 class="sec-head"><span class="en">6. Histology of Gingiva</span><span class="ar">٦. علم أنسجة اللثة</span></h2>
+    <div class="sec-body">
+      <div class="en">
+        <p>The gingiva is primarily formed of <strong style="color:#8b5cf6">Stratified Squamous Keratinized Epithelium</strong> (about 75% is Parakeratinized). Histological features include:</p>
+        <ul>
+          <li><strong style="color:#8b5cf6">Rete Pegs:</strong> Tall, numerous, slender, and irregular epithelial extensions into the connective tissue.</li>
+          <li><strong style="color:#8b5cf6">Connective Tissue Papillae:</strong> Project into the epithelium between rete pegs.</li>
+          <li><strong style="color:#8b5cf6">Lamina Propria:</strong> Contains dense bundles of collagen fibers.</li>
+          <li><strong style="color:#8b5cf6">Submucosa:</strong> Absent in the gingiva.</li>
+        </ul>
+      </div>
+      <div class="ar">
+        <p>تتكون اللثة بشكل أساسي من <strong style="color:#8b5cf6">ظهارة حرشفية مطبقة متقرنة</strong> (حوالي ٧٥٪ منها نظيرة التقرن). تشمل السمات النسيجية:</p>
+        <ul>
+          <li><strong style="color:#8b5cf6">الأوتاد الشبكية (Rete Pegs):</strong> امتدادات ظهارية طويلة ومتعددة ونحيلة وغير منتظمة داخل النسيج الضام.</li>
+          <li><strong style="color:#8b5cf6">حليمات النسيج الضام:</strong> تبرز داخل الظهارة بين الأوتاد الشبكية.</li>
+          <li><strong style="color:#8b5cf6">الصفيحة المخصوصة (Lamina Propria):</strong> تحتوي على حزم كثيفة من ألياف الكولاجين.</li>
+          <li><strong style="color:#8b5cf6">تحت المخاطية (Submucosa):</strong> غائبة في اللثة.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="source-footer">
+      <span class="en">Source: Pages 13-14 of 22</span>
+      <span class="ar">المصدر: الصفحات ١٣-١٤ من ٢٢</span>
+    </div>
+  </div>
+  <aside class="callouts-col">
+    <div class="callouts">
+      <div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Sulcular and Junctional epithelium are Non-keratinized, unlike the outer oral epithelium.</div><div class="ar">الظهارة التلمية والوصلية غير متقرنة، على عكس الظهارة الفموية الخارجية.</div></div></div>
+      <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Gingiva = No Submucosa. It is directly attached to bone/tooth.</div><div class="ar">اللثة = لا توجد تحت مخاطية. إنها ملتصقة مباشرة بالعظم/السن.</div></div></div>
+      <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Long and sharp rete ridges are characteristic of the outer oral epithelium.</div><div class="ar">الحواف الشبكية الطويلة والحادة هي سمة مميزة للظهارة الفموية الخارجية.</div></div></div>
+    </div>
+  </aside>
+</section>
+
+<section class="section">
+  <div class="content-col">
+    <h2 class="sec-head"><span class="en">7. Macroanatomy of Hard Palate</span><span class="ar">٧. التشريح العياني للحنك الصلب</span></h2>
+    <div class="sec-body">
+      <div class="en">
+        <p>The hard palate is covered by masticatory mucosa and features distinct zones:</p>
+        <ul>
+          <li><strong style="color:#8b5cf6">Incisive Papilla:</strong> Overlies the incisive fossa behind the central incisors.</li>
+          <li><strong style="color:#8b5cf6">Palatine Rugae:</strong> Transverse folds supported by dense lamina propria.</li>
+          <li><strong style="color:#8b5cf6">Median Palatine Raphe:</strong> The midline area where mucosa attaches directly to bone (no submucosa).</li>
+          <li><strong style="color:#8b5cf6">Fatty Zone (Anterolateral):</strong> Contains fat cells.</li>
+          <li><strong style="color:#8b5cf6">Glandular Zone (Posterolateral):</strong> Contains mucous salivary glands.</li>
+        </ul>
+      </div>
+      <div class="ar">
+        <p>يُغطى الحنك الصلب بغشاء مخاطي ماضغ ويتميز بمناطق مميزة:</p>
+        <ul>
+          <li><strong style="color:#8b5cf6">الحليمة القاطعة:</strong> تقع فوق الحفرة القاطعة خلف القواطع المركزية.</li>
+          <li><strong style="color:#8b5cf6">الغضون الحنكية (Rugae):</strong> طيات مستعرضة مدعومة بصفيحة مخصوصة كثيفة.</li>
+          <li><strong style="color:#8b5cf6">الرفاء الحنكي الناصف:</strong> منطقة خط الوسط حيث يلتصق الغشاء المخاطي مباشرة بالعظم (لا توجد تحت مخاطية).</li>
+          <li><strong style="color:#8b5cf6">المنطقة الدهنية (الأمامية الجانبية):</strong> تحتوي على خلايا دهنية.</li>
+          <li><strong style="color:#8b5cf6">المنطقة الغدية (الخلفية الجانبية):</strong> تحتوي على غدد لعابية مخاطية.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="source-footer">
+      <span class="en">Source: Pages 15-17, 19 of 22</span>
+      <span class="ar">المصدر: الصفحات ١٥-١٧، ١٩ من ٢٢</span>
+    </div>
+  </div>
+  <aside class="callouts-col">
+    <div class="callouts">
+      <div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en"><strong>Antero</strong>-lateral = <strong>Fatty</strong>.<br><strong>Postero</strong>-lateral = <strong>Glandular</strong>.</div><div class="ar"><strong>أمامي</strong>-جانبي = <strong>دهني</strong>.<br><strong>خلفي</strong>-جانبي = <strong>غدي</strong>.</div></div></div>
+      <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The Palatine Raphe has no submucosa; it attaches directly to the bone.</div><div class="ar">الرفاء الحنكي لا يحتوي على تحت مخاطية؛ فهو يلتصق مباشرة بالعظم.</div></div></div>
+      <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">The rugae help in gripping food and sensing texture.</div><div class="ar">تساعد الغضون (Rugae) في الإمساك بالطعام واستشعار قوامه.</div></div></div>
+    </div>
+  </aside>
+</section>
+
+<section class="section">
+  <div class="content-col">
+    <h2 class="sec-head"><span class="en">8. Microanatomy of Hard Palate</span><span class="ar">٨. التشريح المجهري للحنك الصلب</span></h2>
+    <div class="sec-body">
+      <div class="en">
+        <p>The microscopic structure of the hard palate reflects its function as a masticatory surface:</p>
+        <ul>
+          <li><strong style="color:#8b5cf6">Epithelium:</strong> Thick, orthokeratinized stratified squamous epithelium with tall, numerous, and broad rete pegs.</li>
+          <li><strong style="color:#8b5cf6">Lamina Propria:</strong> Dense connective tissue.</li>
+          <li><strong style="color:#8b5cf6">Submucosa:</strong> Present in lateral areas but divided into compartments by <strong style="color:#8b5cf6">Traction Bands</strong>.</li>
+          <li><strong style="color:#8b5cf6">Traction Bands:</strong> Bundles of collagen fibers extending from the lamina propria to the bone, firmly anchoring the mucosa.</li>
+        </ul>
+      </div>
+      <div class="ar">
+        <p>يعكس التركيب المجهري للحنك الصلب وظيفته كسطح ماضغ:</p>
+        <ul>
+          <li><strong style="color:#8b5cf6">الظهارة:</strong> ظهارة حرشفية مطبقة سميكة ومتقرنة تقرناً كاملاً (orthokeratinized) مع أوتاد شبكية طويلة ومتعددة وعريضة.</li>
+          <li><strong style="color:#8b5cf6">الصفيحة المخصوصة:</strong> نسيج ضام كثيف.</li>
+          <li><strong style="color:#8b5cf6">تحت المخاطية:</strong> موجودة في المناطق الجانبية لكنها مقسمة إلى حجرات بواسطة <strong style="color:#8b5cf6">أشرطة الشد (Traction Bands)</strong>.</li>
+          <li><strong style="color:#8b5cf6">أشرطة الشد:</strong> حزم من ألياف الكولاجين تمتد من الصفيحة المخصوصة إلى العظم، مما يثبت الغشاء المخاطي بإحكام.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="source-footer">
+      <span class="en">Source: Pages 18, 20-21 of 22</span>
+      <span class="ar">المصدر: الصفحات ١٨، ٢٠-٢١ من ٢٢</span>
+    </div>
+  </div>
+  <aside class="callouts-col">
+    <div class="callouts">
+      <div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Injections in the hard palate are painful because the mucosa is tightly bound to bone, leaving little space for fluid expansion.</div><div class="ar">الحقن في الحنك الصلب مؤلمة لأن الغشاء المخاطي مرتبط بإحكام بالعظم، مما لا يترك مساحة تذكر لتمدد السائل.</div></div></div>
+      <div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">The submucosa compartments contain fat cells anteriorly and mucous glands posteriorly.</div><div class="ar">تحتوي حجرات تحت المخاطية على خلايا دهنية في الأمام وغدد مخاطية في الخلف.</div></div></div>
+      <div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Think of Traction Bands as "anchors" holding the palate skin to the bone.</div><div class="ar">فكر في أشرطة الشد كـ "مراسي" تثبت جلد الحنك بالعظم.</div></div></div>
+    </div>
+  </aside>
+</section>
+
+<section class="section">
+  <div class="content-col">
+    <h2 class="sec-head"><span class="en">9. Summary</span><span class="ar">٩. الملخص</span></h2>
+    <div class="sec-body">
+      <div class="en">
+        <ul>
+          <li>The oral mucosa is classified into Masticatory, Lining, and Specialized types.</li>
+          <li><strong style="color:#8b5cf6">Masticatory mucosa</strong> (Gingiva, Hard Palate) is keratinized, immobile, and firmly attached to bone.</li>
+          <li>The <strong style="color:#8b5cf6">Gingiva</strong> lacks a submucosa and consists of free, attached, and interdental parts.</li>
+          <li>The <strong style="color:#8b5cf6">Dentogingival Junction</strong> (JE + CT attachment) seals the tooth and protects the periodontium.</li>
+          <li>The <strong style="color:#8b5cf6">Hard Palate</strong> has distinct fatty and glandular zones in the submucosa, anchored by traction bands, except at the raphe where submucosa is absent.</li>
+        </ul>
+      </div>
+      <div class="ar">
+        <ul>
+          <li>يُصنف الغشاء المخاطي للفم إلى أنواع: ماضغة، ومبطنة، ومتخصصة.</li>
+          <li><strong style="color:#8b5cf6">الغشاء المخاطي الماضغ</strong> (اللثة، الحنك الصلب) متقرن، وغير متحرك، وملتصق بإحكام بالعظم.</li>
+          <li>تفتقر <strong style="color:#8b5cf6">اللثة</strong> إلى طبقة تحت مخاطية وتتكون من أجزاء حرة، وملتصقة، وبين سنية.</li>
+          <li>يعمل <strong style="color:#8b5cf6">الملتقى السني اللثوي</strong> (JE + ارتباط CT) على ختم السن وحماية دعامات السن.</li>
+          <li>يحتوي <strong style="color:#8b5cf6">الحنك الصلب</strong> على مناطق دهنية وغدية مميزة في الطبقة تحت المخاطية، مثبتة بأشرطة شد، باستثناء الرفاء حيث تغيب الطبقة تحت المخاطية.</li>
+        </ul>
+      </div>
+    </div>
+    <div class="source-footer">
+      <span class="en">Source: All Pages</span>
+      <span class="ar">المصدر: جميع الصفحات</span>
+    </div>
+  </div>
+  <aside class="callouts-col">
+    <div class="callouts">
+      <div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Understanding these structures is vital for diagnosing periodontal disease and planning dental procedures.</div><div class="ar">فهم هذه الهياكل أمر حيوي لتشخيص أمراض اللثة والتخطيط للإجراءات السنية.</div></div></div>
+    </div>
+  </aside>
+</section>
+</div>
+
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Masticatory Mucosa<br>الغشاء المخاطي الماضغ</div><div class="content" hidden=""><div class="en">Keratinized oral mucosa covering the gingiva and hard palate, designed to withstand chewing forces.</div><div class="ar">غشاء مخاطي فموي متقرن يغطي اللثة والحنك الصلب، مصمم لتحمل قوى المضغ.</div></div></div>
+<div class="card"><div class="head">Lining Mucosa<br>الغشاء المخاطي المبطن</div><div class="content" hidden=""><div class="en">Non-keratinized mucosa covering the lips, cheeks, floor of mouth, and soft palate.</div><div class="ar">غشاء مخاطي غير متقرن يغطي الشفاه، والخدين، وقاع الفم، والحنك الرخو.</div></div></div>
+<div class="card"><div class="head">Junctional Epithelium<br>الظهارة الوصلية</div><div class="content" hidden=""><div class="en">Non-keratinized epithelium that forms the attachment between the gingiva and the tooth enamel/cementum.</div><div class="ar">ظهارة غير متقرنة تشكل الارتباط بين اللثة ومينا/ملاط السن.</div></div></div>
+<div class="card"><div class="head">Col<br>السَرْج</div><div class="content" hidden=""><div class="en">A valley-like depression in the interdental papilla connecting the facial and lingual peaks, covered by non-keratinized epithelium.</div><div class="ar">انخفاض يشبه الوادي في الحليمة بين السنية يربط القمم الوجهية واللسانية، مغطى بظهارة غير متقرنة.</div></div></div>
+<div class="card"><div class="head">Rete Pegs<br>الأوتاد الشبكية</div><div class="content" hidden=""><div class="en">Epithelial extensions that project into the underlying connective tissue, prominent in masticatory mucosa.</div><div class="ar">امتدادات ظهارية تبرز داخل النسيج الضام الأساسي، وهي بارزة في الغشاء المخاطي الماضغ.</div></div></div>
+<div class="card"><div class="head">Mucogingival Junction<br>الملتقى المخاطي اللثوي</div><div class="content" hidden=""><div class="en">The demarcation line separating the keratinized attached gingiva from the non-keratinized alveolar mucosa.</div><div class="ar">خط التحديد الذي يفصل اللثة الملتصقة المتقرنة عن الغشاء المخاطي السنخي غير المتقرن.</div></div></div>
+<div class="card"><div class="head">Traction Bands<br>أشرطة الشد</div><div class="content" hidden=""><div class="en">Bundles of collagen fibers in the hard palate connecting the lamina propria to the bone.</div><div class="ar">حزم من ألياف الكولاجين في الحنك الصلب تربط الصفيحة المخصوصة بالعظم.</div></div></div>
+<div class="card"><div class="head">Gingival Sulcus<br>التلم اللثوي</div><div class="content" hidden=""><div class="en">The shallow crevice or space around the tooth bounded by the surface of the tooth and the epithelium lining the free margin of the gingiva.</div><div class="ar">الشق أو الفراغ الضحل حول السن تحده سطح السن والظهارة المبطنة للحافة الحرة للثة.</div></div></div>
+<div class="card"><div class="head">Rugae<br>الغضون الحنكية</div><div class="content" hidden=""><div class="en">Transverse ridges of mucosa found on the anterior part of the hard palate.</div><div class="ar">تلال مستعرضة من الغشاء المخاطي توجد في الجزء الأمامي من الحنك الصلب.</div></div></div>
+</div>
+
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — What type of mucosa covers the Hard Palate?</span><span class="ar">١ — ما نوع الغشاء المخاطي الذي يغطي الحنك الصلب؟</span></div><div class="content" hidden=""><span class="en">A: Masticatory Mucosa.</span><span class="ar">ج: الغشاء المخاطي الماضغ.</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — Is the Col keratinized or non-keratinized?</span><span class="ar">٢ — هل السَرْج (Col) متقرن أم غير متقرن؟</span></div><div class="content" hidden=""><span class="en">A: Non-keratinized.</span><span class="ar">ج: غير متقرن.</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — What separates the attached gingiva from the alveolar mucosa?</span><span class="ar">٣ — ما الذي يفصل اللثة الملتصقة عن الغشاء المخاطي السنخي؟</span></div><div class="content" hidden=""><span class="en">A: The Mucogingival Junction.</span><span class="ar">ج: الملتقى المخاطي اللثوي.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — Does the gingiva have a submucosa?</span><span class="ar">٤ — هل تحتوي اللثة على طبقة تحت مخاطية؟</span></div><div class="content" hidden=""><span class="en">A: No, it is directly attached to the bone/tooth.</span><span class="ar">ج: لا، هي ملتصقة مباشرة بالعظم/السن.</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — What is the "Orange peel" appearance of gingiva called?</span><span class="ar">٥ — ماذا يسمى مظهر "قشر البرتقال" للثة؟</span></div><div class="content" hidden=""><span class="en">A: Stippling.</span><span class="ar">ج: التنقير (Stippling).</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — Where is the glandular zone of the hard palate located?</span><span class="ar">٦ — أين تقع المنطقة الغدية للحنك الصلب؟</span></div><div class="content" hidden=""><span class="en">A: Posterolaterally.</span><span class="ar">ج: في الجانب الخلفي (Posterolaterally).</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — What anchors the hard palate mucosa to the bone?</span><span class="ar">٧ — ما الذي يثبت الغشاء المخاطي للحنك الصلب بالعظم؟</span></div><div class="content" hidden=""><span class="en">A: Traction Bands.</span><span class="ar">ج: أشرطة الشد.</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — What is the average biologic width?</span><span class="ar">٨ — ما هو متوسط العرض الحيوي؟</span></div><div class="content" hidden=""><span class="en">A: Approximately 2.04 mm.</span><span class="ar">ج: تقريباً ٢.٠٤ ملم.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What type of epithelium lines the Gingival Sulcus?</span><span class="ar">٩ — ما نوع الظهارة التي تبطن التلم اللثوي؟</span></div><div class="content" hidden=""><span class="en">A: Non-keratinized epithelium.</span><span class="ar">ج: ظهارة غير متقرنة.</span></div></div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

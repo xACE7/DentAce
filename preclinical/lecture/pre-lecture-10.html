@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>pre-10</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  /* Keep stronger 25% glows on cards (exceptions) */
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* === Language Switcher (compact, theme-matched, EN-left / AR-right, edge-aligned) === */
+  #langBtn{
+    --h: 40px;          /* compact height */
+    --pad: 3px;         /* inset for the sliding background */
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;   /* narrow but fits EN + AR comfortably */
+    height: var(--h);
+    padding: 0 6px;     /* tight outer padding */
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  /* Labels flush to edges */
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+
+  /* Sliding background (covers half), with overshoot animations */
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px); /* half coverage */
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);      /* glass tint matching template */
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);               /* EN active by default */
+    z-index: 0;
+  }
+
+  /* Keyframes for overshoot */
+  @keyframes bgToRight {
+    0%   { transform: translateX(0%); }
+    70%  { transform: translateX(108%); }
+    100% { transform: translateX(100%); }
+  }
+  @keyframes bgToLeft {
+    0%   { transform: translateX(100%); }
+    70%  { transform: translateX(-8%); }
+    100% { transform: translateX(0%); }
+  }
+
+  /* Active label bounce */
+  @keyframes bounceActive {
+    0%   { transform: scale(1.0); }
+    40%  { transform: scale(1.14); }
+    70%  { transform: scale(1.04); }
+    100% { transform: scale(1.08); }
+  }
+
+  /* Apply animations + styles per language */
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+
+  body.lang-en #langBtn .lab.en { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-en #langBtn .lab.ar { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text);  text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); animation: bounceActive .4s ease; }
+  body.lang-ar #langBtn .lab.en { color: var(--muted); text-shadow: none;                                   transform: scale(1.0); }
+
+  /* Reduced motion preference */
+  @media (prefers-reduced-motion: reduce) {
+    #langBtn::after, #langBtn .lab.en, #langBtn .lab.ar {
+      animation: none !important;
+      transition: none !important;
+      transform: none !important;
+    }
+  }
+
+  /* Source footer pinned to bottom of the LEFT column only */
+  .content-col{display:flex;flex-direction:column;}
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+  /* Make Section 3 & 4 SVG charts readable on small screens */
+  .chart-svg{ width:100%; height:auto; display:block; }
+
+  /* Mobile boost */
+  @media (max-width: 560px){
+  .chart-svg{ height: 380px !important; }          /* give charts real height */
+  .chart-svg text{ font-size: 13.5px !important; } /* bigger labels */
+  .chart-svg circle{ r: 7 !important; }            /* bigger dots */
+  .chart-svg rect{ height: 34px !important; rx:8 !important; ry:8 !important; } /* thicker bars */
+  .chart-svg path{ stroke-width: 4 !important; }   /* thicker lines */
+  .chart-svg line{ stroke-width: 2.5 !important; } /* thicker axes/grid */
+  }
+
+</style>
+</head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 10
+</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">اللهم لا سهل إلا ما جعلته سهلاً، وأنت تجعل الحزن إذا شئت سهلاً</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Pulp Protection & Dental Cements</b></span>
+<span class="ar"><b>الموضوع: حماية اللب والأسمنت السني</b></span>
+</span>
+</div>
+<div class="sections">
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">1. Introduction to Pulp Protection</span><span class="ar">١. مقدمة في حماية اللب</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>The goals of restorative therapy extend beyond restoring form and function to include minimizing postoperative sensitivity and preserving <strong style="color:#8b5cf6">pulp vitality</strong>. The dental pulp faces various irritants during procedures:</p>
+    <ul>
+        <li><strong style="color:#8b5cf6">Caries</strong> (Most common).</li>
+        <li>Cavity preparation procedures and restorative materials used.</li>
+        <li>Microleakage.</li>
+    </ul>
+    <p>A crucial factor in pulp protection is the <strong style="color:#8b5cf6">Remaining Dentin Thickness (RDT)</strong>. More RDT means less damage to the pulp.</p>
+</div>
+<div class="ar">
+    <p>تمتد أهداف العلاج الترميمي إلى ما هو أبعد من استعادة الشكل والوظيفة لتشمل تقليل الحساسية بعد العملية والحفاظ على <strong style="color:#8b5cf6">حيوية اللب</strong>. يواجه اللب السني مهيجات مختلفة أثناء الإجراءات:</p>
+    <ul>
+        <li><strong style="color:#8b5cf6">التسوس</strong> (الأكثر شيوعاً).</li>
+        <li>إجراءات تحضير التجويف والمواد الترميمية المستخدمة.</li>
+        <li>التسرب الدقيق (Microleakage).</li>
+    </ul>
+    <p>عامل حاسم في حماية اللب هو <strong style="color:#8b5cf6">سماكة العاج المتبقي (RDT)</strong>. كلما زادت السماكة، قل الضرر الذي يلحق باللب.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 2-3 of 46</span>
+<span class="ar">المصدر: الصفحات ٢-٣ من ٤٦</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Main Irritant</span><span class="ar">📌 المهيج الرئيسي</span></div><div class="body" hidden=""><div class="en">Caries is the most common irritant to the pulp.</div><div class="ar">التسوس هو المهيج الأكثر شيوعاً للب.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical Rule</span><span class="ar">🩺 قاعدة سريرية</span></div><div class="body" hidden=""><div class="en">More Remaining Dentin Thickness (RDT) equals less pulp damage.</div><div class="ar">زيادة سماكة العاج المتبقي تعني ضرراً أقل للب.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Goal</span><span class="ar">🧠 الهدف</span></div><div class="body" hidden=""><div class="en">Preserve pulp vitality and minimize sensitivity.</div><div class="ar">الحفاظ على حيوية اللب وتقليل الحساسية.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">2. Pulp Protecting Agents & Calcium Hydroxide</span><span class="ar">٢. عوامل حماية اللب وهيدروكسيد الكالسيوم</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Ideal pulp protecting agents should be <strong style="color:#8b5cf6">biocompatible</strong>, set quickly, have low solubility, withstand condensation forces, and reduce dentin permeability.</p>
+    <p><strong style="color:#8b5cf6">Calcium Hydroxide (CaOH)</strong>, introduced by Herman in 1930, is the "gold standard" for deep cavities. A popular commercial brand is <em>Dycal</em>.</p>
+    <p><strong>Composition of Dycal:</strong></p>
+    <ul>
+        <li><strong>Base Paste:</strong> Glycol Salicylate (40%), Calcium Sulphate, Titanium Dioxide.</li>
+        <li><strong>Catalyst Paste:</strong> Calcium Hydroxide (50%), Zinc Oxide (10%), Zinc Stearate.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p>يجب أن تكون عوامل حماية اللب المثالية <strong style="color:#8b5cf6">متوافقة حيوياً</strong>، سريعة التصلب، قليلة الذوبان، تتحمل قوى التكثيف، وتقلل من نفاذية العاج.</p>
+    <p><strong style="color:#8b5cf6">هيدروكسيد الكالسيوم (CaOH)</strong>، الذي قدمه هيرمان في عام 1930، هو "المعيار الذهبي" للتجاويف العميقة. العلامة التجارية الشهيرة هي <em>دايكال</em>.</p>
+    <p><strong>تركيب دايكال:</strong></p>
+    <ul>
+        <li><strong>معجون القاعدة:</strong> جليكول ساليسيلات (40%)، كبريتات الكالسيوم، ثاني أكسيد التيتانيوم.</li>
+        <li><strong>معجون المحفز:</strong> هيدروكسيد الكالسيوم (50%)، أكسيد الزنك (10%)، ستيرات الزنك.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 4, 8, 10-11 of 46</span>
+<span class="ar">المصدر: الصفحات ٤، ٨، ١٠-١١ من ٤٦</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 History</span><span class="ar">🧠 تاريخ</span></div><div class="body" hidden=""><div class="en">CaOH was first used by Herman in 1930.</div><div class="ar">استخدم هيدروكسيد الكالسيوم لأول مرة بواسطة هيرمان عام ١٩٣٠.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Principal Reactor</span><span class="ar">📌 المفاعل الرئيسي</span></div><div class="body" hidden=""><div class="en">Calcium Hydroxide (50%) in the catalyst paste is the main reactive agent.</div><div class="ar">هيدروكسيد الكالسيوم (٥٠٪) في معجون المحفز هو العامل المفاعل الرئيسي.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Radiopacity</span><span class="ar">📝 العتامة الشعاعية</span></div><div class="body" hidden=""><div class="en">Barium Sulphate is added to provide radiopacity.</div><div class="ar">تضاف كبريتات الباريوم لتوفير العتامة الشعاعية.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">3. Properties & Manipulation of Calcium Hydroxide</span><span class="ar">٣. خصائص ومعالجة هيدروكسيد الكالسيوم</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>The setting reaction involves CaOH reacting with Salicylate ester to form <strong style="color:#8b5cf6">Calcium-disalicylate</strong>. Mixing time is 10 seconds; setting time is 2.5–3.5 minutes.</p>
+    <p><strong>Biologic Properties:</strong> The high alkaline pH (9.2–11.7) creates an unfavorable environment for bacteria and stimulates the formation of <strong style="color:#8b5cf6">reparative dentin</strong>.</p>
+    <p><strong>Disadvantages:</strong> Low compressive strength and <strong style="color:#8b5cf6">high solubility</strong>. Therefore, it is used only over small areas (direct/indirect pulp capping) and requires a stronger base (like GIC) over it.</p>
+</div>
+<div class="ar">
+    <p>يتضمن تفاعل التصلب تفاعل CaOH مع إستر الساليسيلات لتكوين <strong style="color:#8b5cf6">ثنائي ساليسيلات الكالسيوم</strong>. وقت الخلط 10 ثوانٍ؛ وقت التصلب 2.5-3.5 دقيقة.</p>
+    <p><strong>الخصائص البيولوجية:</strong> تخلق درجة الحموضة القلوية العالية (9.2-11.7) بيئة غير ملائمة للبكتيريا وتحفز تكوين <strong style="color:#8b5cf6">العاج الإصلاحي</strong>.</p>
+    <p><strong>العيوب:</strong> قوة ضغط منخفضة و <strong style="color:#8b5cf6">ذوبان عالي</strong>. لذلك، يُستخدم فقط فوق مساحات صغيرة (تغطية اللب المباشرة/غير المباشرة) ويتطلب قاعدة أقوى (مثل GIC) فوقه.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 11-13 of 46</span>
+<span class="ar">المصدر: الصفحات ١١-١٣ من ٤٦</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Major Weakness</span><span class="ar">⚠️ نقطة ضعف رئيسية</span></div><div class="body" hidden=""><div class="en">High solubility means it can dissolve over time if not protected.</div><div class="ar">الذوبان العالي يعني أنه قد يذوب بمرور الوقت إذا لم يتم حمايته.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical Use</span><span class="ar">🩺 الاستخدام السريري</span></div><div class="body" hidden=""><div class="en">Used for Direct and Indirect pulp capping.</div><div class="ar">يستخدم لتغطية اللب المباشرة وغير المباشرة.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why Alkaline?</span><span class="ar">🎯 لماذا القلوية؟</span></div><div class="body" hidden=""><div class="en">The high pH kills bacteria and stimulates odontoblasts.</div><div class="ar">درجة الحموضة العالية تقتل البكتيريا وتحفز الخلايا المولدة للعاج.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Manipulation</span><span class="ar">💡 المعالجة</span></div><div class="body" hidden=""><div class="en">Dispense equal volumes, mix to uniform color in 10 seconds.</div><div class="ar">استخدم أحجاماً متساوية، واخلط للحصول على لون موحد في ١٠ ثوانٍ.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">4. Cavity Varnish</span><span class="ar">٤. ورنيش التجاويف</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong style="color:#8b5cf6">Cavity Varnish</strong> (e.g., Copalite) is a natural gum (Copal) or resin dissolved in an organic solvent like ether or chloroform. When applied, the solvent evaporates, leaving a thin film.</p>
+    <p><strong>Function:</strong> It acts as a barrier to dentinal tubules, reducing microleakage, especially under amalgam restorations.</p>
+    <p><strong>Application:</strong> Two coats are required to ensure no voids exist (the first coat may have voids). It is contraindicated under <strong style="color:#8b5cf6">composite resins</strong> as it interferes with polymerization.</p>
+</div>
+<div class="ar">
+    <p><strong style="color:#8b5cf6">ورنيش التجويف</strong> (مثل Copalite) هو صمغ طبيعي (كوبال) أو راتنج مذاب في مذيب عضوي مثل الإيثر أو الكلوروفورم. عند وضعه، يتبخر المذيب تاركاً طبقة رقيقة.</p>
+    <p><strong>الوظيفة:</strong> يعمل كحاجز للنبيبات العاجية، مما يقلل من التسرب الدقيق، خاصة تحت حشوات الأملغم.</p>
+    <p><strong>التطبيق:</strong> يلزم وضع طبقتين لضمان عدم وجود فراغات (قد تحتوي الطبقة الأولى على فراغات). يمنع استخدامه تحت <strong style="color:#8b5cf6">الراتنجات المركبة (الكومبوزيت)</strong> لأنه يتداخل مع عملية البلمرة.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 16-18 of 46</span>
+<span class="ar">المصدر: الصفحات ١٦-١٨ من ٤٦</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Contraindication</span><span class="ar">⚠️ موانع الاستعمال</span></div><div class="body" hidden=""><div class="en">Do NOT use varnish under composite restorations.</div><div class="ar">لا تستخدم الورنيش تحت حشوات الكومبوزيت.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Technique</span><span class="ar">💡 تقنية</span></div><div class="body" hidden=""><div class="en">Apply two coats to prevent voids.</div><div class="ar">ضع طبقتين لمنع الفراغات.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Indication</span><span class="ar">🩺 دواعي الاستعمال</span></div><div class="body" hidden=""><div class="en">Used below Amalgam and Zinc Phosphate cement.</div><div class="ar">يستخدم تحت الأملغم وأسمنت فوسفات الزنك.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">5. Cavity Bases</span><span class="ar">٥. قواعد التجاويف</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>A <strong style="color:#8b5cf6">Cavity Base</strong> is a layer of cement (typically 0.5–1mm thick) placed under a permanent restoration to replace destroyed dentin. Unlike liners (which are thin, &lt;0.5mm), bases provide <strong style="color:#8b5cf6">thermal protection</strong> for the pulp.</p>
+    <p><strong>Classification:</strong></p>
+    <ul>
+        <li><strong>Low Strength:</strong> CaOH, ZOE.</li>
+        <li><strong>High Strength:</strong> Zinc Phosphate, Glass Ionomer, Polycarboxylate. These provide mechanical support for the restoration.</li>
+    </ul>
+</div>
+<div class="ar">
+    <p><strong style="color:#8b5cf6">قاعدة التجويف</strong> هي طبقة من الأسمنت (سماكتها عادة 0.5-1 ملم) توضع تحت الحشوة الدائمة لتعويض العاج المدمر. على عكس المبطنات (التي تكون رقيقة، أقل من 0.5 ملم)، توفر القواعد <strong style="color:#8b5cf6">حماية حرارية</strong> للب.</p>
+    <p><strong>التصنيف:</strong></p>
+    <ul>
+        <li><strong>قوة منخفضة:</strong> هيدروكسيد الكالسيوم، أكسيد الزنك واليوجينول.</li>
+        <li><strong>قوة عالية:</strong> فوسفات الزنك، الزجاج الشاردي (GIC)، بولي كربوكسيلات. هذه توفر دعماً ميكانيكياً للحشوة.</li>
+    </ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 19-22 of 46</span>
+<span class="ar">المصدر: الصفحات ١٩-٢٢ من ٤٦</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Thickness</span><span class="ar">📌 السماكة</span></div><div class="body" hidden=""><div class="en">Bases are typically 0.5 - 1 mm thick. Liners are less than 0.5 mm.</div><div class="ar">تكون القواعد عادة بسماكة ٠.٥ - ١ ملم. المبطنات تكون أقل من ٠.٥ ملم.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Function</span><span class="ar">🎯 الوظيفة</span></div><div class="body" hidden=""><div class="en">Bases provide thermal insulation and mechanical support.</div><div class="ar">توفر القواعد العزل الحراري والدعم الميكانيكي.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">6. Glass Ionomer Cement (GIC): Overview</span><span class="ar">٦. الأسمنت الزجاجي الشاردي (GIC): نظرة عامة</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Introduced by Wilson and Kent in 1972, <strong style="color:#8b5cf6">Glass Ionomer Cement (GIC)</strong> is a versatile material available as conventional or resin-modified varieties. It chemically bonds to the tooth structure.</p>
+    <p><strong>Classification (Skinner's):</strong></p>
+    <ul>
+        <li><strong>Type I:</strong> Luting agents.</li>
+        <li><strong>Type II:</strong> Restorative materials.</li>
+        <li><strong>Type III:</strong> Liners and bases.</li>
+    </ul>
+    <p>Modifications include Metal-modified GIC (Miracle Mix, Cermet) and Resin-modified GIC (RMGIs).</p>
+</div>
+<div class="ar">
+    <p>تم تقديم <strong style="color:#8b5cf6">الأسمنت الزجاجي الشاردي (GIC)</strong> بواسطة ويلسون وكينت في عام 1972، وهو مادة متعددة الاستخدامات تتوفر كأنواع تقليدية أو معدلة بالراتنج. يرتبط كيميائياً ببنية السن.</p>
+    <p><strong>التصنيف (حسب سكينر):</strong></p>
+    <ul>
+        <li><strong>النوع الأول:</strong> عوامل الإلصاق (Luting).</li>
+        <li><strong>النوع الثاني:</strong> مواد ترميمية (حشوات).</li>
+        <li><strong>النوع الثالث:</strong> مبطنات وقواعد.</li>
+    </ul>
+    <p>تشمل التعديلات GIC المعدل بالمعدن (Miracle Mix، Cermet) و GIC المعدل بالراتنج (RMGIs).</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 23-26, 42 of 46</span>
+<span class="ar">المصدر: الصفحات ٢٣-٢٦، ٤٢ من ٤٦</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Founders</span><span class="ar">🧠 المؤسسون</span></div><div class="body" hidden=""><div class="en">Wilson and Kent (1972).</div><div class="ar">ويلسون وكينت (١٩٧٢).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Bonding</span><span class="ar">📌 الترابط</span></div><div class="body" hidden=""><div class="en">GIC forms a chemical bond with the tooth structure.</div><div class="ar">يشكل GIC رابطة كيميائية مع بنية السن.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Usage</span><span class="ar">🩺 الاستخدام</span></div><div class="body" hidden=""><div class="en">Can be used for luting, restoring, lining, and sealing fissures.</div><div class="ar">يمكن استخدامه للإلصاق، الترميم، التبطين، وسد الشقوق.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">7. GIC Composition & Setting Reaction</span><span class="ar">٧. تركيب وتفاعل تصلب GIC</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Powder:</strong> Fluoroaluminosilicate glass. Contains Silica (29%), Alumina (16.6%), and Calcium Fluoride (34.2%).</p>
+    <p><strong>Liquid:</strong> Polyacrylic acid (40-50%), Water, Itaconic acid (reduces viscosity), and Tartaric acid (increases working time, decreases setting time).</p>
+    <p><strong>Setting Reaction (Acid-Base):</strong></p>
+    <ol>
+        <li><strong>Dissolution:</strong> Acid attacks glass particles; ions release.</li>
+        <li><strong>Precipitation/Gelation:</strong> Calcium/Aluminum polyacrylates form.</li>
+        <li><strong>Hardening:</strong> Slow maturation of the matrix.</li>
+    </ol>
+</div>
+<div class="ar">
+    <p><strong>المسحوق:</strong> زجاج فلورو ألومينو سيليكات. يحتوي على السيليكا (29%)، الألومينا (16.6%)، وفلوريد الكالسيوم (34.2%).</p>
+    <p><strong>السائل:</strong> حمض البولي أكريليك (40-50%)، ماء، حمض الإيتاكونيك (يقلل اللزوجة)، وحمض الطرطريك (يزيد وقت العمل ويقلل وقت التصلب).</p>
+    <p><strong>تفاعل التصلب (حمض-قاعدة):</strong></p>
+    <ol>
+        <li><strong>الذوبان:</strong> يهاجم الحمض جزيئات الزجاج؛ تتحرر الأيونات.</li>
+        <li><strong>الترسيب/التجلط:</strong> تتكون بولي أكريلات الكالسيوم/الألومنيوم.</li>
+        <li><strong>التصلب:</strong> نضج بطيء للمصفوفة.</li>
+    </ol>
+</div>
+<div class="chart-wrap" style="width:100%;overflow:hidden"><div class="en">
+<svg class="chart-svg" viewBox="0 0 860 240">
+  <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="138" x2="820" y1="200" y2="200"></line>
+  <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="140" x2="140" y1="55" y2="201"></line>
+  <text x="130" y="85" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">CaF2</text>
+  <text x="130" y="130" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">Silica</text>
+  <text x="130" y="175" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">Alumina</text>
+  <rect fill="#60a5fa" height="28" opacity="0.95" rx="6" ry="6" width="240" x="145" y="65"></rect> <rect fill="#22d3ee" height="28" opacity="0.95" rx="6" ry="6" width="200" x="145" y="110"></rect> <rect fill="#a78bfa" height="28" opacity="0.95" rx="6" ry="6" width="115" x="145" y="155"></rect> <g font-size="11" fill="#a6afc6" opacity=".95">
+    <text x="168" y="218">10%</text>
+    <text x="233" y="218">20%</text>
+    <text x="298" y="218">30%</text>
+    <text x="363" y="218">40%</text>
+    <text x="428" y="218">50%</text>
+  </g>
+</svg>
+</div><div class="ar">
+<svg class="chart-svg" viewBox="0 0 860 240">
+  <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="138" x2="820" y1="200" y2="200"></line>
+  <line stroke="rgba(255,255,255,.7)" stroke-width="4" x1="140" x2="140" y1="55" y2="201"></line>
+  <text x="130" y="85" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">فلوريد الكالسيوم</text>
+  <text x="130" y="130" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">السيليكا</text>
+  <text x="130" y="175" fill="#f6f7fb" font-size="12" text-anchor="end" opacity=".9">الألومينا</text>
+  <rect fill="#60a5fa" height="28" opacity="0.95" rx="6" ry="6" width="240" x="145" y="65"></rect>
+  <rect fill="#22d3ee" height="28" opacity="0.95" rx="6" ry="6" width="200" x="145" y="110"></rect>
+  <rect fill="#a78bfa" height="28" opacity="0.95" rx="6" ry="6" width="115" x="145" y="155"></rect>
+  <g font-size="11" fill="#a6afc6" opacity=".95">
+    <text x="168" y="218">10%</text>
+    <text x="233" y="218">20%</text>
+    <text x="298" y="218">30%</text>
+    <text x="363" y="218">40%</text>
+    <text x="428" y="218">50%</text>
+  </g>
+</svg>
+</div></div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 28-30 of 46</span>
+<span class="ar">المصدر: الصفحات ٢٨-٣٠ من ٤٦</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout extra"><div class="hdr"><span class="en">📝 Tartaric Acid</span><span class="ar">📝 حمض الطرطريك</span></div><div class="body" hidden=""><div class="en">It extends working time but sharpens/decreases setting time.</div><div class="ar">يمدد وقت العمل ولكنه يسرع/يقلل وقت التصلب.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Moisture Sensitivity</span><span class="ar">⚠️ حساسية الرطوبة</span></div><div class="body" hidden=""><div class="en">GIC is moisture sensitive while setting.</div><div class="ar">الأسمنت الزجاجي الشاردي حساس للرطوبة أثناء التصلب.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Acid-Base</span><span class="ar">📌 حمض-قاعدة</span></div><div class="body" hidden=""><div class="en">The setting is an acid-base reaction between polyacrylic acid and glass powder.</div><div class="ar">التصلب هو تفاعل حمض-قاعدة بين حمض البولي أكريليك ومسحوق الزجاج.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">8. Manipulation & Properties of GIC</span><span class="ar">٨. معالجة وخصائص GIC</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p><strong>Manipulation (Hand Mix):</strong> Use an agate spatula. Divide powder into two equal portions. Mix the first half into the liquid (10-15 sec), then add the second half. Total mixing time: 30-60 seconds. The mix should appear <strong style="color:#8b5cf6">glossy</strong>.</p>
+    <p><strong>Properties:</strong></p>
+    <ul>
+        <li><strong>Fluoride Release:</strong> Acts as a reservoir, beneficial for high caries activity (anticariogenic).</li>
+        <li><strong>Strength:</strong> Compressive (100-150 MPa), Tensile (6.6 MPa). Brittle material.</li>
+        <li><strong>Adhesion:</strong> Chemical adhesion to enamel and dentin.</li>
+        <li><strong>Thermal Protection:</strong> Good insulator.</li>
+    </ul>
+    <p><strong>Indications:</strong> Class V lesions (abrasion/abfraction), primary teeth, luting, and patients with high caries index.</p>
+</div>
+<div class="ar">
+    <p><strong>المعالجة (الخلط اليدوي):</strong> استخدم ملعقة عقيق (Agate). قسّم المسحوق إلى جزأين متساويين. اخلط النصف الأول في السائل (10-15 ثانية)، ثم أضف النصف الثاني. وقت الخلط الكلي: 30-60 ثانية. يجب أن يبدو الخليط <strong style="color:#8b5cf6">لامعاً</strong>.</p>
+    <p><strong>الخصائص:</strong></p>
+    <ul>
+        <li><strong>إطلاق الفلورايد:</strong> يعمل كخزان، مفيد لنشاط التسوس العالي (مضاد للتسوس).</li>
+        <li><strong>القوة:</strong> الضغط (100-150 ميجا باسكال)، الشد (6.6 ميجا باسكال). مادة هشة.</li>
+        <li><strong>الالتصاق:</strong> التصاق كيميائي بالمينا والعاج.</li>
+        <li><strong>الحماية الحرارية:</strong> عازل جيد.</li>
+    </ul>
+    <p><strong>دواعي الاستعمال:</strong> آفات الفئة الخامسة (التآكل/Abfraction)، الأسنان اللبنية، الإلصاق، والمرضى الذين لديهم مؤشر تسوس مرتفع.</p>
+</div>
+<div class="chart-wrap" style="width:100%;overflow:hidden">
+<div class="en">
+  <svg class="chart-svg" viewBox="0 0 880 360">
+    <text x="440" y="40" fill="#f6f7fb" font-size="16" text-anchor="middle" font-weight="bold">GIC Setting Reaction Stages</text>
+    <g transform="translate(140, 100)">
+        <circle cx="0" cy="100" r="80" fill="#22d3ee" opacity="0.3"></circle>
+        <text x="0" y="105" text-anchor="middle" fill="#fff" font-size="14">Dissolution</text>
+    </g>
+    <path d="M220,200 L300,200" stroke="#fff" stroke-width="2" marker-end="url(#arrow)"></path>
+    <g transform="translate(440, 100)">
+        <circle cx="0" cy="100" r="80" fill="#60a5fa" opacity="0.3"></circle>
+        <text x="0" y="105" text-anchor="middle" fill="#fff" font-size="14">Gelation</text>
+    </g>
+    <path d="M520,200 L600,200" stroke="#fff" stroke-width="2" marker-end="url(#arrow)"></path>
+    <g transform="translate(740, 100)">
+        <circle cx="0" cy="100" r="80" fill="#f472b6" opacity="0.3"></circle>
+        <text x="0" y="105" text-anchor="middle" fill="#fff" font-size="14">Hardening</text>
+    </g>
+  </svg>
+</div>
+<div class="ar">
+  <svg class="chart-svg" viewBox="0 0 880 360">
+    <text x="440" y="40" fill="#f6f7fb" font-size="16" text-anchor="middle" font-weight="bold">مراحل تصلب GIC</text>
+    <g transform="translate(740, 100)">
+        <circle cx="0" cy="100" r="80" fill="#22d3ee" opacity="0.3"></circle>
+        <text x="0" y="105" text-anchor="middle" fill="#fff" font-size="14">الذوبان</text>
+    </g>
+    <path d="M660,200 L580,200" stroke="#fff" stroke-width="2"></path>
+    <g transform="translate(440, 100)">
+        <circle cx="0" cy="100" r="80" fill="#60a5fa" opacity="0.3"></circle>
+        <text x="0" y="105" text-anchor="middle" fill="#fff" font-size="14">التجلط</text>
+    </g>
+    <path d="M360,200 L280,200" stroke="#fff" stroke-width="2"></path>
+    <g transform="translate(140, 100)">
+        <circle cx="0" cy="100" r="80" fill="#f472b6" opacity="0.3"></circle>
+        <text x="0" y="105" text-anchor="middle" fill="#fff" font-size="14">التصلب</text>
+    </g>
+  </svg>
+</div>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 32-41 of 46</span>
+<span class="ar">المصدر: الصفحات ٣٢-٤١ من ٤٦</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Spatula Type</span><span class="ar">⚠️ نوع الملعقة</span></div><div class="body" hidden=""><div class="en">Use Agate spatula, not metal (metal abrades and discolors the mix).</div><div class="ar">استخدم ملعقة عقيق، وليس معدنية (المعدن يتآكل ويغير لون الخليط).</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Gloss Test</span><span class="ar">🩺 اختبار اللمعان</span></div><div class="body" hidden=""><div class="en">The mix must be glossy when applied (indicates available acid for bonding).</div><div class="ar">يجب أن يكون الخليط لامعاً عند وضعه (يدل على وجود حمض متاح للترابط).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Anticariogenic</span><span class="ar">📌 مضاد للتسوس</span></div><div class="body" hidden=""><div class="en">GIC releases fluoride, helping prevent secondary caries.</div><div class="ar">يطلق GIC الفلورايد، مما يساعد على منع التسوس الثانوي.</div></div></div>
+</div>
+</aside>
+</section>
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">9. Summary</span><span class="ar">٩. الملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+    <p>Restorative dentistry aims to protect the pulp by maintaining <strong style="color:#8b5cf6">Remaining Dentin Thickness (RDT)</strong>. Calcium Hydroxide is the gold standard for direct pulp capping due to its ability to stimulate reparative dentin, despite its high solubility. Cavity varnishes seal tubules but cannot be used with composites. Glass Ionomer Cements adhere chemically to teeth, release fluoride, and serve as excellent bases, though they are brittle and moisture-sensitive during setting.</p>
+</div>
+<div class="ar">
+    <p>يهدف طب الأسنان الترميمي إلى حماية اللب من خلال الحفاظ على <strong style="color:#8b5cf6">سماكة العاج المتبقي (RDT)</strong>. هيدروكسيد الكالسيوم هو المعيار الذهبي لتغطية اللب المباشرة لقدرته على تحفيز العاج الإصلاحي، رغم ذوبانه العالي. ورنيش التجويف يغلق النبيبات ولكن لا يمكن استخدامه مع الكومبوزيت. الأسمنت الزجاجي الشاردي يلتصق كيميائياً بالأسنان، يطلق الفلورايد، ويعمل كقاعدة ممتازة، رغم كونه هشاً وحساساً للرطوبة أثناء التصلب.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Full Lecture</span>
+<span class="ar">المصدر: المحاضرة بالكامل</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Quick Recap</span><span class="ar">🧠 مراجعة سريعة</span></div><div class="body" hidden=""><div class="en">CaOH = Reparative Dentin. GIC = Fluoride + Chemical Bond.</div><div class="ar">هيدروكسيد الكالسيوم = عاج إصلاحي. GIC = فلورايد + رابطة كيميائية.</div></div></div>
+</div>
+</aside>
+</section>
+
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Cavity Liner EN/عربي</div><div class="content" hidden=""><div class="en">A thin layer (<0.5mm) of cement/resin used to provide a barrier against bacteria or therapeutic effect.</div><div class="ar">طبقة رقيقة (<0.5 ملم) من الأسمنت/الراتنج تستخدم لتوفير حاجز ضد البكتيريا أو تأثير علاجي.</div></div></div>
+<div class="card"><div class="head">Cavity Base EN/عربي</div><div class="content" hidden=""><div class="en">A thicker layer (0.5-1mm) used to replace dentin and provide thermal insulation and mechanical support.</div><div class="ar">طبقة أكثر سمكاً (0.5-1 ملم) تستخدم لتعويض العاج وتوفير العزل الحراري والدعم الميكانيكي.</div></div></div>
+<div class="card"><div class="head">Calcium Hydroxide EN/عربي</div><div class="content" hidden=""><div class="en">Alkaline material used for pulp capping to stimulate reparative dentin formation.</div><div class="ar">مادة قلوية تستخدم لتغطية اللب لتحفيز تكوين العاج الإصلاحي.</div></div></div>
+<div class="card"><div class="head">Reparative Dentin EN/عربي</div><div class="content" hidden=""><div class="en">Tertiary dentin formed by odontoblasts in response to a stimulus (like CaOH).</div><div class="ar">عاج ثالثي يتكون بواسطة الخلايا المولدة للعاج استجابة لمحفز (مثل هيدروكسيد الكالسيوم).</div></div></div>
+<div class="card"><div class="head">Cavity Varnish EN/عربي</div><div class="content" hidden=""><div class="en">A resin solution that evaporates to form a thin film, sealing dentinal tubules.</div><div class="ar">محلول راتنجي يتبخر ليشكل طبقة رقيقة تغلق النبيبات العاجية.</div></div></div>
+<div class="card"><div class="head">Glass Ionomer Cement EN/عربي</div><div class="content" hidden=""><div class="en">A restorative material based on an acid-base reaction between glass powder and polyacrylic acid.</div><div class="ar">مادة ترميمية تعتمد على تفاعل حمض-قاعدة بين مسحوق الزجاج وحمض البولي أكريليك.</div></div></div>
+<div class="card"><div class="head">Tartaric Acid EN/عربي</div><div class="content" hidden=""><div class="en">An additive in GIC liquid that increases working time and decreases setting time.</div><div class="ar">مادة مضافة في سائل GIC تزيد من وقت العمل وتقلل من وقت التصلب.</div></div></div>
+<div class="card"><div class="head">Polyacrylic Acid EN/عربي</div><div class="content" hidden=""><div class="en">The main acidic component in the liquid of Glass Ionomer Cement.</div><div class="ar">المكون الحمضي الرئيسي في سائل الأسمنت الزجاجي الشاردي.</div></div></div>
+<div class="card"><div class="head">RDT EN/عربي</div><div class="content" hidden=""><div class="en">Remaining Dentin Thickness; a critical factor in pulp survival.</div><div class="ar">سماكة العاج المتبقي؛ عامل حاسم في بقاء اللب.</div></div></div>
+</div>
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — Who introduced CaOH and when?</span><span class="ar">١ — من قدم هيدروكسيد الكالسيوم ومتى؟</span></div><div class="content" hidden=""><span class="en">A: Herman in 1930.</span><span class="ar">ج: هيرمان في عام ١٩٣٠.</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — What is the main reactor in Dycal Catalyst?</span><span class="ar">٢ — ما هو المفاعل الرئيسي في محفز دايكال؟</span></div><div class="content" hidden=""><span class="en">A: Calcium Hydroxide (50%).</span><span class="ar">ج: هيدروكسيد الكالسيوم (٥٠٪).</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — Why apply 2 coats of varnish?</span><span class="ar">٣ — لماذا توضع طبقتان من الورنيش؟</span></div><div class="content" hidden=""><span class="en">A: To ensure uniform coating and avoid voids.</span><span class="ar">ج: لضمان تغطية موحدة وتجنب الفراغات.</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — Why is varnish contraindicated with composite?</span><span class="ar">٤ — لماذا يُمنع الورنيش مع الكومبوزيت؟</span></div><div class="content" hidden=""><span class="en">A: It interferes with the polymerization of the resin.</span><span class="ar">ج: لأنه يتداخل مع بلمرة الراتنج.</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — What is the typical thickness of a Base?</span><span class="ar">٥ — ما هي السماكة المعتادة للقاعدة؟</span></div><div class="content" hidden=""><span class="en">A: 0.5 - 1 mm.</span><span class="ar">ج: ٠.٥ - ١ ملم.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — What are the 3 stages of GIC setting?</span><span class="ar">٦ — ما هي مراحل تصلب GIC الثلاث؟</span></div><div class="content" hidden=""><span class="en">A: Dissolution, Gelation, Hardening.</span><span class="ar">ج: الذوبان، التجلط، التصلب.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — Why use an Agate spatula for GIC?</span><span class="ar">٧ — لماذا نستخدم ملعقة العقيق لخلط GIC؟</span></div><div class="content" hidden=""><span class="en">A: To prevent abrasion and discoloration caused by metal.</span><span class="ar">ج: لمنع التآكل وتغير اللون الذي يسببه المعدن.</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — What is a key indication for GIC?</span><span class="ar">٨ — ما هو الاستخدام الرئيسي لـ GIC؟</span></div><div class="content" hidden=""><span class="en">A: Class V lesions (abrasion/abfraction) or high caries risk.</span><span class="ar">ج: آفات الفئة الخامسة (تآكل) أو خطر التسوس العالي.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — What is the main disadvantage of CaOH?</span><span class="ar">٩ — ما هو العيب الرئيسي لهيدروكسيد الكالسيوم؟</span></div><div class="content" hidden=""><span class="en">A: High solubility and low mechanical strength.</span><span class="ar">ج: ذوبان عالي وقوة ميكانيكية منخفضة.</span></div></div>
+</div>
+</div>
+</main>
+<script>
+  // Language toggle: flip lang visibility + page direction
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  // Callout toggle
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  // Glossary toggle (dim term when open)
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  // Flashcards toggle (dim question when open)
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

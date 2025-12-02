@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer table{width:100%;border-collapse:collapse;margin-top:5px;font-size:0.9rem;}
+  .answer th, .answer td{border:1px solid rgba(255,255,255,0.2);padding:6px;text-align:left;}
+  .answer th{background:rgba(255,255,255,0.1);}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 11</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+  {
+    q: "Which statement best defines the primary mechanism of action for anti-epileptic drugs (AEDs)?",
+    opts: [
+      "Inhibition of abnormal electrical discharge spread with minimal general CNS depression",
+      "Stimulation of dopamine release in the limbic system",
+      "Total suppression of all neuronal activity in the cortex",
+      "Enhancement of general CNS depression to induce deep sleep"
+    ],
+    correct: 0,
+    explain: "AEDs inhibit the spread of abnormal electrical discharge with minimal general depressant action on the CNS."
+  },
+  {
+    q: "How does Phenytoin primarily exert its anti-epileptic effect?",
+    opts: [
+      "Prevents repetitive detonation of normal brain cells and stabilizes neuronal membranes",
+      "Increases GABA levels significantly in the synapse",
+      "Blocks D2 dopamine receptors in the limbic system",
+      "Inhibits serotonin reuptake in the presynaptic terminal"
+    ],
+    correct: 0,
+    explain: "Phenytoin prevents repetitive detonation of normal brain cells and stabilizes neuronal membranes."
+  },
+  {
+    q: "What is the typical time to peak plasma concentration for Phenytoin after oral administration?",
+    opts: [
+      "2 to 4 hours",
+      "15 to 30 minutes",
+      "12 to 24 hours",
+      "30 to 60 seconds"
+    ],
+    correct: 0,
+    explain: "After oral administration, peak plasma concentration of Phenytoin usually takes 2 to 4 hours."
+  },
+  {
+    q: "Which of the following is a specific adverse effect associated with Phenytoin?",
+    opts: [
+      "Gingival hypertrophy (Gum hypertrophy)",
+      "Severe hypotension",
+      "Extrapyramidal symptoms",
+      "Leucopenia"
+    ],
+    correct: 0,
+    explain: "Adverse effects of Phenytoin include gum hypertrophy, hirsutism, and hypersensitivity reactions."
+  },
+  {
+    q: "Into which active metabolite is Carbamazepine metabolized in the liver?",
+    opts: [
+      "Epoxy carbamazepine",
+      "Hydroxy-phenytoin",
+      "Desmethyl-imipramine",
+      "Acetyl-valproate"
+    ],
+    correct: 0,
+    explain: "Carbamazepine is metabolized in the liver to an active metabolite called epoxy carbamazepine."
+  },
+  {
+    q: "Carbamazepine is particularly effective for which type of seizure?",
+    opts: [
+      "Grand mal (tonic-clonic)",
+      "Absence seizures only",
+      "Status epilepticus exclusively",
+      "Myoclonic seizures"
+    ],
+    correct: 0,
+    explain: "Carbamazepine is effective in grand mal (tonic-clonic) seizures."
+  },
+  {
+    q: "What is the primary mechanism of action of Sodium Valproate?",
+    opts: [
+      "Increases GABA levels in the brain",
+      "Blocks sodium channels only",
+      "Agonizes D2 receptors",
+      "Inhibits Monoamine Oxidase"
+    ],
+    correct: 0,
+    explain: "Sodium Valproate increases the levels of GABA in the brain."
+  },
+  {
+    q: "What is a significant dental implication for a patient taking Valproate?",
+    opts: [
+      "Risk of bleeding due to platelet suppression",
+      "Severe gingival overgrowth",
+      "Discoloration of teeth",
+      "Induced salivation (Sialorrhea)"
+    ],
+    correct: 0,
+    explain: "Valproate carries a risk of bleeding due to platelet suppression."
+  },
+  {
+    q: "Why is Levetiracetam often preferred or widely used in dental patients compared to older AEDs?",
+    opts: [
+      "It has fewer drug interactions",
+      "It cures epilepsy permanently",
+      "It acts faster than IV drugs",
+      "It causes significant sedation"
+    ],
+    correct: 0,
+    explain: "Levetiracetam has fewer drug interactions and is widely used in dental patients."
+  },
+  {
+    q: "Clinical depression is characterized by feelings of hopelessness and which other key symptom?",
+    opts: [
+      "Lack of energy and anhedonia (lack of pleasure)",
+      "Excessive energy and euphoria",
+      "Visual hallucinations and delusions",
+      "Uncontrollable repetitive movements"
+    ],
+    correct: 0,
+    explain: "Depression involves lack of energy and taking little or no pleasure in things that gave joy in the past."
+  },
+  {
+    q: "How does Imipramine (a Tricyclic Antidepressant) function?",
+    opts: [
+      "Blocks the uptake of amines like Norepinephrine and Serotonin",
+      "Selectively blocks Serotonin only",
+      "Inhibits the enzyme MAO",
+      "Blocks dopamine receptors"
+    ],
+    correct: 0,
+    explain: "Imipramine blocks the amine uptake (NE and 5-HT)."
+  },
+  {
+    q: "When does mood elevation typically occur after starting Imipramine therapy in a depressed patient?",
+    opts: [
+      "2-3 weeks",
+      "Immediately (within 1 hour)",
+      "2-3 days",
+      "6 months"
+    ],
+    correct: 0,
+    explain: "In a depressed patient, an elevation of mood occurs 2-3 weeks after administration begins."
+  },
+  {
+    q: "Which autonomic nervous system effect is common with Imipramine?",
+    opts: [
+      "Anticholinergic effects (dry mouth, etc.)",
+      "Cholinergic crisis (salivation)",
+      "Adrenergic storm",
+      "Histaminic reaction"
+    ],
+    correct: 0,
+    explain: "Imipramine causes anticholinergic effects on the autonomic nervous system."
+  },
+  {
+    q: "Fluoxetine belongs to which class of antidepressants?",
+    opts: [
+      "Selective Serotonin Reuptake Inhibitors (SSRI)",
+      "Tricyclic Antidepressants (TCA)",
+      "Monoamine Oxidase Inhibitors (MAOIs)",
+      "Atypical Antipsychotics"
+    ],
+    correct: 0,
+    explain: "Fluoxetine is a selective serotonin (5-HT) uptake inhibitor."
+  },
+  {
+    q: "Why does Fluoxetine generally have fewer adverse effects than TCAs?",
+    opts: [
+      "Minimal binding to cholinergic, histaminic, and alpha-adrenergic receptors",
+      "It is not metabolized by the liver",
+      "It has a very short half-life",
+      "It does not cross the blood-brain barrier"
+    ],
+    correct: 0,
+    explain: "It has fewer adverse effects because of minimal binding to cholinergic, histaminic, and alpha-adrenergic receptors."
+  },
+  {
+    q: "Which oral health side effect is often seen with SSRIs like Fluoxetine?",
+    opts: [
+      "Bruxism (teeth grinding)",
+      "Gingival Hyperplasia",
+      "Excessive salivation",
+      "Tooth discoloration"
+    ],
+    correct: 0,
+    explain: "Bruxism is often seen with SSRIs and can cause tooth wear."
+  },
+  {
+    q: "Psychosis is characterized by disturbances of reality, impaired cognition, and what else?",
+    opts: [
+      "Inappropriate or diminished mood",
+      "Enhanced memory and focus",
+      "Excessive happiness only",
+      "Rapid heart rate"
+    ],
+    correct: 0,
+    explain: "Psychosis includes disturbances of reality/perception, impaired cognitive functioning, and inappropriate or diminished mood."
+  },
+  {
+    q: "Which of the following is considered a 'Positive' symptom of schizophrenia?",
+    opts: [
+      "Delusions and hallucinations",
+      "Withdrawal from social contacts",
+      "Flattening of emotional responses",
+      "Cognitive deficits"
+    ],
+    correct: 0,
+    explain: "Positive symptoms include delusions, hallucinations, and thought disorder/abnormal behaviors."
+  },
+  {
+    q: "What does the Dopamine theory suggest regarding the pathogenesis of schizophrenia?",
+    opts: [
+      "Increased dopamine levels may cause the disease",
+      "Decreased dopamine levels cause the disease",
+      "Serotonin depletion is the sole cause",
+      "Lack of GABA is the primary trigger"
+    ],
+    correct: 0,
+    explain: "The Dopamine theory suggests that increased dopamine levels may be the cause of the disease."
+  },
+  {
+    q: "All antipsychotic drugs act as antagonists at which specific receptor?",
+    opts: [
+      "Dopamine D2 receptors",
+      "Histamine H1 receptors",
+      "Muscarinic M3 receptors",
+      "Beta-2 adrenergic receptors"
+    ],
+    correct: 0,
+    explain: "All antipsychotic drugs are antagonists at dopamine D2 receptors."
+  },
+  {
+    q: "What is a major advantage of 'Atypical' antipsychotics over 'Typical' ones?",
+    opts: [
+      "Lower incidence of extrapyramidal side effects",
+      "They work instantly",
+      "They do not cause sedation",
+      "They are much cheaper"
+    ],
+    correct: 0,
+    explain: "The incidence of extrapyramidal (movement disorders) side effects is less in the atypical group."
+  },
+  {
+    q: "Besides D2, which other receptor does Clozapine specifically block?",
+    opts: [
+      "D4 receptors",
+      "Alpha-2 receptors",
+      "Nicotinic receptors",
+      "Opioid receptors"
+    ],
+    correct: 0,
+    explain: "Clozapine also blocks D4-receptors."
+  },
+  {
+    q: "Which serious condition requires routine monitoring in patients taking Clozapine?",
+    opts: [
+      "Leucopenia",
+      "Hyperglycemia",
+      "Hypertension",
+      "Thrombocytosis"
+    ],
+    correct: 0,
+    explain: "With Clozapine, leucopenia is common and requires routine monitoring."
+  },
+  {
+    q: "What characterizes Tardive Dyskinesia?",
+    opts: [
+      "Slowly developing, often irreversible involuntary movements",
+      "Acute muscle rigidity that resolves quickly",
+      "Sudden onset of high fever",
+      "Temporary loss of consciousness"
+    ],
+    correct: 0,
+    explain: "Tardive dyskinesia is a slowly developing, often irreversible condition comprising involuntary movements."
+  },
+  {
+    q: "How should a dentist approach a patient with a history of psychosis who appears distrustful?",
+    opts: [
+      "Explain procedures and obtain permission before every action",
+      "Restrain the patient immediately",
+      "Ignore their questions to save time",
+      "Proceed silently to avoid agitation"
+    ],
+    correct: 0,
+    explain: "Explain procedures and their rationale, and obtain the patient's permission before doing each procedure."
+  },
+  {
+    q: "Which of the following is an example of a Monoamine Oxidase Inhibitor (MAOI)?",
+    opts: [
+      "Phenelzine",
+      "Bupropion",
+      "Imipramine",
+      "Carbamazepine"
+    ],
+    correct: 0,
+    explain: "Phenelzine is classified as a Monoamine Oxidase Inhibitor (MAOI)."
+  },
+  {
+    q: "Bupropion is classified as which type of drug?",
+    opts: [
+      "Atypical Antidepressant",
+      "Typical Antipsychotic",
+      "SSRI",
+      "Benzodiazepine"
+    ],
+    correct: 0,
+    explain: "Bupropion is listed as an Atypical Antidepressant."
+  },
+  {
+    q: "How is the majority of a Phenytoin dose excreted?",
+    opts: [
+      "In the urine",
+      "Through the bile",
+      "Through the lungs",
+      "Through sweat"
+    ],
+    correct: 0,
+    explain: "The majority of the Phenytoin dose is excreted in the urine."
+  },
+  {
+    q: "Why do many AEDs increase the risk of dental caries?",
+    opts: [
+      "They cause Xerostomia (Dry Mouth)",
+      "They contain high sugar content",
+      "They erode enamel directly",
+      "They lower oral pH to 2"
+    ],
+    correct: 0,
+    explain: "Xerostomia (Dry Mouth) is common with various AEDs, leading to increased caries risk."
+  },
+  {
+    q: "Which statement regarding Antipsychotic Malignant Syndrome is true?",
+    opts: [
+      "It is rare but potentially dangerous",
+      "It is very common and mild",
+      "It only occurs with antidepressants",
+      "It is treated with more antipsychotics"
+    ],
+    correct: 0,
+    explain: "Antipsychotic malignant syndrome is a rare but potentially dangerous side effect."
+  }
+];
+
+const tfs = [
+  {
+    q: "Phenytoin is an example of a newer anti-epileptic drug.",
+    answer: false,
+    explain: "Phenytoin is classified as an older AED."
+  },
+  {
+    q: "Carbamazepine is metabolized in the liver to an active metabolite.",
+    answer: true,
+    explain: "It is metabolized to an active metabolite (epoxy carbamazepine)."
+  },
+  {
+    q: "Sodium Valproate decreases the levels of GABA in the brain.",
+    answer: false,
+    explain: "Sodium valproate INCREASES the levels of GABA in the brain."
+  },
+  {
+    q: "A non-depressed person taking Imipramine will typically experience mood elevation.",
+    answer: false,
+    explain: "A non-depressed person experiences sleeping; mood elevation occurs only in depressed patients."
+  },
+  {
+    q: "Fluoxetine has a strong effect on central norepinephrine and dopamine function.",
+    answer: false,
+    explain: "Fluoxetine has LITTLE effect on central norepinephrine and dopamine function."
+  },
+  {
+    q: "Bruxism (teeth grinding) is a known oral health side effect of SSRIs.",
+    answer: true,
+    explain: "Bruxism is often seen with SSRIs and can cause tooth wear."
+  },
+  {
+    q: "Withdrawal from social contacts is considered a 'Positive' symptom of schizophrenia.",
+    answer: false,
+    explain: "Withdrawal is a 'Negative' symptom. Positive symptoms include delusions and hallucinations."
+  },
+  {
+    q: "Antipsychotic drugs typically take days or weeks to work fully.",
+    answer: true,
+    explain: "Antipsychotics take days or weeks to work."
+  },
+  {
+    q: "Clozapine has a high incidence of acute dystonia compared to Haloperidol.",
+    answer: false,
+    explain: "The incidence of acute dystonias is LESS with atypical antipsychotics, particularly low with Clozapine."
+  }
+];
+
+const saqs = [
+  {
+    q: "Define 'Psychosis' as described in the lecture.",
+    a: "Psychosis is a disorder characterized by disturbances of reality and perception, impaired cognitive functioning, and inappropriate or diminished mood."
+  },
+  {
+    q: "List three adverse effects associated with Phenytoin.",
+    a: `
+      <table>
+        <tr><th>1.</th><td>Gum hypertrophy (Gingival hyperplasia)</td></tr>
+        <tr><th>2.</th><td>Hirsutism</td></tr>
+        <tr><th>3.</th><td>Hypersensitivity reaction (or Megaloblastic anemia/Hyperglycemia)</td></tr>
+      </table>
+    `
+  },
+  {
+    q: "Compare 'Typical' and 'Atypical' antipsychotics regarding their side effect profile.",
+    a: `
+      <table>
+        <tr><th>Feature</th><th>Typical (e.g., Chlorpromazine)</th><th>Atypical (e.g., Clozapine)</th></tr>
+        <tr><td>Extrapyramidal Effects</td><td>Higher Incidence</td><td>Lower Incidence</td></tr>
+        <tr><td>Effect on Negative Symptoms</td><td>Less Effective</td><td>More Effective</td></tr>
+      </table>
+    `
+  },
+  {
+    q: "A patient taking Carbamazepine requires a prescription for another medication. Why must the dentist be cautious?",
+    a: "Carbamazepine is known for drug interactions and induces liver enzymes, which may affect the metabolism of other drugs."
+  },
+  {
+    q: "List three types/classes of Antidepressant drugs mentioned.",
+    a: `
+      <table>
+        <tr><th>1.</th><td>Tricyclic Antidepressants (TCA) - e.g., Imipramine</td></tr>
+        <tr><th>2.</th><td>Selective Serotonin Reuptake Inhibitors (SSRI) - e.g., Fluoxetine</td></tr>
+        <tr><th>3.</th><td>Monoamine Oxidase Inhibitors (MAOI) - e.g., Phenelzine</td></tr>
+        <tr><th>(4.)</th><td>Atypical Antidepressants - e.g., Bupropion</td></tr>
+      </table>
+    `
+  },
+  {
+    q: "What is the 'Dopamine theory' regarding the pathogenesis of Schizophrenia?",
+    a: "The theory suggests that increased dopamine levels may be the cause of the disease. In animals, dopamine release causes schizophrenic symptoms, and potent D2-receptor agonists produce similar effects."
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  // shuffle options
+  const map = shuffleIndices(4);
+  const visualToOriginal = map; 
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; 
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always highlight correct
+      buttons[correctVisualIndex].classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return;
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

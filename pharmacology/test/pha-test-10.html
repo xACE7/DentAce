@@ -1,0 +1,690 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Pharma Lecture 10</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04); white-space: pre-wrap;}
+  .answer table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+  }
+  .answer th, .answer td {
+      border: 1px solid rgba(255,255,255,0.1);
+      padding: 8px;
+      text-align: left;
+  }
+  .answer th {
+      background: rgba(255,255,255,0.05);
+  }
+  .answer ol {
+      padding-left: 20px;
+  }
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 10</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data (Generated from pharma-10.pdf) -----------
+const mcqs = [
+  {
+    q: "Which class of analgesics primarily relieves pain without causing loss of consciousness?",
+    opts: ["Opioid Analgesics", "Narcotic Analgesics", "Adjuvants", "Analgesics"],
+    correct: 3,
+    explain: "Analgesics are defined as drugs that relieve pain by acting on CNS or peripheral pain mechanism without causing loss of consciousness."
+  },
+  {
+    q: "Morphine's primary analgesic, euphoric, and respiratory depressant effects are mediated mainly through which opioid receptor?",
+    opts: ["Kappa (κ)", "Delta (δ)", "Mu (μ)", "Alpha (α)"],
+    correct: 2,
+    explain: "Analgesic, respiratory depression, and euphoria produced by morphine result mainly from action at mu (μ) receptors."
+  },
+  {
+    q: "What is considered the main cause of death from an opioid overdose, such as morphine poisoning?",
+    opts: ["Severe Hypotension", "Miosis", "Respiratory Depression", "Urinary Retention"],
+    correct: 2,
+    explain: "Depression of respiration is the main cause of death from opioid overdose."
+  },
+  {
+    q: "Which drug is the specific antagonist used in the treatment of acute opioid overdose/toxicity (Morphine Poisoning)?",
+    opts: ["Prednisolone", "Aspirin", "Naloxone", "Pethidine"],
+    correct: 2,
+    explain: "Specific antagonists, such as Naloxone, are used for treatment of acute overdose/toxicity."
+  },
+  {
+    q: "Opioids cause nausea and vomiting by stimulating receptors in which specific area of the medulla?",
+    opts: ["Medullary Respiratory Center", "Vomiting Center", "Chemoreceptor Trigger Zone", "Nucleus Tractus Solitarius"],
+    correct: 2,
+    explain: "Nausea and vomiting are caused by stimulation of receptors in the chemoreceptor trigger zone."
+  },
+  {
+    q: "Which of the following is an example of a **Steroidal** Non-Narcotic analgesic, as classified in the lecture?",
+    opts: ["Morphine", "Acetaminophen", "Prednisolone", "Aspirin"],
+    correct: 2,
+    explain: "The classification lists Steroidal (Ex: Prednisolone) as a type of Non-Narcotic analgesic."
+  },
+  {
+    q: "Which inflammatory mediator is a prostaglandin primarily involved in pain, inflammation, and fever, whose production is inhibited by NSAIDs?",
+    opts: ["Histamine", "5-HT (Serotonin)", "PGE2", "Substance P"],
+    correct: 2,
+    explain: "Prostaglandins (eg PGE2) are main inflammatory mediators. NSAIDs inhibit their production, which mediate pain, inflammation and fever."
+  },
+  {
+    q: "Which effect of NSAIDs is directly attributed to the inhibition of the constitutive enzyme COX-1?",
+    opts: ["Reduction of pain and inflammation", "Reduction of fever", "Loss of GI mucosal protection", "Maintenance of renal function"],
+    correct: 2,
+    explain: "COX-1 is 'Constitutive' and its product (PGE2) is responsible for GI mucosal protection and Haemostasia. Inhibition of COX-1 leads to side effects like gastric ulcers and loss of protection."
+  },
+  {
+    q: "Which drug is classified as a **Selective** COX-2 inhibitor (Coxib) in the lecture slides?",
+    opts: ["Ibuprofen", "Diclofenac", "Celecoxib", "Aspirin"],
+    correct: 2,
+    explain: "Celecoxib is listed as a Selective NSAID."
+  },
+  {
+    q: "What is the mechanism of action of **Steroidal** anti-inflammatory drugs like Prednisolone?",
+    opts: ["Inhibition of Cyclooxygenase (COX)", "Direct stimulation of μ receptors", "Inhibition of Phospholipase A2", "Stimulation of Chemoreceptor Trigger Zone"],
+    correct: 2,
+    explain: "They inhibit the enzyme phospholipase A2."
+  },
+  {
+    q: "Which term describes the syndrome of tinnitus, vertigo, and decreased hearing, associated with Aspirin overdose?",
+    opts: ["Reye's syndrome", "Bronchospasm", "Salicylism", "Nephrotic Syndrome"],
+    correct: 2,
+    explain: "Salicylism is the syndrome consisting of tinnitus, vertigo, and decreased hearing due to Aspirin."
+  },
+  {
+    q: "Which analgesic, primarily used for its mild analgesic effect, carries the serious disadvantage of severe hepatotoxicity at high doses?",
+    opts: ["Morphine", "Aspirin", "Ibuprofen", "Paracetamol"],
+    correct: 3,
+    explain: "Paracetamol (Acetaminophen) is stated to have the serious disadvantage of severe hepatotoxicity at high doses."
+  },
+  {
+    q: "Which common dental intervention is typically associated with **Severe** anticipated postprocedural pain?",
+    opts: ["Routine endodontics", "Simple extraction", "Complex implant surgery", "Scaling/root planing"],
+    correct: 2,
+    explain: "Complex implant or full bony impaction surgery is listed under Severe anticipated pain."
+  },
+  {
+    q: "Opioids are extracted from the seeds of which plant?",
+    opts: ["Papaver rhoeas", "Atropa belladonna", "Papaver somniferum", "Cannabis sativa"],
+    correct: 2,
+    explain: "Opium is extracted from poppy seeds (Papaver somniferum)."
+  },
+  {
+    q: "What is the maximum recommended daily dose of Aspirin for analgesia or antipyresis in adults?",
+    opts: ["1000 mg", "1600 mg", "3000 mg", "4000 mg"],
+    correct: 3,
+    explain: "The maximum daily dose for Aspirin in adults is 4000 mg."
+  },
+  {
+    q: "According to the lecture, which of the following is NOT one of the three major effects of NSAIDs?",
+    opts: ["Anti-inflammatory effect", "Euphoric effect", "Analgesic effect", "Antipyretic effect"],
+    correct: 1,
+    explain: "NSAIDs have anti-inflammatory, analgesic, and antipyretic effects. Euphoria is an opioid effect."
+  },
+  {
+    q: "Glucocorticoids suppress inflammation by inhibiting which characteristic inflammatory mechanism?",
+    opts: ["Histamine release from mast cells", "μ-receptor activation", "Migration of leukocytes", "Blood pressure maintenance"],
+    correct: 2,
+    explain: "They suppress the edema, capillary dilatation, migration of leukocytes, and capillary permeability in the inflamed area, which includes suppressing migration."
+  },
+  {
+    q: "Which characteristic distinguishes Aspirin's effect from Morphine's effect on the central nervous system?",
+    opts: ["Aspirin causes respiratory depression", "Aspirin does not cause sedation or dependence", "Aspirin is a strong narcotic", "Aspirin primarily acts on the κ receptor"],
+    correct: 1,
+    explain: "Unlike morphine, Aspirin does not produce sedation and there is no drug tolerance or dependence."
+  },
+  {
+    q: "What is the recommended first-line analgesic therapy for dental pain according to the lecture?",
+    opts: ["Opioids like Morphine", "Steroidal drugs like Prednisolone", "NSAIDs", "Benzodiazepines"],
+    correct: 2,
+    explain: "The lecture advises to 'Consider NSAIDs as first-line therapy'."
+  },
+  {
+    q: "Which condition is NOT listed as a potential consequence of COX-1 inhibition by NSAIDs?",
+    opts: ["Gastric ulcers", "Bleeding", "Acute renal failure", "Severe hepatotoxicity"],
+    correct: 3,
+    explain: "Gastric ulcers, bleeding, and acute renal failure are consequences of COX-1 inhibition. Hepatotoxicity is linked to Paracetamol."
+  },
+  {
+    q: "Which opioid drug is listed as one of the most suitable for use if needed in dental pain?",
+    opts: ["Morphine", "Fentanyl", "Codeine", "Hydrocodone"],
+    correct: 2,
+    explain: "Codeine, tramadol, and Pentazocine are the most suitable drugs if needed in dental pain."
+  },
+  {
+    q: "Opioids are sometimes used to supplement the sleep-inducing properties of benzodiazepines in clinical situations due to their effect on:",
+    opts: ["Cough suppression", "Analgesia", "Relief from diarrhea", "Appetite suppression"],
+    correct: 1,
+    explain: "Opioids induce sleep (sedation) and are used to supplement benzodiazepines when pain is present and sleep is necessary."
+  },
+  {
+    q: "Which side effect of glucocorticoids is a result of their metabolic action?",
+    opts: ["Euphoria", "Hyperglycemia", "Nervousness", "Increased acid secretion"],
+    correct: 1,
+    explain: "Metabolic effects are listed as Hyperglycemia."
+  },
+  {
+    q: "For pain classified as **Mild to Moderate**, what is the fixed-interval regimen recommended before switching to an as-needed dose?",
+    opts: ["Ibuprofen 200 mg every 4-6 hours", "Ibuprofen 400-600 mg every 6 hours for 24 hours", "Ibuprofen + Acetaminophen every 8 hours", "Only Ibuprofen as needed"],
+    correct: 1,
+    explain: "For Mild to Moderate pain, Ibuprofen 400 to 600 mg fixed interval every 6 hours for 24 hours is recommended."
+  },
+  {
+    q: "Which NSAID, despite being an NSAID, is noted for causing fewer GI disturbances and bleeding events compared to Aspirin?",
+    opts: ["Diclofenac", "Ibuprofen", "Celecoxib", "Naproxen"],
+    correct: 1,
+    explain: "Ibuprofen causes fewer GI disturbances and bleeding events than aspirin."
+  },
+  {
+    q: "Which effect of glucocorticoids is considered reversible and affects the CNS?",
+    opts: ["Hyperglycemia", "Myocardial contractility", "Euphoria and restlessness", "Suppression of edema"],
+    correct: 2,
+    explain: "Effect on CNS causes euphoria, mood elevation, nervousness, and restlessness, which are reversible types of actions."
+  },
+  {
+    q: "Reye's syndrome, a rare disorder associated with Aspirin use in children, involves swelling in which two organs?",
+    opts: ["Heart and Lungs", "Brain and Liver", "Kidneys and Spleen", "Stomach and Intestines"],
+    correct: 1,
+    explain: "Reye's syndrome involves swelling in the liver and brain."
+  },
+  {
+    q: "What is the maximum recommended daily dose of Paracetamol for children (> 2 years) for no longer than 5 days?",
+    opts: ["4000 mg", "3000 mg", "2000 mg", "1600 mg"],
+    correct: 3,
+    explain: "The maximum daily dose for Paracetamol for children > 2 years is 1600 mg."
+  },
+  {
+    q: "Which of the following dental interventions is associated with **Moderate** anticipated postprocedural pain?",
+    opts: ["Frenectomy", "Simple extraction", "Quadrant periodontal flap surgery", "Subgingival restorative procedures"],
+    correct: 2,
+    explain: "Quadrant periodontal flap surgery is listed under Moderate anticipated pain."
+  },
+  {
+    q: "The use of NSAIDs is contraindicated in which of the following conditions?",
+    opts: ["Common Cold", "Peptic ulcers", "Mild headache", "Fever"],
+    correct: 1,
+    explain: "NSAIDs are contraindicated in bleeding disorders, peptic ulcers, and pregnancy."
+  }
+];
+
+const tfs = [
+  {
+    q: "NSAIDs are commonly employed as the initial drug of choice for dental pain and inflammation.",
+    answer: true,
+    explain: "NSAIDs are commonly employed for dental pain and inflammation (Page 3) and are considered first-line therapy (Page 13)."
+  },
+  {
+    q: "δ (Delta) and κ (Kappa) opioid receptors contribute to analgesia primarily at the supraspinal level.",
+    answer: false,
+    explain: "Delta and kappa receptors can also contribute to analgesia, particularly at the **spinal level**."
+  },
+  {
+    q: "Opioids relieve diarrhea due to their indirect actions on the intestines, mediated by CNS effects.",
+    answer: false,
+    explain: "Opioids relieve diarrhea as a result of their **direct actions on the intestines**."
+  },
+  {
+    q: "Glucocorticoids suppress inflammation by increasing the activity of the enzyme phospholipase A2.",
+    answer: false,
+    explain: "Glucocorticoids **inhibit** the enzyme phospholipase A2."
+  },
+  {
+    q: "COX-2 is known as the 'Constitutive' cyclooxygenase enzyme.",
+    answer: false,
+    explain: "COX-1 is 'Constitutive'; COX-2 is 'Inducible'."
+  },
+  {
+    q: "Inhibition of COX-2 alone is desirable because it reduces inflammation, pain, and fever without causing major COX-1 related side effects.",
+    answer: true,
+    explain: "Inhibition of COX-2 alone is good because it achieves therapeutic benefits without the side effects caused by COX-1 inhibition."
+  },
+  {
+    q: "Aspirin is used for its strong anti-inflammatory effect but lacks an antipyretic effect.",
+    answer: false,
+    explain: "Aspirin relieves pain and inflammation & **fever**."
+  },
+  {
+    q: "Paracetamol is without GIT irritation and is well-absorbed.",
+    answer: true,
+    explain: "Paracetamol is well-absorbed and without GIT irritation."
+  },
+  {
+    q: "Ibuprofen use is considered less risky for cardiovascular toxicity than Naproxen use.",
+    answer: false,
+    explain: "Ibuprofen use is **more risky** than naproxen for cardiovascular toxicity."
+  }
+];
+
+const saqs = [
+  {
+    q: "Describe the primary mechanism by which steroidal anti-inflammatory drugs, like Prednisolone, achieve their anti-inflammatory effect.",
+    a: "Steroidal anti-inflammatory drugs, or glucocorticoids, achieve their primary anti-inflammatory effect by inhibiting the enzyme **phospholipase A2**. This inhibition prevents the conversion of arachidonic acid into prostaglandins and other inflammatory mediators, thereby suppressing all types of inflammation and allergic reactions."
+  },
+  {
+    q: "Explain why the combination of opioids and alcohol is particularly dangerous.",
+    a: "The combination of opioids and alcohol is especially dangerous because both substances depress the Central Nervous System (CNS), and the combination leads to severe **Depression of Respiration**, which is the main cause of death from opioid overdose."
+  },
+  {
+    q: "List at least three of the pharmacological effects of Opioid Analgesics other than analgesia.",
+    a: "<ol><li>Sedation and anxiolytics (Drowsiness, apathy, cognitive impairment).</li><li>Depression of respiration (Main cause of death in overdose).</li><li>Cough suppression (Suppresses the 'cough center').</li><li>Nausea and vomiting (Stimulation of the chemoreceptor trigger zone).</li><li>Gastrointestinal symptoms (Relief of diarrhea due to direct action).</li><li>Release of histamines (causing itching or bronchoconstriction).</li></ol>"
+  },
+  {
+    q: "List the four specific adverse effects/conditions associated with chronic NSAID usage (excluding common GI issues like nausea/vomiting).",
+    a: "<ol><li>Skin reactions</li><li>Analgesic-associated nephropathy (renal toxicity)</li><li>Liver disorders</li><li>Bone marrow depression, and bronchospasm (in asthmatics)</li></ol>"
+  },
+  {
+    q: "Compare the physiological actions of the two types of cyclooxygenase enzymes, COX-1 and COX-2, including the primary function of the prostaglandins they produce and their constitutive/inducible nature.",
+    a: `<ol>
+<li>**Nature:** COX-1 is **Constitutive** (always present/essential for maintenance), while COX-2 is **Inducible** (produced primarily during inflammation).</li>
+<li>**Primary Function:** Prostaglandins from COX-1 provide **GI mucosal protection and Haemostasia (blood clotting)**. Prostaglandins from COX-2 act as **Mediators of pain, Inflammation, and fever**.</li>
+<li>**Inhibition Outcome:** Inhibition of COX-1 is associated with **side effects** (gastric ulcers, bleeding). Inhibition of COX-2 is associated with the **therapeutic benefits** (reduce pain, inflammation, fever).</li>
+</ol>`
+  },
+  {
+    q: "A patient who is a heavy chronic user of Ibuprofen is scheduled for a dental procedure. Based on the lecture's precautions for NSAID usage, what are two critical physiological systems a dentist should be concerned about before prescribing further NSAIDs?",
+    a: "The dentist should be concerned about: <ol><li>**Gastrointestinal System:** Chronic NSAID use, even Ibuprofen, carries a risk of GI disturbances and bleeding events, potentially leading to peptic ulcers or complications from the antiplatelet effect.</li><li>**Renal System (Kidneys):** Renal toxicity in the form of analgesic-associated nephropathy, nephrotic syndrome, or hyperkalemia is a significant concern during chronic administration.</li></ol>"
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

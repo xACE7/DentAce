@@ -1,0 +1,670 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 34</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+  {
+    q: "Which of the following papillae are described as cone-shaped?",
+    opts: ["Filiform papillae", "Fungiform papillae", "Circumvallate papillae", "Foliate papillae"],
+    correct: 0,
+    explain: "Filiform papillae are cone-shaped and are the most numerous type found all over the tongue."
+  },
+  {
+    q: "Which papillae type is the most numerous on the tongue?",
+    opts: ["Circumvallate", "Fungiform", "Filiform", "Foliate"],
+    correct: 2,
+    explain: "Filiform papillae are the most numerous and cover the entire dorsal surface."
+  },
+  {
+    q: "The epithelium lining the filiform papillae is:",
+    opts: ["Non-keratinized stratified squamous", "Keratinized stratified squamous", "Pseudostratified columnar", "Simple cuboidal"],
+    correct: 1,
+    explain: "Filiform papillae are lined by keratinized epithelium, which gives them their abrasive quality."
+  },
+  {
+    q: "Which of the following statements about filiform papillae is TRUE?",
+    opts: ["They contain numerous taste buds", "They are mushroom-shaped", "They do not contain taste buds", "They are located only on the lateral borders"],
+    correct: 2,
+    explain: "Filiform papillae are unique because they do not contain taste buds."
+  },
+  {
+    q: "Fungiform papillae are described as being:",
+    opts: ["Cone-shaped", "Mushroom-shaped", "V-shaped", "Cylindrical"],
+    correct: 1,
+    explain: "Fungiform papillae are mushroom-shaped, with a narrow stalk and a broad cap."
+  },
+  {
+    q: "Where are fungiform papillae primarily located?",
+    opts: ["Posterior third only", "Tip and sides of the tongue", "Ventral surface", "Root of the tongue"],
+    correct: 1,
+    explain: "Fungiform papillae are less numerous and present on the tip and sides of the tongue."
+  },
+  {
+    q: "The epithelium covering the fungiform papillae is:",
+    opts: ["Thickly keratinized", "Non-keratinized", "Orthokeratinized only", "Parakeratinized only"],
+    correct: 1,
+    explain: "The slides describe fungiform papillae as being lined by non-keratinized epithelium."
+  },
+  {
+    q: "Which type of papilla contains taste buds on its superior/dorsal surface?",
+    opts: ["Filiform", "Fungiform", "Circumvallate", "None of the above"],
+    correct: 1,
+    explain: "Fungiform papillae have taste buds, unlike filiform papillae."
+  },
+  {
+    q: "Von Ebner's glands are associated with which papillae?",
+    opts: ["Filiform", "Fungiform", "Circumvallate", "Gingival papillae"],
+    correct: 2,
+    explain: "Von Ebner's glands are serous salivary glands located immediately below the circumvallate papillae."
+  },
+  {
+    q: "The secretion of Von Ebner's glands is:",
+    opts: ["Purely Mucous", "Purely Serous", "Mixed", "Sebaceous"],
+    correct: 1,
+    explain: "Von Ebner's glands are described as serous glands in the histology slides."
+  },
+  {
+    q: "Where are the taste buds located on a circumvallate papilla?",
+    opts: ["On the superficial keratinized surface", "On the lateral walls facing the trough", "Deep in the connective tissue core", "Within the Von Ebner's glands"],
+    correct: 1,
+    explain: "Taste buds are found in the non-keratinized epithelium lining the lateral surface/walls of the papilla."
+  },
+  {
+    q: "The depression surrounding a circumvallate papilla is called a:",
+    opts: ["Crypt", "V-shaped trough/furrow", "Fissure", "Gingival sulcus"],
+    correct: 1,
+    explain: "A 'V' shaped trough or furrow surrounds the circumvallate papilla."
+  },
+  {
+    q: "The superficial surface of the circumvallate papilla is lined by:",
+    opts: ["Non-keratinized epithelium", "Keratinized stratified squamous epithelium", "Simple columnar epithelium", "Respiratory epithelium"],
+    correct: 1,
+    explain: "The superficial surface of circumvallate papillae is keratinized, while the lateral walls are non-keratinized."
+  },
+  {
+    q: "Which cell type is NOT a component of a taste bud?",
+    opts: ["Taste receptor cell", "Basal cell", "Goblet cell", "Support cells"],
+    correct: 2,
+    explain: "Goblet cells are respiratory/intestinal; taste buds contain receptor cells, basal cells, and support cells."
+  },
+  {
+    q: "The opening of the taste bud into the lumen is called the:",
+    opts: ["Taste pore", "Salivary duct", "Taste canal", "Neural foramina"],
+    correct: 0,
+    explain: "Taste buds open into the lumen via a taste pore."
+  },
+  {
+    q: "In the histology of the tongue, the core of the papillae consists of:",
+    opts: ["Adipose tissue", "Connective tissue (Lamina propria)", "Cartilage", "Bone"],
+    correct: 1,
+    explain: "Each papilla has a connective tissue core derived from the lamina propria."
+  },
+  {
+    q: "Nerve fibers associated with taste buds are:",
+    opts: ["Efferent motor nerves", "Afferent sensory nerves", "Autonomic nerves only", "None of the above"],
+    correct: 1,
+    explain: "Taste buds are connected to afferent nerves to transmit taste sensation."
+  },
+  {
+    q: "Skeletal muscle strands in the tongue are oriented:",
+    opts: ["Longitudinally only", "Transversely only", "In different directions (interlacing)", "Circularly only"],
+    correct: 2,
+    explain: "The tongue contains interlacing skeletal muscle strands running in different directions for complex movement."
+  },
+  {
+    q: "Which papillae appear as pale staining oval bodies within the epithelium?",
+    opts: ["Filiform structures", "Taste buds", "Von Ebner's glands", "Muscle fibers"],
+    correct: 1,
+    explain: "Taste buds appear as pale, barrel-shaped bodies within the darker staining epithelium."
+  },
+  {
+    q: "The basal cells in a taste bud are located:",
+    opts: ["At the taste pore", "At the base of the bud near the connective tissue", "In the center of the bud", "Outside the basement membrane"],
+    correct: 1,
+    explain: "Basal cells are located at the base of the taste bud, acting as stem cells."
+  },
+  {
+    q: "The glands found immediately below the circumvallate papillae open into:",
+    opts: ["The surface of the tongue", "The base of the trough/furrow", "The fungiform papillae", "The ventral surface"],
+    correct: 1,
+    explain: "Serous glands (Von Ebner's) open into the base of the trough to wash away taste stimuli."
+  },
+  {
+    q: "Filiform papillae are essentially extensions of:",
+    opts: ["Stratified squamous epithelium", "Connective tissue only", "Muscle fibers", "Salivary ducts"],
+    correct: 0,
+    explain: "Filiform papillae are described as extensions of stratified squamous epithelium with a CT core."
+  },
+  {
+    q: "Which papilla type is least numerous among the options provided in the lecture?",
+    opts: ["Filiform", "Fungiform", "Both are equal", "Neither"],
+    correct: 1,
+    explain: "Slides state Fungiform are 'Less numerous' compared to the 'Most numerous' Filiform."
+  },
+  {
+    q: "The lateral walls of circumvallate papillae are lined by:",
+    opts: ["Keratinized epithelium", "Non-keratinized epithelium", "Para-keratinized epithelium", "Transitional epithelium"],
+    correct: 1,
+    explain: "The lateral walls containing the taste buds are non-keratinized, facilitating taste reception."
+  },
+  {
+    q: "Identify the structure labeled 'M' in the Filiform histology slide:",
+    opts: ["Mucosa", "Muscle", "Mandible", "Mitochondria"],
+    correct: 1,
+    explain: "In the provided slide context, 'M' or the deeper tissue indicated refers to the submucosa containing muscle."
+  },
+  {
+    q: "Taste receptor cells are part of which epithelium?",
+    opts: ["Lingual epithelium", "Gingival epithelium", "Buccal epithelium", "Palatal epithelium"],
+    correct: 0,
+    explain: "Taste buds are embedded within the lingual epithelium of the tongue."
+  },
+  {
+    q: "In the provided images, the 'pale' structures observed in the circumvallate epithelium are:",
+    opts: ["Keratin pearls", "Taste buds", "Salivary ducts", "Adipocytes"],
+    correct: 1,
+    explain: "The slides explicitly describe the taste buds as 'pale' structures within the epithelium."
+  },
+  {
+    q: "The connective tissue core of a papilla is also known as:",
+    opts: ["Lamina propria", "Submucosa", "Muscularis mucosa", "Periosteum"],
+    correct: 0,
+    explain: "The connective tissue projecting into the papilla is the lamina propria."
+  },
+  {
+    q: "Which of the following is NOT a feature of filiform papillae?",
+    opts: ["Cone-shape", "Keratinization", "Taste buds", "Numerous distribution"],
+    correct: 2,
+    explain: "Filiform papillae lack taste buds; this is their distinguishing negative feature."
+  },
+  {
+    q: "What lies deep to the lamina propria in the tongue sections?",
+    opts: ["Bone", "Submucosa containing muscle", "Cartilage", "Large arteries only"],
+    correct: 1,
+    explain: "Deep to the mucosa/lamina propria is the submucosa containing interlacing skeletal muscle."
+  }
+];
+
+const tfs = [
+  {
+    q: "Filiform papillae contain numerous taste buds.",
+    answer: false,
+    explain: "Filiform papillae are heavily keratinized and do not contain taste buds."
+  },
+  {
+    q: "Fungiform papillae are lined by non-keratinized epithelium.",
+    answer: true,
+    explain: "The slides specifically identify the lining of fungiform papillae as non-keratinized."
+  },
+  {
+    q: "Von Ebner's glands are mucous salivary glands.",
+    answer: false,
+    explain: "Von Ebner's glands are serous glands found below the circumvallate papillae."
+  },
+  {
+    q: "Taste buds are located on the superficial (top) surface of circumvallate papillae.",
+    answer: false,
+    explain: "They are located on the lateral walls facing the trough."
+  },
+  {
+    q: "Filiform papillae are the most numerous papillae on the tongue.",
+    answer: true,
+    explain: "They cover the majority of the dorsal surface of the tongue."
+  },
+  {
+    q: "Basal cells are a component of the taste bud.",
+    answer: true,
+    explain: "Basal cells are found at the base of the taste bud structure."
+  },
+  {
+    q: "Circumvallate papillae are surrounded by a V-shaped trough.",
+    answer: true,
+    explain: "This trough receives secretions from Von Ebner's glands."
+  },
+  {
+    q: "Fungiform papillae are mushroom-shaped.",
+    answer: true,
+    explain: "Their name is derived from their fungal/mushroom-like appearance."
+  },
+  {
+    q: "The core of tongue papillae consists of epithelial cells.",
+    answer: false,
+    explain: "The core consists of connective tissue (lamina propria), not epithelium."
+  }
+];
+
+const saqs = [
+  {
+    q: "<strong>Direct Answer:</strong> Define the primary function and histological appearance of Filiform Papillae.",
+    a: "Filiform papillae are <strong>cone-shaped</strong> structures that are the <strong>most numerous</strong> on the tongue. They are lined by <strong>keratinized stratified squamous epithelium</strong> and serve a mechanical function (friction) as they <strong>lack taste buds</strong>."
+  },
+  {
+    q: "<strong>List:</strong> Name the three primary cell types found within a Taste Bud.",
+    a: "<ol><li>Taste receptor cells</li><li>Basal cells</li><li>Support (sustentacular) cells</li></ol>"
+  },
+  {
+    q: "<strong>Comparison:</strong> Compare Filiform and Fungiform papillae based on the features below.",
+    a: "<table border='1' style='width:100%; border-collapse:collapse; border-color:rgba(255,255,255,0.2);'><tr><th style='padding:5px'>Feature</th><th style='padding:5px'>Filiform</th><th style='padding:5px'>Fungiform</th></tr><tr><td style='padding:5px'><strong>Shape</strong></td><td style='padding:5px'>Cone-shaped</td><td style='padding:5px'>Mushroom-shaped</td></tr><tr><td style='padding:5px'><strong>Taste Buds</strong></td><td style='padding:5px'>Absent</td><td style='padding:5px'>Present</td></tr><tr><td style='padding:5px'><strong>Keratinization</strong></td><td style='padding:5px'>Keratinized</td><td style='padding:5px'>Non-keratinized</td></tr></table>"
+  },
+  {
+    q: "<strong>Case-based Scenario:</strong> A histological slide of the tongue reveals a large papilla surrounded by a deep furrow/trough. Pale staining oval bodies are seen in the epithelium of the lateral walls. <br><br>1. Identify the papilla.<br>2. Identify the pale bodies.",
+    a: "1. <strong>Circumvallate Papilla</strong> (indicated by the furrow/trough and lateral taste buds).<br>2. <strong>Taste Buds</strong> (the pale oval bodies)."
+  },
+  {
+    q: "<strong>List:</strong> List the specific locations for Filiform and Fungiform papillae.",
+    a: "<ol><li><strong>Filiform:</strong> All over the dorsal surface of the tongue.</li><li><strong>Fungiform:</strong> Tip and sides of the tongue.</li></ol>"
+  },
+  {
+    q: "<strong>Direct Answer:</strong> Describe the location and type of secretion of Von Ebner's glands.",
+    a: "Von Ebner's glands are located <strong>immediately below the circumvallate papillae</strong> deep in the connective tissue. They secrete a <strong>serous</strong> fluid into the base of the trough."
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

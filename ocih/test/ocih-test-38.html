@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  /* Table styling for SAQs */
+  .answer table {width: 100%; border-collapse: collapse; margin-top: 8px; color: var(--text);}
+  .answer th, .answer td {border: 1px solid var(--glass-border); padding: 8px; text-align: left;}
+  .answer th {background: rgba(255,255,255,0.08);}
+
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 38</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+  {
+    q: "What is the approximate percentage of inorganic matter (Hydroxyapatite) in alveolar bone?",
+    opts: ["67%", "33%", "28%", "95%"],
+    correct: 0,
+    explain: "Bone is composed of 67% inorganic material (Hydroxyapatite) and 33% organic material."
+  },
+  {
+    q: "Which collagen type makes up more than 95% of the organic matrix in alveolar bone?",
+    opts: ["Type I", "Type II", "Type V", "Type III"],
+    correct: 0,
+    explain: "The organic matrix is primarily Collagen Type I (>95%), with trace amounts of Type V (<5%)."
+  },
+  {
+    q: "Which of the following is considered a non-collagenous protein found in bone?",
+    opts: ["Osteocalcin", "Keratin", "Elastin", "Fibrinogen"],
+    correct: 0,
+    explain: "Non-collagenous proteins in bone include Osteocalcin, Osteopontin, Osteonectin, and Bone sialoprotein."
+  },
+  {
+    q: "Developmentally, the alveolar bone is classified as:",
+    opts: ["Intramembranous bone", "Endochondral bone", "Cartilaginous bone", "Pneumatic bone"],
+    correct: 0,
+    explain: "The alveolar process forms directly from connective tissue membranes, classifying it as intramembranous bone."
+  },
+  {
+    q: "The part of the maxilla and mandible that forms and supports the sockets of the teeth is called:",
+    opts: ["Alveolar process", "Basal bone", "Ramus", "Condyle"],
+    correct: 0,
+    explain: "The alveolar process is defined as the bone that forms and supports the tooth sockets."
+  },
+  {
+    q: "Alveolar bone proper is also known radiographically as:",
+    opts: ["Lamina dura", "Spongiosa", "Cortical plate", "Basal bone"],
+    correct: 0,
+    explain: "On radiographs, the alveolar bone proper appears as a radiopaque line called the lamina dura."
+  },
+  {
+    q: "What is 'Bundle Bone'?",
+    opts: ["Bone lining the socket where Sharpey's fibers anchor", "Bone found in the central spongiosa", "Bone forming the outer cortical plate", "Bone that contains Haversian systems only"],
+    correct: 0,
+    explain: "Bundle bone is the alveolar bone proper directly lining the socket into which periodontal ligament fibers (Sharpey's fibers) anchor."
+  },
+  {
+    q: "The 'Cribriform Plate' refers to which structure?",
+    opts: ["Alveolar bone proper", "Outer cortical plate", "Trabecular bone", "Apical foramen"],
+    correct: 0,
+    explain: "The alveolar bone proper is perforated by many openings for nerves/vessels, giving it a sieve-like appearance called the cribriform plate."
+  },
+  {
+    q: "Where is the 'Cortical Plate' generally thickest?",
+    opts: ["Premolar and molar region of the lower jaw (buccal)", "Anterior region of the maxilla", "Lingual side of the maxilla", "Apical region of incisors"],
+    correct: 0,
+    explain: "Cortical plates are thicker in the mandible than the maxilla, and thickest in the buccal premolar/molar region of the mandible."
+  },
+  {
+    q: "Type I spongiosa, characterized by a ladder-like arrangement, is most often seen in the:",
+    opts: ["Mandible", "Maxilla", "Palate", "Zygoma"],
+    correct: 0,
+    explain: "Radiographically, Type I spongiosa (regular, horizontal ladder-like trabeculae) is typical of the mandible."
+  },
+  {
+    q: "The interdental and interradicular septa contain perforating canals called:",
+    opts: ["Canals of Zuckerkandl and Hirschfeld", "Volkmann's canals", "Haversian canals", "Canals of Schlemm"],
+    correct: 0,
+    explain: "Nutrient canals housing arteries and nerves in the septa are known as the canals of Zuckerkandl and Hirschfeld."
+  },
+  {
+    q: "Normally, the crest of the alveolar bone is located how far below the CEJ?",
+    opts: ["1.5 to 2 mm", "0.5 to 1 mm", "3 to 4 mm", "At the level of the CEJ"],
+    correct: 0,
+    explain: "In health, the alveolar crest is usually 1.5 to 2 mm apical to the cementoenamel junction (CEJ)."
+  },
+  {
+    q: "Which cells are responsible for the synthesis and secretion of the organic bone matrix?",
+    opts: ["Osteoblasts", "Osteoclasts", "Osteocytes", "Bone lining cells"],
+    correct: 0,
+    explain: "Osteoblasts differentiate from osteoprogenitor cells and synthesize the organic matrix (osteoid)."
+  },
+  {
+    q: "Osteoclasts are found in resorption bays known as:",
+    opts: ["Howship's lacunae", "Osteocytic lacunae", "Canaliculi", "Haversian canals"],
+    correct: 0,
+    explain: "Osteoclasts reside in depressions on the bone surface called Howship's lacunae."
+  },
+  {
+    q: "Which enzyme is a marker that distinguishes osteoclasts from other multinucleated giant cells?",
+    opts: ["Acid phosphatase", "Alkaline phosphatase", "Collagenase", "Elastase"],
+    correct: 0,
+    explain: "The presence of acid phosphatase distinguishes osteoclasts."
+  },
+  {
+    q: "Osteocytes communicate with each other and blood vessels via:",
+    opts: ["Canaliculi", "Volkmann's canals", "Howship's lacunae", "Sharpey's fibers"],
+    correct: 0,
+    explain: "Narrow extensions of lacunae called canaliculi allow osteocytic processes to communicate and transport nutrients."
+  },
+  {
+    q: "When osteoblasts become quiescent and flatten on the bone surface, they are called:",
+    opts: ["Bone lining cells", "Osteocytes", "Osteoclasts", "Chondrocytes"],
+    correct: 0,
+    explain: "Inactive osteoblasts on the bone surface are termed bone lining cells."
+  },
+  {
+    q: "The 'Cutting Cone' in bone remodeling is formed by:",
+    opts: ["Osteoclasts", "Osteoblasts", "Osteocytes", "Fibroblasts"],
+    correct: 0,
+    explain: "The cutting cone is the leading edge of the remodeling unit where osteoclasts tunnel through bone."
+  },
+  {
+    q: "What structure separates old bone from new bone in a secondary osteon?",
+    opts: ["Cement (Reversal) line", "Lamina dura", "Periosteum", "Sharpey's fibers"],
+    correct: 0,
+    explain: "The reversal line (cement line) is a mineralized layer rich in glycoproteins that separates old bone from the new bone deposited by osteoblasts."
+  },
+  {
+    q: "The simultaneous process of bone synthesis and breakdown is termed:",
+    opts: ["Coupling", "Modeling", "Calcification", "Maturation"],
+    correct: 0,
+    explain: "Coupling refers to the balance and coordination between bone resorption and formation."
+  },
+  {
+    q: "In orthodontics, bone resorption occurs on the side of:",
+    opts: ["Pressure", "Tension", "Stabilization", "Rotation"],
+    correct: 0,
+    explain: "Pressure causes osteoclasts to proliferate and resorb bone, allowing the tooth to move."
+  },
+  {
+    q: "In orthodontics, bone deposition occurs on the side of:",
+    opts: ["Tension", "Pressure", "Compression", "Intrusion"],
+    correct: 0,
+    explain: "Tension activates osteoblasts to produce osteoid and form new bone."
+  },
+  {
+    q: "A bone defect where the root is exposed but the alveolar crest remains intact is a:",
+    opts: ["Fenestration", "Dehiscence", "Furcation defect", "Infrabony pocket"],
+    correct: 0,
+    explain: "Fenestration is a 'window' defect where the crest is intact. Dehiscence involves loss of the marginal bone."
+  },
+  {
+    q: "A bone defect extending to the alveolar crest (marginal bone loss) is called:",
+    opts: ["Dehiscence", "Fenestration", "Exostosis", "Torus"],
+    correct: 0,
+    explain: "Dehiscence is a defect where the loss of bone extends to the top edge of the alveolar crest."
+  },
+  {
+    q: "Loss of lamina dura on a radiograph may indicate:",
+    opts: ["Infection or inflammation", "Hypercementosis", "Ankylosis", "Bone apposition"],
+    correct: 0,
+    explain: "Loss of lamina dura is typically associated with infection, inflammation, and resorption of the socket."
+  },
+  {
+    q: "Age changes in alveolar bone include:",
+    opts: ["Fatty infiltration of marrow spaces", "Increased bone width", "Increased osteoblast activity", "Thickening of the cribriform plate"],
+    correct: 0,
+    explain: "With age, marrow spaces show fatty infiltration and bone formation decreases."
+  },
+  {
+    q: "The nerve supply to the mandible is primarily from the:",
+    opts: ["Inferior alveolar nerve", "Superior alveolar nerve", "Infraorbital nerve", "Facial nerve"],
+    correct: 0,
+    explain: "The mandible is supplied by the inferior alveolar nerve, a branch of the mandibular nerve (V3)."
+  },
+  {
+    q: "Which protein acts as a cohesive mineralized layer at the reversal line?",
+    opts: ["Osteopontin", "Collagen Type I", "Albumin", "Hemoglobin"],
+    correct: 0,
+    explain: "The cement line contains glycoproteins like osteopontin and bone sialoprotein."
+  },
+  {
+    q: "Cancellous bone contains trabeculae that are aligned according to:",
+    opts: ["Lines of stress", "Random distribution", "Blood vessel paths", "Nerve pathways"],
+    correct: 0,
+    explain: "Trabeculae in spongy bone are organized to follow lines of stress for maximum strength."
+  },
+  {
+    q: "What happens to the alveolar process if teeth are lost?",
+    opts: ["It disappears (resorbs)", "It becomes denser", "It transforms into basal bone", "It grows thicker"],
+    correct: 0,
+    explain: "The alveolar process is tooth-dependent; if teeth are lost, the alveolar bone resorbs/disappears."
+  }
+];
+
+const tfs = [
+  {
+    q: "The maxilla has more cancellous (spongy) bone than the mandible.",
+    answer: true,
+    explain: "The maxilla generally has a thinner cortical plate and more abundant cancellous bone compared to the mandible."
+  },
+  {
+    q: "Alveolar bone forms mainly by endochondral ossification.",
+    answer: false,
+    explain: "Alveolar bone is formed by intramembranous ossification."
+  },
+  {
+    q: "Bundle bone contains numerous Haversian systems (osteons).",
+    answer: false,
+    explain: "Bundle bone lines the socket and anchors fibers; the adjacent 'lamellated bone' contains osteons."
+  },
+  {
+    q: "Osteoclasts are multinucleated cells responsible for bone resorption.",
+    answer: true,
+    explain: "Osteoclasts are large, multinucleated giant cells that remove mineralized matrix."
+  },
+  {
+    q: "Canaliculi allow nutrient diffusion between osteocytes and blood vessels.",
+    answer: true,
+    explain: "Canaliculi penetrate the matrix to connect lacunae to blood sources."
+  },
+  {
+    q: "The alveolar crest is typically horizontal if adjacent teeth are inclined/tilted.",
+    answer: false,
+    explain: "If neighboring teeth are inclined, the alveolar crest becomes oblique."
+  },
+  {
+    q: "Bone turnover (remodeling) stops completely in adulthood.",
+    answer: false,
+    explain: "Bone constantly undergoes remodeling to maintain stability and integrity throughout life."
+  },
+  {
+    q: "The outer cortical plate of the maxilla is perforated by many small vascular openings.",
+    answer: true,
+    explain: "Unlike the mandible, the maxillary cortical plate has many small perforations."
+  },
+  {
+    q: "Osteoblasts are derived from hematopoietic stem cells.",
+    answer: false,
+    explain: "Osteoblasts are derived from mesenchymal stem cells (osteoclasts are hematopoietic)."
+  }
+];
+
+const saqs = [
+  {
+    q: "1. Define the 'Alveolar Process'.",
+    a: "The alveolar process is the part of the maxilla and mandible that forms and supports the sockets of the teeth. It disappears if the teeth are lost."
+  },
+  {
+    q: "2. List four functions of the alveolar bone.",
+    a: `
+    <table>
+      <tr><td>1. Houses the roots of teeth.</td></tr>
+      <tr><td>2. Anchors the roots via Sharpey's fibers.</td></tr>
+      <tr><td>3. Absorbs and distributes occlusal forces.</td></tr>
+      <tr><td>4. Supplies vessels and nerves to the PDL.</td></tr>
+    </table>`
+  },
+  {
+    q: "3. Comparison: Differentiate between Dehiscence and Fenestration.",
+    a: `
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Dehiscence</th>
+          <th>Fenestration</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Definition</b></td>
+          <td>Bone loss extends to the alveolar crest.</td>
+          <td>"Window" defect; crest remains intact.</td>
+        </tr>
+        <tr>
+          <td><b>Appearance</b></td>
+          <td>Root exposed at the margin.</td>
+          <td>Root exposed, but covered by bone at the margin.</td>
+        </tr>
+      </tbody>
+    </table>`
+  },
+  {
+    q: "4. Case Scenario: During orthodontic treatment, a force is applied to move a tooth mesially. Describe the bone changes on the mesial and distal sides.",
+    a: "<b>Mesial side (Pressure):</b> Osteoclasts proliferate and cause bone resorption.<br><b>Distal side (Tension):</b> Osteoblasts are activated to produce osteoid and form new bone."
+  },
+  {
+    q: "5. List the chemical composition of bone (Inorganic vs Organic percentages).",
+    a: `
+    <table>
+      <tr>
+        <th>Component</th>
+        <th>Percentage</th>
+        <th>Main Constituent</th>
+      </tr>
+      <tr>
+        <td>Inorganic</td>
+        <td>67%</td>
+        <td>Hydroxyapatite</td>
+      </tr>
+      <tr>
+        <td>Organic</td>
+        <td>33%</td>
+        <td>Collagen (Type I) & Non-collagenous proteins</td>
+      </tr>
+    </table>`
+  },
+  {
+    q: "6. Comparison: Differentiate between Compact (Cortical) and Spongy (Cancellous) Bone.",
+    a: `
+    <table>
+      <thead>
+        <tr>
+          <th>Feature</th>
+          <th>Compact Bone</th>
+          <th>Spongy Bone</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><b>Structure</b></td>
+          <td>Closely packed osteons (Haversian systems).</td>
+          <td>Loosely arranged trabeculae.</td>
+        </tr>
+        <tr>
+          <td><b>Location</b></td>
+          <td>Outer cortical plates.</td>
+          <td>Central area between plates and socket.</td>
+        </tr>
+        <tr>
+          <td><b>Marrow</b></td>
+          <td>Haversian canals (narrow channels).</td>
+          <td>Large irregular cavities with marrow.</td>
+        </tr>
+      </tbody>
+    </table>`
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

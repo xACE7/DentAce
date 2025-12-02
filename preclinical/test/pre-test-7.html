@@ -1,0 +1,674 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Glowing Dark Theme</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+  
+  table {width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 0.9rem;}
+  table th, table td {border: 1px solid rgba(255,255,255,0.15); padding: 8px; text-align: left;}
+  table th {background: rgba(255,255,255,0.05);}
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 7</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+  {
+    q: "What is the ideal distance that should be maintained between the operator's face and the patient's face?",
+    opts: ["Similar to that for reading a book", "As close as physically possible", "Approximately 1 meter away", "An arm's length away"],
+    correct: 0,
+    explain: "The ideal distance is similar to that for reading a book. The operator's face should not come in close proximity to the patient."
+  },
+  {
+    q: "When operating on the mandibular arch, how should the occlusal surfaces be oriented relative to the floor?",
+    opts: ["Approximately 45 degrees", "Approximately 90 degrees", "Parallel to the floor", "Perpendicular to the ceiling"],
+    correct: 0,
+    explain: "For the mandibular arch, the occlusal surfaces should be oriented approximately 45 degrees with the floor (chin-down position)."
+  },
+  {
+    q: "Which patient head position is recommended for the Maxillary arch?",
+    opts: ["Chin-up position", "Chin-down position", "Head rotated to the extreme right", "Head touching the chest"],
+    correct: 0,
+    explain: "For the Maxillary arch, the occlusal surfaces should be oriented approximately 90 degrees with the floor, achieved by a chin-up position."
+  },
+  {
+    q: "What is the correct position for the operator's thighs when seated?",
+    opts: ["Parallel to the floor", "Perpendicular to the floor", "Angled 45 degrees downwards", "Crossed at the knees"],
+    correct: 0,
+    explain: "The operator's thighs should be parallel to the floor, and the knees should be apart."
+  },
+  {
+    q: "What is the ideal angle for the operator's hips when seated?",
+    opts: ["90 degrees", "45 degrees", "120 degrees", "180 degrees"],
+    correct: 0,
+    explain: "The operator's hips should sit at an angle of 90 degrees."
+  },
+  {
+    q: "The patient's mouth should be at the same level as which part of the operator's body?",
+    opts: ["Elbow", "Shoulder", "Eye level", "Chest"],
+    correct: 0,
+    explain: "As a rule, the teeth being treated should be at the same level as the operator's elbow."
+  },
+  {
+    q: "According to studies (Burke et al 1997), what percentage of dentists retire early due to Musculoskeletal disorders (MSDs)?",
+    opts: ["29.5%", "10.5%", "50.0%", "75.2%"],
+    correct: 0,
+    explain: "Musculoskeletal disorders (29.5%) are a common cause of early retirement for dentists."
+  },
+  {
+    q: "Carpal tunnel syndrome is caused by pressure on which nerve?",
+    opts: ["Median nerve", "Ulnar nerve", "Radial nerve", "Sciatic nerve"],
+    correct: 0,
+    explain: "Carpal tunnel syndrome is caused by pressure on the median nerve in the carpal tunnel of the wrist."
+  },
+  {
+    q: "For a right-handed operator, which clock position is known as the 'Direct Rear' position?",
+    opts: ["12:00", "11:00", "9:00", "7:00"],
+    correct: 0,
+    explain: "The 12:00 position is the Direct Rear position."
+  },
+  {
+    q: "Which operator position is considered the 'position of choice' for most operations?",
+    opts: ["Right Rear (11 o'clock)", "Right Front (7 o'clock)", "Direct Right (9 o'clock)", "Direct Rear (12 o'clock)"],
+    correct: 0,
+    explain: "The Right Rear position (11 o'clock) is the position of choice for most operations as most areas are accessible."
+  },
+  {
+    q: "The Right Front position (7 o'clock) is particularly useful for examining which surfaces?",
+    opts: ["Facial surfaces of mandibular anterior teeth", "Lingual surfaces of maxillary posterior teeth", "Occlusal surfaces of right posterior teeth", "Lingual surfaces of mandibular anterior teeth"],
+    correct: 0,
+    explain: "The 7 o'clock position facilitates examination of the facial surfaces of mandibular anterior teeth and maxillary anterior teeth."
+  },
+  {
+    q: "The Direct Rear position (12 o'clock) is primarily used for operating on which teeth?",
+    opts: ["Lingual surfaces of mandibular anterior teeth", "Facial surfaces of maxillary posterior teeth", "Buccal surfaces of mandibular molars", "Occlusal surfaces of right premolars"],
+    correct: 0,
+    explain: "The 12 o'clock position has limited application but is used primarily for lingual surfaces of mandibular anterior teeth."
+  },
+  {
+    q: "How much higher should the dental assistant's chair be compared to the operator's chair?",
+    opts: ["4 to 6 inches", "1 to 2 inches", "Same height", "8 to 10 inches"],
+    correct: 0,
+    explain: "The dental assistant chair is 4 to 6 inches higher for maximal visual access."
+  },
+  {
+    q: "In Four-Handed Dentistry (Right-handed), what corresponds to the 'Static zone'?",
+    opts: ["12 to 2 o'clock", "2 to 4 o'clock", "4 to 7 o'clock", "7 to 12 o'clock"],
+    correct: 0,
+    explain: "The Static zone is from 12 to 2 o'clock."
+  },
+  {
+    q: "In Four-Handed Dentistry (Right-handed), what corresponds to the 'Assistant's zone'?",
+    opts: ["2 to 4 o'clock", "12 to 2 o'clock", "4 to 7 o'clock", "7 to 12 o'clock"],
+    correct: 0,
+    explain: "The Assistant's zone is from 2 to 4 o'clock."
+  },
+  {
+    q: "In Four-Handed Dentistry (Right-handed), what corresponds to the 'Transfer zone'?",
+    opts: ["4 to 7 o'clock", "2 to 4 o'clock", "7 to 12 o'clock", "12 to 2 o'clock"],
+    correct: 0,
+    explain: "The Transfer zone is from 4 to 7 o'clock."
+  },
+  {
+    q: "In Four-Handed Dentistry (Right-handed), what corresponds to the 'Operator's zone'?",
+    opts: ["7 to 12 o'clock", "4 to 7 o'clock", "12 to 2 o'clock", "2 to 4 o'clock"],
+    correct: 0,
+    explain: "The Operator's zone is from 7 to 12 o'clock."
+  },
+  {
+    q: "Where should instrument exchange occur?",
+    opts: ["Below the patient's chin", "Over the patient's face", "Behind the patient's head", "Above the patient's forehead"],
+    correct: 0,
+    explain: "Exchanges should occur in the exchange zone below the patient's chin and several inches above the patient's chest."
+  },
+  {
+    q: "Which item is typically stored in the Static zone?",
+    opts: ["Blood pressure equipment", "Handpiece", "Suction tip", "Mouth mirror"],
+    correct: 0,
+    explain: "Infrequently used instruments such as blood pressure equipment and portable curing lights are stored in the Static zone."
+  },
+  {
+    q: "What is the definition of the 'Supine position'?",
+    opts: ["Head, knees, and feet are at approximately the same level", "Head is lower than the feet", "Head is higher than the feet", "Patient is seated at a 90-degree angle"],
+    correct: 0,
+    explain: "In the supine position, the patient's head, knees, and feet are approximately the same level."
+  },
+  {
+    q: "When should the patient's head be positioned lower than the feet?",
+    opts: ["Only in an emergency (e.g., syncope)", "For all mandibular procedures", "For all maxillary procedures", "Whenever the patient prefers"],
+    correct: 0,
+    explain: "The head should be positioned lower than the feet only in an emergency, such as when the patient is in syncope."
+  },
+  {
+    q: "For a Left-handed operator, where is the 'Operator's zone'?",
+    opts: ["12 to 5 o'clock", "7 to 12 o'clock", "5 to 8 o'clock", "8 to 10 o'clock"],
+    correct: 0,
+    explain: "For a left-handed operator, the zones are mirrored. The operator sits on the right side, typically 12 to 5 o'clock (Right side of the clock face)."
+  },
+  {
+    q: "What is a benefit of using magnification (loupes)?",
+    opts: ["Reduced eyestrain", "Increased treatment time", "Decreased ergonomics", "Increased muscular tension"],
+    correct: 0,
+    explain: "Magnification leads to improved ergonomics, improved visibility, and reduced eyestrain."
+  },
+  {
+    q: "Where should the overhead light be positioned?",
+    opts: ["As close as possible to the sight line", "Perpendicular to the operator's back", "Behind the assistant", "At the patient's feet"],
+    correct: 0,
+    explain: "Overhead light should be positioned as close as possible to the sight line to produce shadow-free illumination."
+  },
+  {
+    q: "Which of the following is NOT a common MSD in dentistry?",
+    opts: ["Gout", "Lower back pain", "Wrist tendonitis", "Carpal tunnel syndrome"],
+    correct: 0,
+    explain: "Gout is not listed as a common MSD in dentistry; Back pain and wrist issues are the primary concerns."
+  },
+  {
+    q: "Which hand should be free to hold the mouth mirror for a right-handed operator?",
+    opts: ["Left hand", "Right hand", "Both hands", "Neither hand"],
+    correct: 0,
+    explain: "From most positions, the left hand should be free to hold the mouth mirror."
+  },
+  {
+    q: "Which position is convenient for operating on the facial surfaces of the right posterior teeth?",
+    opts: ["Direct Right (9 o'clock)", "Direct Rear (12 o'clock)", "Right Front (7 o'clock)", "Left Rear (2 o'clock)"],
+    correct: 0,
+    explain: "The Direct Right (9 o'clock) position is convenient for facial surfaces of maxillary/mandibular right posterior teeth."
+  },
+  {
+    q: "What is the primary goal of Four-Handed Dentistry?",
+    opts: ["Maximal efficiency and minimal strain", "Treatment speed only", "Reducing the number of instruments used", "Eliminating the need for an assistant"],
+    correct: 0,
+    explain: "The goal is to allow the dentist and assistant to function as a team with maximal efficiency and minimal strain."
+  },
+  {
+    q: "When operating on the maxillary arch, the chin should be?",
+    opts: ["Up", "Down", "Neutral", "Pressed to chest"],
+    correct: 0,
+    explain: "For the maxillary arch, the position is chin-up."
+  },
+  {
+    q: "Which of the following is considered bad ergonomic positioning?",
+    opts: ["Slumping of the shoulders", "Thighs parallel to floor", "Back straight", "Elbows at patient mouth level"],
+    correct: 0,
+    explain: "Positions that create unnecessary curvature of the spine or slumping of the shoulders should be avoided."
+  }
+];
+
+const tfs = [
+  {
+    q: "Ideally, the dentist should rest their forearms on the patient's shoulders for stability.",
+    answer: false,
+    explain: "A proper operator does not rest forearms on the patient's shoulders or hands on the patient's face."
+  },
+  {
+    q: "The dental assistant's chair should be positioned lower than the operator's chair.",
+    answer: false,
+    explain: "The dental assistant chair is 4 to 6 inches higher than the operator's chair for maximal visual access."
+  },
+  {
+    q: "Instruments should never be exchanged over the patient's face.",
+    answer: true,
+    explain: "This is a safety precaution; instruments should be exchanged in the transfer zone below the chin."
+  },
+  {
+    q: "For the Mandibular arch, the patient should be in a chin-up position.",
+    answer: false,
+    explain: "For the Mandibular arch, the patient should be in a chin-down position (occlusal surface 45 degrees to floor)."
+  },
+  {
+    q: "The Static zone is the zone of least activity.",
+    answer: true,
+    explain: "It is used for infrequently used instruments and is the zone of least activity."
+  },
+  {
+    q: "A patient in a comfortable position has less muscular tension and cooperates better.",
+    answer: true,
+    explain: "Patient comfort directly correlates with relaxation and cooperation."
+  },
+  {
+    q: "When working, the operator's back should be curved to get closer to the patient.",
+    answer: false,
+    explain: "The operator's back should be straight to prevent MSDs."
+  },
+  {
+    q: "The Direct Rear (12 o'clock) position allows for direct vision of all teeth.",
+    answer: false,
+    explain: "It has limited application, primarily for lingual surfaces of mandibular anterior teeth."
+  },
+  {
+    q: "Wrist tendonitis is an inflammation of a tendon in the wrist.",
+    answer: true,
+    explain: "This is the correct definition provided in the lecture."
+  }
+];
+
+const saqs = [
+  {
+    q: "Define 'Four Handed Dentistry' as described in the lecture.",
+    a: "It is an ergonomically sound way to practice dentistry using the skills of the dental assistant while including work simplification techniques."
+  },
+  {
+    q: "List 3 types of Musculoskeletal disorders (MSD's) that occur in dentists.",
+    a: "1. Lower back pain<br>2. Upper back pain<br>3. Wrist Joint Tendonitis<br>4. Carpal tunnel syndrome"
+  },
+  {
+    q: "Compare the patient head position/orientation for the Mandibular Arch vs the Maxillary Arch.",
+    a: "<table><thead><tr><th>Feature</th><th>Mandibular Arch</th><th>Maxillary Arch</th></tr></thead><tbody><tr><td>Orientation</td><td>~45 degrees to floor</td><td>~90 degrees to floor</td></tr><tr><td>Chin Position</td><td>Chin down</td><td>Chin up</td></tr></tbody></table>"
+  },
+  {
+    q: "You are treating a patient and need to access the lingual surfaces of the mandibular anterior teeth. Which specific clock position is most appropriate?",
+    a: "Direct Rear Position (12 o'clock)"
+  },
+  {
+    q: "List the 4 Zones of activity in Four-Handed Dentistry.",
+    a: "1. Operator's zone<br>2. Assistant's zone<br>3. Transfer zone<br>4. Static zone"
+  },
+  {
+    q: "Describe exactly where the instrument exchange should occur relative to the patient.",
+    a: "In the exchange zone below the patient's chin and several inches above the patient's chest."
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>
