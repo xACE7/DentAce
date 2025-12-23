@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Faulty Radiographs</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  strong { color: #8b5cf6; }
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  .table-wrap{overflow-x:auto;margin:.25rem 0 0;padding-bottom:6px;-webkit-overflow-scrolling:touch;}
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  table{width:100%;border-collapse:collapse;min-width:600px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden;box-shadow:var(--glow-white);}
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);border-radius:var(--radius);padding:1rem;margin:20px 0 10px;display:flex;justify-content:center;align-items:center;box-shadow:var(--glow-white);}
+  .glossary-box h3,.flashcards-box h3{margin:0;font-weight:900;font-size:1.35rem;background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);}
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  @media(max-width:960px){.section{grid-template-columns:1fr;}.grid.g3x4{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  body.lang-ar {direction: rtl;text-align: right;}
+  body.lang-en {direction: ltr;text-align: left;}
+  header, header * {direction: ltr !important;text-align: left !important;}
+
+  #langBtn{
+    --h: 40px;--pad: 3px;position: fixed;top: 16px;right: 16px;display: inline-flex;align-items: center;justify-content: space-between;min-width: 150px;height: var(--h);padding: 0 6px;border-radius: 9999px;font-size: 13px;font-weight: 800;gap: .35rem;border: 1px solid rgba(255,255,255,.12);background: rgba(255,255,255,.06);color: var(--muted);box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);backdrop-filter: blur(6px);isolation: isolate;overflow: hidden;z-index: 9999;
+  }
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;padding-right:10px;order:2;z-index:2;transition:color .3s ease, text-shadow .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn::after{content:"";position:absolute;top: var(--pad);bottom: var(--pad);left: var(--pad);width: calc(50% - var(--pad)*2 + 2px);border-radius: inherit;background: rgba(255,255,255,.10);box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);transform: translateX(0);z-index: 0;}
+
+  body.lang-en #langBtn::after { transform: translateX(0%); }
+  body.lang-ar #langBtn::after { transform: translateX(100%); }
+  body.lang-en #langBtn .lab.en { color: var(--text); text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text); text-shadow: 0 0 6px rgba(255,255,255,.35); transform: scale(1.08); }
+
+  .source-footer{margin-top:auto;padding:8px 12px;font-size:.85rem;color:var(--muted);border-top:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);text-align:center;border-radius:0 0 var(--radius) var(--radius);}
+</style>
+</head>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 10</div>
+<button aria-label="Toggle language" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">اللهم علّمنا ما ينفعنا، وانفعنا بما علّمتنا، وزدنا علماً</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Faulty Radiographs & Image Quality</b></span>
+<span class="ar"><b>الموضوع: عيوب الصور الشعاعية وجودة الصورة</b></span>
+</span>
+</div>
+<div class="sections">
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">1. The Ideal Radiograph</span><span class="ar">١. الصورة الشعاعية المثالية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>An <strong>Ideal Radiograph</strong> must possess several key characteristics to be diagnostic. It requires <strong>optimum density</strong>, maximum detail, and <strong>sufficient contrast</strong> to make anatomy visible. The image must be <strong>sharp</strong>, properly centered, and maintain the <strong>actual size and shape</strong> of the object being radiographed.</p>
+</div>
+<div class="ar">
+<p>يجب أن تمتلك <strong>الصورة الشعاعية المثالية</strong> عدة خصائص أساسية لتكون تشخيصية. تتطلب <strong>كثافة مثالية</strong>، وتفاصيل قصوى، و<strong>تباينًا كافيًا</strong> لجعل التشريح مرئيًا. يجب أن تكون الصورة <strong>حادة</strong>، متمركزة بشكل صحيح، وتحافظ على <strong>الحجم والشكل الحقيقي</strong> للشيء الذي يتم تصويره.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 3 of 23</span><span class="ar">المصدر: صفحة ٣ من ٢٣</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">An ideal image must have the same size and shape as the original object.</div><div class="ar">يجب أن يكون للصورة المثالية نفس حجم وشكل الشيء الأصلي.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden=""><div class="en">Accurate dimensions are critical for endodontic measurements and surgical planning.</div><div class="ar">الأبعاد الدقيقة حاسمة لقياسات علاج العصب والتخطيط الجراحي.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Memorize the 4 pillars: Density, Contrast, Detail, and Sharpness.</div><div class="ar">احفظ الركائز الأربع: الكثافة، التباين، التفاصيل، والحدة.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">2. Density and Contrast</span><span class="ar">٢. الكثافة والتباين</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Density</strong> is defined as the overall degree of <strong>darkening</strong> of a processed film. A radiograph can be categorized as <strong>Dark (High Density)</strong>, <strong>Light (Low Density)</strong>, or <strong>Optimum</strong>. <strong>Contrast</strong> refers to the <strong>difference in densities</strong> between various regions of the film. High contrast shows distinct black and white areas, while low contrast shows many shades of gray.</p>
+</div>
+<div class="ar">
+<p>تُعرف <strong>الكثافة</strong> بأنها الدرجة الكلية لـ <strong>إسوداد</strong> الفيلم المعالج. يمكن تصنيف الصورة الشعاعية على أنها <strong>داكنة (كثافة عالية)</strong>، <strong>فاتحة (كثافة منخفضة)</strong>، أو <strong>مثالية</strong>. يشير <strong>التباين</strong> إلى <strong>الاختلاف في الكثافات</strong> بين المناطق المختلفة من الفيلم.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 4-5 of 23</span><span class="ar">المصدر: الصفحات ٤-٥ من ٢٣</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Density = overall darkness; Contrast = difference between dark and light.</div><div class="ar">الكثافة = الإسوداد العام؛ التباين = الفرق بين الغامق والفاتح.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Insufficient contrast makes it impossible to distinguish between enamel, dentin, and caries.</div><div class="ar">التباين غير الكافي يجعل من المستحيل التمييز بين المينا والعاج والتسوس.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Overexposed films appear too dark, masking important anatomical details.</div><div class="ar">تظهر الأفلام المعرضة للأشعة بشكل مفرط داكنة جدًا، مما يخفي التفاصيل التشريحية المهمة.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">3. Classification of Errors</span><span class="ar">٣. تصنيف الأخطاء</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Radiographic faults are generally classified into two main categories:</p>
+<ul>
+<li><strong>Technique and Projection Errors</strong>: Related to patient positioning and tube alignment.</li>
+<li><strong>Exposure and Processing/Handling Errors</strong>: Related to machine settings, film handling, or scanning processes.</li>
+</ul>
+</div>
+<div class="ar">
+<p>تُصنف العيوب الشعاعية عمومًا إلى فئتين رئيسيتين:</p>
+<ul>
+<li><strong>أخطاء التقنية والإسقاط</strong>: تتعلق بوضعية المريض ومحاذاة الأنبوب.</li>
+<li><strong>أخطاء التعريض والمعالجة/التداول</strong>: تتعلق بإعدادات الجهاز، أو التعامل مع الفيلم، أو عمليات المسح.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 7 of 23</span><span class="ar">المصدر: صفحة ٧ من ٢٣</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Most errors result in a need for retakes, increasing patient radiation dose.</div><div class="ar">تؤدي معظم الأخطاء إلى الحاجة لإعادة التصوير، مما يزيد من جرعة الإشعاع للمريض.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Categorize errors as you study to understand if the solution lies in "positioning" or "machine settings".</div><div class="ar">صنف الأخطاء أثناء الدراسة لفهم ما إذا كان الحل يكمن في "الوضعية" أو "إعدادات الجهاز".</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">"TP-EH": Technique/Projection vs Exposure/Handling.</div><div class="ar">تذكر: تقنية/إسقاط مقابل تعريض/تداول.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">4. Technique Errors: Placement & Cut-offs</span><span class="ar">٤. أخطاء التقنية: الوضعية والقطع</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Common placement errors include <strong>Apical cut-off</strong> (apex not visible) and <strong>Crown cut-off</strong>. A <strong>Cone-cut error</strong> occurs when the <strong>PID (Position Indicating Device)</strong> is not properly aligned with the sensor, resulting in a partial image. <strong>Blurred images</strong> are caused by <strong>movement</strong> of the patient, x-ray tube, or sensor during exposure.</p>
+</div>
+<div class="ar">
+<p>تشمل أخطاء الوضعية الشائعة <strong>قطع الذروة</strong> (الذروة غير مرئية) و <strong>قطع التاج</strong>. يحدث خطأ <strong>قطع المخروط</strong> عندما لا يكون جهاز تحديد الموضع (PID) محاذيًا بشكل صحيح للحساس. تنتج <strong>الصور المهتزة</strong> عن <strong>حركة</strong> المريض أو الأنبوب أو الحساس.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 9-12 of 23</span><span class="ar">المصدر: الصفحات ٩-١٢ من ٢٣</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Always ensure the sensor covers at least 1/8th inch beyond the apex.</div><div class="ar">تأكد دائمًا من أن الحساس يغطي ١/٨ بوصة على الأقل بعد الذروة.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Movement blur is the most common reason for loss of image sharpness.</div><div class="ar">اهتزاز الحركة هو السبب الأكثر شيوعًا لفقدان حدة الصورة.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Cone-cut appears as a clear, unexposed area with a curved or straight border.</div><div class="ar">يظهر قطع المخروط كمنطقة واضحة غير معرضة للأشعة بحدود منحنية أو مستقيمة.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">5. Shape Distortion: Elongation & Foreshortening</span><span class="ar">٥. تشوه الشكل: الاستطالة والتقاصر</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Elongation</strong> occurs when teeth appear longer than actual; it is caused by <strong>decreased (too flat) vertical angulation</strong>. Conversely, <strong>Foreshortening</strong> makes teeth appear shorter due to <strong>increased (too steep) vertical angulation</strong>. <strong>Overlapped images</strong> result from improper <strong>horizontal angulation</strong>, where the beam is not directed through the interproximal spaces.</p>
+</div>
+<div class="ar">
+<p>تحدث <strong>الاستطالة</strong> عندما تظهر الأسنان أطول من الحقيقي؛ وسببها <strong>نقص الزاوية العمودية</strong> (مسطحة جدًا). وبالعكس، فإن <strong>التقاصر</strong> يجعل الأسنان تظهر أقصر بسبب <strong>زيادة الزاوية العمودية</strong> (حادة جدًا).</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 13-15 of 23</span><span class="ar">المصدر: الصفحات ١٣-١٥ من ٢٣</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Flat = Long (Elongation); Steep = Short (Foreshortening).</div><div class="ar">مسطحة = طويلة (استطالة)؛ حادة = قصيرة (تقاصر).</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Horizontal angulation errors cause overlapping of proximal contacts.</div><div class="ar">تتسبب أخطاء الزاوية الأفقية في تداخل نقاط التماس الملاصقة.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">Overlap makes a radiograph useless for detecting proximal caries.</div><div class="ar">التداخل يجعل الصورة الشعاعية عديمة الفائدة للكشف عن التسوس الملاصق.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">6. Exposure Factors & Density Faults</span><span class="ar">٦. عوامل التعريض وعيوب الكثافة</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Light radiographs (Low Density)</strong> are caused by low exposure time, mA, or kVp, or increased source-to-film distance. <strong>Dark radiographs (High Density)</strong> are caused by excessive exposure time, high mA/kVp, or a short source-to-film distance. In <strong>PSP sensors</strong>, a delay in scanning or background radiation can also cause density issues.</p>
+</div>
+<div class="ar">
+<p>تنتج <strong>الصور الفاتحة (كثافة منخفضة)</strong> عن نقص وقت التعريض أو الـ mA أو الـ kVp. وتنتج <strong>الصور الداكنة (كثافة عالية)</strong> عن زيادة وقت التعريض أو زيادة الـ mA/kVp.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 18-19 of 23</span><span class="ar">المصدر: الصفحات ١٨-١٩ من ٢٣</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Expired films or films stored in high heat will show reduced density and fog.</div><div class="ar">الأفلام منتهية الصلاحية أو المخزنة في حرارة عالية ستظهر كثافة منخفضة وضبابية.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Thick bone or dense anatomical areas require higher exposure settings to avoid light images.</div><div class="ar">تتطلب العظام السميكة أو المناطق التشريحية الكثيفة إعدادات تعريض أعلى لتجنب الصور الفاتحة.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden=""><div class="en">Remember the Inverse Square Law: Increasing distance significantly lightens the image.</div><div class="ar">تذكر قانون التربيع العكسي: زيادة المسافة تفتح الصورة بشكل كبير.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">7. Handling and Artifact Errors</span><span class="ar">٧. أخطاء التداول والشوائب</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Handling errors include <strong>Finger Prints</strong> (caused by oils/sweat or developer contamination), <strong>Scratches</strong> (removing emulsion or damaging PSP plates), and <strong>Static Electricity</strong>. Radiopaque artifacts include <strong>Dental appliances</strong>, jewelry, and hair clips which must be removed before exposure. <strong>Double exposure</strong> occurs when the same film/sensor is used twice.</p>
+</div>
+<div class="ar">
+<p>تشمل أخطاء التداول <strong>بصمات الأصابع</strong>، و <strong>الخدوش</strong>، و <strong>الكهرباء الساكنة</strong>. تشمل الشوائب الظليلة للأشعة <strong>الأجهزة السنية</strong> والمجوهرات التي يجب إزالتها. يحدث <strong>التعريض المزدوج</strong> عند استخدام نفس الفيلم مرتين.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 8, 20-22 of 23</span><span class="ar">المصدر: الصفحات ٨، ٢٠-٢٢ من ٢٣</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden=""><div class="en">Always handle films and PSP plates by the edges only to avoid fingerprints.</div><div class="ar">تعامل دائمًا مع الأفلام وصفائح PSP من الحواف فقط لتجنب بصمات الأصابع.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden=""><div class="en">Artifacts like wigs and hair-clips can obscure the maxillary molar area.</div><div class="ar">الشوائب مثل الشعر المستعار ومشابك الشعر يمكن أن تحجب منطقة الأرحاء العلوية.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Oils and sweat on fingers interfere with the laser scanning of PSP plates.</div><div class="ar">تتداخل الزيوت والعرق الموجود على الأصابع مع مسح الليزر لصفائح PSP.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">8. Summary</span><span class="ar">٨. ملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Achieving a diagnostic radiograph requires precise control over <strong>Technique</strong> (positioning and angulation) and <strong>Processing</strong> (handling and exposure factors). Understanding the cause of faults like <strong>elongation, foreshortening, cone-cuts, and density variations</strong> is essential for clinical troubleshooting. Minimizing artifacts and preventing movement are key to producing <strong>sharp, high-quality</strong> images while protecting the patient from unnecessary radiation.</p>
+</div>
+<div class="ar">
+<p>يتطلب الحصول على صورة شعاعية تشخيصية تحكمًا دقيقًا في <strong>التقنية</strong> (الوضعية والزوايا) و <strong>المعالجة</strong> (عوامل التداول والتعريض). إن فهم سبب العيوب مثل <strong>الاستطالة والتقاصر وقطع المخروط وتغيرات الكثافة</strong> ضروري لاستكشاف الأخطاء السريرية وإصلاحها.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 1-23 Summary</span><span class="ar">المصدر: ملخص الصفحات ١-٢٣</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden=""><div class="en">Ideal image = Sharp, Correct size, Optimum density/contrast.</div><div class="ar">الصورة المثالية = حادة، حجم صحيح، كثافة/تباين مثاليين.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden=""><div class="en">"Retake" is a word we want to avoid by mastering these techniques.</div><div class="ar">"إعادة التصوير" هي كلمة نريد تجنبها من خلال إتقان هذه التقنيات.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden=""><div class="en">Digital sensors can trigger double exposures due to software or operator error.</div><div class="ar">يمكن للحساسات الرقمية أن تطلق تعريضات مزدوجة بسبب أخطاء البرنامج أو المشغل.</div></div></div>
+</div>
+</aside>
+</section>
+
+</div>
+
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Density / الكثافة</div><div class="content" hidden=""><div class="en">Overall degree of darkening of a processed film.</div><div class="ar">الدرجة الكلية لإسوداد الفيلم المعالج.</div></div></div>
+<div class="card"><div class="head">Contrast / التباين</div><div class="content" hidden=""><div class="en">Difference in densities in different regions of the film.</div><div class="ar">الاختلاف في الكثافات في المناطق المختلفة من الفيلم.</div></div></div>
+<div class="card"><div class="head">Sharpness / الحدة</div><div class="content" hidden=""><div class="en">Effectiveness of a radiograph to precisely define an edge.</div><div class="ar">فعالية الصورة الشعاعية في تحديد الحواف بدقة.</div></div></div>
+<div class="card"><div class="head">Elongation / الاستطالة</div><div class="content" hidden=""><div class="en">Distortion where teeth appear longer than actual length.</div><div class="ar">تشوه تظهر فيه الأسنان أطول من طولها الحقيقي.</div></div></div>
+<div class="card"><div class="head">Foreshortening / التقاصر</div><div class="content" hidden=""><div class="en">Distortion where teeth appear shorter than actual length.</div><div class="ar">تشوه تظهر فيه الأسنان أقصر من طولها الحقيقي.</div></div></div>
+<div class="card"><div class="head">Cone-cut / قطع المخروط</div><div class="content" hidden=""><div class="en">Partial image due to misalignment of PID and sensor.</div><div class="ar">صورة جزئية بسبب عدم محاذاة جهاز تحديد الموضع والحساس.</div></div></div>
+<div class="card"><div class="head">Artifact / شائبة</div><div class="content" hidden=""><div class="en">Any structure visible on a radiograph that is not part of the object.</div><div class="ar">أي هيكل مرئي في الصورة الشعاعية ليس جزءًا من الشيء المصور.</div></div></div>
+<div class="card"><div class="head">Radiopaque / ظليل للأشعة</div><div class="content" hidden=""><div class="en">Materials that block x-rays and appear white on film.</div><div class="ar">المواد التي تحجب الأشعة السينية وتظهر بيضاء على الفيلم.</div></div></div>
+<div class="card"><div class="head">PSP Plate / صفيحة PSP</div><div class="content" hidden=""><div class="en">Photostimulable phosphor plate used in digital imaging.</div><div class="ar">صفيحة الفوسفور القابلة للتحفيز الضوئي المستخدمة في التصوير الرقمي.</div></div></div>
+</div>
+
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">What causes elongation?</span><span class="ar">ما الذي يسبب الاستطالة؟</span></div><div class="content" hidden=""><span class="en">Decreased (too flat) vertical angulation.</span><span class="ar">نقص الزاوية العمودية (مسطحة جدًا).</span></div></div>
+<div class="card"><div class="head"><span class="en">What causes foreshortening?</span><span class="ar">ما الذي يسبب التقاصر؟</span></div><div class="content" hidden=""><span class="en">Increased (too steep) vertical angulation.</span><span class="ar">زيادة الزاوية العمودية (حادة جدًا).</span></div></div>
+<div class="card"><div class="head"><span class="en">How do fingerprints appear?</span><span class="ar">كيف تظهر بصمات الأصابع؟</span></div><div class="content" hidden=""><span class="en">As dark or light smudges or whorled patterns.</span><span class="ar">كلطخات داكنة أو فاتحة أو أنماط لولبية.</span></div></div>
+<div class="card"><div class="head"><span class="en">Cause of blurred images?</span><span class="ar">سبب الصور المهتزة؟</span></div><div class="content" hidden=""><span class="en">Movement of patient, tube, or sensor.</span><span class="ar">حركة المريض أو الأنبوب أو الحساس.</span></div></div>
+<div class="card"><div class="head"><span class="en">Cause of overlapped contacts?</span><span class="ar">سبب تداخل نقاط التماس؟</span></div><div class="content" hidden=""><span class="en">Incorrect horizontal angulation.</span><span class="ar">زاوية أفقية غير صحيحة.</span></div></div>
+<div class="card"><div class="head"><span class="en">What is high density?</span><span class="ar">ما هي الكثافة العالية؟</span></div><div class="content" hidden=""><span class="en">An overall dark radiograph.</span><span class="ar">صورة شعاعية داكنة بشكل عام.</span></div></div>
+<div class="card"><div class="head"><span class="en">Why avoid bending films?</span><span class="ar">لماذا نتجنب ثني الأفلام؟</span></div><div class="content" hidden=""><span class="en">It causes image distortion.</span><span class="ar">لأنه يسبب تشوهًا في الصورة.</span></div></div>
+<div class="card"><div class="head"><span class="en">Common radiopaque artifacts?</span><span class="ar">شوائب ظليلة شائعة؟</span></div><div class="content" hidden=""><span class="en">Jewelry, eyeglasses, dental appliances.</span><span class="ar">المجوهرات، النظارات، الأجهزة السنية.</span></div></div>
+<div class="card"><div class="head"><span class="en">Effect of low kVp?</span><span class="ar">تأثير انخفاض kVp؟</span></div><div class="content" hidden=""><span class="en">Light radiograph (Low density).</span><span class="ar">صورة فاتحة (كثافة منخفضة).</span></div></div>
+</div>
+</main>
+<script>
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

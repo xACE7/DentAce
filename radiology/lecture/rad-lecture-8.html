@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Image Receptors & Processing</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+  .dua, .chip-box{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);border-radius:var(--radius);padding:1.1rem 1.25rem;margin:10px 0 18px;display:flex;align-items:center;justify-content:center;box-shadow:var(--glow-white);}
+  .dua{font-weight:900;font-size:1.2rem;background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);text-align:center;}
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 10px rgba(255,255,255,.15);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+  .section{display:grid;grid-template-columns: 6fr 2fr;gap:1.25rem;background:rgba(255,255,255,.05);border:1px solid rgba(255,255,255,.12);border-radius:var(--radius);padding:14px;box-shadow:var(--glow-white);min-height:320px;}
+  .content-col{min-width:0;display:flex;flex-direction:column;}
+  .sec-head{font-weight:900;font-size:1.35rem;margin:0 0 .6rem 0;padding:.7rem 1rem;border-radius:10px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.1);text-align:center;background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);box-shadow:var(--glow-white);}
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body strong { color: #8b5cf6; }
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .facts .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+  .table-wrap{overflow-x:auto;margin:.25rem 0 0;padding-bottom:6px;-webkit-overflow-scrolling:touch;}
+  table{width:100%;border-collapse:collapse;min-width:600px;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.12);border-radius:16px;overflow:hidden;box-shadow:var(--glow-white);}
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.05);border-radius:var(--radius);padding:1rem;margin:20px 0 10px;display:flex;justify-content:center;align-items:center;box-shadow:var(--glow-white);}
+  .glossary-box h3,.flashcards-box h3{margin:0;font-weight:900;font-size:1.35rem;background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;}
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+  .source-footer{margin-top:auto;padding:8px 12px;font-size:.85rem;color:var(--muted);border-top:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.03);text-align:center;border-radius:0 0 var(--radius) var(--radius);}
+  @media(max-width:960px){.section{grid-template-columns:1fr;}.grid.g3x4{grid-template-columns:repeat(2,1fr);}}
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+  body.lang-ar {direction: rtl; text-align: right;}
+  header, header * {direction: ltr !important; text-align: left !important;}
+  #langBtn{--h: 40px; --pad: 3px; position: fixed; top: 16px; right: 16px; display: inline-flex; align-items: center; justify-content: space-between; min-width: 150px; height: var(--h); padding: 0 6px; border-radius: 9999px; font-size: 13px; font-weight: 800; border: 1px solid rgba(255,255,255,.12); background: rgba(255,255,255,.06); color: var(--muted); backdrop-filter: blur(6px); z-index: 9999;}
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;}
+  #langBtn .lab.ar{justify-content:flex-end; padding-right:10px;order:2;z-index:2;}
+  #langBtn::after{content:"";position:absolute;top: var(--pad);bottom: var(--pad);left: var(--pad);width: calc(50% - var(--pad)*2 + 2px);border-radius: inherit;background: rgba(255,255,255,.10);transition: transform .42s cubic-bezier(.22,.61,.36,1);}
+  body.lang-ar #langBtn::after{transform: translateX(100%);}
+  body.lang-en #langBtn .lab.en, body.lang-ar #langBtn .lab.ar{color: var(--text);}
+</style>
+</head>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 8</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">اللهم انفعنا بما علمتنا، وعلمنا ما ينفعنا، وزدنا علماً</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Image Receptors & Processing</b></span>
+<span class="ar"><b>الموضوع: مستقبلات الصور والمعالجة الإشعاعية</b></span>
+</span>
+</div>
+<div class="sections">
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">1. Classification of Image Receptors</span><span class="ar">١. تصنيف مستقبلات الصور</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Image receptors in dental radiography are divided into two main categories:</p>
+<ul>
+<li><strong>Analogue Receptors:</strong> Includes <strong>Direct-action (Non-screen)</strong> film, which is sensitive primarily to X-ray photons, and <strong>Indirect-action (Screen)</strong> film, used with intensifying screens sensitive to light.</li>
+<li><strong>Digital Receptors:</strong> Includes <strong>Solid-state technology</strong> (CCD, CMOS) and <strong>Photostimulable Phosphor (PSP)</strong> technology.</li>
+</ul>
+</div>
+<div class="ar">
+<p>تنقسم مستقبلات الصور في أشعة الأسنان إلى فئتين رئيسيتين:</p>
+<ul>
+<li><strong>المستقبلات التناظرية:</strong> تشمل أفلام <strong>التصوير المباشر</strong> (بدون شاشة) الحساسة لفوتونات الأشعة السينية، وأفلام <strong>التصوير غير المباشر</strong> الحساسة للضوء.</li>
+<li><strong>المستقبلات الرقمية:</strong> تشمل <strong>تقنية الحالة الصلبة</strong> (CCD, CMOS) وتقنية <strong>الفوسفور القابل للتحفيز الضوئي</strong> (PSP).</li>
+</ul>
+</div>
+</div>
+<div class="source-footer"><span class="en">Source: Page 3 of 18</span><span class="ar">المصدر: صفحة ٣ من ١٨</span></div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Direct-action film is also called <strong>packet film</strong>.</div><div class="ar">يسمى فيلم العمل المباشر أيضاً بفيلم الحزمة (packet film).</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why This Matters</span><span class="ar">🎯 لماذا هذا مهم</span></div><div class="body" hidden><div class="en">Understanding sensitivity helps in choosing the right receptor for dose reduction.</div><div class="ar">فهم الحساسية يساعد في اختيار المستقبل الصحيح لتقليل الجرعة الإشعاعية.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">2. Intraoral Film Sizes</span><span class="ar">٢. أحجام الأفلام داخل الفم</span></h2>
+<div class="sec-body">
+<div class="en"><p>Intraoral film packets come in five basic sizes tailored for different clinical needs:</p></div>
+<div class="ar"><p>تتوفر حزم الأفلام داخل الفم بخمسة أحجام أساسية مصممة لاحتياجات سريرية مختلفة:</p></div>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Size #</th><th><span class="en">Use</span><span class="ar">الاستخدام</span></th></tr></thead>
+<tbody>
+<tr><td>0</td><td><span class="en">Child</span><span class="ar">للأطفال</span></td></tr>
+<tr><td>1</td><td><span class="en">Narrow Anterior</span><span class="ar">الأسنان الأمامية الضيقة</span></td></tr>
+<tr><td>2</td><td><span class="en">Adult (Universal)</span><span class="ar">للبالغين (عالمي)</span></td></tr>
+<tr><td>3</td><td><span class="en">Preformed Bitewing</span><span class="ar">أجنحة العض الجاهزة</span></td></tr>
+<tr><td>4</td><td><span class="en">Occlusal</span><span class="ar">الإطباقي</span></td></tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="source-footer"><span class="en">Source: Page 4 of 18</span><span class="ar">المصدر: صفحة ٤ من ١٨</span></div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Size <strong>#2</strong> is the most commonly used "universal" size for adults.</div><div class="ar">المقاس رقم 2 هو المقاس "العالمي" الأكثر استخداماً للبالغين.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Remember that Size 4 is the largest, used for <strong>occlusal</strong> views.</div><div class="ar">تذكر أن المقاس 4 هو الأكبر، ويستخدم لصور الإطباق.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">3. Structure of Analogue Film</span><span class="ar">٣. تركيب الفيلم التناظري</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>The radiographic film comprises four basic layers:</p>
+<ol>
+<li><strong>Plastic Base:</strong> Clear <strong>Cellulose Acetate</strong> that supports the emulsion but doesn't contribute to the image.</li>
+<li><strong>Adhesive:</strong> Fixes the emulsion to the base.</li>
+<li><strong>Emulsion:</strong> Located on <strong>both sides</strong> (double emulsion), containing sensitive silver halide.</li>
+<li><strong>Protective Layer:</strong> Clear <strong>Gelatin</strong> to shield from mechanical damage like scratches.</li>
+</ol>
+</div>
+<div class="ar">
+<p>يتكون الفيلم الإشعاعي من أربع طبقات أساسية:</p>
+<ol>
+<li><strong>القاعدة البلاستيكية:</strong> مادة <strong>أسيتات السليلوز</strong> الشفافة التي تدعم المستحلب.</li>
+<li><strong>المادة اللاصقة:</strong> تثبت المستحلب على القاعدة.</li>
+<li><strong>المستحلب:</strong> يوجد على <strong>كلا الجانبين</strong>، ويحتوي على هاليد الفضة الحساس.</li>
+<li><strong>الطبقة الواقية:</strong> <strong>جيلاتين</strong> شفاف لحماية الفيلم من التلف الميكانيكي كالخدوش.</li>
+</ol>
+</div>
+</div>
+<div class="source-footer"><span class="en">Source: Page 5 of 18</span><span class="ar">المصدر: صفحة ٥ من ١٨</span></div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">The emulsion is the part sensitive to radiation.</div><div class="ar">المستحلب هو الجزء الحساس للإشعاع.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">Double emulsion increases the sensitivity and speed of the film.</div><div class="ar">المستحلب المزدوج يزيد من حساسية وسرعة الفيلم.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">4. Digital Sensors: CCD vs CMOS</span><span class="ar">٤. المستشعرات الرقمية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Charge-Coupled Device (CCD):</strong> Uses silicon crystals in a pixel matrix. It is more sensitive to light, so it is coated with a <strong>scintillating material</strong> (Gadolinium Oxybromide) to capture X-rays efficiently.</p>
+<p><strong>Complementary Metal Oxide Semiconductor (CMOS):</strong> Also silicon-based but reads pixel charges differently. Each pixel is <strong>isolated</strong> and connected directly to a transistor.</p>
+</div>
+<div class="ar">
+<p><strong>جهاز الشحن المزدوج (CCD):</strong> يستخدم بلورات السيليكون في مصفوفة بكسل. وهو أكثر حساسية للضوء، لذا يتم طلاؤه بـ <strong>مادة وميضية</strong> لالتقاط الأشعة السينية بفعالية.</p>
+<p><strong>أشباه الموصلات المعدنية المكملة (CMOS):</strong> تعتمد أيضاً على السيليكون ولكنها تقرأ الشحنات بشكل مختلف؛ حيث يتم <strong>عزل</strong> كل بكسل وتوصيله مباشرة بترانزستور.</p>
+</div>
+</div>
+<div class="source-footer"><span class="en">Source: Pages 6-7 of 18</span><span class="ar">المصدر: صفحة ٦-٧ من ١٨</span></div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">CCD was the first digital receptor adapted for dentistry in 1987.</div><div class="ar">كان CCD أول مستقبل رقمي تم تكييفه لطب الأسنان في عام 1987.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Memory</span><span class="ar">🧠 تذكّر</span></div><div class="body" hidden><div class="en">CMOS = <strong>Connected Directly</strong> to Transistors (easier reading).</div><div class="ar">تذكر: CMOS = متصل مباشرة بالترانزستورات.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">5. PSP and Flat-Panel Detectors</span><span class="ar">٥. مستشعرات PSP واللوحات المسطحة</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Photostimulable Phosphor (PSP):</strong> These plates store energy from X-rays and release it as light when stimulated by a specific wavelength. The material is <strong>europium-doped barium fluorohalide</strong>.</p>
+<p><strong>Flat-Panel Detectors:</strong> Use <strong>selenium</strong> as a photoconductor. They are expensive and mostly limited to <strong>CBCT</strong> tasks.</p>
+</div>
+<div class="ar">
+<p><strong>الفوسفور القابل للتحفيز الضوئي (PSP):</strong> تخزن هذه الألواح طاقة الأشعة السينية وتطلقها كضوء عند تحفيزها. المادة المستخدمة هي <strong>هاليد فلورو الباريوم المطعّم بالأوروبيوم</strong>.</p>
+<p><strong>كاشفات الألواح المسطحة:</strong> تستخدم مادة <strong>السيلينيوم</strong> كموصل ضوئي. وهي مكلفة وتستخدم غالباً في <strong>الأشعة المقطعية مخروطية الشعاع (CBCT)</strong>.</p>
+</div>
+</div>
+<div class="source-footer"><span class="en">Source: Pages 8-9 of 18</span><span class="ar">المصدر: صفحة ٨-٩ من ١٨</span></div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout extra"><div class="hdr"><span class="en">📝 Extra Notes</span><span class="ar">📝 ملاحظات إضافية</span></div><div class="body" hidden><div class="en">PSP plates are <strong>reusable</strong> but must be cleared after scanning.</div><div class="ar">ألواح PSP قابلة لإعادة الاستخدام ولكن يجب مسحها بعد المسح الضوئي.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">The process of releasing light in PSP is called <strong>phosphorescence</strong>.</div><div class="ar">تسمى عملية إطلاق الضوء في PSP بـ الفسفرة (phosphorescence).</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">6. Principles of Image Formation</span><span class="ar">٦. مبادئ تكوين الصورة</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>The core principle involves the formation of a <strong>Latent Image</strong> (invisible) which is then processed to become a <strong>Visible Image</strong>.</p>
+<ul>
+<li><strong>Analogue:</strong> Chemical reaction occurs on the film; requires chemical processing solutions.</li>
+<li><strong>Digital:</strong> Electrical charges are formed and conveyed to a computer screen to display digital signals.</li>
+</ul>
+</div>
+<div class="ar">
+<p>يتضمن المبدأ الأساسي تكوين <strong>صورة كامنة</strong> (غير مرئية) تتم معالجتها لتصبح <strong>صورة مرئية</strong>.</p>
+<ul>
+<li><strong>التناظري:</strong> يحدث تفاعل كيميائي على الفيلم؛ يتطلب محاليل معالجة كيميائية.</li>
+<li><strong>الرقمي:</strong> تتشكل شحنات كهربائية وتنقل إلى شاشة الكمبيوتر لتتحول إلى إشارات رقمية.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer"><span class="en">Source: Pages 10-11 of 18</span><span class="ar">المصدر: صفحة ١٠-١١ من ١٨</span></div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">The latent image will be lost if the film is exposed to white light before processing.</div><div class="ar">ستفقد الصورة الكامنة إذا تعرض الفيلم للضوء الأبيض قبل المعالجة.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Facts</span><span class="ar">📌 حقائق</span></div><div class="body" hidden><div class="en">Latent image in digital receptors consists of <strong>electrical charges</strong>.</div><div class="ar">تتكون الصورة الكامنة في المستقبلات الرقمية من شحنات كهربائية.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">7. Manual Processing & Darkroom</span><span class="ar">٧. المعالجة اليدوية والغرفة المظلمة</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Manual processing requires a strictly controlled environment:</p>
+<ul>
+<li><strong>Absolute light-tightness:</strong> No light leaks.</li>
+<li><strong>Safelights:</strong> Positioned <strong>1.2m (4 feet)</strong> from the workspace using 25W bulbs.</li>
+<li><strong>Lead Foil Disposal:</strong> Must be recycled, never thrown in the trash.</li>
+</ul>
+</div>
+<div class="ar">
+<p>تتطلب المعالجة اليدوية بيئة محكمة:</p>
+<ul>
+<li><strong>إحكام الضوء:</strong> عدم وجود أي تسرب للضوء.</li>
+<li><strong>إضاءة الأمان:</strong> توضع على بعد <strong>١.٢ متر (٤ أقدام)</strong> من سطح العمل باستخدام مصابيح بقوة ٢٥ واط.</li>
+<li><strong>التخلص من رقائق الرصاص:</strong> يجب إعادة تدويرها ولا تُرمى أبداً في القمامة.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer"><span class="en">Source: Pages 13-14 of 18</span><span class="ar">المصدر: صفحة ١٣-١٤ من ١٨</span></div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Warnings</span><span class="ar">⚠️ تحذيرات</span></div><div class="body" hidden><div class="en">Lead is a <strong>biohazard</strong>; use proper labeled containers for contaminated items.</div><div class="ar">الرصاص خطر بيئي؛ استخدم حاويات مخصصة للأشياء الملوثة.</div></div></div>
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tips</span><span class="ar">💡 نصائح للمذاكرة</span></div><div class="body" hidden><div class="en">Remember the distance: 4 feet for safelight safety.</div><div class="ar">تذكر المسافة: 4 أقدام لسلامة ضوء الأمان.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">8. Summary</span><span class="ar">٨. ملخص</span></h2>
+<div class="sec-body">
+<div class="en">
+<ul>
+<li>Receptors are either <strong>Analogue</strong> (film) or <strong>Digital</strong> (sensors/PSP).</li>
+<li><strong>Silver halide</strong> in emulsion captures the image in analogue films.</li>
+<li><strong>CCD and CMOS</strong> provide immediate digital images, while <strong>PSP</strong> requires scanning.</li>
+<li>Processing transforms the <strong>Latent Image</strong> into a permanent <strong>Visible Image</strong>.</li>
+<li>Darkroom safety depends on <strong>Safelights</strong> and proper chemical handling.</li>
+</ul>
+</div>
+<div class="ar">
+<ul>
+<li>المستقبلات إما <strong>تناظرية</strong> (فيلم) أو <strong>رقمية</strong> (مستشعرات/PSP).</li>
+<li><strong>هاليد الفضة</strong> في المستحلب هو ما يلتقط الصورة في الأفلام التناظرية.</li>
+<li>توفر تقنيات <strong>CCD و CMOS</strong> صوراً فورية، بينما يتطلب <strong>PSP</strong> مسحاً ضوئياً.</li>
+<li>المعالجة تحول <strong>الصورة الكامنة</strong> إلى <strong>صورة مرئية</strong> دائمة.</li>
+<li>تعتمد سلامة الغرفة المظلمة على <strong>إضاءة الأمان</strong> والتعامل الصحيح مع الكيماويات.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer"><span class="en">Source: All Pages</span><span class="ar">المصدر: جميع الصفحات</span></div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Clinical</span><span class="ar">🩺 سريري</span></div><div class="body" hidden><div class="en">Digital imaging significantly reduces patient radiation exposure compared to analogue.</div><div class="ar">التصوير الرقمي يقلل بشكل كبير من تعرض المريض للإشعاع مقارنة بالتناظري.</div></div></div>
+</div>
+</aside>
+</section>
+
+</div>
+
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Latent Image / صورة كامنة</div><div class="content" hidden><div class="en">The invisible image produced by exposure to radiation before processing.</div><div class="ar">الصورة غير المرئية التي تنتج عن التعرض للإشعاع قبل المعالجة.</div></div></div>
+<div class="card"><div class="head">Emulsion / مستحلب</div><div class="content" hidden><div class="en">The sensitive layer of a film containing silver halide crystals.</div><div class="ar">الطبقة الحساسة في الفيلم التي تحتوي على بلورات هاليد الفضة.</div></div></div>
+<div class="card"><div class="head">Scintillator / مادة وميضية</div><div class="content" hidden><div class="en">Material that converts X-rays into visible light.</div><div class="ar">مادة تحول الأشعة السينية إلى ضوء مرئي.</div></div></div>
+<div class="card"><div class="head">PSP / فوسفور محفز</div><div class="content" hidden><div class="en">Photostimulable Phosphor plate that stores energy for later readout.</div><div class="ar">لوح فوسفوري يختزن الطاقة لتتم قراءته لاحقاً.</div></div></div>
+<div class="card"><div class="head">CCD / جهاز شحن</div><div class="content" hidden><div class="en">Charge-Coupled Device used for digital imaging.</div><div class="ar">جهاز الشحن المزدوج المستخدم في التصوير الرقمي.</div></div></div>
+<div class="card"><div class="head">Pixel / بكسل</div><div class="content" hidden><div class="en">The smallest discrete component of a digital image.</div><div class="ar">أصغر مكون منفصل في الصورة الرقمية.</div></div></div>
+<div class="card"><div class="head">Cellulose Acetate / أسيتات السليلوز</div><div class="content" hidden><div class="en">Material used for the plastic base of dental films.</div><div class="ar">المادة المستخدمة في القاعدة البلاستيكية لأفلام الأسنان.</div></div></div>
+<div class="card"><div class="head">Safelight / ضوء الأمان</div><div class="content" hidden><div class="en">Special lighting that doesn't affect sensitive film during processing.</div><div class="ar">إضاءة خاصة لا تؤثر على الفيلم الحساس أثناء المعالجة.</div></div></div>
+<div class="card"><div class="head">Phosphorescence / فسفرة</div><div class="content" hidden><div class="en">The emission of light by a substance after being stimulated.</div><div class="ar">انبعاث الضوء من مادة ما بعد تحفيزها.</div></div></div>
+</div>
+
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">1 — Which size is universal?</span><span class="ar">١ — أي حجم هو العالمي؟</span></div><div class="content" hidden><span class="en">A: Size #2.</span><span class="ar">ج: المقاس رقم 2.</span></div></div>
+<div class="card"><div class="head"><span class="en">2 — What stores PSP energy?</span><span class="ar">٢ — ما الذي يخزن طاقة PSP؟</span></div><div class="content" hidden><span class="en">A: Europium-doped barium fluorohalide.</span><span class="ar">ج: هاليد فلورو الباريوم المطعّم بالأوروبيوم.</span></div></div>
+<div class="card"><div class="head"><span class="en">3 — Safelight distance?</span><span class="ar">٣ — مسافة ضوء الأمان؟</span></div><div class="content" hidden><span class="en">A: 1.2 meters (4 feet).</span><span class="ar">ج: ١.٢ متر (٤ أقدام).</span></div></div>
+<div class="card"><div class="head"><span class="en">4 — What is the film base?</span><span class="ar">٤ — ما هي قاعدة الفيلم؟</span></div><div class="content" hidden><span class="en">A: Cellulose Acetate.</span><span class="ar">ج: أسيتات السليلوز.</span></div></div>
+<div class="card"><div class="head"><span class="en">5 — CCD vs CMOS reading?</span><span class="ar">٥ — القراءة في CCD مقابل CMOS؟</span></div><div class="content" hidden><span class="en">A: CMOS pixels are isolated and read directly.</span><span class="ar">ج: بكسلات CMOS معزولة وتُقرأ مباشرة.</span></div></div>
+<div class="card"><div class="head"><span class="en">6 — Flat-panel material?</span><span class="ar">٦ — مادة الألواح المسطحة؟</span></div><div class="content" hidden><span class="en">A: Selenium.</span><span class="ar">ج: السيلينيوم.</span></div></div>
+<div class="card"><div class="head"><span class="en">7 — Lead foil disposal?</span><span class="ar">٧ — التخلص من رقائق الرصاص؟</span></div><div class="content" hidden><span class="en">A: Recycling (Biohazard).</span><span class="ar">ج: إعادة التدوير (خطر بيولوجي).</span></div></div>
+<div class="card"><div class="head"><span class="en">8 — Invisible image name?</span><span class="ar">٨ — اسم الصورة غير المرئية؟</span></div><div class="content" hidden><span class="en">A: Latent Image.</span><span class="ar">ج: الصورة الكامنة.</span></div></div>
+<div class="card"><div class="head"><span class="en">9 — Protecting emulsion?</span><span class="ar">٩ — حماية المستحلب؟</span></div><div class="content" hidden><span class="en">A: Gelatin protective layer.</span><span class="ar">ج: طبقة الجيلاتين الواقية.</span></div></div>
+</div>
+</main>
+
+<script>
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  document.querySelectorAll('.card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>

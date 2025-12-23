@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Shedding Interactive Exam • Dentistry</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;
+    --bad:#ef4444;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+  .opt-btn.correct{ border-left:6px solid var(--ok); background:rgba(255,255,255,0.03); }
+  .opt-btn.wrong{ border-left:6px solid var(--bad); background:rgba(255,255,255,0.03); }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  
+  /* Tables inside SAQ answers */
+  .saq-table { width: 100%; border-collapse: collapse; margin-top: 8px; }
+  .saq-table th, .saq-table td { border: 1px solid rgba(255,255,255,0.1); padding: 8px; text-align: left; }
+  .saq-table th { background: rgba(255,255,255,0.05); }
+
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 41</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow"><button class="ghost" id="resetAll">Reset</button></div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs (Multiple Choice)</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom" style="margin-top:40px;">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+const mcqs = [
+  {
+    q: "How is 'Shedding' of primary teeth defined?",
+    opts: ["Pathological loss due to decay", "Physiologic elimination due to progressive root resorption", "Traumatic avulsion of deciduous units", "Mechanical extraction of loose teeth"],
+    correct: 1,
+    explain: "Shedding is a physiologic process involving elimination of deciduous teeth due to root resorption caused by the pressure of permanent successors."
+  },
+  {
+    q: "Which local factor initiates the differentiation of odontoclasts?",
+    opts: ["Bacterial toxins in the sulcus", "Occlusal abrasion of enamel", "Pressure from the erupting permanent successor", "Lack of vitamin D"],
+    correct: 2,
+    explain: "Local pressure from erupting permanent teeth is a primary factor that initiates shedding and odontoclast differentiation."
+  },
+  {
+    q: "The genetic factor in shedding is evidenced by programmed apoptosis in which tissue?",
+    opts: ["Dental Pulp", "Periodontal Ligament", "Alveolar Bone", "Enamel Organ"],
+    correct: 1,
+    explain: "Programmed cell death (apoptosis) in the PDL is considered a genetic factor responsible for initiating resorption at a specific time."
+  },
+  {
+    q: "Where does the resorptive process initially begin in Primary Anterior teeth?",
+    opts: ["Labial surface of the crown", "Inter-radicular area between roots", "Apico-lingual root surface", "Mesial surface of the neck"],
+    correct: 2,
+    explain: "Permanent anteriors develop apically and lingually, so resorption starts on the apico-lingual root surface."
+  },
+  {
+    q: "In primary molars, where does root resorption first begin?",
+    opts: ["Outer buccal surface", "Inner (inter-radicular) surfaces", "Cervical line", "Occlusal table"],
+    correct: 1,
+    explain: "Since premolars often develop between the divergent roots of primary molars, resorption begins on the inner inter-radicular surfaces."
+  },
+  {
+    q: "Odontoclasts are histologically identical to which of the following cells?",
+    opts: ["Ameloblasts", "Osteoclasts", "Cementoblasts", "Fibroblasts"],
+    correct: 1,
+    explain: "Odontoclasts and osteoclasts share the same origin (monocytes) and identical structure, including multiple nuclei and a ruffled border."
+  },
+  {
+    q: "What is the primary origin of odontoclasts?",
+    opts: ["Epithelial cells of Malassez", "Monocytes or undifferentiated mesenchymal cells", "Pulp fibroblasts", "Plasma cells"],
+    correct: 1,
+    explain: "Odontoclasts originate from blood-borne monocytes or undifferentiated mesenchymal cells."
+  },
+  {
+    q: "The 'Ruffled Border' of an odontoclast serves what function?",
+    opts: ["Secretes enamel matrix", "Faces the surface being resorbed to facilitate mineral/matrix removal", "Attaches the tooth to the bone", "Detects thermal changes in the pulp"],
+    correct: 1,
+    explain: "The ruffled (brush) border is the active site facing the dental tissue being resorbed."
+  },
+  {
+    q: "What are 'Howship’s lacunae'?",
+    opts: ["Spaces in the PDL for nerves", "Hollowed-out shallow depressions on the resorbing root surface", "Microscopic canals in dentin", "Attachment sites for cementum"],
+    correct: 1,
+    explain: "Howship’s lacunae are the scalloped depressions on the root surface where odontoclasts reside during resorption."
+  },
+  {
+    q: "During the process of shedding, what occurs first in mineral removal?",
+    opts: ["Proteolytic degradation", "Secretion of acids by odontoclasts", "Phagocytosis of crystals", "Invasion by pulp cells"],
+    correct: 1,
+    explain: "Mineral removal occurs first via acid secretion, followed by organic matrix degradation by proteolytic enzymes."
+  },
+  {
+    q: "Which enzyme is primarily responsible for the disintegration of the organic matrix during resorption?",
+    opts: ["Amylase", "Proteolytic enzymes", "Carbonic anhydrase", "Alkaline phosphatase"],
+    correct: 1,
+    explain: "Proteolytic enzymes secreted by odontoclasts break down the organic components of the dental hard tissues."
+  },
+  {
+    q: "Histologically, what happens to the periodontal fibroblasts in shedding areas?",
+    opts: ["They transform into osteoblasts", "They show signs of impaired function and apoptosis", "They proliferate to strengthen attachment", "They form massive collagen bundles"],
+    correct: 1,
+    explain: "Fibroblasts show abrupt loss and programmed cell death (apoptosis) without signs of inflammation."
+  },
+  {
+    q: "What is the status of the pulp tissue during the shedding process?",
+    opts: ["It actively dissolves the dentin from inside", "It appears histologically normal but lacks neural elements", "It undergoes acute inflammation", "It transforms into bone-like tissue"],
+    correct: 1,
+    explain: "The pulp remains relatively normal but loses its nerve elements and plays a passive role in shedding."
+  },
+  {
+    q: "Which of the following is an abnormality of shedding?",
+    opts: ["Normal exfoliation", "Submerged deciduous teeth", "Permanent tooth eruption", "Physiological attrition"],
+    correct: 1,
+    explain: "Submerged teeth, retained teeth, and remnants are the primary abnormalities of shedding mentioned."
+  },
+  {
+    q: "Submerged deciduous teeth are most often caused by:",
+    opts: ["Excessive pressure", "Ankylosis", "Genetic mutation of enamel", "Poor oral hygiene"],
+    correct: 1,
+    explain: "Ankylosis (bony union) stops active eruption, causing the tooth to appear 'submerged' as the alveolar bone grows around it."
+  },
+  {
+    q: "What is the clinical definition of 'Ankylosis'?",
+    opts: ["Tooth decay reaching the bone", "A bony union between alveolar bone and the roots of teeth", "Loss of the crown of the tooth", "Extra roots on a molar"],
+    correct: 1,
+    explain: "Ankylosis is a direct fusion between the root surface and the surrounding bone, obliterating the PDL."
+  },
+  {
+    q: "Retained deciduous teeth are most commonly found in which location?",
+    opts: ["Lower central incisors", "Upper B and lower E", "Lower 1st molars", "Upper central incisors"],
+    correct: 1,
+    explain: "Retention is most frequent in upper lateral incisors (B) and lower second deciduous molars (E)."
+  },
+  {
+    q: "Which condition is a major cause of retained deciduous teeth?",
+    opts: ["Bruxism", "Congenitally missing permanent teeth (Hypodontia)", "Early loss of antagonists", "Excessive fluoride"],
+    correct: 1,
+    explain: "If the permanent successor is missing, there is no pressure to initiate resorption, leading to retention."
+  },
+  {
+    q: "Impaction of which tooth often leads to the retention of its deciduous predecessor?",
+    opts: ["Permanent canine", "First molar", "Central incisor", "Lower lateral incisor"],
+    correct: 0,
+    explain: "Impaction (failure to erupt) of permanent teeth like canines often prevents the shedding of the deciduous tooth."
+  },
+  {
+    q: "Why do 'remnants' of deciduous teeth occur?",
+    opts: ["The tooth was too healthy", "Parts of roots were not in the path of the erupting permanent tooth", "The child ate too much calcium", "The roots were too short"],
+    correct: 1,
+    explain: "Root parts outside the path of the erupting successor may escape resorption and remain in the bone."
+  },
+  {
+    q: "Where are root remnants most commonly seen in the mandible?",
+    opts: ["Lower incisor region", "Lower second molar (E) region due to divergent roots", "Lower canine region", "Lower first premolar region"],
+    correct: 1,
+    explain: "The widely divergent roots of lower E often allow the smaller premolar to pass between them, leaving the root tips behind."
+  },
+  {
+    q: "What might be the fate of a retained deciduous root tip?",
+    opts: ["It becomes a new permanent tooth", "It is surrounded by cellular cementum", "It turns into a cyst", "It dissolves within 2 days"],
+    correct: 1,
+    explain: "Retained tips may be surrounded by cementum, ankylosed, resorb, or be exfoliated."
+  },
+  {
+    q: "The movement of permanent anterior teeth during later stages is in which direction?",
+    opts: ["Lingual only", "Distal only", "Incisolabial direction", "Purely apical"],
+    correct: 2,
+    explain: "Permanent anteriors move from lingual to an incisolabial direction to eventually sit apical to their predecessors."
+  },
+  {
+    q: "Which cell resorbs the organic matrix of dentin?",
+    opts: ["Osteoblast", "Odontoclast", "Cementoblast", "Fibroclast"],
+    correct: 1,
+    explain: "Odontoclasts resorb both the mineralized and organic components of dentin, cementum, and enamel."
+  },
+  {
+    q: "What determines the pattern of root resorption?",
+    opts: ["Diet of the patient", "Developmental position of the permanent successor", "Size of the deciduous crown", "Number of nerves in the pulp"],
+    correct: 1,
+    explain: "The position of the erupting permanent tooth determines where pressure is applied and where resorption begins."
+  },
+  {
+    q: "Which of the following describes the cytoplasm of an odontoclast?",
+    opts: ["Clear and transparent", "Foamy appearance", "Dark and granular", "Striated"],
+    correct: 1,
+    explain: "Odontoclasts are large cells with multiple nuclei and a characteristic foamy-appearing cytoplasm."
+  },
+  {
+    q: "What happens to the masticatory forces during shedding?",
+    opts: ["They decrease to zero", "Increase of forces applied to teeth contributes to shedding", "They have no effect", "They prevent resorption"],
+    correct: 1,
+    explain: "Increase in masticatory forces is a local factor that helps initiate shedding."
+  },
+  {
+    q: "Shedding results in the loss of which dentition?",
+    opts: ["Permanent", "Deciduous (Primary)", "Succedaneous", "Geriatric"],
+    correct: 1,
+    explain: "Shedding is specifically the loss of the primary (deciduous) dentition."
+  },
+  {
+    q: "If a submerged deciduous tooth is found, what is the recommended treatment?",
+    opts: ["Wait for it to erupt", "It should be removed", "Apply braces", "Root canal treatment"],
+    correct: 1,
+    explain: "Submerged teeth typically need to be removed as they interfere with occlusion and eruption of successors."
+  },
+  {
+    q: "The process of shedding is accomplished by the resorption of hard dental tissues and what else?",
+    opts: ["Formation of new bone inside the pulp", "Resorption of dental soft tissues (PDL/Pulp)", "Hardening of the gingiva", "Hypertrophy of the tongue"],
+    correct: 1,
+    explain: "Shedding involves resorbing hard tissues (dentin/cementum) and soft tissues (PDL/Pulp)."
+  }
+];
+
+const tfs = [
+  { q: "Shedding is a pathologic elimination of deciduous teeth.", answer: false, explain: "Shedding is a physiologic (natural) process." },
+  { q: "Permanent anterior teeth develop in a position labial to their primary predecessors.", answer: false, explain: "They develop apical and lingual to their predecessors." },
+  { q: "Odontoclasts can remove enamel, dentin, and cementum.", answer: true, explain: "Odontoclasts are capable of resorbing all hard dental tissues." },
+  { q: "Programmed cell death (apoptosis) in the PDL is a key feature of shedding.", answer: true, explain: "Apoptosis is the mechanism of soft tissue removal in the PDL." },
+  { q: "Ankylosis is a cause of submerged deciduous teeth.", answer: true, explain: "Bony fusion stops the tooth's eruption, making it appear submerged." },
+  { q: "The pulp tissue plays an active role in driving the shedding process.", answer: false, explain: "The pulp plays a passive role." },
+  { q: "Hypodontia (missing permanent teeth) is a common cause of retained deciduous teeth.", answer: true, explain: "Without a successor, the primary tooth often remains in place." },
+  { q: "In primary molars, resorption begins on the outer apical surface.", answer: false, explain: "It begins on the inner inter-radicular surfaces." },
+  { q: "Odontoclasts are found in Howship's lacunae on the root surface.", answer: true, explain: "These lacunae are the specific sites where resorption occurs." }
+];
+
+const saqs = [
+  {
+    q: "Define Shedding of primary teeth.",
+    a: "Shedding is the physiologic elimination (loss) of deciduous teeth due to progressive root resorption under the influence of pressure exerted by the erupting permanent successor."
+  },
+  {
+    q: "List the four possible fates of retained deciduous root tips.",
+    a: "1. Surrounded by cellular cementum.<br>2. Ankylosed to bone.<br>3. Resorb and disappear.<br>4. Exfoliated."
+  },
+  {
+    q: "Compare the initial site and direction of root resorption in primary anterior teeth versus primary molars.",
+    a: `<table class="saq-table">
+          <tr><th>Feature</th><th>Primary Anterior Teeth</th><th>Primary Molars</th></tr>
+          <tr><td>Initial Site</td><td>Apico-lingual root surface</td><td>Inner inter-radicular surfaces</td></tr>
+          <tr><td>Resorption Plane</td><td>Proceeds horizontally and apically</td><td>Begins between divergent roots</td></tr>
+        </table>`
+  },
+  {
+    q: "A 9-year-old child presents with a primary second molar that is positioned significantly lower than the occlusal plane of the adjacent teeth. What is this condition called, and what is its most common cause?",
+    a: "This condition is called <b>Submerged Deciduous Teeth</b>. Its most common cause is <b>Ankylosis</b> (bony union between the alveolar bone and the roots)."
+  },
+  {
+    q: "List the two local factors that initiate shedding.",
+    a: "1. Pressure factor (from the erupting permanent tooth) which leads to odontoclast differentiation.<br>2. Increase of masticatory forces applied to the teeth."
+  },
+  {
+    q: "Describe the histological appearance and origin of odontoclasts.",
+    a: "<b>Origin:</b> Monocytes or undifferentiated mesenchymal cells.<br><b>Appearance:</b> Large, multinucleated cells with foamy cytoplasm and a 'Ruffled Border' facing the resorbing surface."
+  }
+];
+
+// ----------- State & Logic -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null),
+  tf: Array(tfs.length).fill(null),
+  saq: Array(saqs.length).fill(false)
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// Render MCQs
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return;
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+      card.dataset.locked = 'true';
+      buttons.forEach(b=>b.setAttribute('disabled',''));
+      
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      } else {
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>${item.explain}`;
+      }
+      recalc();
+    });
+  });
+  mcqGrid.appendChild(card);
+});
+
+// Render T/F
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <p class="meta">T/F Statement ${idx+1}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true"><span class="key">T</span><span class="label">True</span></button>
+      <button class="opt-btn" data-v="false"><span class="key">F</span><span class="label">False</span></button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return;
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+      card.dataset.locked = 'true';
+      buttons.forEach(b=>b.setAttribute('disabled',''));
+
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      if(val !== item.answer){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      } else {
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>${item.explain}`;
+      }
+      recalc();
+    });
+  });
+  tfGrid.appendChild(card);
+});
+
+// Render SAQs
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <p class="meta">Short Answer ${idx+1}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <textarea rows="3" placeholder="Write your notes here..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);font-family:inherit;"></textarea>
+    <div class="btnrow" style="margin-top:10px">
+      <button class="primary" data-act="reveal">Reveal Answer</button>
+      <button class="ghost" data-act="toggle">Mark as Correct</button>
+    </div>
+    <div class="answer" hidden>${item.a}</div>
+  `;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answerDiv = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answerDiv.hidden = !answerDiv.hidden;
+    revealBtn.textContent = answerDiv.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    state.saq[idx] = !state.saq[idx];
+    toggleBtn.textContent = state.saq[idx] ? "✓ Marked Correct" : "Mark as Correct";
+    toggleBtn.style.borderColor = state.saq[idx] ? "var(--ok)" : "rgba(255,255,255,0.18)";
+    recalc();
+  });
+  saqGrid.appendChild(card);
+});
+
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const fb = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"] .feedback`).textContent;
+    return s + (fb.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const fb = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"] .feedback`).textContent;
+    return s + (fb.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"].forEach(id=>{
+    const el = document.getElementById(id);
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    else if(id.includes('Tf')) el.textContent = tfScore;
+    else if(id.includes('Saq')) el.textContent = saqScore;
+    else el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>location.reload());
+</script>
+</body>
+</html>

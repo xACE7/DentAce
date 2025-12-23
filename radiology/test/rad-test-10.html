@@ -1,0 +1,613 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Faulty Radiographs</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;
+    --bad:#ef4444;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  th, td { border: 1px solid var(--card-border); padding: 8px; text-align: left; font-size: 0.9rem; }
+  th { background: var(--glass); }
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Oral Radiology</h1>
+      <p class="subtitle">Test based on Lecture 10</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تجيَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+const mcqs = [
+  {
+    q: "Which term describes the overall degree of darkening of a processed radiographic film?",
+    opts: ["Contrast", "Density", "Sharpness", "Detail"],
+    correct: 1,
+    explain: "Density is defined as the overall degree of darkening of a processed film."
+  },
+  {
+    q: "What is an 'Ideal Radiograph' characterized by?",
+    opts: ["High contrast only", "Maximum detail and optimum density", "Minimum density and high contrast", "Large size and blurred edges"],
+    correct: 1,
+    explain: "An ideal radiograph has optimum density, maximum detail, and sufficient contrast to make details apparent."
+  },
+  {
+    q: "A radiograph that appears too light (low density) is most likely caused by:",
+    opts: ["Excessive exposure time", "High mA settings", "Reduced exposure time", "Short source-to-film distance"],
+    correct: 2,
+    explain: "Low exposure time, low mA, and low kVp lead to a light radiograph (reduced density)."
+  },
+  {
+    q: "What is the result of increasing the vertical angulation excessively beyond what is required?",
+    opts: ["Elongation", "Foreshortening", "Cone-cut", "Overlapping"],
+    correct: 1,
+    explain: "Increased vertical angulation (steeper beam) results in foreshortening."
+  },
+  {
+    q: "Elongation of the dental image is primarily caused by:",
+    opts: ["Steep vertical angulation", "Flat vertical angulation", "Incorrect horizontal angulation", "Movement during exposure"],
+    correct: 1,
+    explain: "Decreased vertical angulation (too flat) makes the teeth appear longer than actual length."
+  },
+  {
+    q: "Overlapped contact areas on a radiograph are the result of:",
+    opts: ["Incorrect vertical angulation", "Incorrect horizontal angulation", "Film bending", "Patient movement"],
+    correct: 1,
+    explain: "Improper horizontal angulation causes the proximal surfaces of teeth to overlap."
+  },
+  {
+    q: "What error occurs if the X-ray beam (PID) is not properly aligned with the film holder/sensor center?",
+    opts: ["Cone-cut", "Double exposure", "Backward film placement", "Blurred image"],
+    correct: 0,
+    explain: "Cone-cut occurs when the PID is not aligned with the sensor, leaving a portion of the film unexposed."
+  },
+  {
+    q: "If a film appears clear (transparent) after processing, it most likely means:",
+    opts: ["The film was overexposed", "The film was not exposed to radiation", "The film was placed backward", "The developer was too hot"],
+    correct: 1,
+    explain: "An unexposed film remains clear after processing."
+  },
+  {
+    q: "A 'blurred image' on a dental radiograph is typically caused by:",
+    opts: ["Static electricity", "Movement of the patient or tube", "Low kVp", "Incorrect horizontal angulation"],
+    correct: 1,
+    explain: "Movement of the patient, tube, or sensor during exposure leads to blurred images."
+  },
+  {
+    q: "Handling a PSP plate with bare fingers can result in:",
+    opts: ["Elongation", "Dark or light smudges with curved patterns", "Cone-cut", "Foreshortening"],
+    correct: 1,
+    explain: "Oils and sweat from fingers contaminate PSP plates, appearing as curved or whorled smudges."
+  },
+  {
+    q: "Which of the following is considered a patient preparation error?",
+    opts: ["Horizontal overlapping", "Radiopaque artifacts like jewelry", "Incorrect sensor size", "Developer contamination"],
+    correct: 1,
+    explain: "Artifacts like jewelry, glasses, and wigs are patient preparation errors."
+  },
+  {
+    q: "What does 'Sharpness' in radiography define?",
+    opts: ["The overall darkening", "The difference in densities", "The effectiveness to precisely define an edge", "The size of the object"],
+    correct: 2,
+    explain: "Sharpness is the effectiveness of a radiograph to precisely define an edge."
+  },
+  {
+    q: "If a radiograph shows 'Apical Cut-off', what was the likely error?",
+    opts: ["Sensor placed too high/low to miss the apex", "Vertical angulation too flat", "Horizontal angulation incorrect", "PID was too far"],
+    correct: 0,
+    explain: "Apical cut-off is a film placement error where the sensor does not cover the root apex."
+  },
+  {
+    q: "White or dark streaks on a PSP plate are usually indicative of:",
+    opts: ["Overexposure", "Scratches on the plate surface", "Patient movement", "High kVp"],
+    correct: 1,
+    explain: "Scratches on the plate result in white or dark lines/streaks."
+  },
+  {
+    q: "What occurs when the same film or sensor is used twice for exposure?",
+    opts: ["Cone-cut", "Double exposure", "Backward film error", "Static electricity"],
+    correct: 1,
+    explain: "Double exposure results in two overlapping images on one radiograph."
+  },
+  {
+    q: "A dark radiograph (high density) could be caused by:",
+    opts: ["Low mA", "High kVp", "Increased source-to-film distance", "Dense anatomical area"],
+    correct: 1,
+    explain: "High kVp, high mA, and excessive exposure time lead to dark radiographs."
+  },
+  {
+    q: "What is the recommended handling technique to avoid fingerprints on film?",
+    opts: ["Handle by the center", "Handle by the edges only", "Use wet gloves", "Handle very quickly"],
+    correct: 1,
+    explain: "Films should be handled by the edges only to prevent fingerprint artifacts."
+  },
+  {
+    q: "Delayed scanning of a PSP plate results in:",
+    opts: ["Increased contrast", "Loss of latent image (faded image)", "Darkening of the image", "Elongation"],
+    correct: 1,
+    explain: "Delayed scanning leads to the loss of latent image, appearing faded or noisy."
+  },
+  {
+    q: "A 'herringbone' or tire-track pattern appears when:",
+    opts: ["The patient moves", "The film is placed backward", "Horizontal angulation is wrong", "Vertical angulation is too steep"],
+    correct: 1,
+    explain: "Backward film placement shows the lead foil pattern (herringbone)."
+  },
+  {
+    q: "A light radiograph in a PSP system can be caused by:",
+    opts: ["Excessive exposure", "Delay in scanning after exposure", "Background radiation", "Short PID"],
+    correct: 1,
+    explain: "Delay in scanning a PSP plate leads to image fading (light image)."
+  },
+  {
+    q: "Contrast is defined as:",
+    opts: ["Degree of darkening", "Sharpness of the edge", "Difference in densities between regions", "Alignment of the PID"],
+    correct: 2,
+    explain: "Contrast is the difference in densities in different regions of the film."
+  },
+  {
+    q: "What happens if a PSP plate is exposed to ambient light before scanning?",
+    opts: ["Image becomes sharper", "Partial or complete image loss", "Image becomes darker", "No effect"],
+    correct: 1,
+    explain: "Ambient light exposure before scanning causes partial or complete loss of the latent image."
+  },
+  {
+    q: "Dust or debris on a PSP scanner usually appears as:",
+    opts: ["Black fingerprints", "White spots or lines", "Elongated roots", "Cone-cuts"],
+    correct: 1,
+    explain: "Dust or debris on the plate or scanner manifests as white spots or lines."
+  },
+  {
+    q: "Which error results in teeth appearing 'squashed' or shorter than actual size?",
+    opts: ["Elongation", "Foreshortening", "Horizontal overlap", "Blurred image"],
+    correct: 1,
+    explain: "Foreshortening makes teeth appear shorter due to steep vertical angulation."
+  },
+  {
+    q: "What is a 'Dot Artifact' in dental radiography?",
+    opts: ["A lead foil pattern", "A raised identification dot placed over a root", "Dust on the lens", "A light leak"],
+    correct: 1,
+    explain: "The identification dot should be placed occlusally; if placed over a root, it is an artifact."
+  },
+  {
+    q: "When using the paralleling technique, placing the sensor too close to the teeth often leads to:",
+    opts: ["Foreshortening", "Apical cut-off", "Cone-cut", "Sharp image"],
+    correct: 1,
+    explain: "Placing the sensor too close to the teeth in paralleling technique often results in missing the apex (cut-off)."
+  },
+  {
+    q: "A radiopaque artifact like a hair-clip appearing on a film is classified as:",
+    opts: ["Processing error", "Exposure error", "Patient preparation error", "Storage error"],
+    correct: 2,
+    explain: "Hair-clips are external objects that should be removed during patient preparation."
+  },
+  {
+    q: "In digital sensors, an 'automatic exposure error' can trigger:",
+    opts: ["Cone-cut", "Double exposure", "Elongation", "Static electricity"],
+    correct: 1,
+    explain: "Software or operator errors can trigger two exposures on a digital sensor."
+  },
+  {
+    q: "Increased source-to-film distance without adjusting exposure factors results in:",
+    opts: ["Dark radiograph", "Light radiograph", "Sharper radiograph", "Distorted radiograph"],
+    correct: 1,
+    explain: "Increasing the distance reduces the intensity of the beam, causing a light radiograph if time isn't increased."
+  },
+  {
+    q: "Black fingerprints on a traditional film occur because:",
+    opts: ["The finger was contaminated with developer", "The finger was dry", "The finger was contaminated with fixer", "The film was old"],
+    correct: 0,
+    explain: "Touching the film with developer-contaminated fingers before processing creates black fingerprints."
+  }
+];
+
+const tfs = [
+  {
+    q: "Optimum density is the ideal degree of darkening for diagnostic purposes.",
+    answer: true,
+    explain: "True. Optimum density makes the radiographic detail apparent and diagnostic."
+  },
+  {
+    q: "Decreased vertical angulation (too flat) causes foreshortening of the teeth.",
+    answer: false,
+    explain: "False. Decreased vertical angulation causes elongation; increased vertical angulation causes foreshortening."
+  },
+  {
+    q: "Cone-cut occurs because the PID failed to cover the entire film or sensor.",
+    answer: true,
+    explain: "True. Cone-cut is the result of X-ray beam misalignment with the sensor."
+  },
+  {
+    q: "If a PSP plate is not erased before reuse, it can lead to a double exposure artifact.",
+    answer: true,
+    explain: "True. Failure to erase the previous latent image results in two images on the same plate."
+  },
+  {
+    q: "Overlapped images are corrected by changing the vertical angulation.",
+    answer: false,
+    explain: "False. Overlapped images are corrected by adjusting the horizontal angulation."
+  },
+  {
+    q: "Sharpness is defined as the difference in densities between different regions of the radiograph.",
+    answer: false,
+    explain: "False. That is the definition of Contrast. Sharpness defines edge precision."
+  },
+  {
+    q: "Backward film placement results in a light image with a herringbone pattern.",
+    answer: true,
+    explain: "True. The lead foil attenuates the beam (making it light) and leaves its pattern."
+  },
+  {
+    q: "Static electricity artifacts appear as thin, black branching lines on traditional film.",
+    answer: true,
+    explain: "True. While not explicitly detailed in these slides, it is a common handling error; for these slides, 'scratches' are more emphasized."
+  },
+  {
+    q: "A blurred image can be caused by the movement of the X-ray tube head during exposure.",
+    answer: true,
+    explain: "True. Tube head, patient, or sensor movement all cause blurring."
+  }
+];
+
+const saqs = [
+  {
+    q: "Define 'Ideal Radiograph' according to the lecture.",
+    a: "An 'Ideal Radiograph' is the one with optimum density, maximum detail, and sufficient contrast to make the detail apparent. It should be sharp, centered, and have the same size and shape as the object."
+  },
+  {
+    q: "Enumerate the different types of radiographic artifacts that can result from poor patient preparation.",
+    a: "1. Dental appliances<br>2. Eye-glasses<br>3. Jewelry<br>4. Wigs<br>5. Hair-clips/Bands"
+  },
+  {
+    q: "Explain the difference between elongation and foreshortening in a comparison table.",
+    a: `<table>
+        <thead><tr><th>Feature</th><th>Elongation</th><th>Foreshortening</th></tr></thead>
+        <tbody>
+          <tr><td>Appearance</td><td>Teeth look longer than actual</td><td>Teeth look shorter than actual</td></tr>
+          <tr><td>Cause</td><td>Flat/low vertical angulation</td><td>Steep/high vertical angulation</td></tr>
+          <tr><td>Correction</td><td>Increase vertical angulation</td><td>Decrease vertical angulation</td></tr>
+        </tbody>
+      </table>`
+  },
+  {
+    q: "A student produces a radiograph where the roots are missing, but the crowns are clearly visible. The sensor was placed correctly in the holder. What is the most likely technical error?",
+    a: "The most likely error is an 'Apical Cut-off' caused by incorrect vertical angulation (too flat) or placing the sensor too high/low, failing to cover the root length (at least 1/8th inch beyond the apex)."
+  },
+  {
+    q: "List the factors that can lead to a radiograph appearing too dark (high density).",
+    a: "1. Excessive exposure time<br>2. High mA (milliamperage)<br>3. High kVp (kilovoltage peak)<br>4. Short source-to-film distance"
+  },
+  {
+    q: "Compare the visual appearance of scratches versus fingerprints on a PSP plate.",
+    a: `<table>
+        <thead><tr><th>Error</th><th>Visual Appearance</th></tr></thead>
+        <tbody>
+          <tr><td>Scratches</td><td>White or dark lines/streaks</td></tr>
+          <tr><td>Fingerprints</td><td>Dark or light smudges; curved or whorled patterns</td></tr>
+        </tbody>
+      </table>`
+  }
+];
+
+// ----------- Logic -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null),
+  tf: Array(tfs.length).fill(null),
+  saq: Array(saqs.length).fill(false)
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const vToO = map;
+  const oToV = Array(4);
+  map.forEach((orig, v)=>{ oToV[orig] = v; });
+  const correctV = oToV[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ vToO[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return;
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+      buttons[correctV].classList.add('correct');
+      if(v !== correctV) btn.classList.add('wrong');
+      
+      feedback.hidden=false;
+      const isCorrect = (v === correctV);
+      feedback.innerHTML = `<b>${isCorrect ? 'Correct ✔' : 'Wrong ✖'}</b><br>Correct answer: <b>${String.fromCharCode(65+correctV)}</b><br>${item.explain}`;
+      
+      card.dataset.locked = 'true';
+      buttons.forEach(b=>b.setAttribute('disabled',''));
+      recalc();
+    });
+  });
+  mcqGrid.appendChild(card);
+});
+
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true"><span class="key">T</span><span class="label">True</span></button>
+      <button class="opt-btn" data-v="false"><span class="key">F</span><span class="label">False</span></button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return;
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+      if(val !== item.answer) btn.classList.add('wrong');
+      
+      feedback.hidden=false;
+      feedback.innerHTML = `<b>${val === item.answer ? 'Correct ✔' : 'Wrong ✖'}</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      
+      card.dataset.locked = 'true';
+      buttons.forEach(b=>b.setAttribute('disabled',''));
+      recalc();
+    });
+  });
+  tfGrid.appendChild(card);
+});
+
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${saqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);margin-bottom:10px;"></textarea>
+    <div class="btnrow">
+      <button class="primary" data-act="reveal">Reveal Answer</button>
+      <button class="ghost" data-act="toggle">I was correct</button>
+    </div>
+    <div class="answer" hidden>${item.a}</div>
+  `;
+  const rev = card.querySelector('[data-act="reveal"]');
+  const tog = card.querySelector('[data-act="toggle"]');
+  const ans = card.querySelector('.answer');
+
+  rev.addEventListener('click', ()=>{
+    ans.hidden = !ans.hidden;
+    rev.textContent = ans.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+  tog.addEventListener('click', ()=>{
+    state.saq[idx] = !state.saq[idx];
+    tog.textContent = state.saq[idx] ? "✓ Counted" : "I was correct";
+    tog.style.outline = state.saq[idx] ? "2px solid var(--ok)" : "none";
+    recalc();
+  });
+  saqGrid.appendChild(card);
+});
+
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    return s + (card.querySelector('.feedback').textContent.includes("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    return s + (card.querySelector('.feedback').textContent.includes("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"].forEach(id=>{
+    const el = document.getElementById(id);
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    else if(id.includes('Tf')) el.textContent = tfScore;
+    else if(id.includes('Saq')) el.textContent = saqScore;
+    else el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  location.reload();
+});
+</script>
+</body>
+</html>

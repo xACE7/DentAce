@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Rad-6 Extra-oral Radiographic Techniques</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;
+    --bad:#ef4444;
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+
+  table { width: 100%; border-collapse: collapse; margin-top: 10px; color: var(--text); }
+  th, td { border: 1px solid var(--card-border); padding: 8px; text-align: left; }
+  th { background: rgba(255,255,255,0.1); }
+</style>
+</head>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 6</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+const mcqs = [
+  {
+    q: "Which extra-oral projection is specifically indicated for detecting fractures of the zygomatic arches?",
+    opts: ["Lateral Skull", "Sub-mento Vertex (SMV)", "Water's Projection", "Reverse-Towne"],
+    correct: 1,
+    explain: "SMV is indicated for fractures of the zygomatic arches, often taken with reduced exposure to see these thin bones."
+  },
+  {
+    q: "In Water's projection (PNS), the cantho-meatal line forms what angle with the image receptor?",
+    opts: ["10 degrees", "30 degrees", "37 degrees", "90 degrees"],
+    correct: 2,
+    explain: "For Water's projection, the head is tilted so the cantho-meatal line is at 37° to the receptor (Nose-Chin position)."
+  },
+  {
+    q: "What is the primary indication for the Reverse-Towne projection?",
+    opts: ["Frontal Sinus investigation", "High fractures of the condylar necks", "Zygomatic arch fracture", "Sella turcica conditions"],
+    correct: 1,
+    explain: "Reverse-Towne (open mouth) is used for high condylar neck fractures and intracapsular TMJ fractures."
+  },
+  {
+    q: "Where is the central X-ray beam centered for a Lateral Skull projection?",
+    opts: ["Angle of the mandible", "The Glabella", "External Auditory Meatus", "Lower first molars"],
+    correct: 2,
+    explain: "The beam is perpendicular to the mid-sagittal plane and centered over the External Auditory Meatus."
+  },
+  {
+    q: "Which view is the best alternative for patients who cannot open their mouth or have severe gagging?",
+    opts: ["Panoramic Radiograph", "Mandibular Oblique Views", "Sub-mento Vertex", "Postero-anterior Skull"],
+    correct: 1,
+    explain: "Mandibular oblique views are used when intraoral views are impossible due to gagging, trismus, or unconsciousness."
+  },
+  {
+    q: "The 'Forehead-Nose' position is used in which of the following projections?",
+    opts: ["Water's Projection", "Lateral Skull", "Postero-anterior (PA) Skull", "Sub-mento Vertex"],
+    correct: 2,
+    explain: "PA Skull projection uses the 'Forehead-Nose' position where the head is tipped forward."
+  },
+  {
+    q: "In the Mandibular Oblique Body view, the central beam is aimed at which region?",
+    opts: ["Condylar head", "Molar-premolar region", "Symphysis", "Sigmoid notch"],
+    correct: 1,
+    explain: "The beam is aimed at the Molar-premolar region, 2cm below the opposite side angle of the mandible."
+  },
+  {
+    q: "Which condition affecting the skull vault shows a 'cotton-wool' appearance and is indicated for PA skull views?",
+    opts: ["Multiple Myeloma", "Hyperparathyroidism", "Paget's Disease", "Osteomyelitis"],
+    correct: 2,
+    explain: "Paget's disease is a specific indication for conditions affecting the skull vault in PA projections."
+  },
+  {
+    q: "For a Sub-mento Vertex projection, the central ray is aimed at what angle to the horizontal line?",
+    opts: ["5 degrees", "10 degrees", "30 degrees", "37 degrees"],
+    correct: 0,
+    explain: "In SMV, the beam is aimed upwards from below the chin at 5° to the horizontal line."
+  },
+  {
+    q: "Which of the following is NOT an indication for the Water's (Occipito-mental) projection?",
+    opts: ["LeFort fractures", "Coronoid process fractures", "Maxillary sinus investigation", "Sella turcica tumors"],
+    correct: 3,
+    explain: "Sella turcica tumors are an indication for Lateral Skull projection, not Water's."
+  },
+  {
+    q: "The Reverse-Towne projection requires the patient to have their mouth open to:",
+    opts: ["See the maxillary sinuses", "Bring condylar heads out of glenoid fossae", "Avoid superimposition of the teeth", "Stabilize the head"],
+    correct: 1,
+    explain: "Opening the mouth takes the condylar heads out of the glenoid fossae so they can be visualized clearly."
+  },
+  {
+    q: "Which projection centers the beam on an imaginary line joining the lower first molars?",
+    opts: ["PA Skull", "Water's Projection", "Sub-mento Vertex", "Lateral Skull"],
+    correct: 2,
+    explain: "The SMV projection centers the beam on an imaginary line joining the lower first molars."
+  },
+  {
+    q: "The Mandibular Oblique Ramus view is specifically indicated for investigating:",
+    opts: ["Zygomatic arch", "Frontal sinus", "TMJ problems", "Palatal lesions"],
+    correct: 2,
+    explain: "Mandibular Oblique Ramus views are often used for TMJ problems and the ramus area."
+  },
+  {
+    q: "For a PA Skull projection, the central ray is horizontal and centered through the:",
+    opts: ["Nasion", "Occiput", "Vertex", "Menton"],
+    correct: 1,
+    explain: "The X-ray tubehead for PA skull is horizontal (or 10°) and centered through the Occiput."
+  },
+  {
+    q: "Which anatomical landmark is found in the resultant image of an SMV projection?",
+    opts: ["Foramen magnum", "Sella turcica", "Infra-orbital foramen", "Frontal sinus"],
+    correct: 0,
+    explain: "Foramen magnum, foramen ovale, and foramen spinosum are key landmarks in SMV views."
+  },
+  {
+    q: "Conditions affecting the Sella turcica (like Pituitary tumors) are best evaluated by:",
+    opts: ["Water's projection", "Lateral Skull", "Reverse-Towne", "PA Skull"],
+    correct: 1,
+    explain: "Lateral skull is specifically indicated for conditions affecting the Sella turcica."
+  },
+  {
+    q: "In the Reverse-Towne projection, the central ray is aimed at what angle to the horizontal?",
+    opts: ["5 degrees", "10 degrees", "30 degrees", "37 degrees"],
+    correct: 2,
+    explain: "The Reverse-Towne projection uses an upward angle of 30° to the horizontal."
+  },
+  {
+    q: "Which projection is used to assess the thickness (medio-lateral) of the posterior mandible before osteotomy?",
+    opts: ["Panoramic", "PA Skull", "Sub-mento Vertex", "Lateral Skull"],
+    correct: 2,
+    explain: "SMV provides a view from below that allows assessment of the medio-lateral thickness of the mandible."
+  },
+  {
+    q: "The 'Innominate line' is a radiographic landmark typically seen in which projection?",
+    opts: ["Lateral Skull", "Water's Projection", "SMV", "PA Skull"],
+    correct: 1,
+    explain: "The innominate line is visualized in the resultant image of the Water's (Occipito-mental) projection."
+  },
+  {
+    q: "Which projection is most useful for investigating the Frontal and Ethmoidal sinuses simultaneously?",
+    opts: ["Lateral Skull", "Water's Projection", "PA Skull", "Reverse-Towne"],
+    correct: 0,
+    explain: "Lateral skull shows Frontal, Sphenoidal, and Maxillary sinuses; PA shows Frontal; Water's shows Maxillary. Lateral provides the best overview for depth."
+  },
+  {
+    q: "In Mandibular Oblique views, the head is tilted towards the affected side to:",
+    opts: ["Decrease exposure", "Avoid superimposition of the opposite side", "Make the patient comfortable", "Align with the floor"],
+    correct: 1,
+    explain: "The head is tilted to the affected side and the beam comes from below the opposite side to avoid superimposing the two sides of the mandible."
+  },
+  {
+    q: "Which radiographic technique is used for 'Mixed dentition analysis' and 'Growth and development'?",
+    opts: ["Periapical", "Extra-oral radiographs", "Bitewing", "Occlusal"],
+    correct: 1,
+    explain: "Extra-oral techniques like Lateral Cephalometric (subset of Lateral Skull) are used for growth and development analysis."
+  },
+  {
+    q: "What is the patient's head position in a Sub-mento Vertex view?",
+    opts: ["Forehead-Nose", "Nose-Chin", "Tipped backwards as far as possible", "Parallel to the floor"],
+    correct: 2,
+    explain: "In SMV, the head is tipped backwards as far as possible so the vertex touches the film."
+  },
+  {
+    q: "Which projection shows the 'Odontoid peg' (C2) centered in the foramen magnum?",
+    opts: ["SMV", "PA Skull", "Lateral Skull", "Water's Projection"],
+    correct: 0,
+    explain: "The odontoid peg is a key landmark seen inside the foramen magnum in a properly positioned SMV."
+  },
+  {
+    q: "If you want to investigate the sphenoidal sinus specifically from a vertical perspective, you use:",
+    opts: ["Lateral Skull", "Sub-mento Vertex", "Water's", "PA Skull"],
+    correct: 1,
+    explain: "SMV is indicated for investigating the sphenoidal sinus base."
+  },
+  {
+    q: "Which projection is also known as the 'Occipito-mental' projection?",
+    opts: ["PA Skull", "Water's Projection", "Reverse-Towne", "Lateral Skull"],
+    correct: 1,
+    explain: "Water's projection is technically called the Occipito-mental projection."
+  },
+  {
+    q: "What is the position of the Image Receptor in a Lateral Skull projection?",
+    opts: ["Perpendicular to Mid-sagittal Plane", "Parallel to Mid-sagittal Plane", "At 37 degrees to Cantho-meatal line", "Under the chin"],
+    correct: 1,
+    explain: "In Lateral Skull, the receptor is positioned parallel to the patient's Mid-sagittal Plane."
+  },
+  {
+    q: "The 'Crista galli' and 'Superior orbital fissure' are landmarks of which projection?",
+    opts: ["Water's", "PA Skull", "SMV", "Reverse-Towne"],
+    correct: 1,
+    explain: "These landmarks are clearly visible in a Postero-anterior (PA) skull projection."
+  },
+  {
+    q: "For Mandibular Oblique views, the cassette should be held 2cm below:",
+    opts: ["The ear", "The angle of the mandible", "The symphysis", "The zygoma"],
+    correct: 1,
+    explain: "The landmark is the angle of the mandible, with the beam directed 2cm below the opposite angle."
+  },
+  {
+    q: "Which projection is preferred for evaluating a patient with suspected LeFort II or III fractures?",
+    opts: ["Lateral Skull", "Water's Projection", "SMV", "PA Skull"],
+    correct: 1,
+    explain: "Water's projection is excellent for middle-third facial fractures including LeFort categories."
+  }
+];
+
+const tfs = [
+  {
+    q: "Extra-oral radiographs are used to investigate diseases affecting the skull base and vault.",
+    answer: true,
+    explain: "Indications include diseases of the skull base, vault, and maxillofacial skeleton."
+  },
+  {
+    q: "In the PA skull projection, the central ray is aimed 30 degrees upwards.",
+    answer: false,
+    explain: "The central ray is horizontal (or 10 degrees) in PA skull; 30 degrees upwards is for Reverse-Towne."
+  },
+  {
+    q: "Water's projection is the primary choice for investigating the Frontal Sinuses.",
+    answer: false,
+    explain: "Water's is primarily for Maxillary sinuses; PA skull is preferred for Frontal sinuses."
+  },
+  {
+    q: "The Sub-mento Vertex projection is taken with the head tipped forward in the 'Forehead-Nose' position.",
+    answer: false,
+    explain: "SMV requires the head tipped backwards; Forehead-Nose is for PA skull."
+  },
+  {
+    q: "The Lateral Skull projection can show downward and backward displacement of the Maxillae in middle 1/3 fractures.",
+    answer: true,
+    explain: "This is a specific indication for Lateral Skull in trauma cases."
+  },
+  {
+    q: "Panoramic Radiograph is considered an extra-oral radiographic technique.",
+    answer: true,
+    explain: "The lecture lists Panoramic Radiograph as one of the types of extra-oral radiographs."
+  },
+  {
+    q: "For the Reverse-Towne projection, the central ray is centered through the Occiput.",
+    answer: false,
+    explain: "In Reverse-Towne, the ray is centered through the Condyles; PA skull is centered through the Occiput."
+  },
+  {
+    q: "The Mandibular Oblique Body view allows for the evaluation of unerupted teeth when intraoral views are not possible.",
+    answer: true,
+    explain: "This is a primary indication, especially for wisdom teeth when a patient cannot open their mouth."
+  },
+  {
+    q: "The Zygomatic arch is best visualized in the SMV projection when exposure factors are increased.",
+    answer: false,
+    explain: "Exposure factors must be reduced to see the thin zygomatic arches in SMV."
+  }
+];
+
+const saqs = [
+  {
+    q: "A patient presents with a suspected fracture of the mandibular ramus but is suffering from severe trismus and cannot open their mouth for intraoral films. Explain which extra-oral view you would use and why.",
+    a: "The Mandibular Oblique Ramus view should be used. This technique is specifically indicated when intraoral views are impossible due to trismus (inability to open mouth) and allows for the detection of fractures in the ramus area without requiring the patient to open their mouth."
+  },
+  {
+    q: "List the general indications for extra-oral radiographic techniques mentioned in the lecture.",
+    a: `
+      <table>
+        <tr><th>#</th><th>Indication</th></tr>
+        <tr><td>1</td><td>Fractures of the maxillofacial skeleton and skull</td></tr>
+        <tr><td>2</td><td>Investigation of the Maxillary Antra (Sinuses)</td></tr>
+        <tr><td>3</td><td>Diseases affecting the Skull base and Vault</td></tr>
+        <tr><td>4</td><td>TMJ disorders and mandibular lesions (cysts/tumors)</td></tr>
+        <tr><td>5</td><td>Growth/development and mixed dentition analysis</td></tr>
+      </table>
+    `
+  },
+  {
+    q: "Compare the patient positioning and central ray direction between the Postero-anterior (PA) Skull projection and the Reverse-Towne projection.",
+    a: `
+      <table>
+        <tr><th>Feature</th><th>PA Skull Projection</th><th>Reverse-Towne Projection</th></tr>
+        <tr><td>Patient Position</td><td>Forehead-Nose (Mouth Closed)</td><td>Forehead-Nose (Mouth Open)</td></tr>
+        <tr><td>Central Ray Angle</td><td>Horizontal (or 10°)</td><td>30° Upwards</td></tr>
+        <tr><td>Centering Point</td><td>Centered through Occiput</td><td>Centered through Condyles</td></tr>
+      </table>
+    `
+  },
+  {
+    q: "A young patient requires an orthodontic assessment to evaluate the relationship of the maxilla and mandible to the cranial base. Which projection is indicated and how is the image receptor positioned?",
+    a: "The Lateral Skull (specifically Lateral Cephalometric) projection is indicated. The image receptor must be positioned parallel to the patient's mid-sagittal plane."
+  },
+  {
+    q: "List at least four anatomical landmarks visible on the resultant image of a Water's (Occipito-mental) projection.",
+    a: `
+      <table>
+        <tr><td>1</td><td>Maxillary antrum</td></tr>
+        <tr><td>2</td><td>Frontal sinus</td></tr>
+        <tr><td>3</td><td>Orbit and Infra-orbital foramen</td></tr>
+        <tr><td>4</td><td>Zygomatic arch and Coronoid process</td></tr>
+      </table>
+    `
+  },
+  {
+    q: "Explain the 'Nose-Chin' position used in Water's projection and identify the primary structure it is designed to visualize.",
+    a: "In the 'Nose-Chin' position, the patient's head is tilted upward so that the cantho-meatal line forms a 37-degree angle with the image receptor. This position is primarily designed to visualize the Maxillary Sinuses (Antra) without superimposition of the petrous temporal bones."
+  }
+];
+
+const state = {
+  mcq: Array(mcqs.length).fill(null),
+  tf: Array(tfs.length).fill(null),
+  saq: Array(saqs.length).fill(false)
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return;
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+  mcqGrid.appendChild(card);
+});
+
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return;
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+  tfGrid.appendChild(card);
+});
+
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+  saqGrid.appendChild(card);
+});
+
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedbackText = card.querySelector('.feedback').textContent;
+    return s + (feedbackText.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedbackText = card.querySelector('.feedback').textContent;
+    return s + (feedbackText.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+recalc();
+</script>
+</body>
+</html>

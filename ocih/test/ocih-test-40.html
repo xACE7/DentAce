@@ -1,0 +1,820 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Interactive Exam • Lecture 39</title>
+<meta name="color-scheme" content="dark" />
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --card:rgba(255,255,255,0.05);
+    --card-border:rgba(255,255,255,0.12);
+    --glass:rgba(255,255,255,0.04);
+    --glass-border:rgba(255,255,255,0.10);
+    --glow-cyan:#06b6d4;
+    --glow-cyan-outer:rgba(6,182,212,0.40);
+    --glow-purple:#8b5cf6;
+    --glow-purple-outer:rgba(139,92,246,0.35);
+    --white-haze:rgba(255,255,255,0.08);
+    --white-outer:rgba(255,255,255,0.15);
+    --radius:16px;
+    --gap:1.25rem;
+    --pad:1.5rem;
+    --ok:#22c55e;  /* green */
+    --bad:#ef4444; /* red */
+  }
+
+  *{box-sizing:border-box}
+  body{margin:0;font:16px/1.65 Inter,ui-sans-serif,system-ui,-apple-system,Segoe UI,Roboto;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1100px;margin:0 auto;padding:24px;}
+
+  .titlebar{
+    position: static;z-index:10;
+    backdrop-filter:saturate(140%) blur(8px);
+    background:linear-gradient(180deg,rgba(11,11,18,0.75),rgba(11,11,18,0.35));
+    border-bottom:1px solid var(--glass-border);
+  }
+  .titlebar .inner{max-width:1100px;margin:0 auto;padding:16px 24px;display:grid;gap:8px;align-items:center;}
+  .grad-text{
+    font-weight:800;
+    letter-spacing:.3px;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px var(--glow-cyan-outer), 0 0 14px var(--glow-purple-outer);
+  }
+  h1.grad-text{font-size:clamp(1.6rem,2vw+1rem,2.6rem);margin:0;text-align:center;}
+  .subtitle{margin:0;text-align:center;color:var(--muted);font-size:0.95rem}
+
+  .section-h{
+    margin:28px 0 14px;
+    padding:12px 16px;
+    border-radius:var(--radius);
+    background:var(--glass);
+    border:1px solid var(--glass-border);
+    box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    text-align:center;
+    font-weight:750;
+    font-size:1.15rem;
+  }
+  .section-h .grad-text{font-size:1.3rem;}
+
+  .grid{display:grid;gap:var(--gap)}
+  @media (min-width:800px){
+    .grid.mcq{grid-template-columns:repeat(2,minmax(0,1fr));}
+    .grid.tf {grid-template-columns:repeat(3,minmax(0,1fr));}
+  }
+
+  /* Cards (no accent on the card itself) */
+  .card{
+    background:var(--card);
+    border:1px solid var(--card-border);
+    border-radius:var(--radius);
+    padding:var(--pad);
+    box-shadow: 0 2px 8px var(--white-haze), 0 0 0 1px rgba(255,255,255,0.02), 0 0 24px rgba(255,255,255,0.06);
+    position:relative;
+  }
+
+  .qtitle{font-weight:650;margin:0 0 12px}
+  .meta{color:var(--muted);font-size:0.88rem;margin-bottom:10px}
+
+  .opts{display:grid;gap:10px}
+  .opt-btn{
+    all:unset;cursor:pointer;display:flex;gap:10px;align-items:center;
+    padding:12px 14px;border-radius:12px;
+    background:rgba(255,255,255,0.03);
+    border:1px solid rgba(255,255,255,0.10);
+    transition:transform .06s ease, background .15s ease, border-color .15s ease;
+  }
+  .opt-btn .key{width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-weight:700;
+    background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;
+    box-shadow:0 0 10px var(--glow-cyan-outer),0 0 10px var(--glow-purple-outer) inset;
+  }
+  .opt-btn:hover{transform:translateY(-1px);border-color:rgba(255,255,255,0.22);}
+
+  /* Accent line ONLY on the chosen/correct answer box, no background highlight */
+  .opt-btn.correct{
+    border-left:6px solid var(--ok);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn.wrong{
+    border-left:6px solid var(--bad);
+    outline:none;
+    background:rgba(255,255,255,0.03);
+  }
+  .opt-btn[disabled]{opacity:.85;cursor:not-allowed;pointer-events:none;}
+
+  .feedback{margin-top:10px;border-radius:12px;padding:10px 12px;border:1px dashed rgba(255,255,255,0.18);background:rgba(255,255,255,0.03);color:var(--muted);}
+  .feedback[hidden]{display:none;}
+  .feedback b{color:var(--text)}
+
+  .answer{margin-top:10px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04)}
+  .answer[hidden]{display:none;}
+  .btnrow{display:flex;gap:10px;flex-wrap:wrap}
+  .ghost, .primary{
+    all:unset;cursor:pointer;border-radius:12px;padding:10px 14px;font-weight:650;border:1px solid rgba(255,255,255,0.18);
+    background:rgba(255,255,255,0.03);
+  }
+  .primary{background:linear-gradient(90deg,var(--glow-cyan),var(--glow-purple));color:#0b0b12;border-color:transparent;}
+
+  .score{
+    margin:16px 0;padding:12px 14px;border-radius:14px;
+    background:var(--glass);border:1px solid var(--glass-border);box-shadow: 0 2px 10px var(--white-haze), 0 0 18px rgba(255,255,255,0.06), 0 0 30px var(--white-outer);
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;
+  }
+  .score .part{color:var(--muted);font-weight:600}
+  .score b{color:var(--text)}
+</style>
+</head>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-57Q3BDNKFW"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+
+  gtag('config', 'G-57Q3BDNKFW');
+</script>
+<body>
+  <header class="titlebar">
+    <div class="inner">
+      <h1 class="grad-text">🦷 Dentistry 3rd year</h1>
+      <p class="subtitle">Test based on Lecture 39</p>
+    </div>
+  </header>
+
+  <main class="wrap">
+
+    <h2 class="section-h"><span class="grad-text">اللَّهُمَّ لا سَهْلَ إِلَّا مَا جَعَلْتَهُ سَهْلًا، وَأَنْتَ تَجْعَلُ الحَزْنَ إِذَا شِئْتَ سَهْلًا</span></h2>
+
+    <section class="score" id="scoreTop">
+      <div class="part">MCQs: <b><span id="sMcq">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal">0</span>/45</b></div>
+      <div class="btnrow">
+        <button class="ghost" id="resetAll">Reset</button>
+      </div>
+    </section>
+
+    <h2 class="section-h"><span class="grad-text">MCQs</span></h2>
+    <div class="grid mcq" id="mcqGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">True / False</span></h2>
+    <div class="grid tf" id="tfGrid"></div>
+
+    <h2 class="section-h"><span class="grad-text">Short Answer Questions</span></h2>
+    <div class="grid" id="saqGrid"></div>
+
+    <section class="score" id="scoreBottom">
+      <div class="part">MCQs: <b><span id="sMcq2">0</span>/30</b></div>
+      <div class="part">True/False: <b><span id="sTf2">0</span>/9</b></div>
+      <div class="part">SAQs: <b><span id="sSaq2">0</span>/6</b></div>
+      <div class="part">Total: <b><span id="sTotal2">0</span>/45</b></div>
+    </section>
+  </main>
+
+<script>
+// ----------- Data -----------
+const mcqs = [
+  {
+    q: "What defines 'Active Eruption'?",
+    opts: [
+      "Movement due to apical recession of gingival tissue",
+      "Actual movement of the tooth from its developmental site to its functional position",
+      "Exposure of more tooth structure without tooth movement",
+      "Movement of the tooth caused strictly by attrition"
+    ],
+    correct: 1,
+    explain: "Active eruption is the actual movement of the tooth from its developmental site to its position in the dental arch, whereas passive eruption involves gingival recession."
+  },
+  {
+    q: "The pre-eruptive phase ends at which developmental milestone?",
+    opts: [
+      "Completion of the crown",
+      "Completion of the root",
+      "When the tooth reaches the occlusal plane",
+      "Upon exfoliation of the primary tooth"
+    ],
+    correct: 0,
+    explain: "The pre-eruptive phase begins at the early bell stage and ends at the time of crown completion (or the beginning of root formation)."
+  },
+  {
+    q: "Which type of tooth movement involves the tooth shifting around a transverse axis?",
+    opts: [
+      "Bodily movement",
+      "Eccentric growth",
+      "Tipping",
+      "Rotation"
+    ],
+    correct: 2,
+    explain: "Tipping (or tilting) is movement around a transverse axis. Rotation is around a longitudinal axis."
+  },
+  {
+    q: "During the pre-eruptive phase, crowding of deciduous teeth is primarily relieved by which mechanism?",
+    opts: [
+      "Resorption of adjacent roots",
+      "Growth of the jaw in length, width, and height",
+      "Decrease in tooth size",
+      "Early shedding of incisors"
+    ],
+    correct: 1,
+    explain: "Crowding is relieved by jaw growth in length (forward/backward), width (outward), and height (vertical)."
+  },
+  {
+    q: "How do the tooth germs of permanent incisors and canines initially develop relative to their deciduous predecessors?",
+    opts: [
+      "Buccal to the apical third of roots",
+      "Lingual to the incisal level of deciduous teeth",
+      "Directly inferior to the bifurcation",
+      "Distal to the deciduous molars"
+    ],
+    correct: 1,
+    explain: "They begin development lingual to the incisal level of deciduous teeth and later shift to be lingual to the apical third."
+  },
+  {
+    q: "Where do the developing premolars eventually position themselves relative to the deciduous molars?",
+    opts: [
+      "Lingual to the roots",
+      "Buccal to the roots",
+      "Enclosed within the roots",
+      "Distal to the roots"
+    ],
+    correct: 2,
+    explain: "Premolars shift from a position near the occlusal area to a position enclosed within the roots of deciduous molars."
+  },
+  {
+    q: "Maxillary permanent molars develop in the maxillary tuberosities with their occlusal surfaces facing in which direction?",
+    opts: [
+      "Mesially",
+      "Distally",
+      "Buccally",
+      "Lingually"
+    ],
+    correct: 1,
+    explain: "Maxillary permanent molars develop in the tuberosities with occlusal surfaces facing distally, then swing into position."
+  },
+  {
+    q: "Mandibular permanent molars develop in the ramus with their occlusal surfaces inclined in which direction?",
+    opts: [
+      "Mesially",
+      "Distally",
+      "Buccally",
+      "Lingually"
+    ],
+    correct: 0,
+    explain: "Mandibular permanent molars develop in the ramus with occlusal surfaces inclined mesially, then upright with jaw growth."
+  },
+  {
+    q: "What defines 'Bodily movement' during eruption?",
+    opts: [
+      "Movement where one part remains stationary while the rest grows",
+      "Movement around a longitudinal axis",
+      "Movement of the entire tooth in one direction (drift)",
+      "Movement around a transverse axis"
+    ],
+    correct: 2,
+    explain: "Bodily movement involves the entire tooth moving in one direction, causing bone resorption ahead and deposition behind."
+  },
+  {
+    q: "What term describes the phenomenon where one part of the tooth germ remains stationary while the remainder continues to grow?",
+    opts: [
+      "Bodily movement",
+      "Eccentric growth",
+      "Tipping",
+      "Rotation"
+    ],
+    correct: 1,
+    explain: "Eccentric growth leads to a shift in the center of the tooth germ because one part remains stationary while the rest grows."
+  },
+  {
+    q: "The eruptive (pre-functional) phase ends when?",
+    opts: [
+      "Root formation begins",
+      "The crown is completed",
+      "The tooth reaches occlusion",
+      "The tooth is lost"
+    ],
+    correct: 2,
+    explain: "The eruptive phase starts with root formation and ends when the tooth reaches functional occlusion."
+  },
+  {
+    q: "What is the 'Gubernacular Canal'?",
+    opts: [
+      "A canal in the root of the tooth",
+      "A small canal in the alveolar bone containing the gubernacular cord",
+      "A canal for the inferior alveolar nerve",
+      "A pathway for pus drainage"
+    ],
+    correct: 1,
+    explain: "It is a small canal in the bony crypt surrounding the successor tooth, containing the gubernacular cord."
+  },
+  {
+    q: "In anterior teeth, where are the gubernacular canals located?",
+    opts: [
+      "In the lingual plate of bone",
+      "In the buccal plate of bone",
+      "Within the pulp chamber",
+      "In the interdental septum"
+    ],
+    correct: 0,
+    explain: "For anterior teeth, gubernacular canals are seen in the lingual plate of bone behind the deciduous incisors."
+  },
+  {
+    q: "The gubernacular cord consists of remnants of which structure?",
+    opts: [
+      "Enamel organ",
+      "Dental lamina and connective tissue",
+      "Hertwig's epithelial root sheath",
+      "Dental papilla"
+    ],
+    correct: 1,
+    explain: "The gubernacular cord contains remnants of the dental lamina and connective tissue."
+  },
+  {
+    q: "What is the primary function of the gubernacular canal and cord?",
+    opts: [
+      "To provide nutrition to the erupting tooth",
+      "To provide a directional path for eruption",
+      "To form the periodontal ligament",
+      "To prevent ankylosis"
+    ],
+    correct: 1,
+    explain: "They provide the directional path for the eruption of the permanent tooth."
+  },
+  {
+    q: "Which cells are responsible for bone resorption in the roof of the crypt during eruption?",
+    opts: [
+      "Osteoblasts",
+      "Osteoclasts",
+      "Fibroblasts",
+      "Ameloblasts"
+    ],
+    correct: 1,
+    explain: "Osteoclasts are responsible for resorbing the bone in the roof of the crypt to allow the tooth to move out."
+  },
+  {
+    q: "What happens to the connective tissue between the Reduced Dental Epithelium (RDE) and the oral epithelium during eruption?",
+    opts: [
+      "It thickens and becomes fibrous",
+      "It calcifies",
+      "It degenerates",
+      "It turns into bone"
+    ],
+    correct: 2,
+    explain: "The connective tissue degenerates, allowing the RDE and oral epithelium to fuse."
+  },
+  {
+    q: "The fusion of the Reduced Dental Epithelium with the Oral Epithelium results in the formation of what?",
+    opts: [
+      "A solid mass of bone",
+      "An epithelial lined canal",
+      "A connective tissue capsule",
+      "A cystic cavity"
+    ],
+    correct: 1,
+    explain: "The epithelial layers fuse and central cells degenerate, forming an epithelial lined canal for the tooth to erupt."
+  },
+  {
+    q: "Why is tooth eruption typically not accompanied by bleeding?",
+    opts: [
+      "Because the tooth is sharp",
+      "Because the tooth erupts through an epithelial lined canal",
+      "Because the gingiva is avascular",
+      "Because the eruption is very slow"
+    ],
+    correct: 1,
+    explain: "The tooth erupts through the epithelial lined canal formed by the fusion of RDE and oral epithelium, preventing hemorrhage."
+  },
+  {
+    q: "What causes the 'blanching' of the mucosa overlying an erupting tooth?",
+    opts: [
+      "Increased blood flow",
+      "Stretching and thinning of the oral mucous membrane",
+      "Infection",
+      "Accumulation of pus"
+    ],
+    correct: 1,
+    explain: "The fusion of epithelia causes stretching and thinning of the mucosa, compressing blood vessels and leading to blanching."
+  },
+  {
+    q: "What is the role of Reduced Dental Epithelium (RDE) in the eruption pathway?",
+    opts: [
+      "It secretes desmolytic enzymes to break down connective tissue",
+      "It forms the root of the tooth",
+      "It produces enamel",
+      "It anchors the tooth to the bone"
+    ],
+    correct: 0,
+    explain: "The RDE secretes desmolytic enzymes that cause degeneration of the overlying connective tissue."
+  },
+  {
+    q: "How does the rate of tooth eruption compare to the rate of jaw growth during the pre-functional phase?",
+    opts: [
+      "Eruption is slower than jaw growth",
+      "Eruption is equal to jaw growth",
+      "Eruption is faster than jaw growth",
+      "There is no correlation"
+    ],
+    correct: 2,
+    explain: "The rate of tooth eruption is more than the rate of jaw growth during the eruptive (pre-functional) phase."
+  },
+  {
+    q: "When does the Eruptive (Functional) phase begin?",
+    opts: [
+      "When the root is completed",
+      "When the tooth reaches the occlusal plane",
+      "When the tooth is shed",
+      "When the crown is formed"
+    ],
+    correct: 1,
+    explain: "The functional eruptive phase begins when the tooth reaches the occlusal plane and engages in function."
+  },
+  {
+    q: "Which movement compensates for the increase in jaw height during the post-eruptive phase?",
+    opts: [
+      "Mesial drift",
+      "Axial movement",
+      "Rotational movement",
+      "Tipping"
+    ],
+    correct: 1,
+    explain: "Axial movement continues to compensate for the vertical growth (height) of the jaws."
+  },
+  {
+    q: "Which movement compensates for proximal wear of teeth?",
+    opts: [
+      "Axial movement",
+      "Mesial drift",
+      "Distal drift",
+      "Submergence"
+    ],
+    correct: 1,
+    explain: "Mesial drift compensates for proximal wear to maintain interproximal contacts."
+  },
+  {
+    q: "Which of the following is NOT a proposed theory of tooth eruption?",
+    opts: [
+      "Root formation theory",
+      "Bone remodeling theory",
+      "Pulpal pressure theory",
+      "Salivary pressure theory"
+    ],
+    correct: 3,
+    explain: "Salivary pressure is not a theory. Valid theories include root formation, bone remodeling, PDL traction, and vascular/pulpal pressure."
+  },
+  {
+    q: "The 'Periodontal Ligament Traction Theory' suggests eruption is caused by?",
+    opts: [
+      "Elongation of the root pushing the tooth",
+      "Traction by periodontal fibers (fibroblasts)",
+      "Blood pressure in the pulp",
+      "Deposition of bone at the apex"
+    ],
+    correct: 1,
+    explain: "It suggests that the traction power of fibroblasts and collagen fibers in the PDL pulls the tooth into eruption."
+  },
+  {
+    q: "Which of the following is considered the most critical factor in eruption according to current consensus?",
+    opts: [
+      "Root elongation alone",
+      "A coupling of bone remodeling, root elongation, and PDL changes",
+      "Purely vascular pressure",
+      "Gravity"
+    ],
+    correct: 1,
+    explain: "Eruption is a multifactorial process involving root elongation, alveolar bone modification, and PDL modification."
+  },
+  {
+    q: "During bodily movement, where does bone deposition occur?",
+    opts: [
+      "On the surface toward which the tooth moves",
+      "On the crypt wall behind the moving tooth",
+      "At the apex only",
+      "On the occlusal surface"
+    ],
+    correct: 1,
+    explain: "Bone resorption occurs in front of the movement, and bone deposition occurs behind it."
+  },
+  {
+    q: "For premolars, where are the gubernacular canals located?",
+    opts: [
+      "In the lingual plate",
+      "In the socket of the corresponding deciduous molars",
+      "In the mandibular canal",
+      "In the maxillary sinus"
+    ],
+    correct: 1,
+    explain: "In premolars, the canals are present in the socket of the corresponding deciduous molars."
+  }
+];
+
+const tfs = [
+  {
+    q: "Passive eruption involves the actual movement of the tooth from its developmental site.",
+    answer: false,
+    explain: "This describes Active Eruption. Passive eruption is gingival recession exposing the tooth without actual tooth movement."
+  },
+  {
+    q: "The pre-eruptive phase ends at the beginning of root formation.",
+    answer: true,
+    explain: "Correct. It starts at crown formation and ends when root formation begins."
+  },
+  {
+    q: "Permanent molars have deciduous predecessors.",
+    answer: false,
+    explain: "Permanent molars do not have deciduous predecessors; they develop as posterior extensions of the dental lamina."
+  },
+  {
+    q: "Maxillary permanent molars initially develop with their occlusal surfaces facing mesially.",
+    answer: false,
+    explain: "They develop with occlusal surfaces facing distally."
+  },
+  {
+    q: "The gubernacular cord guides the eruption of permanent teeth.",
+    answer: true,
+    explain: "It provides the directional path for the eruption."
+  },
+  {
+    q: "Eruption is accompanied by severe bleeding due to the rupture of oral mucosa.",
+    answer: false,
+    explain: "Eruption is typically bloodless because the tooth moves through an epithelial lined canal formed by fused epithelia."
+  },
+  {
+    q: "The rate of tooth eruption is slower than the rate of jaw growth in the eruptive phase.",
+    answer: false,
+    explain: "The rate of eruption is more (faster) than the rate of jaw growth."
+  },
+  {
+    q: "Axial movement in the post-eruptive phase compensates for occlusal wear.",
+    answer: true,
+    explain: "Axial movement compensates for both jaw height increase and occlusal wear."
+  },
+  {
+    q: "Osteoblasts are the primary cells responsible for clearing the eruption pathway in the overlying bone.",
+    answer: false,
+    explain: "Osteoclasts are responsible for bone resorption in the eruption pathway."
+  }
+];
+
+const saqs = [
+  {
+    q: "Define 'Eccentric Growth' in the context of tooth movement.",
+    a: "It is a type of movement where one part of the developing tooth germ remains stationary while the remainder continues to grow, leading to a shift in its center."
+  },
+  {
+    q: "List the 3 phases of tooth eruption.",
+    a: "<ul><li>1. Pre-eruptive phase</li><li>2. Eruptive (Pre-functional) phase</li><li>3. Post-eruptive (Functional) phase</li></ul>"
+  },
+  {
+    q: "Compare the initial developmental position and subsequent movement of Maxillary vs. Mandibular permanent molars.",
+    a: "<table border='1' style='width:100%; border-collapse:collapse; margin-top:5px; color:inherit;'><tr><th>Tooth</th><th>Initial Position (Occlusal Surface Facing)</th><th>Movement</th></tr><tr><td>Maxillary Molars</td><td>Distally (in tuberosity)</td><td>Swing into position</td></tr><tr><td>Mandibular Molars</td><td>Mesially (in ramus)</td><td>Tilt/Upright into position</td></tr></table>"
+  },
+  {
+    q: "A mother notices a white 'blanched' area on her baby's gum where a tooth is coming in but sees no bleeding when it emerges. Explain the histological basis for this.",
+    a: "The Reduced Dental Epithelium fuses with the Oral Epithelium as the tooth approaches the surface. This fusion compresses the blood vessels (causing blanching) and forms an epithelial-lined canal. The central cells degenerate, allowing the tooth to erupt through this canal without rupturing blood vessels (no bleeding)."
+  },
+  {
+    q: "List 4 major theories proposed to explain the mechanism of tooth eruption.",
+    a: "<ul><li>1. Root Formation Theory</li><li>2. Bone Remodeling Theory</li><li>3. Periodontal Ligament Traction Theory</li><li>4. Pulpal/Vascular Pressure Theory</li></ul>"
+  },
+  {
+    q: "Describe the function and contents of the Gubernacular Canal.",
+    a: "<b>Contents:</b> Remnants of the dental lamina and connective tissue (Gubernacular cord).<br><b>Function:</b> It provides the directional path for the eruption of the permanent tooth."
+  }
+];
+
+// ----------- State -----------
+const state = {
+  mcq: Array(mcqs.length).fill(null), // null | selectedIndex
+  tf: Array(tfs.length).fill(null),   // null | boolean
+  saq: Array(saqs.length).fill(false) // self-marked
+};
+
+function shuffleIndices(n){
+  const arr = Array.from({length:n}, (_,i)=>i);
+  for(let i=n-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [arr[i],arr[j]] = [arr[j],arr[i]];
+  }
+  return arr;
+}
+
+// ----------- Render MCQs -----------
+const mcqGrid = document.getElementById('mcqGrid');
+mcqs.forEach((item, idx)=>{
+  const map = shuffleIndices(4);
+  const visualToOriginal = map;
+  const originalToVisual = Array(4);
+  map.forEach((orig, v)=>{ originalToVisual[orig] = v; });
+  const correctVisualIndex = originalToVisual[item.correct];
+
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='mcq';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Question ${idx+1} of ${mcqs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      ${[0,1,2,3].map(v=>`
+        <button class="opt-btn" data-v="${v}" aria-label="Answer option ${String.fromCharCode(65+v)}">
+          <span class="key">${String.fromCharCode(65+v)}</span>
+          <span class="label">${item.opts[ visualToOriginal[v] ]}</span>
+        </button>
+      `).join('')}
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const v = Number(btn.dataset.v);
+      state.mcq[idx] = v;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct option (green)
+      const correctBtn = buttons[correctVisualIndex];
+      correctBtn.classList.add('correct');
+
+      if(v !== correctVisualIndex){
+        // Mark chosen wrong option (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${String.fromCharCode(65+correctVisualIndex)}</b><br>${item.explain}`;
+      }
+      lock();
+      recalc();
+    });
+  });
+
+  mcqGrid.appendChild(card);
+});
+
+// ----------- Render True/False -----------
+const tfGrid = document.getElementById('tfGrid');
+tfs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='tf';
+  card.dataset.index = idx;
+  card.dataset.locked = 'false';
+  card.innerHTML = `
+    <p class="meta">Statement ${idx+1} of ${tfs.length}</p>
+    <h3 class="qtitle">${item.q}</h3>
+    <div class="opts">
+      <button class="opt-btn" data-v="true">
+        <span class="key">T</span><span class="label">True</span>
+      </button>
+      <button class="opt-btn" data-v="false">
+        <span class="key">F</span><span class="label">False</span>
+      </button>
+    </div>
+    <div class="feedback" hidden></div>
+  `;
+
+  const buttons = card.querySelectorAll('.opt-btn');
+  const feedback = card.querySelector('.feedback');
+
+  function lock(){
+    card.dataset.locked = 'true';
+    buttons.forEach(b=>b.setAttribute('disabled',''));
+  }
+
+  buttons.forEach(btn=>{
+    btn.addEventListener('click', ()=>{
+      if(card.dataset.locked === 'true') return; // one attempt
+      const val = btn.dataset.v === "true";
+      state.tf[idx] = val;
+
+      // clear classes
+      buttons.forEach(b=>b.classList.remove('correct','wrong'));
+
+      // Always mark the correct button (green)
+      const correctBtn = Array.from(buttons).find(b => (b.dataset.v === (item.answer ? "true" : "false")));
+      correctBtn.classList.add('correct');
+
+      const isCorrect = (val === item.answer);
+      if(!isCorrect){
+        // mark chosen wrong (red)
+        btn.classList.add('wrong');
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Wrong ✖</b><br>Correct answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }else{
+        feedback.hidden=false;
+        feedback.innerHTML = `<b>Correct ✔</b><br>Answer: <b>${item.answer ? 'True' : 'False'}</b><br>${item.explain}`;
+      }
+
+      lock();
+      recalc();
+    });
+  });
+
+  tfGrid.appendChild(card);
+});
+
+// ----------- Render SAQs -----------
+const saqGrid = document.getElementById('saqGrid');
+saqs.forEach((item, idx)=>{
+  const card = document.createElement('article');
+  card.className='card qcard';
+  card.dataset.type='saq';
+  card.dataset.index = idx;
+  card.innerHTML = `
+  <p class="meta">Question ${idx + 1} of ${saqs.length}</p>
+  <h3 class="qtitle">${item.q}</h3>
+  <textarea rows="4" placeholder="Type your answer..." style="width:100%;padding:12px;border-radius:12px;background:rgba(255,255,255,0.03);border:1px solid rgba(255,255,255,0.14);color:var(--text);"></textarea>
+  <div class="btnrow" style="margin-top:10px">
+    <button class="primary" data-act="reveal">Reveal Answer</button>
+    <button class="ghost" data-act="toggle">I was correct</button>
+  </div>
+  <div class="answer" hidden>${item.a}</div>
+`;
+
+
+  const revealBtn = card.querySelector('[data-act="reveal"]');
+  const toggleBtn = card.querySelector('[data-act="toggle"]');
+  const answer = card.querySelector('.answer');
+
+  revealBtn.addEventListener('click', ()=>{
+    answer.hidden = !answer.hidden;
+    revealBtn.textContent = answer.hidden ? "Reveal Answer" : "Hide Answer";
+  });
+
+  toggleBtn.addEventListener('click', ()=>{
+    const now = !state.saq[idx];
+    state.saq[idx] = now;
+    toggleBtn.textContent = now ? "✓ Counted as correct" : "I was correct";
+    toggleBtn.style.outline = now ? "2px solid rgba(34,197,94,.7)" : "none";
+    recalc();
+  });
+
+  saqGrid.appendChild(card);
+});
+
+// ----------- Score + Reset -----------
+function recalc(){
+  const mcqScore = state.mcq.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="mcq"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const tfScore = state.tf.reduce((s,v,i)=>{
+    if(v===null) return s;
+    const card = document.querySelector(`.qcard[data-type="tf"][data-index="${i}"]`);
+    const feedback = card.querySelector('.feedback').textContent;
+    return s + (feedback.startsWith("Correct") ? 1 : 0);
+  },0);
+  const saqScore = state.saq.filter(Boolean).length;
+  const total = mcqScore + tfScore + saqScore;
+
+  const ids = ["sMcq","sTf","sSaq","sTotal","sMcq2","sTf2","sSaq2","sTotal2"];
+  ids.forEach(id=>{
+    const el = document.getElementById(id);
+    if(!el) return;
+    if(id.includes('Mcq')) el.textContent = mcqScore;
+    if(id.includes('Tf')) el.textContent = tfScore;
+    if(id.includes('Saq')) el.textContent = saqScore;
+    if(id.includes('Total')) el.textContent = total;
+  });
+}
+
+document.getElementById('resetAll').addEventListener('click', ()=>{
+  document.querySelectorAll('.qcard .feedback').forEach(f=>{f.hidden=true; f.textContent=''; f.innerHTML='';});
+  document.querySelectorAll('.opt-btn').forEach(b=>{
+    b.classList.remove('correct','wrong');
+    b.removeAttribute('disabled');
+  });
+  document.querySelectorAll('.qcard[data-type="mcq"], .qcard[data-type="tf"]').forEach(c=>{c.dataset.locked='false';});
+  document.querySelectorAll('.qcard[data-type="saq"] textarea').forEach(t=>t.value="");
+  document.querySelectorAll('.qcard[data-type="saq"] .answer').forEach(a=>a.hidden=true);
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="reveal"]').forEach(b=>b.textContent="Reveal Answer");
+  document.querySelectorAll('.qcard[data-type="saq"] [data-act="toggle"]').forEach(b=>{b.textContent="I was correct"; b.style.outline="none";});
+
+  state.mcq.fill(null); state.tf.fill(null); state.saq.fill(false);
+  recalc();
+});
+
+recalc();
+</script>
+</body>
+</html>

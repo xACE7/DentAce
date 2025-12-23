@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="en" style="direction:ltr;">
+<head>
+<meta charset="utf-8"/>
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport"/>
+<title>🦷 Dentistry 3rd year — Advanced Imaging Modalities</title>
+<meta content="dark" name="color-scheme"/>
+<style>
+  :root{
+    --bg:#0b0b12;
+    --text:#f6f7fb;
+    --muted:#a6afc6;
+    --radius:16px;
+    --gap:1.25rem;
+
+    /* Callout colors */
+    --callout-gold:#eab308;
+    --callout-gray:#9ca3af;
+    --callout-green:#22c55e;
+    --callout-pink:#f472b6;
+    --callout-red:#f43f5e;
+    --callout-cyan:#22d3ee;
+    --callout-blue:#60a5fa;
+    --callout-lemon:#fde047;
+
+    /* 15% intensity glows (global) */
+    --glow-white: 0 0 28px rgba(255,255,255,.15), 0 0 50px rgba(255,255,255,.15);
+    /* Exceptions (keep at 25%) */
+    --glossary-glow: 0 0 26px rgba(139,92,246,.25), 0 0 44px rgba(139,92,246,.25);
+    --flash-glow: 0 0 26px rgba(6,182,212,.25), 0 0 44px rgba(6,182,212,.25);
+  }
+
+  /* Base */
+  body{margin:0;font:16px/1.7 Inter,ui-sans-serif,system-ui;color:var(--text);background:var(--bg);min-height:100dvh;}
+  .wrap{max-width:1200px;margin:0 auto;padding:20px;}
+
+  /* Language visibility (scoped to content so switcher labels stay visible) */
+  .lang-en main .ar{display:none!important;}
+  .lang-ar main .en{display:none!important;}
+
+  /* Header bar */
+  header{position:static;background:rgba(20,20,35,.6);border-bottom:1px solid rgba(255,255,255,.12);}
+  .hdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;}
+  .hdr .left{display:flex;flex-direction:column;gap:6px}
+  .title{font-weight:800;font-size:clamp(1.6rem,1.1rem+2vw,2.6rem);background:linear-gradient(90deg,#06b6d4,#8b5cf6);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);} 
+  .subtitle{color:var(--muted);font-size:1.05rem;letter-spacing:.2px}
+
+  /* Dua & Topic boxes (white glow global 15%) */
+  .dua,
+  .chip-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1.1rem 1.25rem;
+    margin:10px 0 18px;
+    display:flex;align-items:center;justify-content:center;
+    box-shadow:var(--glow-white);
+  }
+  .dua{
+    font-weight:900;
+    font-size:1.2rem;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    text-align:center;
+  }
+  .chip{display:flex;gap:.6rem;align-items:center;font-weight:900;font-size:1.2rem;opacity:.98;}
+  .chip b{
+    background:linear-gradient(90deg,#22d3ee 0%, #8b5cf6 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 10px rgba(255,255,255,.15);
+  }
+  .chip-box{box-shadow:var(--glow-white);}
+  .chip::before{content:"📘"; filter: drop-shadow(0 0 6px rgba(255,255,255,.15));}
+
+  /* Sections container */
+  .sections{display:flex;flex-direction:column;gap:var(--gap);}
+
+  /* Section -> wider content (6fr) / callouts (2fr) */
+  .section{
+    display:grid;
+    grid-template-columns: 6fr 2fr;
+    gap:1.25rem;
+    background:rgba(255,255,255,.05);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:var(--radius);
+    padding:14px;
+    box-shadow:var(--glow-white);
+    min-height:320px;
+  }
+  .section>div{display:flex;flex-direction:column}
+  .content-col{min-width:0;}
+  .callouts-col{min-width:0;}
+
+  .sec-head{
+    font-weight:900;
+    font-size:1.35rem;
+    margin:0 0 .6rem 0;
+    padding:.7rem 1rem;
+    border-radius:10px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.1);
+    text-align:center;
+    background-image:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+    box-shadow:var(--glow-white);
+  }
+  .sec-body{display:flex;flex-direction:column;gap:.75rem}
+  .sec-body p{margin:0}
+  strong { color: #8b5cf6; }
+
+  /* Callouts column */
+  .callouts{display:flex;flex-direction:column;gap:.6rem}
+  .callout{border-radius:12px;border:1px solid rgba(255,255,255,.12);background:#141420;box-shadow:0 4px 10px rgba(0,0,0,.25), 0 0 20px rgba(255,255,255,.15);overflow:hidden;}
+  .callout .hdr{padding:10px 12px;font-weight:700;font-size:1rem;cursor:pointer;display:flex;gap:.4rem;align-items:center;}
+  .callout .body{padding:8px 12px;font-size:.95rem;color:var(--muted);background:rgba(255,255,255,.02);}  
+  .callout .body[hidden]{display:none;}
+  .facts   .hdr{border-left:5px solid var(--callout-gold);color:var(--callout-gold);}
+  .example .hdr{border-left:5px solid var(--callout-gray);color:var(--callout-gray);}
+  .clinical .hdr{border-left:5px solid var(--callout-green);color:var(--callout-green);}
+  .memory  .hdr{border-left:5px solid var(--callout-pink);color:var(--callout-pink);}
+  .warning .hdr{border-left:5px solid var(--callout-red);color:var(--callout-red);}
+  .extra   .hdr{border-left:5px solid var(--callout-cyan);color:var(--callout-cyan);}
+  .why     .hdr{border-left:5px solid var(--callout-blue);color:var(--callout-blue);}
+  .tips    .hdr{border-left:5px solid var(--callout-lemon);color:var(--callout-lemon);}
+
+  /* Table wrap: invisible scroll container */
+  .table-wrap{
+    overflow-x:auto;
+    margin:.25rem 0 0;
+    padding-bottom:6px;
+    -webkit-overflow-scrolling:touch;
+  }
+  .table-wrap::-webkit-scrollbar{height:10px}
+  .table-wrap::-webkit-scrollbar-track{background:transparent;}
+  .table-wrap::-webkit-scrollbar-thumb{background:rgba(255,255,255,.25);border-radius:999px}
+
+  /* Table look + white glow (15%) */
+  table{
+    width:100%;
+    border-collapse:collapse;
+    min-width:720px;
+    background:rgba(255,255,255,.04);
+    border:1px solid rgba(255,255,255,.12);
+    border-radius:16px;
+    overflow:hidden;
+    box-shadow:var(--glow-white);
+  }
+  th,td{padding:.75rem 1rem; border-bottom:1px solid rgba(255,255,255,.08); text-align:left; vertical-align:top;}
+  th{background:rgba(255,255,255,.08); font-weight:700;}
+  tr:last-child td{border-bottom:none;}
+
+  /* Glossary & Flashcards */
+  .grid{display:grid;gap:1rem;}
+  .grid.g3x4{grid-template-columns:repeat(3,1fr);}
+  .glossary-box,.flashcards-box{
+    border:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.05);
+    border-radius:var(--radius);
+    padding:1rem;
+    margin:20px 0 10px;
+    display:flex;justify-content:center;align-items:center;
+    box-shadow:var(--glow-white);
+  }
+  .glossary-box h3,.flashcards-box h3{
+    margin:0;
+    font-weight:900;
+    font-size:1.35rem;
+    background:linear-gradient(90deg,#06b6d4,#8b5cf6);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    text-shadow:0 0 8px rgba(6,182,212,.15),0 0 12px rgba(139,92,246,.15);
+  }
+  .card{border-radius:14px;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.04);cursor:pointer;display:flex;flex-direction:column;min-height:140px;}
+  .card .head{padding:10px 12px;font-weight:800;font-size:1rem;transition:opacity .25s ease;}
+  .card .content{padding:10px 12px 14px;color:var(--text);font-size:.95rem;line-height:1.6;}
+  .card .content[hidden]{display:none;}
+  .card.open .head{opacity:.45;}
+  #glossary .card{box-shadow:var(--glossary-glow);}
+  #flashcards .card{box-shadow:var(--flash-glow);}
+
+  /* Responsive: stack to 1 column under 960px */
+  @media(max-width:960px){
+    .section{grid-template-columns:1fr;}
+    .grid.g3x4{grid-template-columns:repeat(2,1fr);}
+  }
+  @media(max-width:560px){.grid.g3x4{grid-template-columns:1fr;}}
+
+  /* RTL/LTR control */
+  body.lang-ar {
+    direction: rtl;
+    text-align: right;
+  }
+  body.lang-en {
+    direction: ltr;
+    text-align: left;
+  }
+
+  /* Keep header always LTR */
+  header, header * {
+    direction: ltr !important;
+    text-align: left !important;
+  }
+
+  /* Language Switcher */
+  #langBtn{
+    --h: 40px;
+    --pad: 3px;
+    position: fixed;
+    top: 16px;
+    right: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: space-between;
+    min-width: 150px;
+    height: var(--h);
+    padding: 0 6px;
+    border-radius: 9999px;
+    font-size: 13px;
+    font-weight: 800;
+    gap: .35rem;
+    border: 1px solid rgba(255,255,255,.12);
+    background: rgba(255,255,255,.06);
+    color: var(--muted);
+    box-shadow: 0 10px 25px rgba(0,0,0,.35), 0 2px 6px rgba(0,0,0,.25);
+    backdrop-filter: blur(6px);
+    isolation: isolate;
+    overflow: hidden;
+    z-index: 9999;
+  }
+  #langBtn .lab{display:flex;align-items:center;flex:1;min-width:0;}
+  #langBtn .lab.en{justify-content:flex-start;padding-left:10px;order:1;z-index:2;transition:color .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn .lab.ar{justify-content:flex-end;  padding-right:10px;order:2;z-index:2;transition:color .3s ease, transform .35s cubic-bezier(.22,.61,.36,1);}
+  #langBtn::after{
+    content:"";
+    position:absolute;
+    top: var(--pad);
+    bottom: var(--pad);
+    left: var(--pad);
+    width: calc(50% - var(--pad)*2 + 2px);
+    border-radius: inherit;
+    background: rgba(255,255,255,.10);
+    box-shadow: 0 4px 12px rgba(0,0,0,.35), 0 0 18px rgba(255,255,255,.10);
+    transform: translateX(0);
+    z-index: 0;
+  }
+  @keyframes bgToRight { 0% { transform: translateX(0%); } 70% { transform: translateX(108%); } 100% { transform: translateX(100%); } }
+  @keyframes bgToLeft { 0% { transform: translateX(100%); } 70% { transform: translateX(-8%); } 100% { transform: translateX(0%); } }
+  body.lang-en #langBtn::after { animation: bgToLeft .42s cubic-bezier(.22,.61,.36,1); transform: translateX(0%); }
+  body.lang-ar #langBtn::after { animation: bgToRight .42s cubic-bezier(.22,.61,.36,1); transform: translateX(100%); }
+  body.lang-en #langBtn .lab.en { color: var(--text); transform: scale(1.08); }
+  body.lang-ar #langBtn .lab.ar { color: var(--text); transform: scale(1.08); }
+
+  .source-footer{
+    margin-top:auto;
+    padding:8px 12px;
+    font-size:.85rem;
+    color:var(--muted);
+    border-top:1px solid rgba(255,255,255,.12);
+    background:rgba(255,255,255,.03);
+    text-align:center;
+    border-radius:0 0 var(--radius) var(--radius);
+  }
+</style>
+</head>
+<body class="lang-en">
+<header>
+<div class="hdr wrap">
+<div class="left">
+<div class="title">🦷 Dentistry 3rd year</div>
+<div class="subtitle">Lecture 7</div>
+<button aria-label="Toggle language" class="lang-toggle" id="langBtn">
+<span class="lab en">EN</span>
+<span class="lab ar">AR</span>
+</button>
+</div>
+</div></header>
+<main class="wrap">
+<div class="dua">اللهم انفعنا بما علمتنا، وعلمنا ما ينفعنا، وزدنا علماً</div>
+<div class="chip-box">
+<span class="chip">
+<span class="en"><b>Topic: Advanced Imaging Modalities in Maxillofacial Radiology</b></span>
+<span class="ar"><b>الموضوع: تقنيات التصوير المتقدمة في أشعة الوجه والفكين</b></span>
+</span>
+</div>
+<div class="sections">
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">1. Introduction to Tomography</span><span class="ar">١. مقدمة في التصوير المقطعي</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>Tomography</strong> originates from the Greek words "Tomo" (slice) and "Graphia" (describing). It is a radiographic technique designed to image a single layer or section of the body while intentionally <strong>blurring structures</strong> in other planes.</p>
+<p>Modern advanced imaging includes:</p>
+<ul>
+    <li>Computed Tomography (CT)</li>
+    <li>Magnetic Resonance Imaging (MRI)</li>
+    <li>Ultrasonography (US)</li>
+    <li>Positron Emission Tomography (PET)</li>
+</ul>
+</div>
+<div class="ar">
+<p><strong>التصوير المقطعي (Tomography)</strong> مشتق من الكلمات اليونانية "Tomo" (شريحة) و "Graphia" (وصف). وهي تقنية شعاعية تهدف لتصوير طبقة أو قسم واحد من الجسم مع <strong>تغييب (تضبيب) الهياكل</strong> في المستويات الأخرى بشكل متعمد.</p>
+<p>تشمل تقنيات التصوير المتقدمة الحديثة:</p>
+<ul>
+    <li>الأشعة المقطعية المحوسبة (CT)</li>
+    <li>التصوير بالرنين المغناطيسي (MRI)</li>
+    <li>التصوير بالموجات فوق الصوتية (US)</li>
+    <li>التصوير المقطعي بالإصدار البوزيتروني (PET)</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 3 of 28</span>
+<span class="ar">المصدر: صفحة ٣ من ٢٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Etymology</span><span class="ar">📌 أصل الكلمة</span></div><div class="body" hidden=""><div class="en">"Tomo" means slice; "Graphia" means describing or writing.</div><div class="ar">"Tomo" تعني شريحة؛ "Graphia" تعني وصف أو كتابة.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Core Principle</span><span class="ar">🧠 المبدأ الأساسي</span></div><div class="body" hidden=""><div class="en">Focus on one layer, blur the rest.</div><div class="ar">التركيز على طبقة واحدة وتضبيب الباقي.</div></div></div>
+<div class="callout why"><div class="hdr"><span class="en">🎯 Clinical Need</span><span class="ar">🎯 الضرورة السريرية</span></div><div class="body" hidden=""><div class="en">Advanced imaging is essential for complex maxillofacial pathology that standard X-rays can't detail.</div><div class="ar">التصوير المتقدم ضروري لأمراض الوجه والفكين المعقدة التي لا تستطيع الأشعة السينية العادية تفصيلها.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">2. Computed Tomography (CT) Principles</span><span class="ar">٢. مبادئ الأشعة المقطعية (CT)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Introduced by <strong>Sir Godfrey N. Hounsfield</strong> in 1967, the CT scanner utilizes a rotating <strong>gantry</strong>. The gantry houses the X-ray tube (rotating anode, 120 kVp) and <strong>solid-state detectors</strong>.</p>
+<p>Working mechanism:</p>
+<ul>
+    <li>The patient is placed between the X-ray source and detectors.</li>
+    <li>A <strong>thin fan beam</strong> passes through the patient.</li>
+    <li><strong>Scintillation crystals</strong> (Gadolinium oxysulfide) convert X-rays to visible light.</li>
+    <li><strong>Photodiodes</strong> convert this light into electrical signals for the computer.</li>
+</ul>
+</div>
+<div class="ar">
+<p>قدمها <strong>السير جودفري هونسفيلد</strong> عام ١٩٦٧، ويستخدم جهاز الـ CT <strong>حلقة دوارة (Gantry)</strong>. تضم هذه الحلقة أنبوب الأشعة السينية (مصعد دوار، ١٢٠ كيلو فولت) و<strong>كواشف صلبة</strong>.</p>
+<p>آلية العمل:</p>
+<ul>
+    <li>يوضع المريض بين مصدر الأشعة والكواشف.</li>
+    <li>تمر <strong>حزمة مروحية رقيقة</strong> عبر المريض.</li>
+    <li>تقوم <strong>بلورات الوميض</strong> (كبريتيد أوكسي الجادولينيوم) بتحويل الأشعة إلى ضوء مرئي.</li>
+    <li>تقوم <strong>الثنائيات الضوئية</strong> بتحويل هذا الضوء إلى إشارات كهربائية للحاسوب.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 4, 5, 6 of 28</span>
+<span class="ar">المصدر: الصفحات ٤، ٥، ٦ من ٢٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 History</span><span class="ar">📌 تاريخ</span></div><div class="body" hidden=""><div class="en">CT was invented in 1967 by Sir Godfrey N. Hounsfield.</div><div class="ar">تم اختراع الأشعة المقطعية عام ١٩٦٧ من قبل السير جودفري هونسفيلد.</div></div></div>
+<div class="callout technical"><div class="hdr"><span class="en">⚙️ Technical Spec</span><span class="ar">⚙️ مواصفات فنية</span></div><div class="body" hidden=""><div class="en">Operates typically at 120 kVp and 200 to 800 mA.</div><div class="ar">يعمل عادة بجهد ١٢٠ كيلو فولت وتيار من ٢٠٠ إلى ٨٠٠ مللي أمبير.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Scintillator</span><span class="ar">🧠 مادة الوميض</span></div><div class="body" hidden=""><div class="en">Gadolinium oxysulfide (Gd2S2O) is the crystal used to capture signals.</div><div class="ar">كبريتيد أوكسي الجادولينيوم هو البلورة المستخدمة لالتقاط الإشارات.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">3. Hounsfield Units (CT Numbers)</span><span class="ar">٣. وحدات هونسفيلد (أرقام الـ CT)</span></h2>
+<div class="sec-body">
+<div aria-label="Scrollable table" class="table-wrap">
+<table>
+<thead>
+<tr>
+<th><span class="en">Tissue Type</span><span class="ar">نوع النسيج</span></th>
+<th><span class="en">Hounsfield Unit (HU)</span><span class="ar">وحدة هونسفيلد</span></th>
+<th><span class="en">Appearance</span><span class="ar">المظهر</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="en">Bone</span><span class="ar">العظام</span></td>
+<td><span class="en">+400 to +1000</span><span class="ar">+٤٠٠ إلى +١٠٠٠</span></td>
+<td><span class="en">Bright White</span><span class="ar">أبيض ساطع</span></td>
+</tr>
+<tr>
+<td><span class="en">Soft Tissue</span><span class="ar">الأنسجة الرخوة</span></td>
+<td><span class="en">+40 to +80</span><span class="ar">+٤٠ إلى +٨٠</span></td>
+<td><span class="en">Light Gray</span><span class="ar">رمادي فاتح</span></td>
+</tr>
+<tr>
+<td><span class="en">Water</span><span class="ar">الماء</span></td>
+<td><span class="en">0</span><span class="ar">٠</span></td>
+<td><span class="en">Gray (Reference)</span><span class="ar">رمادي (مرجع)</span></td>
+</tr>
+<tr>
+<td><span class="en">Fat</span><span class="ar">الدهون</span></td>
+<td><span class="en">-60 to -100</span><span class="ar">-٦٠ إلى -١٠٠</span></td>
+<td><span class="en">Dark Gray</span><span class="ar">رمادي غامق</span></td>
+</tr>
+<tr>
+<td><span class="en">Air</span><span class="ar">الهواء</span></td>
+<td><span class="en">-1000</span><span class="ar">-١٠٠٠</span></td>
+<td><span class="en">Black</span><span class="ar">أسود</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 9 of 28</span>
+<span class="ar">المصدر: صفحة ٩ من ٢٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 CT Number</span><span class="ar">📌 رقم الـ CT</span></div><div class="body" hidden=""><div class="en">Dense tissues absorb more X-rays and have higher HU values.</div><div class="ar">الأنسجة الكثيفة تمتص أشعة أكثر ولها قيم HU أعلى.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Contrast Toxicity</span><span class="ar">⚠️ سمية الصبغة</span></div><div class="body" hidden=""><div class="en">Iodine contrast is toxic to patients with kidney disease or asthma.</div><div class="ar">صبغة اليود سامة للمرضى المصابين بأمراض الكلى أو الربو.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Contrast CT</span><span class="ar">🩺 الـ CT الملون</span></div><div class="body" hidden=""><div class="en">Used to enhance visualization of soft tissues and blood vessels.</div><div class="ar">يستخدم لتحسين رؤية الأنسجة الرخوة والأوعية الدموية.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">4. Cone Beam CT (CBCT) vs. Medical CT</span><span class="ar">٤. الأشعة المقطعية مخروطية الشعاع (CBCT) مقابل المقطعية الطبية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p><strong>CBCT</strong> is specialized for dental imaging. It uses a <strong>cone-shaped</strong> beam that captures a large volume in a <strong>single rotation</strong>, unlike the fan beam used in medical CT.</p>
+<p>Key differences:</p>
+<ul>
+    <li><strong>Radiation Dose:</strong> CBCT is up to 40% lower than traditional CT.</li>
+    <li><strong>Imaging:</strong> CBCT is ideal for <strong>hard tissues</strong> (bone, teeth) but has limited soft tissue detail.</li>
+    <li><strong>Scan Time:</strong> Rapid scan time with single rotation.</li>
+</ul>
+</div>
+<div class="ar">
+<p><strong>CBCT</strong> متخصصة في تصوير الأسنان. تستخدم حزمة على شكل <strong>مخروط</strong> تلتقط حجماً كبيراً في <strong>دورة واحدة</strong> فقط، على عكس الحزمة المروحية المستخدمة في الـ CT الطبي.</p>
+<p>الاختلافات الرئيسية:</p>
+<ul>
+    <li><strong>جرعة الإشعاع:</strong> CBCT أقل بنسبة تصل إلى ٤٠٪ من الـ CT التقليدي.</li>
+    <li><strong>التصوير:</strong> CBCT مثالي لـ <strong>الأنسجة الصلبة</strong> (العظام، الأسنان) ولكن تفاصيل الأنسجة الرخوة فيه محدودة.</li>
+    <li><strong>وقت المسح:</strong> وقت مسح سريع بدورة واحدة.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 13, 15 of 28</span>
+<span class="ar">المصدر: الصفحات ١٣، ١٥ من ٢٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 FOV</span><span class="ar">📌 مجال الرؤية</span></div><div class="body" hidden=""><div class="en">CBCT allows for adjustable Field of View (FOV) for specific needs.</div><div class="ar">يسمح الـ CBCT بتعديل مجال الرؤية (FOV) حسب الاحتياجات المحددة.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Artifacts</span><span class="ar">⚠️ شوائب الصورة</span></div><div class="body" hidden=""><div class="en">Metallic restorations in teeth can produce artifacts in CT images.</div><div class="ar">تركيبات الأسنان المعدنية قد تنتج "شوائب" أو تشوهات في صور الـ CT.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 CBCT Uses</span><span class="ar">🩺 استخدامات CBCT</span></div><div class="body" hidden=""><div class="en">Ideal for dental implants, TMJ imaging, and impacted teeth assessment.</div><div class="ar">مثالي لزراعة الأسنان، تصوير مفصل الفك، وتقييم الأسنان المطمورة.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">5. Ultrasonography</span><span class="ar">٥. التصوير بالموجات فوق الصوتية</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Ultrasonography uses <strong>high-frequency sound waves</strong> (1 to 20 MHz) to produce real-time images. It is <strong>non-invasive</strong> and uses <strong>non-ionizing radiation</strong>.</p>
+<p>Key Terminologies:</p>
+<ul>
+    <li><strong>Anechoic:</strong> No echoes, appears black (e.g., fluid).</li>
+    <li><strong>Hyperechoic:</strong> Strong echoes, appears bright (e.g., stones).</li>
+    <li><strong>Hypoechoic:</strong> Weak echoes, appears darker (e.g., some tumors).</li>
+</ul>
+</div>
+<div class="ar">
+<p>يستخدم التصوير بالموجات فوق الصوتية <strong>موجات صوتية عالية التردد</strong> (١ إلى ٢٠ ميجاهرتز) لإنتاج صور فورية. وهي تقنية <strong>غير جراحية</strong> وتستخدم <strong>إشعاعاً غير مؤين</strong>.</p>
+<p>المصطلحات الأساسية:</p>
+<ul>
+    <li><strong>Anechoic (عديم الصدى):</strong> لا توجد أصداء، يظهر باللون الأسود (مثل السوائل).</li>
+    <li><strong>Hyperechoic (عالي الصدى):</strong> أصداء قوية، يظهر ساطعاً (مثل الحصوات).</li>
+    <li><strong>Hypoechoic (منخفض الصدى):</strong> أصداء ضعيفة، يظهر أكثر قتامة.</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 16, 17 of 28</span>
+<span class="ar">المصدر: الصفحات ١٦، ١٧ من ٢٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout technical"><div class="hdr"><span class="en">⚙️ Transducer</span><span class="ar">⚙️ المسبار</span></div><div class="body" hidden=""><div class="en">The device that sends and captures echoes is called a transducer.</div><div class="ar">الجهاز الذي يرسل ويلتقط الأصداء يسمى المسبار (Transducer).</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Dental Indications</span><span class="ar">🩺 دواعي الاستخدام في الأسنان</span></div><div class="body" hidden=""><div class="en">Salivary gland stones, cysts, infections, and lymph node pathologies.</div><div class="ar">حصوات الغدد اللعابية، الأكياس، الالتهابات، وأمراض الغدد الليمفاوية.</div></div></div>
+<div class="callout extra"><div class="hdr"><span class="en">📝 Limitation</span><span class="ar">📝 العيوب</span></div><div class="body" hidden=""><div class="en">Limited bone imaging as sound waves cannot penetrate deep through hard tissues.</div><div class="ar">تصوير العظام محدود لأن الموجات الصوتية لا يمكنها اختراق الأنسجة الصلبة بعمق.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">6. Magnetic Resonance Imaging (MRI)</span><span class="ar">٦. التصوير بالرنين المغناطيسي (MRI)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>MRI works using powerful <strong>magnets</strong> and <strong>hydrogen atoms</strong> (protons). When the magnet is on, protons align; <strong>radio waves</strong> then knock them out of alignment. As they return, they release energy/signals used to create images.</p>
+<p>Weighting Types:</p>
+<ul>
+    <li><strong>T1 weighted:</strong> Best for normal anatomy.</li>
+    <li><strong>T2 weighted:</strong> Best for evaluating <strong>pathology</strong> (fluids/edema).</li>
+</ul>
+</div>
+<div class="ar">
+<p>يعمل الرنين المغناطيسي باستخدام <strong>مغانط قوية</strong> و<strong>ذرات الهيدروجين</strong> (البروتونات). عندما يعمل المغناطيس، تصطف البروتونات؛ ثم تقوم <strong>موجات الراديو</strong> بإزاحتها عن مسارها. وعند عودتها، تطلق طاقة/إشارات تستخدم لإنشاء الصور.</p>
+<p>أنواع الترجيح (Weighting):</p>
+<ul>
+    <li><strong>T1 weighted:</strong> الأفضل للتشريح الطبيعي.</li>
+    <li><strong>T2 weighted:</strong> الأفضل لتقييم <strong>الأمراض</strong> (السوائل/الوذمة).</li>
+</ul>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 20, 21, 23 of 28</span>
+<span class="ar">المصدر: الصفحات ٢٠، ٢١، ٢٣ من ٢٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout why"><div class="hdr"><span class="en">🎯 Why MRI?</span><span class="ar">🎯 لماذا الرنين؟</span></div><div class="body" hidden=""><div class="en">Superior soft tissue contrast compared to CT. No ionizing radiation.</div><div class="ar">تباين متفوق للأنسجة الرخوة مقارنة بالـ CT. لا يوجد إشعاع مؤين.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Contraindications</span><span class="ar">⚠️ موانع الاستخدام</span></div><div class="body" hidden=""><div class="en">Patients with cardiac pacemakers or ferromagnetic implants cannot have an MRI.</div><div class="ar">المرضى الذين لديهم أجهزة تنظيم ضربات القلب أو غرسات حديدية لا يمكنهم إجراء الرنين.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Claustrophobia</span><span class="ar">🧠 رهاب الأماكن المغلقة</span></div><div class="body" hidden=""><div class="en">A common patient disadvantage due to the enclosed, noisy machine.</div><div class="ar">عيب شائع للمرضى بسبب الجهاز المغلق والضوضاء.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">7. Positron Emission Tomography (PET)</span><span class="ar">٧. التصوير المقطعي بالإصدار البوزيتروني (PET)</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>PET is a <strong>nuclear imaging</strong> technique. A <strong>radiotracer</strong> (commonly Fluorodeoxyglucose - FDG) is injected into the body. Active tissues (like cancer cells) absorb more tracer.</p>
+<p>The tracer emits <strong>positrons</strong> which collide with electrons, creating <strong>gamma rays</strong>. A gamma camera detects these to show <strong>metabolic function</strong> rather than just anatomy.</p>
+</div>
+<div class="ar">
+<p>الـ PET هو تقنية <strong>تصوير نووي</strong>. يتم حقن <strong>متتبع مشع</strong> (عادة الفلوروديوكسي جلوكوز - FDG) في الجسم. تمتص الأنسجة النشطة (مثل الخلايا السرطانية) كمية أكبر من المتتبع.</p>
+<p>يطلق المتتبع <strong>بوزيترونات</strong> تصطدم بالإلكترونات، مما ينتج <strong>أشعة جاما</strong>. تكتشف كاميرا جاما هذه الأشعة لإظهار <strong>الوظيفة الأيضية</strong> بدلاً من مجرد الهيكل التشريحي.</p>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Pages 24, 25 of 28</span>
+<span class="ar">المصدر: الصفحات ٢٤، ٢٥ من ٢٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout facts"><div class="hdr"><span class="en">📌 Radiotracer</span><span class="ar">📌 المتتبع المشع</span></div><div class="body" hidden=""><div class="en">FDG is the most common radioactive material used in PET scans.</div><div class="ar">FDG هي المادة المشعة الأكثر شيوعاً المستخدمة في فحوصات الـ PET.</div></div></div>
+<div class="callout memory"><div class="hdr"><span class="en">🧠 Function vs Structure</span><span class="ar">🧠 الوظيفة مقابل الهيكل</span></div><div class="body" hidden=""><div class="en">PET scans show how tissues are functioning; CT/MRI show how they look.</div><div class="ar">فحوصات الـ PET تظهر كيف تعمل الأنسجة؛ بينما تظهر الـ CT/MRI شكلها.</div></div></div>
+<div class="callout clinical"><div class="hdr"><span class="en">🩺 Cancer Staging</span><span class="ar">🩺 مراحل السرطان</span></div><div class="body" hidden=""><div class="en">PET is essential for detecting, staging, and monitoring cancer recurrence.</div><div class="ar">الـ PET ضروري لاكتشاف وتحديد مراحل السرطان ومراقبة تكراره.</div></div></div>
+</div>
+</aside>
+</section>
+
+<section class="section">
+<div class="content-col">
+<h2 class="sec-head"><span class="en">8. Summary & Radiation Dose Comparison</span><span class="ar">٨. ملخص ومقارنة جرعات الإشعاع</span></h2>
+<div class="sec-body">
+<div class="en">
+<p>Selecting the right modality depends on whether you need <strong>hard tissue detail</strong> (CT/CBCT), <strong>soft tissue contrast</strong> (MRI/Ultrasound), or <strong>metabolic activity</strong> (PET).</p>
+</div>
+<div class="ar">
+<p>يعتمد اختيار الوسيلة المناسبة على ما إذا كنت بحاجة إلى <strong>تفاصيل الأنسجة الصلبة</strong> (CT/CBCT)، أو <strong>تباين الأنسجة الرخوة</strong> (MRI/Ultrasound)، أو <strong>النشاط الأيضي</strong> (PET).</p>
+</div>
+<div aria-label="Scrollable table" class="table-wrap">
+<table>
+<thead>
+<tr>
+<th><span class="en">Technique</span><span class="ar">التقنية</span></th>
+<th><span class="en">Effective Dose (µSv)</span><span class="ar">الجرعة الفعالة (ميكرو سيفرت)</span></th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><span class="en">Panoramic (OPG)</span><span class="ar">البانوراما</span></td>
+<td><span class="en">10 – 30</span><span class="ar">١٠ – ٣٠</span></td>
+</tr>
+<tr>
+<td><span class="en">CBCT (Large FOV)</span><span class="ar">CBCT (مجال واسع)</span></td>
+<td><span class="en">60 - 600</span><span class="ar">٦٠ - ٦٠٠</span></td>
+</tr>
+<tr>
+<td><span class="en">Medical CT (Maxillofacial)</span><span class="ar">CT طبي (للوجه والفكين)</span></td>
+<td><span class="en">600 – 2000</span><span class="ar">٦٠٠ – ٢٠٠٠</span></td>
+</tr>
+<tr>
+<td><span class="en">PET Scan (Whole Body)</span><span class="ar">PET (كامل الجسم)</span></td>
+<td><span class="en">4000 – 7000</span><span class="ar">٤٠٠٠ – ٧٠٠٠</span></td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="source-footer">
+<span class="en">Source: Page 27 of 28</span>
+<span class="ar">المصدر: صفحة ٢٧ من ٢٨</span>
+</div>
+</div>
+<aside class="callouts-col">
+<div class="callouts">
+<div class="callout tips"><div class="hdr"><span class="en">💡 Study Tip</span><span class="ar">💡 نصيحة للمذاكرة</span></div><div class="body" hidden=""><div class="en">Remember that MRI and Ultrasound do NOT use ionizing radiation.</div><div class="ar">تذكر أن الرنين المغناطيسي والموجات فوق الصوتية لا تستخدم إشعاعاً مؤيناً.</div></div></div>
+<div class="callout warning"><div class="hdr"><span class="en">⚠️ Highest Dose</span><span class="ar">⚠️ أعلى جرعة</span></div><div class="body" hidden=""><div class="en">PET scans have significantly higher radiation doses compared to dental imaging.</div><div class="ar">فحوصات الـ PET لها جرعات إشعاعية أعلى بكثير مقارنة بتصوير الأسنان.</div></div></div>
+<div class="callout facts"><div class="hdr"><span class="en">📌 Choice</span><span class="ar">📌 الاختيار</span></div><div class="body" hidden=""><div class="en">CBCT is usually the first choice for complex dental cases due to lower dose.</div><div class="ar">عادة ما يكون الـ CBCT هو الخيار الأول لحالات الأسنان المعقدة بسبب جرعته الأقل.</div></div></div>
+</div>
+</aside>
+</section>
+
+</div>
+
+<div class="glossary-box"><h3><span class="en">📚 Glossary</span><span class="ar">📚 المصطلحات</span></h3></div>
+<div class="grid g3x4" id="glossary">
+<div class="card"><div class="head">Gantry / غانتري</div><div class="content" hidden=""><div class="en">The rotating ring part of the CT scanner that houses the X-ray tube and detectors.</div><div class="ar">الجزء الدائري الدوار في جهاز الأشعة المقطعية الذي يضم أنبوب الأشعة والكواشف.</div></div></div>
+<div class="card"><div class="head">Scintillator / الوميض</div><div class="content" hidden=""><div class="en">Material that glows or emits light when exposed to ionizing radiation.</div><div class="ar">مادة تتوهج أو تبعث ضوءاً عند تعرضها لإشعاع مؤين.</div></div></div>
+<div class="card"><div class="head">Anechoic / عديم الصدى</div><div class="content" hidden=""><div class="en">A term in ultrasound describing structures that produce no echoes and appear black.</div><div class="ar">مصطلح في الموجات فوق الصوتية يصف الهياكل التي لا تنتج صدى وتظهر سوداء.</div></div></div>
+<div class="card"><div class="head">Radiotracer / المتتبع المشع</div><div class="content" hidden=""><div class="en">A chemical compound containing a radioactive isotope used in PET scans.</div><div class="ar">مركب كيميائي يحتوي على نظير مشع يستخدم في فحوصات الـ PET.</div></div></div>
+<div class="card"><div class="head">Proton / البروتون</div><div class="content" hidden=""><div class="en">Positively charged particle in hydrogen atoms used as small magnets in MRI.</div><div class="ar">جسيم موجب الشحنة في ذرات الهيدروجين يعمل كمغناطيس صغير في الرنين المغناطيسي.</div></div></div>
+<div class="card"><div class="head">Fan Beam / حزمة مروحية</div><div class="content" hidden=""><div class="en">The shape of the X-ray beam in traditional medical CT scans.</div><div class="ar">شكل حزمة الأشعة السينية في فحوصات الـ CT الطبية التقليدية.</div></div></div>
+<div class="card"><div class="head">Artifact / الشوائب</div><div class="content" hidden=""><div class="en">A visual distortion in an image that does not represent a real anatomical structure.</div><div class="ar">تشويه بصري في الصورة لا يمثل هيكلاً تشريحياً حقيقياً.</div></div></div>
+<div class="card"><div class="head">Claustrophobia / رهاب الاحتجاز</div><div class="content" hidden=""><div class="en">Fear of enclosed spaces, a common issue for patients in MRI scanners.</div><div class="ar">الخوف من الأماكن المغلقة، وهي مشكلة شائعة للمرضى في أجهزة الرنين المغناطيسي.</div></div></div>
+<div class="card"><div class="head">FDG / إف دي جي</div><div class="content" hidden=""><div class="en">Fluorodeoxyglucose, the most common radioactive sugar molecule used in PET.</div><div class="ar">فلوروديوكسي جلوكوز، جزيء السكر المشع الأكثر شيوعاً في فحوصات الـ PET.</div></div></div>
+</div>
+
+<div class="flashcards-box"><h3><span class="en">🃏 Flashcards</span><span class="ar">🃏 بطاقات مراجعة</span></h3></div>
+<div class="grid g3x4" id="flashcards">
+<div class="card"><div class="head"><span class="en">Who introduced the CT scanner?</span><span class="ar">من الذي قدم جهاز الـ CT؟</span></div><div class="content" hidden=""><span class="en">A: Sir Godfrey N. Hounsfield in 1967.</span><span class="ar">ج: السير جودفري هونسفيلد عام ١٩٦٧.</span></div></div>
+<div class="card"><div class="head"><span class="en">What is the HU for air?</span><span class="ar">ما هي قيمة HU للهواء؟</span></div><div class="content" hidden=""><span class="en">A: -1000.</span><span class="ar">ج: -١٠٠٠.</span></div></div>
+<div class="card"><div class="head"><span class="en">Which advanced imaging has NO radiation?</span><span class="ar">أي تصوير متقدم لا يحتوي على إشعاع؟</span></div><div class="content" hidden=""><span class="en">A: MRI and Ultrasonography.</span><span class="ar">ج: الرنين المغناطيسي والموجات فوق الصوتية.</span></div></div>
+<div class="card"><div class="head"><span class="en">What does "Anechoic" look like?</span><span class="ar">كيف يبدو "عديم الصدى"؟</span></div><div class="content" hidden=""><span class="en">A: Dark or Black.</span><span class="ar">ج: داكن أو أسود.</span></div></div>
+<div class="card"><div class="head"><span class="en">Which CT beam is cone-shaped?</span><span class="ar">أي حزمة CT تأتي على شكل مخروط؟</span></div><div class="content" hidden=""><span class="en">A: CBCT (Cone Beam Computed Tomography).</span><span class="ar">ج: الـ CBCT.</span></div></div>
+<div class="card"><div class="head"><span class="en">What is the common PET tracer?</span><span class="ar">ما هو متتبع الـ PET الشائع؟</span></div><div class="content" hidden=""><span class="en">A: Fluorodeoxyglucose (FDG).</span><span class="ar">ج: فلوروديوكسي جلوكوز (FDG).</span></div></div>
+<div class="card"><div class="head"><span class="en">What MRI sequence shows anatomy best?</span><span class="ar">أي تسلسل رنين يظهر التشريح بشكل أفضل؟</span></div><div class="content" hidden=""><span class="en">A: T1 weighted image.</span><span class="ar">ج: صور T1 المرجحة.</span></div></div>
+<div class="card"><div class="head"><span class="en">What causes artifacts in CT?</span><span class="ar">ما الذي يسبب الشوائب في الـ CT؟</span></div><div class="content" hidden=""><span class="en">A: Metallic dental restorations.</span><span class="ar">ج: حشوات وتركيبات الأسنان المعدنية.</span></div></div>
+<div class="card"><div class="head"><span class="en">What does PET scan monitor?</span><span class="ar">ما الذي يراقبه فحص الـ PET؟</span></div><div class="content" hidden=""><span class="en">A: Metabolic and functional processes.</span><span class="ar">ج: العمليات الأيضية والوظيفية.</span></div></div>
+</div>
+</main>
+<script>
+  const btn=document.getElementById('langBtn');
+  btn.addEventListener('click',()=>{
+    const body=document.body;
+    const html=document.documentElement;
+    const toAR=!body.classList.contains('lang-ar');
+    body.classList.toggle('lang-ar', toAR);
+    body.classList.toggle('lang-en', !toAR);
+    html.setAttribute('dir', toAR ? 'rtl' : 'ltr');
+  });
+
+  document.querySelectorAll('.callout .hdr').forEach(h=>{
+    h.addEventListener('click',()=>{
+      const body=h.parentElement.querySelector('.body');
+      body.hidden=!body.hidden;
+    });
+  });
+
+  document.querySelectorAll('#glossary .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+
+  document.querySelectorAll('#flashcards .card').forEach(card=>{
+    card.addEventListener('click',()=>{
+      card.classList.toggle('open');
+      const cont=card.querySelector('.content');
+      cont.hidden=!cont.hidden;
+    });
+  });
+</script>
+</body>
+</html>
