@@ -1,0 +1,128 @@
+/* DentAce lecture component — quiz */
+/* ===================== QUIZ (tests) ===================== */
+.qsec{ font-family:var(--font-title); font-size:1.7rem; margin:16px 0 2px; color:var(--acc); filter:var(--fx-title); text-shadow:0 0 var(--glow-h) var(--glowc); letter-spacing:.4px; }
+.qsec.mcq, .qsrule.mcq{ --acc:var(--c-exam); } .qsec.tf, .qsrule.tf{ --acc:var(--c-extra); } .qsec.saq, .qsrule.saq{ --acc:var(--c-def); }
+.qsrule{ border:0; border-top:2px dashed color-mix(in oklab,var(--acc) 55%, transparent); margin:0 0 10px; }
+.q{ margin:16px 0 6px; }
+.qt{ font-size:1.16rem; line-height:1.5; margin:0 0 8px; filter:var(--fx); }
+.qn{ font-family:var(--font-head); color:var(--c-exam); font-weight:700; margin-right:5px; }
+.opts{ display:grid; gap:7px; margin-left:6px; }
+.opt{ all:unset; cursor:pointer; display:flex; gap:11px; align-items:flex-start; font-size:1.06rem; line-height:1.45; padding:3px 2px; color:var(--ink); filter:var(--fx); }
+.opt .key{ font-family:var(--font-head); font-weight:800; color:var(--c-exam); width:1.4em; flex:none; text-align:center; border-bottom:2px solid color-mix(in oklab,var(--c-exam) 55%, transparent); }
+.opt:hover .key{ color:var(--c-extra); }
+.opt.locked{ cursor:default; }
+.opt.correct, .opt.correct .key{ color:var(--c-extra); } .opt.correct .key{ border-color:var(--c-extra); }
+.opt.wrong, .opt.wrong .key{ color:var(--c-imp); } .opt.wrong span:last-child{ text-decoration:line-through; }
+.exp{ margin:7px 0 0 6px; color:var(--c-extra); font-size:1.0rem; max-height:0; overflow:hidden; opacity:0; transition:max-height .25s ease, opacity .2s; }
+.exp.show{ max-height:300px; opacity:1; } .exp::before{ content:"\2713  "; }
+.score{ position:sticky; top:78px; float:right; margin:-4px 0 6px 12px; font-family:var(--font-head); font-size:1.1rem; color:var(--ink);
+  background:var(--board); border:2px dashed var(--frame); border-radius:14px 8px 16px 9px; padding:6px 13px; z-index:3; }
+.score b{ color:var(--c-extra); }
+.qbtn{ all:unset; cursor:pointer; font-family:var(--font-head); font-size:1.08rem; color:var(--c-exam); border-bottom:2px dashed var(--c-exam); padding:3px 4px; filter:var(--fx); }
+.qbtn:hover{ color:var(--c-extra); border-color:var(--c-extra); }
+/* clinical figures (real images pulled from the source PDF) */
+figure.clin{ margin:16px 0; }
+figure.clin img{ display:block; width:100%; border-radius:13px 8px 14px 7px; border:2px solid var(--frame); box-shadow:0 5px 18px rgba(0,0,0,.20); }
+figure.clin figcaption{ font-family:var(--font-num); font-size:1.02rem; color:var(--muted); margin-top:7px; text-align:center; line-height:1.45; }
+figure.clin figcaption b{ color:var(--c-exam); }
+.figrow{ display:flex; gap:16px; flex-wrap:wrap; align-items:flex-start; margin:16px 0; }
+.figrow figure.clin{ flex:1 1 240px; margin:0; }
+@media(max-width:680px){ .figrow{ flex-direction:column; } }
+
+/* ===================== QUIZ ENGINE (quiz.js) — solid lines ===================== */
+.quiz-src{ font-family:var(--font-num); color:var(--muted); margin:2px 0 6px; text-align:center; font-size:1.05rem; }
+.quiz-dua{ font-family:'Permanent Marker','Gochi Hand',cursive; color:var(--c-exam); filter:var(--fx); font-size:1.45rem; line-height:1.7; margin:10px 0 6px; text-align:center; }
+.quiz-score{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:14px 0 6px; }
+.quiz-score span{ font-family:var(--font-head); font-size:1.06rem; color:var(--ink); background:var(--board); border:2px solid var(--frame); border-radius:13px; padding:7px 15px; }
+.quiz-score b{ color:var(--c-extra); }
+.quiz-controls{ display:flex; gap:10px; flex-wrap:wrap; justify-content:center; margin:8px 0; }
+.qctl{ all:unset; cursor:pointer; font-family:var(--font-head); font-size:1.04rem; color:var(--ink); background:var(--board);
+  border:2px solid var(--frame); border-radius:13px; padding:8px 15px; filter:var(--fx); transition:transform .1s ease, border-color .12s; }
+.qctl:hover{ transform:translateY(-2px); color:var(--c-exam); }
+.qctl.on, .qctl.seg.on{ border-color:var(--c-exam); color:var(--c-exam); }
+.qctl.go{ border-color:var(--c-extra); color:var(--c-extra); }
+/* exam setup (minutes + start) */
+.quiz-setup{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:center; margin:10px 0 0; }
+.setup-lab{ font-family:var(--font-num); color:var(--muted); }
+.quiz-setup input{ width:70px; font:inherit; padding:6px 9px; border-radius:10px; border:2px solid var(--frame); background:var(--board); color:var(--ink); }
+.quiz-time{ font-family:var(--font-head); font-size:1.12rem; color:var(--c-exam); margin:6px 0; }
+
+/* two-per-row MCQ grid with solid dividers */
+.qgrid{ display:grid; grid-template-columns:1fr 1fr; margin-top:4px; }
+.qcard{ padding:18px 22px; border-bottom:2px solid var(--frame); }
+.qcard:nth-child(odd){ border-right:2px solid var(--frame); }
+.q-meta{ font-family:var(--font-num); color:var(--muted); font-size:.95rem; margin:0 0 6px; }
+.q-text{ font-size:1.12rem; line-height:1.5; margin:0 0 10px; filter:var(--fx); }
+.q-opts{ display:flex; flex-direction:column; gap:5px; }
+.q-opt{ all:unset; cursor:pointer; display:flex; gap:10px; align-items:flex-start; padding:7px 8px; border-radius:10px; color:var(--ink); line-height:1.45; filter:var(--fx); }
+.q-opt:hover:not([disabled]){ background:color-mix(in oklab,var(--c-exam) 10%, transparent); }
+.q-key{ font-family:var(--font-head); font-weight:800; color:var(--c-exam); width:1.5em; flex:none; text-align:center; border-bottom:2px solid color-mix(in oklab,var(--c-exam) 55%, var(--frame)); }
+.q-opt[disabled]{ cursor:default; }
+.q-opt.sel{ background:color-mix(in oklab,var(--c-exam) 16%, transparent); }
+.q-time{ color:var(--c-exam); font-family:var(--font-num); }
+.q-opt.correct, .q-opt.correct .q-key{ color:var(--c-extra) !important; } .q-opt.correct .q-key{ border-color:var(--c-extra); }
+.q-opt.wrong, .q-opt.wrong .q-key{ color:var(--c-imp) !important; } .q-opt.wrong span:last-child{ text-decoration:line-through; }
+.q-fb{ margin-top:9px; color:var(--c-extra); font-size:1rem; line-height:1.55; filter:var(--fx); }
+.q-fb .ok{ color:var(--c-extra); } .q-fb .no{ color:var(--c-imp); }
+.qimg{ display:block; width:100%; max-height:280px; object-fit:contain; border:2px solid var(--frame); border-radius:13px; margin:0 0 10px; background:rgba(0,0,0,.18); }
+
+/* SAQ sheet */
+.saq-item{ padding:14px 0 18px; border-bottom:2px solid var(--frame); }
+.saq-box{ display:block; width:100%; margin:8px 0 6px; padding:11px 13px; font:inherit; font-size:1.05rem; line-height:1.5; color:var(--ink);
+  background:color-mix(in oklab,var(--board) 65%, transparent); border:2px solid var(--frame); border-radius:13px; resize:vertical; min-height:84px; }
+.saq-box::placeholder{ color:var(--muted); } .saq-box:focus{ outline:none; border-color:color-mix(in oklab,var(--c-def) 60%, var(--frame)); }
+.saq-row{ display:flex; gap:10px; flex-wrap:wrap; align-items:center; margin-top:8px; }
+.saq-done.on{ color:var(--c-extra); border-color:var(--c-extra); }
+.saq-ans{ margin-top:10px; color:var(--c-extra); font-size:1.02rem; line-height:1.6; filter:var(--fx); }
+.saq-ans table{ width:100%; border-collapse:collapse; margin-top:4px; }
+.saq-ans th,.saq-ans td{ border:1px solid var(--frame); padding:6px 10px; text-align:left; }
+.qbtn{ all:unset; cursor:pointer; font-family:var(--font-head); font-size:1.04rem; color:var(--c-exam); border:2px solid var(--frame); border-radius:11px; padding:5px 13px; filter:var(--fx); }
+.qbtn:hover{ border-color:var(--c-exam); }
+
+/* fixed exam HUD (timer + submit) */
+.exam-hud[hidden], .solo-bar[hidden]{ display:none !important; }
+.exam-hud{ position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:80; display:flex; gap:14px; align-items:center;
+  background:var(--board); border:2px solid color-mix(in oklab,var(--c-exam) 55%, var(--frame)); border-radius:14px; padding:8px 16px; box-shadow:0 6px 20px rgba(0,0,0,.32); }
+.exam-hud .qtimer{ font-family:var(--font-head); font-size:1.25rem; color:var(--c-exam); }
+.exam-hud .qtimer.low b{ color:var(--c-imp); }
+
+/* one-at-a-time navigator: sits IN-FLOW under the current question and shows EVERY number (no scroll) */
+.solo-bar{ margin:8px auto 44px; display:flex; align-items:center; gap:14px;
+  width:100%; max-width:min(760px,94vw); padding:14px 18px; background:var(--board); border:2px solid var(--frame); border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,.28); }
+.solo-nav{ all:unset; cursor:pointer; font-family:var(--font-head); font-size:1.3rem; color:var(--c-exam); padding:2px 12px; border:2px solid var(--frame); border-radius:11px; flex:none; }
+.solo-pal{ display:flex; gap:7px; flex-wrap:wrap; justify-content:center; flex:1 1 auto; min-width:0; }
+.solo-pn{ all:unset; cursor:pointer; width:34px; height:34px; display:grid; place-items:center; font-family:var(--font-head); font-size:.95rem; color:var(--ink); border:2px solid var(--frame); border-radius:8px; }
+.solo-pn.done{ color:var(--c-extra); border-color:var(--c-extra); }
+.solo-pn.cur{ color:var(--c-exam); border-color:var(--c-exam); background:color-mix(in oklab,var(--c-exam) 14%, transparent); }
+
+/* ---- exam mode: hide answers + the lecture nav, show good-luck ---- */
+body.qexam .q-fb, body.qexam .saq-ans, body.qexam .saq-reveal, body.qexam .saq-done, body.qexam .study-nav{ display:none !important; }
+.goodluck{ display:none; font-family:'Permanent Marker','Gochi Hand',cursive; filter:var(--fx); font-size:1.1rem; align-items:center; gap:6px; }
+body.qexam .goodluck{ display:flex !important; }
+/* ---- one-at-a-time: show only the current item's sheet & item ---- */
+body.qsolo .sheet:not(:has(.cur)){ display:none !important; }
+body.qsolo .qgrid{ display:block; }
+body.qsolo .qcard{ border-right:0 !important; border-bottom:0 !important; }
+body.qsolo .qcard:not(.cur), body.qsolo .saq-item:not(.cur){ display:none !important; }
+
+@media(max-width:760px){
+  .qgrid{ grid-template-columns:1fr; }
+  .qcard{ border-right:0 !important; padding:16px 4px; }
+}
+
+/* test cover (first/setup page): keep "Minutes: [input]" together; tap-friendly on phones */
+.setup-min{ display:flex; align-items:center; justify-content:center; gap:8px; }
+@media(max-width:680px){
+  /* tuck the decorative frame in a little, and pad the content PAST the dashed line (inset 20px)
+     so the score boxes + buttons always sit comfortably INSIDE the frame, never crossing it. */
+  .cover .border{ inset:14px; }
+  .cover .border2{ inset:20px; }
+  .sheet.cover{ padding:32px clamp(28px, 7vw, 38px) 40px; }
+  .quiz-cover .wrap{ gap:9px; }
+  .quiz-dua{ font-size:1.18rem; line-height:1.6; }
+  .quiz-score{ gap:8px; width:100%; max-width:400px; margin-inline:auto; }
+  .quiz-score span{ flex:1 1 0; min-width:0; text-align:center; font-size:.95rem; padding:9px 5px; }   /* MCQ · SAQ · Total in one tidy row */
+  .quiz-controls{ flex-direction:column; align-items:stretch; gap:10px; width:100%; max-width:400px; margin-inline:auto; }   /* same width as the score row above */
+  .quiz-controls .qctl{ width:100%; text-align:center; box-sizing:border-box; padding:12px 14px; font-size:1.08rem; }   /* full-width Start / Reset */
+  .solo-pn{ width:32px; height:32px; }
+}

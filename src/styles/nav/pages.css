@@ -1,0 +1,122 @@
+/* DentAce nav component — pages */
+/* progress dashboard */
+.dash-overall{ max-width:var(--card-width,650px); margin:18px auto 26px; text-align:center; }
+.dash-overall-num{ font-size:clamp(2.6rem,9vw,4rem); font-weight:900; color:var(--hl); line-height:1; }
+.dash-overall-num small{ font-size:.4em; opacity:.7; }
+.dash-overall-bar,.dash-bar{ height:12px; border-radius:99px; background:color-mix(in oklab,var(--fg) 12%, transparent); overflow:hidden; margin:10px 0 6px; }
+.dash-bar{ height:9px; margin:8px 0 4px; }
+.dash-overall-bar > span,.dash-bar > span{ display:block; height:100%; border-radius:99px;
+  background:linear-gradient(90deg,var(--title-a,var(--hl)),var(--glow-main,var(--hl))); transition:width .5s ease; }
+.dash-meta{ font-size:.9rem; color:var(--muted); font-weight:700; }
+.dash-card{ text-align:start; cursor:pointer; position:relative; }
+.dash-card:hover{ transform:none !important; }
+/* progress page: a subject card expands into a lecture/test checklist for manual mark-done */
+.dash-chev{ position:absolute; top:16px; inset-inline-end:18px; color:var(--muted); font-size:.8rem; }
+.dash-card.open{ border-color:color-mix(in oklab,var(--hl) 45%, var(--border)); }
+.dash-checklist{ display:flex; flex-direction:column; gap:18px; margin-top:14px; padding-top:14px; border-top:1px dashed var(--border); cursor:default; }
+.dcl-col{ min-width:0; }
+.dcl-head{ display:flex; align-items:center; justify-content:space-between; gap:8px; font-weight:800; margin-bottom:8px; }
+.dcl-cnt{ color:var(--muted); font-weight:700; font-size:.85em; }
+.dcl-list{ display:flex; flex-direction:column; gap:3px; }
+.dcl-item{ display:flex; align-items:center; gap:11px; padding:8px 10px; border-radius:10px; cursor:pointer; font-size:.92rem; line-height:1.35; }
+.dcl-item:hover{ background:color-mix(in oklab,var(--fg) 7%, transparent); }
+.dcl-n{ flex:none; min-width:22px; text-align:center; font-weight:800; color:var(--hl); }
+.dcl-t{ color:var(--fg); }
+.dcl-item.done .dcl-n{ opacity:.55; }
+.dcl-item.done .dcl-t{ color:var(--muted); text-decoration:line-through; }
+/* themed checkbox (replaces the default gray box) */
+.dcl-item input{ appearance:none; -webkit-appearance:none; width:20px; height:20px; flex:none; margin:0;
+  border:2px solid color-mix(in oklab,var(--fg) 32%, transparent); border-radius:6px; background:transparent;
+  cursor:pointer; position:relative; transition:background .15s, border-color .15s; }
+.dcl-item input:hover{ border-color:var(--hl); }
+.dcl-item input:checked{ background:var(--hl); border-color:var(--hl); }
+.dcl-item input:checked::after{ content:""; position:absolute; left:6px; top:2px; width:5px; height:10px;
+  border:solid #fff; border-width:0 2px 2px 0; transform:rotate(45deg); }
+#dashRoot .board.list-board{ align-items:start; }   /* an expanded card grows without stretching its row-mates */
+.dash-card.is-complete{ border-color:color-mix(in oklab,#22c55e 60%, var(--border)) !important; }
+.dash-line{ display:flex; justify-content:space-between; align-items:center; gap:8px; font-size:.9rem; color:var(--muted); font-weight:700; margin-top:9px; }
+.dash-line b{ color:var(--fg); white-space:nowrap; }
+.dash-bar.tests{ margin-top:5px; }
+.dash-bar.tests > span{ background:linear-gradient(90deg,#f59e0b,#22d3ee); }
+/* subject-page performance strip (read-only) */
+.subj-perf{ width:100%; flex-basis:100%; grid-column:1/-1; display:flex; flex-wrap:wrap; gap:16px; margin-bottom:8px;
+  background:var(--panel); border:1px solid var(--border); border-radius:16px; padding:16px 20px; }
+/* subject page: cap the board to the SAME width as the title bar / duas so the
+   progress strip and cards line up; PDFs / Lectures / Tests become one even row. */
+.subj-board{ width:100%; max-width: var(--content-w); margin-inline:auto; }
+.subj-board > .card{ flex:1 1 0; max-width:none; min-width:0; min-height: clamp(160px, 10vw, 250px); }
+@media(max-width:760px){ .subj-board > .card{ flex:1 1 100%; } }   /* stack on small tablets / phones */
+/* lecture/test/pdf LIST page: same proven pattern as the subject board — cap the board so cards
+   can NEVER exceed the screen; 650px (2-up) on desktop, full-width stacked on phones. */
+.list-board{ width:100%; max-width: var(--content-w); margin-inline:auto; }
+/* lecture/test/pdf lists + semester subjects: explicit 1 → 2 → 3 columns (max 3), cards FILL the row. */
+.board.list-board{ display:grid; grid-template-columns: 1fr; gap:var(--gap); }
+@media(min-width: 850px){  .board.list-board{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media(min-width: 1500px){ .board.list-board{ grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+.list-board > .card{ min-width:0; }
+/* home: each year's two semesters → 1 col on small, 2 per row when bigger (never a lone gap) */
+.board.semester-grid{ width:100%; max-width: var(--content-w); margin-inline:auto;
+  display:grid; grid-template-columns: 1fr; gap:var(--gap); }
+@media(min-width: 850px){ .board.semester-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+.semester-grid > .card{ min-width:0; }
+.perf-item{ flex:1 1 220px; }
+.perf-lbl{ font-weight:800; margin-bottom:8px; }
+.perf-bar{ height:9px; border-radius:99px; background:color-mix(in oklab,var(--fg) 12%, transparent); overflow:hidden; }
+.perf-bar > span{ display:block; height:100%; border-radius:99px; background:linear-gradient(90deg,var(--title-a,var(--hl)),var(--glow-main,var(--hl))); }
+.perf-bar.tests > span{ background:linear-gradient(90deg,#f59e0b,#22d3ee); }
+.perf-num{ font-size:.9rem; color:var(--muted); font-weight:700; margin-top:6px; }
+.section-head .sec-count{ font-size:.58em; color:var(--muted); font-weight:700; vertical-align:middle; opacity:.85; }
+/* per-subject progress ring on the semester page */
+.subj-card{ position:relative; }
+.subj-ring{ position:absolute; top:10px; right:12px; left:auto; width:42px; height:42px; display:grid; place-items:center; z-index:2; pointer-events:none; }
+.subj-ring i{ position:absolute; inset:0; border-radius:50%;
+  background:conic-gradient(var(--hl) calc(var(--p,0)*1%), color-mix(in oklab,var(--fg) 15%, transparent) 0);
+  -webkit-mask:radial-gradient(closest-side, transparent 63%, #000 64%); mask:radial-gradient(closest-side, transparent 63%, #000 64%); }
+.subj-ring span{ position:relative; font-size:.7rem; font-weight:800; color:var(--fg); }
+.subj-ring span small{ font-size:.66em; opacity:.7; }
+.subj-ring.full i{ background:#22c55e; }
+.subj-ring.full span{ color:#22c55e; }
+/* dashboard widgets: exam countdown · streak · overall */
+.dash-widgets{ display:flex; flex-wrap:wrap; gap:14px; justify-content:center; max-width:var(--card-width,650px); margin:18px auto 14px; }
+.dash-widget{ flex:1 1 150px; min-width:140px; text-align:center; padding:16px 12px; border-radius:16px;
+  background:var(--panel); border:1px solid var(--border); }
+.dw-num{ font-size:clamp(2rem,7vw,3rem); font-weight:900; color:var(--hl); line-height:1; }
+.dw-num small{ font-size:.4em; opacity:.7; }
+.dw-lbl{ font-weight:800; margin:4px 0 2px; }
+.dash-resume{ display:block; width:100%; max-width:var(--control-w); margin:0 auto 14px; padding:13px 18px; border-radius:14px;
+  background:color-mix(in oklab,var(--hl) 16%, var(--panel)); border:1px solid var(--hl); color:var(--fg);
+  text-decoration:none; font-weight:700; }
+.dash-resume:hover{ background:color-mix(in oklab,var(--hl) 26%, var(--panel)); }
+.plan-link{ text-align:center; }
+.plan-intro{ max-width:var(--card-width,650px); margin:14px auto 18px; text-align:center; color:var(--muted); }
+.plan-exam{ max-width:var(--card-width,650px); margin:0 auto 18px; padding-bottom:16px; border-bottom:1px dashed var(--border); }
+.plan-cfg{ display:flex; gap:10px; align-items:center; justify-content:center; flex-wrap:wrap; margin:14px auto; }
+.plan-sem,.plan-sub,.plan-date{ font:inherit; padding:8px 11px; border-radius:10px; background:var(--panel); border:1px solid var(--border); color:var(--fg); max-width:46vw; }
+.plan-del{ font:inherit; padding:8px 13px; border-radius:10px; border:1px solid var(--border); background:transparent; color:var(--muted); cursor:pointer; }
+.plan-del:hover{ color:#ef4444; border-color:#ef4444; }
+.plan-lecs{ max-width:var(--card-width,650px); margin:0 auto; }
+.plan-lecs-head{ display:flex; align-items:center; gap:8px; justify-content:space-between; font-weight:800; margin-bottom:6px; }
+.plan-cnt{ color:var(--muted); font-weight:700; font-size:.85em; }
+.plan-all{ font:inherit; font-weight:800; font-size:.82rem; padding:4px 13px; border-radius:20px; border:1px solid var(--border); background:transparent; color:var(--hl); cursor:pointer; white-space:nowrap; }
+.plan-lec-list{ max-height:230px; overflow:auto; display:flex; flex-direction:column; gap:2px; padding:6px; background:var(--panel); border:1px solid var(--border); border-radius:12px; }
+.plan-lec{ display:flex; align-items:center; gap:9px; padding:6px 8px; border-radius:8px; cursor:pointer; font-size:.95rem; }
+.plan-lec:hover{ background:color-mix(in oklab,var(--fg) 7%, transparent); }
+.plan-lec input{ width:17px; height:17px; flex:none; accent-color:var(--hl); }
+.plan-lec.done{ color:var(--muted); }
+.plan-add{ display:block; margin:14px auto 30px; font:inherit; font-weight:800; padding:10px 24px; border-radius:12px; border:1px dashed var(--hl); background:transparent; color:var(--hl); cursor:pointer; }
+.plan-sched-title{ text-align:center; margin:26px auto 14px; }
+.plan-day-exam{ margin:6px auto 12px; }
+.plan-day-sub{ font-weight:800; color:var(--hl); margin:8px auto 4px; max-width:var(--card-width,650px); }
+.dash-recent{ display:flex; flex-direction:column; gap:7px; max-width:var(--card-width,650px); margin:0 auto 8px; }
+.recent-item{ padding:10px 14px; border-radius:11px; background:var(--panel); border:1px solid var(--border);
+  color:var(--fg); text-decoration:none; font-weight:600; }
+.recent-item:hover{ border-color:var(--hl); color:var(--hl); }
+.score-item{ display:flex; justify-content:space-between; align-items:center; gap:10px; }
+.score-item b{ white-space:nowrap; }
+.score-item.weak{ border-color:color-mix(in oklab,#ef4444 55%, var(--border)); }
+.score-item.weak b{ color:#ef4444; }
+.score-item.strong b{ color:#22c55e; }
+/* list done/not-done filter */
+.list-filter{ display:inline-flex; gap:4px; background:var(--panel); border:1px solid var(--border); border-radius:99px; padding:3px; }
+.lf-btn{ font:inherit; font-weight:700; font-size:.86rem; padding:5px 13px; border:0; border-radius:99px; background:transparent; color:var(--muted); cursor:pointer; }
+.lf-btn.active{ background:var(--hl); color:#fff; }

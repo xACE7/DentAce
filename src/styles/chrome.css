@@ -1,0 +1,129 @@
+/* ============================================================
+   DentAce — chrome.css
+   The ONE shared chrome, loaded by EVERY page via @import in study.css
+   (lecture/test pages) and theme.css (nav pages). Built by site-chrome.js.
+   Owns: the TOP BAR (brand · breadcrumb · stats · search · gear) ·
+   the ⚙ SETTINGS PANEL · the EN/AR language toggle · bilingual · RTL.
+
+   Self-contained --ch-* tokens (keyed by data-design × data-mode), scoped
+   to the chrome roots, so the header + panel look IDENTICAL on every page
+   regardless of the page's own palette. Only the .site-top *margin*
+   (body-padding offset) stays per-page (set in css/lecture/header.css).
+   ============================================================ */
+
+/* Wordmark + chrome display fonts (Inter · Permanent Marker · Gochi Hand) are loaded by the
+   <link> in src/app/layout.tsx — no @import here, so this file bundles cleanly via direct import. */
+
+/* ---------- chrome tokens (scoped to the chrome roots; never leak into page bodies) ---------- */
+:is(.site-top,.theme-menu,.themewrap,.crumb-sw-menu){
+  --ch-board:#272b30; --ch-ink:#f1ece1; --ch-muted:#9b9990; --ch-surround:#16181b;
+  --ch-frame:rgba(255,255,255,.09); --ch-accent:#73c2fc; --ch-accent2:#86e891;
+  --ch-fx:url(#chalkText); --ch-head:'Gochi Hand','Kalam',cursive;
+}
+[data-design="paper"][data-mode="light"] :is(.site-top,.theme-menu,.themewrap,.crumb-sw-menu){
+  --ch-board:#f3e8d0; --ch-ink:#3b3a44; --ch-muted:#8a8576; --ch-surround:#c9cdd2;
+  --ch-frame:rgba(70,55,25,.12); --ch-accent:#1c7ed6; --ch-accent2:#2f9e44;
+}
+[data-design="default"] :is(.site-top,.theme-menu,.themewrap,.crumb-sw-menu){
+  --ch-board:#0e1320; --ch-ink:#eaf0f8; --ch-muted:#9aa6bd; --ch-surround:#06070d;
+  --ch-frame:rgba(255,255,255,.14); --ch-accent:#9D00FF; --ch-accent2:#22c55e;
+  --ch-fx:none; --ch-head:'Inter',system-ui,sans-serif;
+}
+[data-design="default"][data-mode="light"] :is(.site-top,.theme-menu,.themewrap,.crumb-sw-menu){
+  --ch-board:#ffffff; --ch-ink:#16203a; --ch-muted:#566076; --ch-surround:#eef1f7;
+  --ch-frame:rgba(20,30,60,.14); --ch-accent2:#2f9e44;
+}
+
+/* ===================== TOP BAR — shared, identical on every page ===================== */
+/* No margin here — the body-padding offset is per-page (lecture sets .site-top{margin:-84px…}).
+   Background is ~opaque so a page's glow backdrop doesn't tint the bar differently. */
+.site-top{ position:sticky; top:0; z-index:80; display:flex; align-items:center; gap:14px; flex-wrap:wrap;
+  padding:10px clamp(14px,3vw,28px); direction:ltr;   /* header stays LTR in BOTH languages (only page content flips) */
+  background:color-mix(in oklab,var(--ch-surround) 96%, transparent); border-bottom:1px solid var(--ch-frame);
+  -webkit-backdrop-filter:blur(8px); backdrop-filter:blur(8px); }
+/* DentAce wordmark: plain sans in Default, chalk in Paper (overridden below). Fonts loaded via the @import at top. */
+.site-home{ font-family:'Inter',system-ui,sans-serif; font-weight:900; font-size:1.15rem; text-decoration:none; color:var(--ch-ink); white-space:nowrap; }
+.site-home:hover{ color:var(--ch-accent); }
+.site-spacer{ flex:1 1 auto; }
+/* stats · search · ⚙ as ONE no-wrap cluster → they stay together and land in the SAME spot no
+   matter the breadcrumb width, so they don't shift around when switching EN ⇄ AR. */
+.site-tools{ display:inline-flex; align-items:center; gap:14px; flex-wrap:nowrap; }
+.site-crumbs{ display:flex; align-items:center; gap:7px; font-size:.95rem; color:var(--ch-muted); flex-wrap:wrap; }
+.site-crumbs a{ color:var(--ch-accent); text-decoration:none; } .site-crumbs a:hover{ color:var(--ch-ink); text-decoration:underline; }
+.site-crumbs .sep{ opacity:.55; } .site-crumbs .cur{ color:var(--ch-ink); font-weight:700; }
+.crumb-yc{ display:inline-flex; align-items:center; }
+.yr-slash{ opacity:.6; margin:0 3px; }
+.crumb-sw{ position:relative; display:inline-block; }
+.crumb-sw > summary{ list-style:none; cursor:pointer; display:inline-flex; align-items:center; gap:3px; color:var(--ch-accent); font-weight:700; }
+.crumb-sw > summary::-webkit-details-marker{ display:none; }
+.crumb-sw > summary::after{ content:"▾"; font-size:.7em; opacity:.65; }
+.crumb-sw[open] > summary::after{ content:"▴"; }
+.crumb-sw-menu{ position:absolute; top:calc(100% + 5px); left:0; z-index:90; min-width:140px;
+  background:var(--ch-board); border:1px solid var(--ch-frame); border-radius:10px; padding:5px;
+  display:flex; flex-direction:column; gap:2px; box-shadow:0 10px 28px rgba(0,0,0,.35); }
+.crumb-sw-menu a{ padding:6px 11px; border-radius:7px; text-decoration:none; color:var(--ch-ink); white-space:nowrap; font-weight:600; }
+.crumb-sw-menu a:hover{ background:color-mix(in oklab,var(--ch-accent) 16%, transparent); color:var(--ch-ink); }
+.crumb-sw-menu a.cur{ color:var(--ch-accent); }
+.site-stats{ display:inline-flex; gap:6px; }
+.site-stat{ display:inline-flex; align-items:center; gap:3px; text-decoration:none; font-weight:800; font-size:.82rem;
+  padding:5px 10px; border-radius:30px; border:1px solid var(--ch-frame); background:var(--ch-board); color:var(--ch-ink); white-space:nowrap; }
+.site-stat:hover{ border-color:var(--ch-accent); color:var(--ch-accent); }
+.site-search,.site-tool{ text-decoration:none; font-size:1.1rem; line-height:1; padding:6px 10px; border-radius:30px;
+  border:1px solid var(--ch-frame); background:var(--ch-board); color:var(--ch-ink); display:inline-grid; place-items:center; cursor:pointer; font-family:inherit; }
+.site-search:hover,.site-tool:hover{ color:var(--ch-accent); border-color:var(--ch-accent); }
+.site-tool.on{ background:var(--ch-accent) !important; border-color:var(--ch-accent) !important; color:#fff !important; }
+/* language toggle + gear sit side by side at the end of the bar.
+   Scoped under .site-top so it beats the old floating-header rule in css/nav/buttons.css
+   (.themewrap{ position:absolute; left:24px }) — otherwise nav pages yank it to the left. */
+.site-top .themewrap{ position:relative !important; left:auto; top:auto; transform:none;
+  display:inline-flex; align-items:center; gap:8px; margin-right:4px; }
+.themebtn{ font-family:var(--ch-head); font-size:1.2rem; line-height:1; color:var(--ch-ink); background:var(--ch-board);
+  border:1px solid var(--ch-frame); border-radius:30px; padding:5px 12px; cursor:pointer; }
+.themebtn:hover{ color:var(--ch-accent); border-color:var(--ch-accent); }
+.site-lang{ font:inherit; font-weight:800; font-size:.95rem; letter-spacing:.03em; line-height:1; cursor:pointer; white-space:nowrap;
+  color:var(--ch-ink); background:var(--ch-board); border:1px solid var(--ch-frame); border-radius:30px; padding:7px 13px;
+  transition:color .15s ease, border-color .15s ease; }
+.site-lang:hover{ color:var(--ch-accent); border-color:var(--ch-accent); }
+body.lang-ar .site-stat b, body.lang-ar .stat-num{ direction:ltr; display:inline-block; }   /* Latin digits stay LTR */
+@media(max-width:700px){ .site-top{ gap:8px; padding:8px 12px; } .site-home{ font-size:1rem; } .site-crumbs{ font-size:.82rem; } .site-tools{ gap:8px; } }
+
+/* paper (chalk) skin for the top bar (NO chalk filter on the bar itself — kept crisp) */
+[data-design="paper"] .site-top{ border-bottom:2px dashed var(--ch-frame); }
+[data-design="paper"] .site-home{ font-family:'Permanent Marker','Gochi Hand',cursive; font-size:1.2rem; color:var(--ch-accent); }   /* chalk wordmark, Paper only */
+[data-design="paper"] :is(.site-search,.site-tool,.site-stat,.themebtn,.site-lang){ border-width:2px; }
+[data-design="paper"] .site-search:hover,[data-design="paper"] .site-tool:hover{ color:var(--ch-accent2); border-color:var(--ch-accent2); }
+
+/* ===================== ⚙ SETTINGS PANEL ===================== */
+.theme-menu{ position:absolute; top:48px; right:0; min-width:200px; background:var(--ch-board); border:1px solid var(--ch-frame);
+  border-radius:14px; padding:6px; box-shadow:0 12px 30px rgba(0,0,0,.4); display:flex; flex-direction:column; gap:4px; z-index:90; }
+.theme-menu[hidden]{ display:none; }
+.settings-panel{ width:236px; max-height:74vh; overflow-y:auto; overflow-x:hidden; }   /* overflow-x:hidden kills the stray horizontal scrollbar */
+.set-label{ font-size:.7rem; text-transform:uppercase; letter-spacing:.08em; color:var(--ch-muted); margin:9px 6px 4px; font-weight:800; }
+.set-label:first-child{ margin-top:2px; }
+.set-grid{ display:grid; grid-template-columns:1fr 1fr; gap:4px; }
+.theme-opt{ background:transparent; border:0; color:var(--ch-ink); cursor:pointer; text-align:left; padding:9px 12px; border-radius:9px; font:inherit; transition:background .15s ease; }
+.settings-panel .theme-opt{ padding:7px 9px; font-size:.85rem; text-align:center; }
+.theme-opt:hover{ background:color-mix(in oklab,var(--ch-ink) 12%, transparent); }
+.theme-opt.active{ background:color-mix(in oklab,var(--ch-accent) 28%, transparent); font-weight:900; }
+.set-link{ display:block; margin-top:10px; padding:10px 12px; border-radius:10px; text-decoration:none; font-weight:800; color:var(--ch-accent); border:1px solid var(--ch-frame); text-align:center; }
+.set-link:hover{ background:color-mix(in oklab,var(--ch-accent) 12%, transparent); }
+.theme-menu #langBtn, .settings-panel #langBtn{ display:flex; width:100%; margin-top:4px; }
+/* NOTE: the panel is positioned from JS (Settings.tsx → place()) as position:fixed, clamped to the
+   viewport — the header wraps unpredictably (long breadcrumbs), so a static CSS anchor can't keep it
+   on-screen. The position:absolute/top/right below is only the pre-open default. */
+
+/* paper (chalk) skin for the panel + language button — identical on every page */
+[data-design="paper"] .theme-menu{ border-radius:8px; }
+[data-design="paper"] .theme-opt{ border-radius:6px; }
+[data-design="paper"] .theme-opt.active{ background:transparent; color:var(--ch-accent); border:1.5px dashed var(--ch-accent); font-weight:900; }
+[data-design="paper"] .set-link{ border-style:dashed; }
+[data-design="paper"] :is(.theme-opt,.set-label,.set-link,.site-lang){ filter:var(--ch-fx); }
+
+/* ===================== bilingual + RTL (whole project) ===================== */
+/* show only the active language; exclude the slider's own EN/AR labels (.lab) */
+.lang-en .ar:not(.lab){ display:none !important; } .lang-ar .en:not(.lab){ display:none !important; }
+/* Arabic → right-to-left everywhere EXCEPT tests (English-only; body.test set by study.js).
+   Nav content is JS-rendered after the lang class is set, so there is no flash. */
+body.lang-ar:not(.test){ direction:rtl; }
+/* the header itself stays LTR (set on .site-top above), so the ⚙ gear is on the right and
+   its panel opens with the default right:0 — no flip needed. */
