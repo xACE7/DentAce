@@ -2,6 +2,7 @@
 import React from "react";
 import parse from "html-react-parser";
 import { Bi } from "@/lib/content/Bi";
+import { asset } from "@/lib/asset";
 import type { Unit, Sheet, Row, Block, Fig, Bilingual } from "@/lib/content/types";
 
 /* React port of render.js — emits the exact chalk-sheet DOM (same classes) from a Unit. */
@@ -50,7 +51,7 @@ function Figure({ f }: { f: Fig }) {
   return (
     <figure className="clin">
       {/* eslint-disable-next-line @next/next/no-img-element */}
-      <img src={f.img} alt={alt} loading="lazy" decoding="async" />
+      <img src={asset(f.img)} alt={alt} loading="lazy" decoding="async" />
       <figcaption>{f.cap != null ? <Bi v={f.cap} /> : null}</figcaption>
     </figure>
   );

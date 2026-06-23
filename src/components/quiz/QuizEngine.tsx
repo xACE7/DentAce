@@ -5,6 +5,7 @@ import type { Quiz } from "@/lib/content/types";
 import { findSubject, findSem, findYear } from "@/lib/content/nav";
 import { DUAS } from "@/lib/site-config";
 import { testPath, setScore, markToday, pushRecent, getSaqDraft, setSaqDraft, clearSaqDraft } from "@/lib/progress";
+import { asset } from "@/lib/asset";
 
 const RULE = '<svg class="rule" viewBox="0 0 260 11" preserveAspectRatio="none"><path d="M2 7 Q74 1 140 5 T258 4"/></svg>';
 function shuffle(n: number): number[] {
@@ -199,7 +200,7 @@ export function QuizEngine({ quiz, year, sem, sub, n }: { quiz: Quiz; year: stri
             return (
               <article className={"qcard" + (examOn && cur === i ? " cur" : "")} key={i} ref={(el) => { cardRefs.current[i] = el; }} data-i={i}>
                 <p className="q-meta">Q{i + 1} / {MCQ.length}{submitted ? <span className="q-time"> · ⏱ {Math.round(timeSpent.current[i] || 0)}s</span> : null}</p>
-                {m.img ? (/* eslint-disable-next-line @next/next/no-img-element */ <img className="qimg" src={m.img} alt={`image for question ${i + 1}`} loading="lazy" />) : null}
+                {m.img ? (/* eslint-disable-next-line @next/next/no-img-element */ <img className="qimg" src={asset(m.img)} alt={`image for question ${i + 1}`} loading="lazy" />) : null}
                 <p className="q-text">{m.q}</p>
                 <div className="q-opts">
                   {maps[i].map((orig, v) => {

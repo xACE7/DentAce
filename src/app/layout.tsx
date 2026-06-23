@@ -17,6 +17,10 @@ const FONTS =
 
 const DESC = "Bilingual study guide for 3rd-year dentistry: lectures, tests and PDFs.";
 
+// Deploy sub-path (e.g. "/DentAce" on GitHub Project Pages). Raw <link>/icon/og
+// paths in metadata are NOT auto-prefixed by Next, so prepend it ourselves.
+const BASE = process.env.NEXT_PUBLIC_BASE_PATH || "";
+
 export const metadata: Metadata = {
   // resolves relative og/icon URLs to absolute (needed for link previews).
   // On deploy, set SITE_URL to your real domain so shared links show the preview image.
@@ -24,11 +28,11 @@ export const metadata: Metadata = {
   title: { default: "DentAce", template: "%s — DentAce" },
   description: DESC,
   applicationName: "DentAce",
-  manifest: "/manifest.webmanifest",
+  manifest: `${BASE}/manifest.webmanifest`,
   icons: {
     icon: [
-      { url: "/icon.svg", type: "image/svg+xml" },
-      { url: "/favicon.png", type: "image/png", sizes: "64x64" },
+      { url: `${BASE}/icon.svg`, type: "image/svg+xml" },
+      { url: `${BASE}/favicon.png`, type: "image/png", sizes: "64x64" },
     ],
   },
   openGraph: {
@@ -36,13 +40,13 @@ export const metadata: Metadata = {
     siteName: "DentAce",
     title: "DentAce — Dentistry 3rd Year",
     description: DESC,
-    images: [{ url: "/og.png", width: 1200, height: 630, alt: "DentAce" }],
+    images: [{ url: `${BASE}/og.png`, width: 1200, height: 630, alt: "DentAce" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "DentAce — Dentistry 3rd Year",
     description: DESC,
-    images: ["/og.png"],
+    images: [`${BASE}/og.png`],
   },
 };
 
