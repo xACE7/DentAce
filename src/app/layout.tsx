@@ -1,6 +1,9 @@
 import type { Metadata, Viewport } from "next";
 import { ThemeProvider } from "@/lib/theme/ThemeProvider";
+import { AuthProvider } from "@/lib/auth/AuthProvider";
 import { Chrome } from "@/components/chrome/Chrome";
+import { PresenceTracker } from "@/components/chrome/PresenceTracker";
+import { BanGate } from "@/components/chrome/BanGate";
 import { ChalkFilters } from "@/components/chrome/ChalkFilters";
 import { SiteFooter } from "@/components/chrome/SiteFooter";
 import { ToTop } from "@/components/chrome/ToTop";
@@ -15,7 +18,7 @@ const BOOT = `(function(){try{var e=document.documentElement,g=localStorage,t=g.
 const FONTS =
   "https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Gochi+Hand&family=Inter:wght@400;600;800;900&family=Kalam:wght@400;700&family=Permanent+Marker&display=swap";
 
-const DESC = "Bilingual study guide for 3rd-year dentistry: lectures, tests and PDFs.";
+const DESC = "Bilingual dentistry study guide — interactive lectures, tests & PDFs.";
 
 // Deploy sub-path (e.g. "/DentAce" on GitHub Project Pages). Raw <link>/icon/og
 // paths in metadata are NOT auto-prefixed by Next, so prepend it ourselves.
@@ -38,13 +41,13 @@ export const metadata: Metadata = {
   openGraph: {
     type: "website",
     siteName: "DentAce",
-    title: "DentAce — Dentistry 3rd Year",
+    title: "DentAce",
     description: DESC,
     images: [{ url: `${BASE}/og.png`, width: 1200, height: 630, alt: "DentAce" }],
   },
   twitter: {
     card: "summary_large_image",
-    title: "DentAce — Dentistry 3rd Year",
+    title: "DentAce",
     description: DESC,
     images: [`${BASE}/og.png`],
   },
@@ -79,13 +82,17 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body suppressHydrationWarning>
         <ThemeProvider>
-          <Chrome />
-          {children}
-          <SiteFooter />
-          <ToTop />
-          <OfflineBar />
-          <ChalkFilters />
-          <PwaRegister />
+          <AuthProvider>
+            <PresenceTracker />
+            <BanGate />
+            <Chrome />
+            {children}
+            <SiteFooter />
+            <ToTop />
+            <OfflineBar />
+            <ChalkFilters />
+            <PwaRegister />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

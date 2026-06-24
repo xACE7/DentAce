@@ -79,25 +79,30 @@ figure.clin figcaption b{ color:var(--c-exam); }
 .qbtn{ all:unset; cursor:pointer; font-family:var(--font-head); font-size:1.04rem; color:var(--c-exam); border:2px solid var(--frame); border-radius:11px; padding:5px 13px; filter:var(--fx); }
 .qbtn:hover{ border-color:var(--c-exam); }
 
-/* fixed exam HUD (timer + submit) */
-.exam-hud[hidden], .solo-bar[hidden]{ display:none !important; }
-.exam-hud{ position:fixed; top:10px; left:50%; transform:translateX(-50%); z-index:80; display:flex; gap:14px; align-items:center;
-  background:var(--board); border:2px solid color-mix(in oklab,var(--c-exam) 55%, var(--frame)); border-radius:14px; padding:8px 16px; box-shadow:0 6px 20px rgba(0,0,0,.32); }
-.exam-hud .qtimer{ font-family:var(--font-head); font-size:1.25rem; color:var(--c-exam); }
-.exam-hud .qtimer.low b{ color:var(--c-imp); }
+/* in-flow exam timer at the top of the current sheet (no floating box) */
+.exam-top{ display:none; }
+body.qexam .exam-top{ display:flex; align-items:center; justify-content:center; gap:6px; margin:-2px auto 12px;
+  font-family:var(--font-head); font-size:1.25rem; color:var(--c-exam); background:var(--board);
+  border:2px solid color-mix(in oklab,var(--c-exam) 55%, var(--frame)); border-radius:13px; padding:6px 16px; width:fit-content; }
+.exam-top.low b{ color:var(--c-imp); }
 
-/* one-at-a-time navigator: sits IN-FLOW under the current question and shows EVERY number (no scroll) */
-.solo-bar{ margin:8px auto 44px; display:flex; align-items:center; gap:14px;
-  width:100%; max-width:min(760px,94vw); padding:14px 18px; background:var(--board); border:2px solid var(--frame); border-radius:16px; box-shadow:0 6px 20px rgba(0,0,0,.28); }
-.solo-nav{ all:unset; cursor:pointer; font-family:var(--font-head); font-size:1.3rem; color:var(--c-exam); padding:2px 12px; border:2px solid var(--frame); border-radius:11px; flex:none; }
-.solo-pal{ display:flex; gap:7px; flex-wrap:wrap; justify-content:center; flex:1 1 auto; min-width:0; }
-.solo-pn{ all:unset; cursor:pointer; width:34px; height:34px; display:grid; place-items:center; font-family:var(--font-head); font-size:.95rem; color:var(--ink); border:2px solid var(--frame); border-radius:8px; }
-.solo-pn.done{ color:var(--c-extra); border-color:var(--c-extra); }
-.solo-pn.cur{ color:var(--c-exam); border-color:var(--c-exam); background:color-mix(in oklab,var(--c-exam) 14%, transparent); }
+/* one-at-a-time navigator: Next + Finish beside "best wishes"; numbers under "good luck" (no scroll) */
+.exam-next, .exam-submit{ all:unset; cursor:pointer; font-family:var(--font-head); font-size:1.05rem;
+  border:2px solid color-mix(in oklab,var(--c-exam) 55%, var(--frame)); border-radius:11px; padding:4px 14px; margin-left:8px; filter:var(--fx); transition:transform .1s ease, border-color .12s, color .12s; }
+.exam-next{ color:var(--c-exam); }
+.exam-next:hover{ transform:translateY(-1px); color:var(--c-extra); border-color:var(--c-extra); }
+.exam-submit{ color:var(--c-extra); border-color:color-mix(in oklab,var(--c-extra) 55%, var(--frame)); }
+.exam-submit:hover{ transform:translateY(-1px); border-color:var(--c-extra); }
+.exam-pal{ display:none; }
+body.qexam .exam-pal{ display:flex; gap:7px; flex-wrap:wrap; justify-content:center; margin:14px auto 4px; max-width:min(760px,94vw); }
+.exam-pn{ all:unset; cursor:pointer; width:34px; height:34px; display:grid; place-items:center; font-family:var(--font-head); font-size:.95rem; color:var(--ink); border:2px solid var(--frame); border-radius:8px; transition:border-color .12s; }
+.exam-pn:hover{ border-color:var(--c-exam); }
+.exam-pn.done{ color:var(--c-extra); border-color:var(--c-extra); }
+.exam-pn.on{ color:var(--c-exam); border-color:var(--c-exam); background:color-mix(in oklab,var(--c-exam) 14%, transparent); }
 
 /* ---- exam mode: hide answers + the lecture nav, show good-luck ---- */
 body.qexam .q-fb, body.qexam .saq-ans, body.qexam .saq-reveal, body.qexam .saq-done, body.qexam .study-nav{ display:none !important; }
-.goodluck{ display:none; font-family:'Permanent Marker','Gochi Hand',cursive; filter:var(--fx); font-size:1.1rem; align-items:center; gap:6px; }
+.goodluck{ display:none; font-family:'Permanent Marker','Gochi Hand',cursive; filter:var(--fx); font-size:1.1rem; align-items:center; flex-wrap:wrap; gap:6px; }
 body.qexam .goodluck{ display:flex !important; }
 /* ---- one-at-a-time: show only the current item's sheet & item ---- */
 body.qsolo .sheet:not(:has(.cur)){ display:none !important; }
@@ -124,5 +129,5 @@ body.qsolo .qcard:not(.cur), body.qsolo .saq-item:not(.cur){ display:none !impor
   .quiz-score span{ flex:1 1 0; min-width:0; text-align:center; font-size:.95rem; padding:9px 5px; }   /* MCQ · SAQ · Total in one tidy row */
   .quiz-controls{ flex-direction:column; align-items:stretch; gap:10px; width:100%; max-width:400px; margin-inline:auto; }   /* same width as the score row above */
   .quiz-controls .qctl{ width:100%; text-align:center; box-sizing:border-box; padding:12px 14px; font-size:1.08rem; }   /* full-width Start / Reset */
-  .solo-pn{ width:32px; height:32px; }
+  .exam-pn{ width:32px; height:32px; }
 }

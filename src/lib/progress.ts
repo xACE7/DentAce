@@ -4,9 +4,21 @@
 
 const ok = () => typeof window !== "undefined";
 function get(key: string): string | null { try { return ok() ? localStorage.getItem(key) : null; } catch { return null; } }
-function setRaw(key: string, val: string) { try { if (ok()) localStorage.setItem(key, val); } catch { /* ignore */ } }
-function del(key: string) { try { if (ok()) localStorage.removeItem(key); } catch { /* ignore */ } }
+function setRaw(key: string, val: string) { try { if (ok()) localStorage.setItem(key, val); } catch { /* ignore */ } emitProgress(); }
+function del(key: string) { try { if (ok()) localStorage.removeItem(key); } catch { /* ignore */ } emitProgress(); }
 function getJSON<T>(key: string, fallback: T): T { const v = get(key); if (!v) return fallback; try { return JSON.parse(v) as T; } catch { return fallback; } }
+
+/* ---- change notifier ----
+   Local writes notify (a) the cloud-sync layer so it can push, and (b) dynamic views
+   (via a window event) so they re-read. The sync layer re-applies a remote pull by
+   writing localStorage directly and dispatching the same window event (no push echo). */
+type Listener = () => void;
+const listeners = new Set<Listener>();
+export function onProgress(cb: Listener): () => void { listeners.add(cb); return () => { listeners.delete(cb); }; }
+export function emitProgress() {
+  listeners.forEach((l) => { try { l(); } catch { /* ignore */ } });
+  if (ok()) { try { window.dispatchEvent(new Event("dentace-progress")); } catch { /* ignore */ } }
+}
 
 /* ---- logical content ids (also used as URL paths) ---- */
 export const lecturePath = (y: string, s: string, sub: string, n: string | number) => `/lecture/${y}/${s}/${sub}/${n}`;

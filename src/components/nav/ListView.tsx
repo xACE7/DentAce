@@ -4,7 +4,9 @@ import { useEffect, useMemo, useState } from "react";
 import {
   findYear, findSem, findSubject, subjectBase, tokensForKind, pdfItems, isPractical, glowClass,
 } from "@/lib/content/nav";
-import { isDone, lecturePath, celebratedOnce } from "@/lib/progress";
+import { isDone, lecturePath, testPath, celebratedOnce } from "@/lib/progress";
+import { useProgressBump } from "@/lib/useProgressBump";
+import { useAuth } from "@/lib/auth/AuthProvider";
 import { TITLES } from "@/lib/titles";
 import { Bi, Emoji } from "@/lib/content/Bi";
 import { Dua } from "./Dua";
@@ -26,12 +28,14 @@ type Item = { token: Token; href: string; isLecture: boolean; labelEn: string; l
 
 export function ListView({ year: yId, sem: sId, sub: subId, kind }: { year: string; sem: string; sub: string; kind: Kind }) {
   const { lang } = useTheme();
+  const auth = useAuth();
   const year = findYear(yId);
   const sem = findSem(year, sId);
   const sub = findSubject(sem, subId);
   const [done, setDone] = useState<Record<string, boolean>>({});
   const [q, setQ] = useState("");
   const [filt, setFilt] = useState<"all" | "todo" | "done">("all");
+  const bump = useProgressBump();
 
   const items: Item[] = useMemo(() => {
     if (!year || !sem || !sub) return [];
@@ -61,8 +65,10 @@ export function ListView({ year: yId, sem: sId, sub: subId, kind }: { year: stri
     const d: Record<string, boolean> = {};
     if (kind === "lecture")
       items.forEach((it) => { d[String(it.token)] = isDone(lecturePath(year.id, sem.id, sub.id, it.token)); });
+    else if (kind === "test")
+      items.forEach((it) => { d[String(it.token)] = isDone(testPath(year.id, sem.id, sub.id, it.token)); });
     setDone(d);
-  }, [items, year, sem, sub, kind]);
+  }, [items, year, sem, sub, kind, bump]);
 
   const doneCount = items.filter((it) => done[String(it.token)]).length;
 
@@ -75,6 +81,23 @@ export function ListView({ year: yId, sem: sId, sub: subId, kind }: { year: stri
   }, [doneCount, items.length, kind, year, sem, sub]);
 
   if (!year || !sem || !sub) return <NotFoundNote msg="Open the list from a subject card." />;
+
+  // per-member content visibility (admin/guests see everything)
+  const hidden =
+    (kind === "pdf" && auth?.flags.pdfs === false) ||
+    (kind === "test" && auth?.flags.tests === false) ||
+    (kind === "lecture" && auth?.flags.lectures === false);
+  if (hidden) {
+    return (
+      <main className="container" id="dmain">
+        <section className="section">
+          <div className="empty-note">
+            <Bi v={{ en: `${PLURAL[kind][0]} aren't available for your account.`, ar: `${PLURAL[kind][1]} غير متاحة لحسابك.` }} />
+          </div>
+        </section>
+      </main>
+    );
+  }
 
   const g = glowClass(sub.color);
   const ph = lang === "ar" ? `بحث في ${PLURAL[kind][1]}` : `Search ${PLURAL[kind][0]}`;

@@ -428,7 +428,12 @@ export const CONTENT_INDEX: ContentIndex = {
       "2",
       "3",
       "4",
+      "5",
+      "6",
+      "7",
+      "8",
       "9",
+      "10",
       "11",
       "12",
       "13",
@@ -445,7 +450,12 @@ export const CONTENT_INDEX: ContentIndex = {
       "2",
       "3",
       "4",
+      "5",
+      "6",
+      "7",
+      "8",
       "9",
+      "10",
       "11",
       "12",
       "13",
@@ -695,8 +705,28 @@ export const CONTENT_INDEX: ContentIndex = {
     ]
   },
   "3rd/s2/elective": {
-    "lecture": [],
-    "test": [],
+    "lecture": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
+    "test": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9"
+    ],
     "pdf": [
       {
         "token": "1",

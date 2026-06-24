@@ -1,10 +1,11 @@
 "use client";
 import parse from "html-react-parser";
-import { useEffect, useMemo, useRef, useState } from "react";
+import Link from "next/link";
+import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
 import type { Quiz } from "@/lib/content/types";
-import { findSubject, findSem, findYear } from "@/lib/content/nav";
+import { findSubject, findSem, findYear, testTokens } from "@/lib/content/nav";
 import { DUAS } from "@/lib/site-config";
-import { testPath, setScore, markToday, pushRecent, getSaqDraft, setSaqDraft, clearSaqDraft } from "@/lib/progress";
+import { testPath, setScore, markToday, pushRecent, getSaqDraft, setSaqDraft, clearSaqDraft, isDone, setDone } from "@/lib/progress";
 import { asset } from "@/lib/asset";
 
 const RULE = '<svg class="rule" viewBox="0 0 260 11" preserveAspectRatio="none"><path d="M2 7 Q74 1 140 5 T258 4"/></svg>';
@@ -15,11 +16,11 @@ function shuffle(n: number): number[] {
 }
 const fmt = (s: number) => { const m = Math.floor(s / 60); const x = s % 60; return `${m}:${x < 10 ? "0" : ""}${x}`; };
 
-function Foot() {
+function Foot({ next, pal }: { next?: ReactNode; pal?: ReactNode }) {
   return (
     <div className="foot">
-      <div className="goodluck">🍀 <span className="extra">good luck</span> <span className="mic">·</span> <span className="exam">best wishes</span> 💙</div>
-      <span />
+      <div className="goodluck">🍀 <span className="extra">good luck</span> <span className="mic">·</span> <span className="exam">best wishes</span> 💙{next}</div>
+      {pal}
     </div>
   );
 }
@@ -28,6 +29,13 @@ export function QuizEngine({ quiz, year, sem, sub, n }: { quiz: Quiz; year: stri
   const MCQ = quiz.mcqs;
   const SAQ = quiz.saqs || [];
   const testId = testPath(year, sem, sub, n);
+
+  // ordered neighbour tests (skip gaps) + done state
+  const toks = testTokens(year, sem, sub).map(String);
+  const tIdx = toks.indexOf(String(n));
+  const prevHref = tIdx > 0 ? `/test/${year}/${sem}/${sub}/${toks[tIdx - 1]}` : null;
+  const nextHref = tIdx >= 0 && tIdx < toks.length - 1 ? `/test/${year}/${sem}/${sub}/${toks[tIdx + 1]}` : null;
+  const [done, setDoneState] = useState(false);
 
   const [mounted, setMounted] = useState(false);
   // per-MCQ option order (stable once mounted); supports any option count (e.g. True/False)
@@ -57,6 +65,7 @@ export function QuizEngine({ quiz, year, sem, sub, n }: { quiz: Quiz; year: stri
 
   useEffect(() => {
     setMounted(true);
+    setDoneState(isDone(testId));
     if (DUAS.length) setDua(DUAS[Math.floor(Math.random() * DUAS.length)]);
     setDrafts(SAQ.map((_, i) => getSaqDraft(testId, i)));
     document.body.classList.add("test");
@@ -124,8 +133,9 @@ export function QuizEngine({ quiz, year, sem, sub, n }: { quiz: Quiz; year: stri
     // wrong-first order
     const rank = (i: number) => (chosen[i] === null ? 1 : chosen[i] === correctVis[i] ? 2 : 0);
     setOrder([...MCQ.map((_, i) => i)].sort((a, b) => rank(a) - rank(b)));
-    // persist score
+    // persist score + auto-mark done (still uncheckable from the dashboard)
     setScore(testId, { s: chosen.filter((c, i) => c === correctVis[i]).length, max: MCQ.length });
+    setDone(testId, true); setDoneState(true);
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
@@ -152,9 +162,32 @@ export function QuizEngine({ quiz, year, sem, sub, n }: { quiz: Quiz; year: stri
     if (sheet) window.scrollTo({ top: sheet.offsetTop - 16, behavior: "smooth" });
   }
 
+  const toggleDone = () => { const nv = !isDone(testId); setDone(testId, nv); setDoneState(nv); };
+
   if (!mounted) return null;
 
   const scoreQ = examOn && !submitted;
+
+  // exam navigator (shown in exam mode): in-flow timer at top; Next + Finish beside "best wishes"; numbers under "good luck"
+  const examTimer = <div className={"exam-top" + (remain <= 60 ? " low" : "")}>⏱ <b>{fmt(Math.max(0, remain))}</b></div>;
+  const examNav = (
+    <>
+      <button className="exam-next" onClick={() => showItem(Math.min(total - 1, cur + 1))}>Next →</button>
+      <button className="exam-submit" onClick={submitExam}>✔ Finish &amp; Submit</button>
+    </>
+  );
+  const examPal = (
+    <div className="exam-pal">
+      {Array.from({ length: total }).map((_, k) => {
+        const answered = k < MCQ.length ? chosen[k] !== null : drafts[k - MCQ.length]?.trim() !== "";
+        return (
+          <button key={k} className={"exam-pn" + (answered ? " done" : "") + (k === cur ? " on" : "")} onClick={() => showItem(k)}>
+            {k < MCQ.length ? k + 1 : `S${k - MCQ.length + 1}`}
+          </button>
+        );
+      })}
+    </div>
+  );
 
   return (
     <>
@@ -187,6 +220,7 @@ export function QuizEngine({ quiz, year, sem, sub, n }: { quiz: Quiz; year: stri
 
       {/* ---------- MCQs ---------- */}
       <section className="sheet acc-blue quiz-mcq">
+        {examTimer}
         <header className="phead">
           <span className="ic"><svg viewBox="0 0 28 28"><circle cx="12" cy="12" r="7" /><line x1="17" y1="17" x2="24" y2="24" /></svg></span>
           <h2 className="ptitle chalk">MCQs</h2><span className="pnum">{MCQ.length}</span>
@@ -227,12 +261,13 @@ export function QuizEngine({ quiz, year, sem, sub, n }: { quiz: Quiz; year: stri
             );
           })}
         </div>
-        <Foot />
+        <Foot next={examNav} pal={examPal} />
       </section>
 
       {/* ---------- SAQs ---------- */}
       {SAQ.length ? (
         <section className="sheet acc-green quiz-saq">
+          {examTimer}
           <header className="phead">
             <span className="ic"><svg viewBox="0 0 28 28"><line x1="6" y1="8" x2="22" y2="8" /><line x1="6" y1="14" x2="22" y2="14" /><line x1="6" y1="20" x2="16" y2="20" /></svg></span>
             <h2 className="ptitle chalk">Short Answer</h2><span className="pnum">{SAQ.length}</span>
@@ -256,29 +291,18 @@ export function QuizEngine({ quiz, year, sem, sub, n }: { quiz: Quiz; year: stri
               </article>
             ))}
           </div>
-          <Foot />
+          <Foot next={examNav} pal={examPal} />
         </section>
       ) : null}
 
-      {/* ---------- exam HUD + solo bar ---------- */}
-      <div className="exam-hud" hidden={!examOn}>
-        <span className={"qtimer" + (remain <= 60 ? " low" : "")}>⏱ <b>{fmt(Math.max(0, remain))}</b></span>
-        <button className="qctl go" onClick={submitExam}>✔ Finish &amp; Submit</button>
-      </div>
-      <div className="solo-bar" hidden={!examOn}>
-        <button className="solo-nav" onClick={() => showItem(Math.max(0, cur - 1))}>←</button>
-        <div className="solo-pal">
-          {Array.from({ length: total }).map((_, k) => {
-            const answered = k < MCQ.length ? chosen[k] !== null : drafts[k - MCQ.length]?.trim() !== "";
-            return (
-              <button key={k} className={"solo-pn" + (answered ? " done" : "") + (k === cur && examOn ? " cur" : "")} onClick={() => showItem(k)}>
-                {k < MCQ.length ? k + 1 : `S${k - MCQ.length + 1}`}
-              </button>
-            );
-          })}
-        </div>
-        <button className="solo-nav" onClick={() => showItem(Math.min(total - 1, cur + 1))}>→</button>
-      </div>
+      {/* prev test · mark done · next test (hidden in exam mode via CSS) */}
+      <nav className="study-nav">
+        {prevHref ? <Link className="study-pg" href={prevHref}>← Prev test</Link> : <span className="study-pg off">← Prev test</span>}
+        <button className={"study-done" + (done ? " on" : "")} type="button" onClick={toggleDone}>
+          {done ? "✓ Done" : "Mark done"}
+        </button>
+        {nextHref ? <Link className="study-pg" href={nextHref}>Next test →</Link> : <span className="study-pg off">Next test →</span>}
+      </nav>
     </>
   );
 }

@@ -3,6 +3,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { findYear, findSem, findSubject, lectureTokens, testTokens, glowClass } from "@/lib/content/nav";
 import { isDone, getScore, lecturePath, testPath } from "@/lib/progress";
+import { useProgressBump } from "@/lib/useProgressBump";
+import { useAuth } from "@/lib/auth/AuthProvider";
 import { Bi, Emoji } from "@/lib/content/Bi";
 import { Dua } from "./Dua";
 import { NotFoundNote } from "./NotFoundNote";
@@ -12,6 +14,8 @@ export function SubjectView({ year: yId, sem: sId, sub: subId }: { year: string;
   const sem = findSem(year, sId);
   const sub = findSubject(sem, subId);
   const [perf, setPerf] = useState({ ld: 0, lt: 0, lp: 0, tk: 0, tt: 0, ta: 0 });
+  const bump = useProgressBump();
+  const auth = useAuth();
 
   useEffect(() => {
     if (!year || !sem || !sub) return;
@@ -25,7 +29,7 @@ export function SubjectView({ year: yId, sem: sId, sub: subId }: { year: string;
       if (sc && sc.max) { tk++; sp += Math.round((sc.s / sc.max) * 100); }
     });
     setPerf({ ld, lt: lec.length, lp, tk, tt: tst.length, ta: tk ? Math.round(sp / tk) : 0 });
-  }, [year, sem, sub]);
+  }, [year, sem, sub, bump]);
 
   if (!year || !sem || !sub) return <NotFoundNote msg="Open the subject from DentAce Home." />;
 
@@ -59,15 +63,21 @@ export function SubjectView({ year: yId, sem: sId, sub: subId }: { year: string;
               </div>
             </div>
           </div>
-          <Link className={`card ${g}`} href={`/list/${q}/pdf`}>
-            <div className="ctitle"><Emoji e="📁" /><Bi v={{ en: "PDFs", ar: "ملفات PDF" }} /></div>
-          </Link>
-          <Link className={`card ${g}`} href={`/list/${q}/lecture`}>
-            <div className="ctitle"><Emoji e="📘" /><Bi v={{ en: "Lectures", ar: "المحاضرات" }} /></div>
-          </Link>
-          <Link className={`card ${g}`} href={`/list/${q}/test`}>
-            <div className="ctitle"><Emoji e="📝" /><Bi v={{ en: "Tests", ar: "الاختبارات" }} /></div>
-          </Link>
+          {auth?.flags.pdfs !== false ? (
+            <Link className={`card ${g}`} href={`/list/${q}/pdf`}>
+              <div className="ctitle"><Emoji e="📁" /><Bi v={{ en: "PDFs", ar: "ملفات PDF" }} /></div>
+            </Link>
+          ) : null}
+          {auth?.flags.lectures !== false ? (
+            <Link className={`card ${g}`} href={`/list/${q}/lecture`}>
+              <div className="ctitle"><Emoji e="📘" /><Bi v={{ en: "Lectures", ar: "المحاضرات" }} /></div>
+            </Link>
+          ) : null}
+          {auth?.flags.tests !== false ? (
+            <Link className={`card ${g}`} href={`/list/${q}/test`}>
+              <div className="ctitle"><Emoji e="📝" /><Bi v={{ en: "Tests", ar: "الاختبارات" }} /></div>
+            </Link>
+          ) : null}
         </div>
       </section>
       <section className="section">

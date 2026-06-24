@@ -5,6 +5,7 @@ import { SITE } from "@/lib/site-config";
 import { lectureTokens, testTokens, subjectBase } from "@/lib/content/nav";
 import { isDone, setDone, getScore, lecturePath, testPath } from "@/lib/progress";
 import { TITLES, type TitleEntry } from "@/lib/titles";
+import { useProgressBump } from "@/lib/useProgressBump";
 import { Bi, Emoji } from "@/lib/content/Bi";
 
 type Card = {
@@ -41,7 +42,7 @@ export function DashboardView() {
           let tDone = 0, scored = 0, sum = 0;
           testToks.forEach((t) => {
             const sc = getScore(testPath(y.id, s.id, sub.id, t));
-            const d = isDone(testPath(y.id, s.id, sub.id, t)) || !!(sc && sc.max); // manual OR taken
+            const d = isDone(testPath(y.id, s.id, sub.id, t)); // manual done flag — toggleable (finishing an exam auto-marks it)
             testDone[t] = d; if (d) tDone++;
             if (sc && sc.max) { scored++; sum += Math.round((sc.s / sc.max) * 100); }
           });
@@ -62,7 +63,8 @@ export function DashboardView() {
     setSecs(out);
   }, []);
 
-  useEffect(() => { recompute(); }, [recompute]);
+  const bump = useProgressBump();
+  useEffect(() => { recompute(); }, [recompute, bump]);
 
   const toggleLec = (y: string, s: string, sub: string, tok: string) => {
     const id = lecturePath(y, s, sub, tok); setDone(id, !isDone(id)); recompute();

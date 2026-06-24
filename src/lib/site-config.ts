@@ -6,6 +6,10 @@ import type { SiteConfig } from "./content/types";
 
 export const GA_ID = "REDACTED";
 
+/* Owner account that can view the live "who's online" tracker (/online).
+   Must match the email in the presence RLS policy. */
+export const ADMIN_EMAIL = "removed@example.com";
+
 export const SITE: SiteConfig = {
   "brand": "🦷 | DentAce",
   "buttons": "neon",

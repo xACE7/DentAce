@@ -3,6 +3,7 @@ import Link from "next/link";
 import { Breadcrumbs } from "./Breadcrumbs";
 import { Stats } from "./Stats";
 import { Settings } from "./Settings";
+import { ProfileButton } from "./ProfileButton";
 import { ChalkText } from "@/lib/content/Bi";
 
 /* The ONE shared top bar — brand · breadcrumb · stats · search · ⚙ — on every page.
@@ -21,6 +22,7 @@ export function Chrome() {
           <ChalkText>{"🔍"}</ChalkText>
         </Link>
         <Settings />
+        <ProfileButton />
       </div>
     </header>
   );
