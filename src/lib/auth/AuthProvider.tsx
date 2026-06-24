@@ -2,7 +2,6 @@
 import { createContext, useContext, useEffect, useMemo, useRef, useState } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase, supabaseEnabled } from "@/lib/supabase";
-import { ADMIN_EMAIL } from "@/lib/site-config";
 import { onProgress } from "@/lib/progress";
 import { pullCloud, schedulePush } from "@/lib/sync";
 
@@ -10,6 +9,7 @@ type Status = "loading" | "in" | "out";
 export type Profile = {
   username: string; avatar_url: string | null; email: string | null;
   banned: boolean; show_pdfs: boolean; show_tests: boolean; show_lectures: boolean;
+  scope: string | null;
 };
 type Result = { error?: string; info?: string };
 type Flags = { pdfs: boolean; tests: boolean; lectures: boolean };
@@ -29,6 +29,7 @@ type AuthCtx = {
   updateEmail: (email: string) => Promise<Result>;
   updatePassword: (password: string) => Promise<Result>;
   uploadAvatar: (file: File) => Promise<Result>;
+  updateScope: (scope: string) => Promise<Result>;
 };
 const Ctx = createContext<AuthCtx | null>(null);
 export const useAuth = () => useContext(Ctx);
@@ -42,11 +43,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loadProfile = async (uid: string) => {
     if (!supabase) return;
-    const { data } = await supabase.from("profiles").select("username, avatar_url, email, banned, show_pdfs, show_tests, show_lectures").eq("id", uid).maybeSingle();
+    const { data } = await supabase.from("profiles").select("username, avatar_url, email, banned, show_pdfs, show_tests, show_lectures, scope").eq("id", uid).maybeSingle();
     setProfile(data ? {
       username: data.username, avatar_url: data.avatar_url, email: data.email,
       banned: !!data.banned,
-      show_pdfs: data.show_pdfs !== false, show_tests: data.show_tests !== false, show_lectures: data.show_lectures !== false,
+      // PDFs are hidden by default — only shown when explicitly granted (=== true).
+      show_pdfs: data.show_pdfs === true, show_tests: data.show_tests !== false, show_lectures: data.show_lectures !== false,
+      scope: typeof data.scope === "string" ? data.scope : null,
     } : null);
   };
 
@@ -127,8 +130,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!supabase || !uidRef.current) return { error: "Not signed in." };
     const uname = username.trim();
     if (!/^[A-Za-z0-9_]{3,20}$/.test(uname)) return { error: "Username must be 3–20 letters, numbers or underscore." };
-    const { error } = await supabase.from("profiles").update({ username: uname }).eq("id", uidRef.current);
-    if (error) return { error: /duplicate|unique/i.test(error.message) ? "That username is taken." : error.message };
+    // upsert (not update) so it works even for accounts created before the profile trigger,
+    // and so the unique-username index is actually hit (blocks duplicates).
+    const payload: { id: string; username: string; email?: string } = { id: uidRef.current, username: uname };
+    if (user?.email) payload.email = user.email;
+    const { error } = await supabase.from("profiles").upsert(payload, { onConflict: "id" });
+    if (error) {
+      if (/duplicate|unique/i.test(error.message)) return { error: "That username is taken." };
+      if (/schema cache|does not exist/i.test(error.message)) return { error: "Profiles table isn't set up yet — run the database setup SQL." };
+      return { error: error.message };
+    }
     await loadProfile(uidRef.current);
     return { info: "Username updated." };
   };
@@ -136,7 +147,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const updateEmail = async (email: string): Promise<Result> => {
     if (!supabase) return { error: "Not signed in." };
     const { error } = await supabase.auth.updateUser({ email }, { emailRedirectTo: redirect() });
-    return error ? { error: error.message } : { info: "Check your new email to confirm the change." };
+    return error ? { error: error.message } : { info: "Check your new email (incl. Spam folder) to confirm the change." };
   };
 
   const updatePassword = async (password: string): Promise<Result> => {
@@ -160,11 +171,29 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { info: "Avatar updated." };
   };
 
-  const isAdmin = !!user && user.email === ADMIN_EMAIL;
+  const updateScope = async (scope: string): Promise<Result> => {
+    if (!supabase || !uidRef.current) return { error: "Not signed in." };
+    const payload: { id: string; scope: string; email?: string } = { id: uidRef.current, scope };
+    if (user?.email) payload.email = user.email;
+    const { error } = await supabase.from("profiles").upsert(payload, { onConflict: "id" });
+    if (error) {
+      if (/schema cache|does not exist|column/i.test(error.message)) return { error: "Add the 'scope' column — run the database setup SQL." };
+      return { error: error.message };
+    }
+    await loadProfile(uidRef.current);
+    return { info: "Saved." };
+  };
+
+  // Admin status comes from a Supabase role claim (app_metadata.role), set
+  // server-side via SQL/dashboard. It can't be self-granted (app_metadata is not
+  // user-editable) and keeps the owner's email out of the published bundle.
+  const isAdmin = !!user && user.app_metadata?.role === "admin";
   const banned = !!user && !!profile?.banned;
-  // content visibility: guests & admin see all; a member sees what their flags allow
+  // content visibility: admin sees all; tests/lectures are public by default but
+  // PDFs are HIDDEN by default — only admin or an explicitly-granted member sees them.
   const flags: Flags = useMemo(() => {
-    if (!user || isAdmin || !profile) return { pdfs: true, tests: true, lectures: true };
+    if (!supabaseEnabled || isAdmin) return { pdfs: true, tests: true, lectures: true };
+    if (!user || !profile) return { pdfs: false, tests: true, lectures: true };
     return { pdfs: profile.show_pdfs, tests: profile.show_tests, lectures: profile.show_lectures };
   }, [user, isAdmin, profile]);
 
@@ -172,7 +201,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <Ctx.Provider
       value={{
         enabled: supabaseEnabled, user, profile, status, syncing, isAdmin, banned, flags,
-        logIn, signUp, signOut, updateUsername, updateEmail, updatePassword, uploadAvatar,
+        logIn, signUp, signOut, updateUsername, updateEmail, updatePassword, uploadAvatar, updateScope,
       }}
     >
       {children}

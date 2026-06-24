@@ -28,7 +28,7 @@ export function MembersView() {
       if (alive && data) {
         setMembers(data.map((m) => ({
           id: m.id, username: m.username, email: m.email, created_at: m.created_at,
-          banned: !!m.banned, show_pdfs: m.show_pdfs !== false, show_tests: m.show_tests !== false, show_lectures: m.show_lectures !== false,
+          banned: !!m.banned, show_pdfs: m.show_pdfs === true, show_tests: m.show_tests !== false, show_lectures: m.show_lectures !== false,
         })));
       }
       if (alive) setLoaded(true);

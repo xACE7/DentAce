@@ -58,6 +58,39 @@ function Seg<T extends string>({ label, items, current, onPick }: {
   );
 }
 
+function ScopeSelect({ label, lang, value, save }: {
+  label: { en: string; ar: string }; lang: "en" | "ar"; value: string;
+  save: (scope: string) => Promise<{ error?: string; info?: string }>;
+}) {
+  const [busy, setBusy] = useState(false);
+  const [msg, setMsg] = useState<{ ok?: boolean; text: string } | null>(null);
+  const [yId, sId] = (value || "").split("/");
+  const year = SITE.years.find((y) => y.id === yId) || SITE.years[0];
+  const sem = year.semesters.find((s) => s.id === sId) || year.semesters[0];
+  const pick = async (scope: string) => {
+    setBusy(true); setMsg(null);
+    const r = await save(scope);
+    setBusy(false);
+    setMsg(r.error ? { text: r.error } : { ok: true, text: r.info || "Saved." });
+  };
+  return (
+    <div className="pf-field">
+      <span className="pf-label"><span className="en">{label.en}</span><span className="ar">{label.ar}</span></span>
+      <div className="pf-row pf-scope">
+        <select className="pf-input" aria-label="Year" disabled={busy} value={year.id}
+          onChange={(e) => { const y = SITE.years.find((yy) => yy.id === e.target.value)!; void pick(`${y.id}/${y.semesters[0].id}`); }}>
+          {SITE.years.map((y) => <option key={y.id} value={y.id}>{lang === "ar" ? y.nameAr : y.name}</option>)}
+        </select>
+        <select className="pf-input" aria-label="Semester" disabled={busy} value={sem.id}
+          onChange={(e) => void pick(`${year.id}/${e.target.value}`)}>
+          {year.semesters.map((s) => <option key={s.id} value={s.id}>{lang === "ar" ? s.nameAr : s.name}</option>)}
+        </select>
+      </div>
+      {msg ? <p className={"pf-msg" + (msg.ok ? " ok" : " err")}>{msg.text}</p> : null}
+    </div>
+  );
+}
+
 const LANGS: Option<"en" | "ar">[] = [
   { id: "en", en: "English", ar: "الإنجليزية" },
   { id: "ar", en: "Arabic", ar: "العربية" },
@@ -70,14 +103,22 @@ export function ProfileView() {
   const [avBusy, setAvBusy] = useState(false);
   const [avMsg, setAvMsg] = useState<{ ok?: boolean; text: string } | null>(null);
 
-  // study stats across content (live via progress bump), filterable by semester
+  // study stats (live via progress bump), scoped to the year+semester chosen in Edit Account
   const bump = useProgressBump();
-  const sems = useMemo(() => {
-    const out: { key: string; label: string }[] = [{ key: "all", label: "All" }];
-    SITE.years.forEach((y) => y.semesters.forEach((s) => out.push({ key: `${y.id}/${s.id}`, label: `${y.id} ${String(s.id).toUpperCase()}` })));
-    return out;
-  }, []);
-  const [scope, setScope] = useState("all");
+  const firstScope = `${SITE.years[0].id}/${SITE.years[0].semesters[0].id}`;
+  const [scope, setScope] = useState(firstScope);
+  // adopt the account's saved scope once the profile loads (synced via Supabase)
+  useEffect(() => { const sc = auth?.profile?.scope; if (sc) setScope(sc); }, [auth?.profile?.scope]);
+  const saveScope = async (s: string) => {
+    setScope(s);
+    return auth ? auth.updateScope(s) : { error: "Not signed in." };
+  };
+  const scopeLabel = useMemo(() => {
+    const [yId, sId] = scope.split("/");
+    const y = SITE.years.find((yy) => yy.id === yId) || SITE.years[0];
+    const s = y.semesters.find((ss) => ss.id === sId) || y.semesters[0];
+    return { en: `${y.name} · ${s.name}`, ar: `${y.nameAr} · ${s.nameAr}` };
+  }, [scope]);
   const [st, setSt] = useState({ streak: 0, lecDone: 0, lecTot: 0, tDone: 0, avg: 0, scored: 0 });
   useEffect(() => {
     let lecDone = 0, lecTot = 0, tDone = 0, scored = 0, sum = 0;
@@ -139,19 +180,11 @@ export function ProfileView() {
           </div>
         </div>
 
-        {/* progress stats (filterable by semester) */}
+        {/* progress stats — scoped to the year+semester chosen in Edit Account */}
         <div className="pf-card">
           <div className="pf-h-row">
             <h3 className="pf-h"><Bi v={{ en: "Your progress", ar: "تقدّمك" }} /></h3>
-            {sems.length > 2 ? (
-              <div className="pf-segsm">
-                {sems.map((sm) => (
-                  <button key={sm.key} type="button" className={"pf-segsm-btn" + (scope === sm.key ? " on" : "")} onClick={() => setScope(sm.key)}>
-                    {sm.key === "all" ? <Bi v={{ en: "All", ar: "الكل" }} /> : sm.label}
-                  </button>
-                ))}
-              </div>
-            ) : null}
+            <span className="pf-scope-tag"><Bi v={scopeLabel} /></span>
           </div>
           <div className="pf-stats">
             <div className="pf-stat c-streak"><span className="pf-stat-n">🔥 {st.streak}</span><span className="pf-stat-l"><Bi v={{ en: "day streak", ar: "يوم متتالٍ" }} /></span></div>
@@ -167,6 +200,7 @@ export function ProfileView() {
           <EditField label={{ en: "Username", ar: "اسم المستخدم" }} type="text" initial={auth.profile?.username || ""} autoComplete="username" save={auth.updateUsername} />
           <EditField label={{ en: "Email", ar: "البريد الإلكتروني" }} type="email" initial={u.email || ""} autoComplete="email" save={auth.updateEmail} />
           <EditField label={{ en: "New password", ar: "كلمة مرور جديدة" }} type="password" initial="" placeholder="••••••" autoComplete="new-password" minLength={6} clearOnSave save={auth.updatePassword} />
+          <ScopeSelect label={{ en: "Year & semester", ar: "السنة والفصل" }} lang={lang} value={scope} save={saveScope} />
         </div>
 
         {/* appearance */}

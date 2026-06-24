@@ -43,7 +43,7 @@ export function Account({ onNavigate }: { onNavigate?: () => void }) {
       ) : auth.user ? (
         <div className="acct">
           <div className="acct-row">
-            <span className="acct-email" title={auth.user.email}>{auth.user.email}</span>
+            <span className="acct-email" title={auth.user.email}>{auth.profile?.username || auth.user.email}</span>
             <span className={"acct-sync" + (auth.syncing ? "" : " ok")}>{auth.syncing ? "syncing…" : "✓ synced"}</span>
           </div>
           <Link className="acct-btn" href="/profile" onClick={() => onNavigate?.()}>
@@ -55,8 +55,8 @@ export function Account({ onNavigate }: { onNavigate?: () => void }) {
         </div>
       ) : verify ? (
         <p className="acct-note">
-          <span className="en">✉ Check your email to verify your account, then log in.</span>
-          <span className="ar">✉ تفقّد بريدك لتأكيد حسابك، ثمّ سجّل الدخول.</span>
+          <span className="en">✉ Check your email to verify your account, then log in. <b>If you don&apos;t see it, look in your Spam folder</b> and mark it &quot;Not spam&quot;.</span>
+          <span className="ar">✉ تفقّد بريدك لتأكيد حسابك، ثمّ سجّل الدخول. <b>وإن لم تجده، تفقّد مجلّد الرسائل غير المرغوبة (Spam)</b> وعلّمه «ليس مزعجًا».</span>
         </p>
       ) : (
         <form

@@ -4,11 +4,9 @@
    add/rename subjects, change emojis/colours/Arabic names, or edit the duas list. */
 import type { SiteConfig } from "./content/types";
 
-export const GA_ID = "REDACTED";
-
-/* Owner account that can view the live "who's online" tracker (/online).
-   Must match the email in the presence RLS policy. */
-export const ADMIN_EMAIL = "removed@example.com";
+/* Google Analytics tag — set NEXT_PUBLIC_GA_ID in .env.local (local) and the
+   deploy workflow (CI). Empty → analytics is skipped (see app/layout.tsx). */
+export const GA_ID = process.env.NEXT_PUBLIC_GA_ID || "";
 
 export const SITE: SiteConfig = {
   "brand": "🦷 | DentAce",

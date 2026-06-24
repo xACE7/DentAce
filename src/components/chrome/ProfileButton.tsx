@@ -21,6 +21,14 @@ export function ProfileButton() {
     setPos({ top: Math.round(b.bottom + 6), left: Math.round(left) });
   };
 
+  // let other parts of the app (e.g. the lecture/test sign-in gate) open this panel
+  useEffect(() => {
+    const onOpen = () => { place(); setOpen(true); };
+    window.addEventListener("da:open-account", onOpen);
+    return () => window.removeEventListener("da:open-account", onOpen);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
   useEffect(() => {
     if (!open) return;
     const onDoc = (e: MouseEvent) => { if (wrap.current && !wrap.current.contains(e.target as Node)) setOpen(false); };

@@ -1,6 +1,6 @@
 /* Live presence: each signed-in client heartbeats its current page into one row
    (public.presence). RLS lets a user write only their own row, and only the owner
-   (ADMIN_EMAIL) can read the table — so the "who's online" list is private. */
+   (the admin role) can read the table — so the "who's online" list is private. */
 import { supabase } from "@/lib/supabase";
 
 export async function setPresence(userId: string, name: string, page: string) {

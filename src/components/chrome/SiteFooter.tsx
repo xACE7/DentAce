@@ -6,7 +6,7 @@ export function SiteFooter() {
   // usePathname() is identical on server and client → no hydration mismatch.
   const path = usePathname() || "/";
   const mailto =
-    "mailto:removed@example.com?subject=" +
+    "mailto:dentace.sa@gmail.com?subject=" +
     encodeURIComponent("DentAce error: " + path) +
     "&body=" +
     encodeURIComponent("Page: " + path + "\n\nFeedback:\n");

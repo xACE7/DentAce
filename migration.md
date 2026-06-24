@@ -100,7 +100,7 @@ Pages). Do **not** double‑click `out/index.html` via a `file://` URL — asset
 paths like `/_next/…` that only resolve when the folder is served at a web root, so styling won't load.
 
 A service worker (`public/sw.js`, registered in production only) provides offline support, and Google
-Analytics (`REDACTED`) is wired in `src/app/layout.tsx`.
+Analytics (tag id from the `NEXT_PUBLIC_GA_ID` env var) is wired in `src/app/layout.tsx`.
 
 ---
 

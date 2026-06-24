@@ -5,6 +5,7 @@ import { SITE } from "@/lib/site-config";
 import { subjectBase, tokensForKind, pdfItems, glowClass } from "@/lib/content/nav";
 import { TITLES } from "@/lib/titles";
 import { Bi, Emoji } from "@/lib/content/Bi";
+import { asset } from "@/lib/asset";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 import type { Kind } from "@/lib/content/types";
 
@@ -67,7 +68,7 @@ export function SearchView() {
               );
               cards.push(
                 k === "pdf"
-                  ? <a key={`i-${sub.id}-${k}-${tok}`} className={`card ${g} search-direct`} href={href} target="_blank" rel="noopener noreferrer">{inner}</a>
+                  ? <a key={`i-${sub.id}-${k}-${tok}`} className={`card ${g} search-direct`} href={href === "#" ? "#" : asset(href)} target="_blank" rel="noopener noreferrer">{inner}</a>
                   : <Link key={`i-${sub.id}-${k}-${tok}`} className={`card ${g} search-direct`} href={href}>{inner}</Link>
               );
             });

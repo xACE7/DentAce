@@ -403,8 +403,8 @@ export const TITLES: Record<string, TitleEntry> = {
     "a": "الطوارئ العصبية - السكتة الدماغية والصرع"
   },
   "3rd-year/3rd-s2/bsd|13": {
-    "e": "Hepatitis in Dental Practice",
-    "a": "التهاب الكبد في طب الأسنان"
+    "e": "Respiratory Diseases & Dental Management",
+    "a": "الأمراض التنفسية والتدبير السني"
   },
   "3rd-year/3rd-s2/bsd|14": {
     "e": "Dental Consideration of Psychiatric Disorders",

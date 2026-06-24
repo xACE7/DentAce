@@ -12,6 +12,7 @@ import { Bi, Emoji } from "@/lib/content/Bi";
 import { Dua } from "./Dua";
 import { NotFoundNote } from "./NotFoundNote";
 import { confetti } from "@/lib/confetti";
+import { asset } from "@/lib/asset";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 import type { Token } from "@/lib/content/contentIndex";
 import type { Kind } from "@/lib/content/types";
@@ -167,7 +168,7 @@ export function ListView({ year: yId, sem: sId, sub: subId, kind }: { year: stri
                 );
                 const cls = `card ${g}${isd ? " is-done" : ""}`;
                 return kind === "pdf" ? (
-                  <a key={String(it.token)} className={cls} href={it.href} hidden={!visible(it)} target="_blank" rel="noopener noreferrer">
+                  <a key={String(it.token)} className={cls} href={it.href === "#" ? "#" : asset(it.href)} hidden={!visible(it)} target="_blank" rel="noopener noreferrer">
                     {card}
                   </a>
                 ) : (

@@ -2,7 +2,6 @@
 import { useEffect, useMemo, useState } from "react";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { supabase } from "@/lib/supabase";
-import { ADMIN_EMAIL } from "@/lib/site-config";
 import { Bi, Emoji } from "@/lib/content/Bi";
 
 type Row = { user_id: string; name: string; page: string | null; updated_at: string };
@@ -30,7 +29,7 @@ function prettyPage(p: string | null): string {
 
 export function OnlineView() {
   const auth = useAuth();
-  const isAdmin = !!auth?.user && auth.user.email === ADMIN_EMAIL;
+  const isAdmin = !!auth?.isAdmin;
   const [rows, setRows] = useState<Row[]>([]);
   const [tick, setTick] = useState(0); // re-render to refresh "x ago" + online filter
 
