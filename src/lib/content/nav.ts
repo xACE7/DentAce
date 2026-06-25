@@ -2,6 +2,7 @@
    Mirrors the lookups the old app.js did, but availability comes from discovery. */
 import { SITE } from "@/lib/site-config";
 import { CONTENT_INDEX, type Token, type PdfItem } from "./contentIndex";
+import { aliasContent } from "./alias";
 import type { Year, Semester, Subject, Kind, Practical } from "./types";
 
 export function findYear(id: string): Year | undefined { return SITE.years.find((y) => y.id === id); }
@@ -19,7 +20,8 @@ export function subjectBase(year: Year, sem: Semester, subject: Subject): string
 }
 
 export function content(y: string, s: string, sub: string): { lecture: Token[]; test: Token[]; pdf: PdfItem[] } {
-  return CONTENT_INDEX[subjectKey(y, s, sub)] || { lecture: [], test: [], pdf: [] };
+  const a = aliasContent(y, s, sub); // mirror e.g. 3rd/s2/preclinical → 3rd/s1/preclinical
+  return CONTENT_INDEX[subjectKey(a.year, a.sem, a.sub)] || { lecture: [], test: [], pdf: [] };
 }
 
 export function lectureTokens(y: string, s: string, sub: string): Token[] { return content(y, s, sub).lecture; }
