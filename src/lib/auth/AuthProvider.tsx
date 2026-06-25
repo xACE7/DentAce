@@ -30,6 +30,7 @@ type AuthCtx = {
   updatePassword: (password: string) => Promise<Result>;
   uploadAvatar: (file: File) => Promise<Result>;
   updateScope: (scope: string) => Promise<Result>;
+  syncNow: () => Promise<Result>;
 };
 const Ctx = createContext<AuthCtx | null>(null);
 export const useAuth = () => useContext(Ctx);
@@ -184,6 +185,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     return { info: "Saved." };
   };
 
+  // Manual "Sync now": pull the cloud row, merge with local, and push the union back.
+  const syncNow = async (): Promise<Result> => {
+    if (!supabase || !uidRef.current) return { error: "Sign in to sync." };
+    setSyncing(true);
+    const ok = await pullCloud(uidRef.current);
+    setSyncing(false);
+    return ok ? { info: "Progress synced." } : { error: "Couldn't sync (offline?)." };
+  };
+
   // Admin status comes from a Supabase role claim (app_metadata.role), set
   // server-side via SQL/dashboard. It can't be self-granted (app_metadata is not
   // user-editable) and keeps the owner's email out of the published bundle.
@@ -201,7 +211,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     <Ctx.Provider
       value={{
         enabled: supabaseEnabled, user, profile, status, syncing, isAdmin, banned, flags,
-        logIn, signUp, signOut, updateUsername, updateEmail, updatePassword, uploadAvatar, updateScope,
+        logIn, signUp, signOut, updateUsername, updateEmail, updatePassword, uploadAvatar, updateScope, syncNow,
       }}
     >
       {children}

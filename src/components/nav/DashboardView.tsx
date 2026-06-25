@@ -6,6 +6,7 @@ import { lectureTokens, testTokens, subjectBase } from "@/lib/content/nav";
 import { isDone, setDone, getScore, lecturePath, testPath } from "@/lib/progress";
 import { TITLES, type TitleEntry } from "@/lib/titles";
 import { useProgressBump } from "@/lib/useProgressBump";
+import { useAuth } from "@/lib/auth/AuthProvider";
 import { Bi, Emoji } from "@/lib/content/Bi";
 
 type Card = {
@@ -64,6 +65,8 @@ export function DashboardView() {
   }, []);
 
   const bump = useProgressBump();
+  const auth = useAuth();
+  const [syncMsg, setSyncMsg] = useState("");
   useEffect(() => { recompute(); }, [recompute, bump]);
 
   const toggleLec = (y: string, s: string, sub: string, tok: string) => {
@@ -72,13 +75,30 @@ export function DashboardView() {
   const toggleTest = (y: string, s: string, sub: string, tok: string) => {
     const id = testPath(y, s, sub, tok); setDone(id, !isDone(id)); recompute();
   };
+  const setAllLec = (c: Card, value: boolean) => { c.lecToks.forEach((t) => setDone(lecturePath(c.y, c.s, c.id, t), value)); recompute(); };
+  const setAllTest = (c: Card, value: boolean) => { c.testToks.forEach((t) => setDone(testPath(c.y, c.s, c.id, t), value)); recompute(); };
+  const doSync = async () => {
+    if (!auth) return;
+    const r = await auth.syncNow();
+    setSyncMsg(r.info || r.error || "");
+    window.setTimeout(() => setSyncMsg(""), 2500);
+  };
 
   return (
     <main className="container" id="dmain">
       <div id="dashRoot">
-        <Link className="dash-resume plan-link" href="/plan">
-          <Emoji e="📅" /><Bi v={{ en: "Build a study plan", ar: "ابنِ خطة مذاكرة" }} />
-        </Link>
+        <div className="dash-top">
+          <Link className="dash-resume plan-link" href="/plan">
+            <Emoji e="📅" /><Bi v={{ en: "Build a study plan", ar: "ابنِ خطة مذاكرة" }} />
+          </Link>
+          {auth?.enabled && auth.status === "in" ? (
+            <button type="button" className="dash-sync plan-link" onClick={doSync} disabled={auth.syncing}>
+              <Emoji e="🔄" />
+              <Bi v={{ en: auth.syncing ? "Syncing…" : "Sync now", ar: auth.syncing ? "جارٍ المزامنة…" : "زامن الآن" }} />
+              {syncMsg && !auth.syncing ? <span className="dash-sync-msg">{syncMsg}</span> : null}
+            </button>
+          ) : null}
+        </div>
         {secs.map((sec) => (
           <section className="section" key={sec.key}>
             <div className="section-head bar">
@@ -92,7 +112,7 @@ export function DashboardView() {
                 const isOpen = open === cardKey;
                 const lecItems = (
                   <div className="dcl-col">
-                    <div className="dcl-head"><span><Bi v={{ en: "Lectures", ar: "المحاضرات" }} /></span><span className="dcl-cnt">{c.done}/{c.lec}</span></div>
+                    <div className="dcl-head"><span><Bi v={{ en: "Lectures", ar: "المحاضرات" }} /></span><span className="dcl-cnt">{c.done}/{c.lec}</span><button type="button" className="dcl-all" onClick={() => setAllLec(c, c.done < c.lec)}><Bi v={{ en: c.done < c.lec ? "✓ All" : "Clear", ar: c.done < c.lec ? "✓ الكل" : "مسح" }} /></button></div>
                     <div className="dcl-list">
                       {c.lecToks.map((t) => (
                         <label className={"dcl-item" + (c.lecDone[t] ? " done" : "")} key={t}>
@@ -106,7 +126,7 @@ export function DashboardView() {
                 );
                 const testItems = (
                   <div className="dcl-col">
-                    <div className="dcl-head"><span><Bi v={{ en: "Tests", ar: "الاختبارات" }} /></span><span className="dcl-cnt">{c.tDone}/{c.tTot}</span></div>
+                    <div className="dcl-head"><span><Bi v={{ en: "Tests", ar: "الاختبارات" }} /></span><span className="dcl-cnt">{c.tDone}/{c.tTot}</span><button type="button" className="dcl-all" onClick={() => setAllTest(c, c.tDone < c.tTot)}><Bi v={{ en: c.tDone < c.tTot ? "✓ All" : "Clear", ar: c.tDone < c.tTot ? "✓ الكل" : "مسح" }} /></button></div>
                     <div className="dcl-list">
                       {c.testToks.map((t) => (
                         <label className={"dcl-item" + (c.testDone[t] ? " done" : "")} key={t}>
