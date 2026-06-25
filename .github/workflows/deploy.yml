@@ -26,8 +26,11 @@ jobs:
           node-version: 20
           cache: npm
       - run: npm ci
-      # Rebuild the content index from disk so it always matches public/content.
-      - run: npm run discover
+      # NOTE: do NOT run `npm run discover` here. The source PDFs are no longer in
+      # the repo (served from the private Supabase 'pdfs' bucket), so re-discovering
+      # in CI would wipe every subject's pdf tokens from the index → "No PDFs yet".
+      # The committed src/lib/content/contentIndex.ts is the source of truth;
+      # regenerate it locally (with PDFs on disk) and commit when content changes.
       - name: Build static site (out/)
         run: npm run export
         env:
