@@ -13,6 +13,7 @@ import { Dua } from "./Dua";
 import { NotFoundNote } from "./NotFoundNote";
 import { confetti } from "@/lib/confetti";
 import { openPdf } from "@/lib/pdf";
+import { supabase } from "@/lib/supabase";
 import { useTheme } from "@/lib/theme/ThemeProvider";
 import type { Token } from "@/lib/content/contentIndex";
 import type { Kind } from "@/lib/content/types";
@@ -36,19 +37,44 @@ export function ListView({ year: yId, sem: sId, sub: subId, kind }: { year: stri
   const [done, setDone] = useState<Record<string, boolean>>({});
   const [q, setQ] = useState("");
   const [filt, setFilt] = useState<"all" | "todo" | "done">("all");
+  // PDFs are served from the private Supabase 'pdfs' bucket, not the repo. List the
+  // bucket at runtime so cards show in production (where the files aren't in git);
+  // the on-disk index is only a local fallback. null = not loaded → use the index.
+  const [bucketPdfs, setBucketPdfs] = useState<{ token: string; file: string }[] | null>(null);
   const bump = useProgressBump();
+
+  useEffect(() => {
+    setBucketPdfs(null);
+    if (kind !== "pdf" || !supabase || !year || !sem || !sub) return;
+    let alive = true;
+    const folder = `${subjectBase(year, sem, sub)}/pdf`;
+    (async () => {
+      const { data, error } = await supabase!.storage.from("pdfs")
+        .list(folder, { limit: 1000, sortBy: { column: "name", order: "asc" } });
+      if (!alive || error || !data) return;
+      const rows = data
+        .filter((f) => f.name.toLowerCase().endsWith(".pdf"))
+        .map((f) => ({ token: f.name.match(/-([\d-]+)\.pdf$/i)?.[1] ?? f.name.replace(/\.pdf$/i, ""), file: `/${folder}/${f.name}` }))
+        .sort((a, b) => (parseInt(a.token) || 0) - (parseInt(b.token) || 0) || a.token.localeCompare(b.token));
+      if (rows.length) setBucketPdfs(rows);
+    })();
+    return () => { alive = false; };
+  }, [kind, year, sem, sub]);
 
   const items: Item[] = useMemo(() => {
     if (!year || !sem || !sub) return [];
     const base = subjectBase(year, sem, sub);
-    const pmap = kind === "pdf" ? new Map(pdfItems(year.id, sem.id, sub.id).map((p) => [String(p.token), p.file])) : null;
-    return tokensForKind(year.id, sem.id, sub.id, kind).map((token) => {
+    const rows: { token: Token; file?: string }[] =
+      kind === "pdf"
+        ? (bucketPdfs ?? pdfItems(year.id, sem.id, sub.id)).map((p) => ({ token: p.token, file: p.file }))
+        : tokensForKind(year.id, sem.id, sub.id, kind).map((token) => ({ token }));
+    return rows.map(({ token, file }) => {
       const isNum = typeof token === "number" || /^\d+$/.test(String(token));
       const prac = isNum && isPractical(sub.practical, kind, parseInt(String(token), 10));
       const labelEn = `${LABEL[kind][0]} ${token}${prac ? " (Practical)" : ""}`;
       const labelAr = `${LABEL[kind][1]} ${token}${prac ? ` (${PRACTICAL[1]})` : ""}`;
       const href =
-        kind === "pdf" ? pmap!.get(String(token)) || "#"
+        kind === "pdf" ? file || "#"
         : kind === "lecture" ? `/lecture/${year.id}/${sem.id}/${sub.id}/${token}`
         : `/test/${year.id}/${sem.id}/${sub.id}/${token}`;
       const ti = TITLES[`${base}|${token}`];
@@ -59,7 +85,7 @@ export function ListView({ year: yId, sem: sId, sub: subId, kind }: { year: stri
         search: `${labelEn} ${labelAr} ${topicEn} ${topicAr}`.toLowerCase(),
       };
     });
-  }, [year, sem, sub, kind]);
+  }, [year, sem, sub, kind, bucketPdfs]);
 
   useEffect(() => {
     if (!year || !sem || !sub) return;
