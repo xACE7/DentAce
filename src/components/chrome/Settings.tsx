@@ -2,7 +2,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { useTheme } from "@/lib/theme/ThemeProvider";
-import { MODES, DESIGNS, type Option } from "@/lib/theme/themes";
+import { MODES, DESIGNS, THEMES, type Option } from "@/lib/theme/themes";
 import { ChalkText } from "@/lib/content/Bi";
 
 function Grid<T extends string>({
@@ -38,7 +38,7 @@ function Grid<T extends string>({
 /* The ⚙ settings: language toggle + gear + Mode/Design panel + plan link.
    Markup matches site-chrome.js (.themewrap > .site-lang + .themebtn + .theme-menu.settings-panel). */
 export function Settings() {
-  const { design, mode, lang, setDesign, setMode, setLang } = useTheme();
+  const { design, mode, theme, lang, setDesign, setMode, setTheme, setLang } = useTheme();
   const [open, setOpen] = useState(false);
   const [pos, setPos] = useState<{ top: number; left: number } | null>(null);
   const wrap = useRef<HTMLDivElement>(null);
@@ -115,6 +115,27 @@ export function Settings() {
           <span className="ar">التصميم</span>
         </div>
         <Grid items={DESIGNS} current={design} onPick={setDesign} />
+        <div className="set-label">
+          <span className="en">Colors</span>
+          <span className="ar">الألوان</span>
+        </div>
+        <div className="set-grid sw-grid">
+          {THEMES.map((t) => (
+            <button
+              key={t.id}
+              type="button"
+              title={t.en}
+              className={"theme-sw" + (t.id === theme ? " active" : "")}
+              onClick={() => setTheme(t.id)}
+            >
+              <span className="sw-dot" style={{ background: `linear-gradient(135deg, ${t.a}, ${t.b})` }} />
+              <span className="sw-name">
+                <span className="en">{t.en}</span>
+                <span className="ar">{t.ar}</span>
+              </span>
+            </button>
+          ))}
+        </div>
         <Link className="set-link" href="/plan">
           <span className="en">
             <ChalkText>{"📅 Build a study plan"}</ChalkText>

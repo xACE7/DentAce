@@ -13,7 +13,7 @@ import { GA_ID } from "@/lib/site-config";
 
 /* No-flash boot: set data-theme/design/mode/lang + read-scale BEFORE first paint,
    straight from localStorage — identical to the old site's inline <head> script. */
-const BOOT = `(function(){try{var e=document.documentElement,g=localStorage,t=g.getItem('dentace-theme')||'ace';if(!/^(ace|forest|royal|mono|daylight|pearl|sakura|mint)$/.test(t))t='ace';e.setAttribute('data-theme',t);e.setAttribute('data-mode',g.getItem('dentace-mode')==='light'?'light':'dark');var d=g.getItem('dentace-design')||'default';if(d==='chalk')d='paper';e.setAttribute('data-design',d);var s=g.getItem('dentace-read-scale');if(s)e.style.setProperty('--read-scale',s+'rem');var l=g.getItem('dentace-lang')==='ar'?'ar':'en';e.setAttribute('data-lang',l);}catch(x){}})();`;
+const BOOT = `(function(){try{var e=document.documentElement,g=localStorage,t=g.getItem('dentace-theme')||'ace';if(!/^(ace|azure|blush|sky|lagoon|candy|sunset|grape|citrus|ember)$/.test(t))t='ace';e.setAttribute('data-theme',t);e.setAttribute('data-mode',g.getItem('dentace-mode')==='light'?'light':'dark');var d=g.getItem('dentace-design')||'default';if(d==='chalk')d='paper';e.setAttribute('data-design',d);var s=g.getItem('dentace-read-scale');if(s)e.style.setProperty('--read-scale',s+'rem');var l=g.getItem('dentace-lang')==='ar'?'ar':'en';e.setAttribute('data-lang',l);}catch(x){}})();`;
 
 const FONTS =
   "https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Gochi+Hand&family=Inter:wght@400;600;800;900&family=Kalam:wght@400;700&family=Permanent+Marker&display=swap";

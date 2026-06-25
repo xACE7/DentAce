@@ -6,10 +6,106 @@
    <html> beats :root, so selecting one swaps accents site-wide.
    TO ADD A THEME: add 4 lines here + one entry in src/lib/theme/themes.ts.
    ============================================================ */
-html[data-theme="forest"]   { --title-a:#34d399; --title-b:#a3e635; --glow-main:#22c55e; --hl:#16a34a; }
-html[data-theme="royal"]    { --title-a:#a855f7; --title-b:#f0abfc; --glow-main:#a855f7; --hl:#7c3aed; }
-html[data-theme="mono"]     { --title-a:#e5e7eb; --title-b:#9ca3af; --glow-main:#cbd5e1; --hl:#94a3b8; }
-html[data-theme="daylight"] { --title-a:#38bdf8; --title-b:#60a5fa; --glow-main:#3b82f6; --hl:#2563eb; }
-html[data-theme="pearl"]    { --title-a:#c4b5fd; --title-b:#818cf8; --glow-main:#a78bfa; --hl:#7c3aed; }
-html[data-theme="sakura"]   { --title-a:#fb7185; --title-b:#f9a8d4; --glow-main:#ec4899; --hl:#db2777; }
-html[data-theme="mint"]     { --title-a:#2dd4bf; --title-b:#5eead4; --glow-main:#14b8a6; --hl:#0d9488; }
+/* Each theme is a 2-colour combo (title-a → title-b) + matching glow/highlight. */
+html[data-theme="sky"]    { --title-a:#38bdf8; --title-b:#f9a8d4; --glow-main:#60a5fa; --hl:#f472b6; }
+html[data-theme="lagoon"] { --title-a:#2dd4bf; --title-b:#818cf8; --glow-main:#14b8a6; --hl:#6366f1; }
+html[data-theme="candy"]  { --title-a:#f472b6; --title-b:#93c5fd; --glow-main:#ec4899; --hl:#60a5fa; }
+html[data-theme="sunset"] { --title-a:#fb923c; --title-b:#f472b6; --glow-main:#fb7185; --hl:#f97316; }
+html[data-theme="grape"]  { --title-a:#a78bfa; --title-b:#22d3ee; --glow-main:#8b5cf6; --hl:#06b6d4; }
+html[data-theme="citrus"] { --title-a:#a3e635; --title-b:#fbbf24; --glow-main:#84cc16; --hl:#f59e0b; }
+html[data-theme="ember"]  { --title-a:#fb7185; --title-b:#fcd34d; --glow-main:#ef4444; --hl:#f59e0b; }
+
+/* ============================================================
+   THEME ACCENTS — the chosen color theme drives the whole UI:
+   buttons, progress bars, active toggles, links, focus rings,
+   header accent and text selection (not just the heading glow).
+   Everything below reads --title-a/--title-b/--glow-main/--hl,
+   which every theme re-tints — so it all changes with the theme.
+   ============================================================ */
+:root{ --ac-grad:linear-gradient(120deg, var(--title-a), var(--title-b)); }
+
+/* text selection */
+::selection{ background:color-mix(in oklab, var(--hl) 38%, transparent); color:#fff; }
+
+/* the header / settings accent follows the theme too */
+html[data-theme] :is(.site-top, .theme-menu, .themewrap, .crumb-sw-menu){ --ch-accent:var(--hl); --ch-accent2:var(--title-a); }
+
+/* focus rings everywhere */
+:is(input, select, textarea, .pf-input, .acct-input, .list-search, .mb-search, .mb-name-input):focus{
+  outline:none; border-color:var(--hl); box-shadow:0 0 0 3px color-mix(in oklab, var(--hl) 26%, transparent);
+}
+
+/* PRIMARY / ACTION BUTTONS → theme gradient */
+:is(.dash-sync, .acct-btn, .plan-add, .exam-submit, .qctl.go){
+  background-image:var(--ac-grad); background-color:transparent; border:0; color:#0a0f1e; font-weight:800;
+}
+:is(.dash-sync, .acct-btn, .plan-add, .exam-submit, .qctl.go):hover{ filter:brightness(1.08); }
+
+/* accent links + the study-plan button */
+:is(.dash-resume, .plan-link, .set-link){ color:var(--hl); }
+.set-link{ border-color:color-mix(in oklab, var(--hl) 38%, var(--border)); }
+.dash-resume{ background:color-mix(in oklab, var(--hl) 14%, var(--panel)); border-color:color-mix(in oklab, var(--hl) 45%, var(--border)); }
+.dash-resume:hover{ background:color-mix(in oklab, var(--hl) 24%, var(--panel)); }
+
+/* active toggles / filters → accent */
+.lf-btn.active{ background:color-mix(in oklab, var(--hl) 22%, transparent); color:var(--hl); border-color:var(--hl); }
+.mb-flag.on{ background:color-mix(in oklab, var(--hl) 18%, transparent); color:var(--hl); border-color:color-mix(in oklab, var(--hl) 55%, var(--border)); }
+:is(.dcl-all:hover, .qbtn.saq-reveal:hover){ color:var(--hl); border-color:var(--hl); }
+
+/* progress bars → theme gradient (lectures) + its mirror (tests) */
+:is(.dash-bar, .dash-overall-bar) > span{ background:var(--ac-grad); }
+:is(.dash-bar.tests, .perf-bar.tests) > span{ background:linear-gradient(90deg, var(--title-b), var(--title-a)); }
+
+/* tinted emphasis text */
+.list-progress{ color:var(--hl); }
+.exam-top b{ color:var(--hl); }
+
+/* card hover border follows the theme */
+.card:hover{ border-color:color-mix(in oklab, var(--hl) 45%, var(--border)); }
+
+/* ===== two PURE single-colour themes ===== */
+html[data-theme="azure"] { --title-a:#38bdf8; --title-b:#7dd3fc; --glow-main:#0ea5e9; --hl:#0ea5e9; }
+html[data-theme="blush"] { --title-a:#f9a8d4; --title-b:#fbcfe8; --glow-main:#f9a8d4; --hl:#ec4899; }
+
+/* ============================================================
+   CARDS + BACKGROUND follow the theme.
+   Rule: the DEFAULT theme keeps each subject's own colour; ANY other
+   theme makes the cards + background follow the chosen theme colour.
+   --card-accent = subject colour (Default) OR theme colour (others),
+   and drives the new card line-details + border tint.
+   ============================================================ */
+/* accent colour per card: subject (Default theme) or theme colour (any other) */
+.card{ --card-accent: var(--glow-main); }
+[class*="glow-"]{ --card-accent: var(--card-glow); }
+html[data-theme]:not([data-theme="ace"]) [class*="glow-"]{ --card-glow: var(--hl); }
+
+/* line-details + border tint — NEON design only, so Paper keeps its chalk cards.
+   Corner bracket sits TOP-LEFT (the green "done" badge owns the top-right). */
+[data-design="default"] .card{ position:relative; border-color: color-mix(in oklab, var(--card-accent) 20%, var(--border)); }
+[data-design="default"] .card::after{
+  content:""; position:absolute; top:0; left:18%; right:18%; height:2px; pointer-events:none;
+  background:linear-gradient(90deg, transparent, var(--card-accent), transparent); opacity:.85;
+}
+[data-design="default"] .card::before{
+  content:""; position:absolute; top:11px; left:11px; width:15px; height:15px; pointer-events:none;
+  border-top:2px solid var(--card-accent); border-left:2px solid var(--card-accent); border-radius:7px 0 0 0; opacity:.5;
+}
+[data-design="default"] .card:hover{ border-color: color-mix(in oklab, var(--card-accent) 50%, var(--border)); }
+[data-design="default"] .card:hover::after{ opacity:1; }
+[data-design="default"] .card:hover::before{ opacity:.9; }
+
+/* themed background — Default keeps the subject-colour blobs; other themes recolour them */
+html[data-design="default"][data-theme]:not([data-theme="ace"]) body::before{
+  background:
+    radial-gradient(1200px 800px at 8% -10%,  color-mix(in oklab, var(--title-a) 42%, transparent) 0%, rgba(0,0,0,0) 58%),
+    radial-gradient(1100px 700px at 110% 0%,  color-mix(in oklab, var(--title-b) 42%, transparent) 0%, rgba(0,0,0,0) 55%),
+    radial-gradient(1000px 800px at 50% 120%, color-mix(in oklab, var(--glow-main) 34%, transparent) 0%, rgba(0,0,0,0) 55%),
+    radial-gradient(900px 700px at -10% 110%, color-mix(in oklab, var(--hl) 30%, transparent) 0%, rgba(0,0,0,0) 55%);
+}
+
+/* ===== polish: smooth transitions + small accent touches ===== */
+[data-design="default"] .card{ transition: transform .35s ease, box-shadow .35s ease, filter .35s ease, border-color .3s ease; }
+[data-design="default"] .card::after, [data-design="default"] .card::before{ transition:opacity .3s ease; }
+.sec-count{ color: color-mix(in oklab, var(--hl) 65%, var(--muted)); }
+:is(.dash-sync, .acct-btn, .plan-add, .exam-submit, .qctl.go){ border-radius:12px; }
+:is(.dash-sync, .acct-btn, .plan-add, .exam-submit, .qctl.go):active{ transform:translateY(1px); }
