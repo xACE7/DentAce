@@ -5,6 +5,8 @@ import { useEffect, useRef, useState } from "react";
 import { LectureRenderer } from "./LectureRenderer";
 import { findYear, findSem, findSubject, lectureTokens } from "@/lib/content/nav";
 import { isDone, setDone, markToday, pushRecent, lecturePath } from "@/lib/progress";
+import { useAuth } from "@/lib/auth/AuthProvider";
+import { useLectureActivity } from "@/lib/activity";
 import type { Unit } from "@/lib/content/types";
 
 export function LectureView({ unit, year, sem, sub, n }: { unit: Unit; year: string; sem: string; sub: string; n: string }) {
@@ -12,6 +14,9 @@ export function LectureView({ unit, year, sem, sub, n }: { unit: Unit; year: str
   const root = useRef<HTMLDivElement>(null);
   const id = lecturePath(year, sem, sub, n);
   const [done, setDoneState] = useState(false);
+  const auth = useAuth();
+  const actTitle = (() => { const t = unit.meta?.title; const s = typeof t === "string" ? t : (t?.en || ""); return s.replace(/\[br\]/g, " ").trim() || `Lecture ${n}`; })();
+  useLectureActivity(auth?.user?.id, `${year}/${sem}/${sub}/${n}`, actTitle);
 
   // ordered neighbours (skip gaps)
   const toks = lectureTokens(year, sem, sub).map(String);

@@ -147,6 +147,30 @@ exception when others then null;  -- already added / publication absent — igno
 end $$;
 
 -- ---------------------------------------------------------------------------
+-- 5b) ACTIVITY — member activity log (lecture/test opens, time spent, test marks)
+-- ---------------------------------------------------------------------------
+create table if not exists public.activity (
+  id      bigint generated always as identity primary key,
+  user_id uuid not null references auth.users(id) on delete cascade,
+  kind    text not null,             -- 'lecture' | 'test'
+  ref     text not null,             -- 'year/sem/sub/token'
+  title   text,
+  seconds int  not null default 0,   -- time spent in that visit
+  score   int,                       -- test score (null for lectures)
+  max     int,                       -- test max
+  at      timestamptz not null default now()
+);
+create index if not exists activity_user_at on public.activity (user_id, at desc);
+alter table public.activity enable row level security;
+grant select, insert on public.activity to authenticated;
+drop policy if exists "activity insert own" on public.activity;
+create policy "activity insert own" on public.activity
+  for insert to authenticated with check (auth.uid() = user_id);
+drop policy if exists "activity read own or admin" on public.activity;
+create policy "activity read own or admin" on public.activity
+  for select to authenticated using (auth.uid() = user_id or public.is_admin());
+
+-- ---------------------------------------------------------------------------
 -- 6) STORAGE — avatars (public) + pdfs (private)
 -- ---------------------------------------------------------------------------
 insert into storage.buckets (id, name, public) values ('avatars', 'avatars', true)

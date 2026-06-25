@@ -25,6 +25,12 @@ function fmtDate(iso: string): string {
   try { return new Date(iso).toLocaleDateString(undefined, { year: "numeric", month: "short", day: "numeric" }); }
   catch { return iso; }
 }
+function fmtDur(s: number): string {
+  if (s < 60) return `${s}s`;
+  const m = Math.floor(s / 60); const r = s % 60;
+  return r ? `${m}m ${r}s` : `${m}m`;
+}
+type Act = { kind: string; ref: string; title: string | null; seconds: number; score: number | null; max: number | null; at: string };
 
 export function MembersView() {
   const auth = useAuth();
@@ -34,6 +40,9 @@ export function MembersView() {
   const [q, setQ] = useState("");
   const [loaded, setLoaded] = useState(false);
   const [, setTick] = useState(0); // re-render so "online / last seen" stays fresh
+  const [histOpen, setHistOpen] = useState<string | null>(null);
+  const [hist, setHist] = useState<Record<string, Act[]>>({});
+  const [histLoading, setHistLoading] = useState(false);
 
   useEffect(() => {
     if (!supabase || !isAdmin) return;
@@ -73,6 +82,20 @@ export function MembersView() {
     setMembers((ms) => ms.map((m) => (m.id === id ? { ...m, ...fields } : m)));
     const { error } = await supabase.from("profiles").update(fields).eq("id", id);
     if (error && prev) setMembers((ms) => ms.map((m) => (m.id === id ? prev : m)));
+  };
+
+  // Expand a member to show their activity history (lectures/tests opened, time, marks).
+  const toggleHist = async (id: string) => {
+    if (histOpen === id) { setHistOpen(null); return; }
+    setHistOpen(id);
+    if (!hist[id] && supabase) {
+      setHistLoading(true);
+      const { data } = await supabase.from("activity")
+        .select("kind, ref, title, seconds, score, max, at")
+        .eq("user_id", id).order("at", { ascending: false }).limit(60);
+      setHist((h) => ({ ...h, [id]: (data as Act[]) || [] }));
+      setHistLoading(false);
+    }
   };
 
   const shown = useMemo(() => {
@@ -152,10 +175,33 @@ export function MembersView() {
                     <button type="button" className={"mb-flag" + (m.show_pdfs ? " on" : "")} onClick={() => patch(m.id, { show_pdfs: !m.show_pdfs })}>PDFs</button>
                     <button type="button" className={"mb-flag" + (m.show_tests ? " on" : "")} onClick={() => patch(m.id, { show_tests: !m.show_tests })}>Tests</button>
                     <button type="button" className={"mb-flag" + (m.show_lectures ? " on" : "")} onClick={() => patch(m.id, { show_lectures: !m.show_lectures })}>Lectures</button>
+                    <button type="button" className={"mb-flag mb-hist-btn" + (histOpen === m.id ? " on" : "")} onClick={() => toggleHist(m.id)}>History</button>
                     <button type="button" className={"mb-ban" + (m.banned ? " on" : "")} disabled={self} onClick={() => patch(m.id, { banned: !m.banned })}>
                       {m.banned ? "Unban" : "Ban"}
                     </button>
                   </div>
+
+                  {histOpen === m.id ? (
+                    <div className="mb-hist">
+                      {histLoading && !hist[m.id] ? (
+                        <p className="mb-hist-empty">…</p>
+                      ) : hist[m.id]?.length ? (
+                        <ul className="mb-hist-list">
+                          {hist[m.id].map((a, i) => (
+                            <li key={i} className="mb-hist-row">
+                              <span className="mb-hist-ico">{a.kind === "test" ? "📝" : "📘"}</span>
+                              <span className="mb-hist-title">{a.title || a.ref}</span>
+                              {a.kind === "test" && a.max ? <span className="mb-hist-score">{a.score}/{a.max} · {Math.round(((a.score || 0) / a.max) * 100)}%</span> : null}
+                              <span className="mb-hist-dur">⏱ {fmtDur(a.seconds)}</span>
+                              <span className="mb-hist-when">{ago(a.at)} ago</span>
+                            </li>
+                          ))}
+                        </ul>
+                      ) : (
+                        <p className="mb-hist-empty"><Bi v={{ en: "No activity recorded yet.", ar: "لا نشاط مُسجّل بعد." }} /></p>
+                      )}
+                    </div>
+                  ) : null}
                 </li>
               );
             })}

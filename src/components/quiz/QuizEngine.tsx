@@ -6,6 +6,8 @@ import type { Quiz } from "@/lib/content/types";
 import { findSubject, findSem, findYear, testTokens } from "@/lib/content/nav";
 import { DUAS } from "@/lib/site-config";
 import { testPath, setScore, markToday, pushRecent, getSaqDraft, setSaqDraft, clearSaqDraft, isDone, setDone } from "@/lib/progress";
+import { useAuth } from "@/lib/auth/AuthProvider";
+import { logActivity } from "@/lib/activity";
 import { asset } from "@/lib/asset";
 
 const RULE = '<svg class="rule" viewBox="0 0 260 11" preserveAspectRatio="none"><path d="M2 7 Q74 1 140 5 T258 4"/></svg>';
@@ -29,6 +31,7 @@ export function QuizEngine({ quiz, year, sem, sub, n }: { quiz: Quiz; year: stri
   const MCQ = quiz.mcqs;
   const SAQ = quiz.saqs || [];
   const testId = testPath(year, sem, sub, n);
+  const auth = useAuth();
 
   // ordered neighbour tests (skip gaps) + done state
   const toks = testTokens(year, sem, sub).map(String);
@@ -134,8 +137,10 @@ export function QuizEngine({ quiz, year, sem, sub, n }: { quiz: Quiz; year: stri
     const rank = (i: number) => (chosen[i] === null ? 1 : chosen[i] === correctVis[i] ? 2 : 0);
     setOrder([...MCQ.map((_, i) => i)].sort((a, b) => rank(a) - rank(b)));
     // persist score + auto-mark done (still uncheckable from the dashboard)
-    setScore(testId, { s: chosen.filter((c, i) => c === correctVis[i]).length, max: MCQ.length });
+    const s = chosen.filter((c, i) => c === correctVis[i]).length;
+    setScore(testId, { s, max: MCQ.length });
     setDone(testId, true); setDoneState(true);
+    void logActivity({ userId: auth?.user?.id, kind: "test", ref: `${year}/${sem}/${sub}/${n}`, title: quiz.title || `Test ${n}`, seconds: examLen - Math.max(0, remain), score: s, max: MCQ.length });
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
