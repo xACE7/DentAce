@@ -17,7 +17,7 @@ export const MODES: Option<ModeId>[] = [
 ];
 
 export const DESIGNS: Option<DesignId>[] = [
-  { id: "default", en: "Default", ar: "افتراضي" },
+  { id: "default", en: "Neon", ar: "نيون" },
   { id: "paper", en: "Paper", ar: "ورقي" },
 ];
 
@@ -35,7 +35,7 @@ export const THEMES: Option<ThemeId>[] = [
   { id: "mint", en: "Teal", ar: "تركواز" },
 ];
 
-export const DEFAULTS = { mode: "dark" as ModeId, design: "paper" as DesignId, theme: "ace" as ThemeId, lang: "en" as "en" | "ar" };
+export const DEFAULTS = { mode: "dark" as ModeId, design: "default" as DesignId, theme: "ace" as ThemeId, lang: "en" as "en" | "ar" };
 
 const set = <T extends string>(arr: Option<T>[]) => new Set(arr.map((o) => o.id));
 const VALID_THEMES = set(THEMES);
@@ -54,7 +54,7 @@ export function normTheme(v: string | null): ThemeId {
 }
 export function normDesign(v: string | null): DesignId {
   if (v === "chalk") return "paper";
-  return v && VALID_DESIGNS.has(v as DesignId) ? (v as DesignId) : "paper";
+  return v && VALID_DESIGNS.has(v as DesignId) ? (v as DesignId) : "default";
 }
 export function normMode(v: string | null): ModeId {
   return v === "light" ? "light" : "dark";
