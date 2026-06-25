@@ -18,7 +18,7 @@ const BOOT = `(function(){try{var e=document.documentElement,g=localStorage,t=g.
 const FONTS =
   "https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Gochi+Hand&family=Inter:wght@400;600;800;900&family=Kalam:wght@400;700&family=Permanent+Marker&display=swap";
 
-const DESC = "Bilingual dentistry study guide — interactive lectures, tests & PDFs.";
+const DESC = "Bilingual dentistry study guide — interactive lectures & tests.";
 
 // Deploy sub-path (e.g. "/DentAce" on GitHub Project Pages). Raw <link>/icon/og
 // paths in metadata are NOT auto-prefixed by Next, so prepend it ourselves.
@@ -43,13 +43,13 @@ export const metadata: Metadata = {
     siteName: "DentAce",
     title: "DentAce",
     description: DESC,
-    images: [{ url: `${BASE}/og.png`, width: 1200, height: 630, alt: "DentAce" }],
+    images: [{ url: `${BASE}/og.png?v=2`, width: 1200, height: 630, alt: "DentAce" }],
   },
   twitter: {
     card: "summary_large_image",
     title: "DentAce",
     description: DESC,
-    images: [`${BASE}/og.png`],
+    images: [`${BASE}/og.png?v=2`],
   },
 };
 
