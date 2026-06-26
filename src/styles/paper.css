@@ -20,16 +20,16 @@
 [data-design="paper"]{                 /* chalkboard (default / dark) */
   --surround:#16181b; --board:#272b30; --ink:#f1ece1; --muted:#9b9990;
   --important:#ff6fa5; --exam:#73c2fc; --extra:#86e891; --define:#c4b1ff; --microbe:#ffb277;
-  --tape:rgba(255,255,255,.16); --frame:rgba(255,255,255,.09); --tblrule:rgba(241,236,225,.40);
+  --tape:rgba(255,255,255,.16); --frame:color-mix(in oklab, var(--title-a, #ffffff) 40%, rgba(255,255,255,.10)); --tblrule:rgba(241,236,225,.40);
   --dust:.55; --glow-s:1px; --glow-l:2px; --glow-h:1px; --glow-h2:2px; --thick:1px;   /* template glow */
   --glow-c:currentColor;
-  --acc:var(--important);
+  --acc:var(--title-a, var(--important));   /* the chalk accent now follows the chosen colour theme */
   color-scheme:dark;
 }
 [data-mode="light"][data-design="paper"]{   /* cream / kraft paper */
   --surround:#c9cdd2; --board:#f3e8d0; --ink:#3b3a44; --muted:#8a8576;
   --important:#e8336d; --exam:#1c7ed6; --extra:#2f9e44; --define:#7c4dff; --microbe:#e8590c;
-  --tape:rgba(150,118,55,.30); --frame:rgba(70,55,25,.12); --tblrule:rgba(59,58,68,.40);
+  --tape:rgba(150,118,55,.30); --frame:color-mix(in oklab, var(--title-a, #463719) 30%, rgba(70,55,25,.16)); --tblrule:rgba(59,58,68,.40);
   --dust:0; --glow-s:0px; --glow-l:0px; --glow-h:0px; --glow-h2:0px; --thick:1px;
   --glow-c:transparent;
   color-scheme:light;
@@ -51,10 +51,10 @@
 [data-design="paper"] *:hover{ transform:none !important; }   /* no hover motion */
 [data-design="paper"] body{
   background:var(--surround) !important; color:var(--ink) !important;
-  font-family:'Kalam','Segoe Print','Comic Sans MS',cursive !important;
+  font-family:'Inter',ui-sans-serif,system-ui,'Segoe UI',Roboto,sans-serif !important;
 }
 [data-design="paper"] body, [data-design="paper"] body *{
-  font-family:'Kalam','Segoe Print','Comic Sans MS',cursive !important;
+  font-family:'Inter',ui-sans-serif,system-ui,'Segoe UI',Roboto,sans-serif !important;
 }
 /* the default pages paint a big glow layer in body::before — remove it */
 [data-design="paper"] body::before{ background:none !important; background-image:none !important; content:none !important; }
@@ -138,6 +138,22 @@
 /* the home page duas */
 [data-design="paper"] :is(#topDua,#botDua){ color:var(--muted) !important; font-weight:700 !important; }
 [data-design="paper"] .empty-note{ color:var(--muted) !important; }
+
+/* ============================================================
+   Chalkboard BACKGROUND IMAGE (dark mode). Drop your wallpaper at
+   public/paper/bg.jpg and it becomes the board background; doodles.svg
+   is just the fallback shown until that file exists. Cards stay CLEAN.
+   ============================================================ */
+[data-mode="dark"][data-design="paper"] body::before{
+  content:"" !important; position:fixed !important; inset:0 !important; z-index:-1 !important; pointer-events:none;
+  background-color:var(--surround) !important;
+  background-image:url("/paper/bg.jpg"), url("/paper/doodles.svg") !important;
+  background-repeat:no-repeat, no-repeat !important;
+  background-position:center, center !important;
+  background-size:cover, cover !important;
+  background-attachment:fixed, fixed !important;
+  opacity:1 !important;
+}
 
 /* list tools */
 [data-design="paper"] .list-search{
