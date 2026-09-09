@@ -6,6 +6,14 @@
    `base` (set in site-config); this only handles the lecture/test lookup. */
 export const CONTENT_ALIAS: Record<string, string> = {
   "3rd/s2/preclinical": "3rd/s1/preclinical",
+  // 4th-year full-year clinical courses run across BOTH semesters. The JSON lives
+  // once under 4th/s1/<sub> (the canonical); S2 mirrors it (no duplication).
+  "4th/s2/endodontics": "4th/s1/endodontics",
+  "4th/s2/removable": "4th/s1/removable",
+  "4th/s2/fixed": "4th/s1/fixed",
+  "4th/s2/periodontics": "4th/s1/periodontics",
+  "4th/s2/oral-surgery": "4th/s1/oral-surgery",
+  "4th/s2/operative": "4th/s1/operative",
 };
 
 /** Resolve a (year,sem,sub) to its canonical content location (itself if not aliased). */

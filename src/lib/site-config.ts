@@ -236,6 +236,76 @@ export const SITE: SiteConfig = {
           "folder": null,
           "subjects": [
             {
+              "id": "diagnosis",
+              "slug": null,
+              "name": "Diagnosis & Planning",
+              "nameAr": "التشخيص وتخطيط العلاج",
+              "emoji": null,
+              "color": "pink",
+              "base": "4th-year/4th-s1/diagnosis",
+              "practical": null
+            },
+            {
+              "id": "endodontics",
+              "slug": "endo",
+              "name": "Endodontics",
+              "nameAr": "علاج الجذور",
+              "emoji": null,
+              "color": "cyan",
+              "base": "4th-year/4th-s1/endodontics",
+              "practical": null
+            },
+            {
+              "id": "removable",
+              "slug": "rpd",
+              "name": "Removable Prosthodontics",
+              "nameAr": "التعويضات المتحركة",
+              "emoji": null,
+              "color": "purple",
+              "base": "4th-year/4th-s1/removable",
+              "practical": null
+            },
+            {
+              "id": "fixed",
+              "slug": "fpd",
+              "name": "Fixed Prosthodontics",
+              "nameAr": "التعويضات الثابتة",
+              "emoji": null,
+              "color": "yellow",
+              "base": "4th-year/4th-s1/fixed",
+              "practical": null
+            },
+            {
+              "id": "periodontics",
+              "slug": "perio",
+              "name": "Periodontics",
+              "nameAr": "طب اللثة",
+              "emoji": null,
+              "color": "green",
+              "base": "4th-year/4th-s1/periodontics",
+              "practical": null
+            },
+            {
+              "id": "oral-surgery",
+              "slug": "surg",
+              "name": "Oral Surgery",
+              "nameAr": "جراحة الفم",
+              "emoji": null,
+              "color": "blue",
+              "base": "4th-year/4th-s1/oral-surgery",
+              "practical": null
+            },
+            {
+              "id": "operative",
+              "slug": "oper",
+              "name": "Operative Dentistry",
+              "nameAr": "طب الأسنان الترميمي",
+              "emoji": null,
+              "color": "pink",
+              "base": "4th-year/4th-s1/operative",
+              "practical": null
+            },
+            {
               "id": "research",
               "slug": "resm",
               "name": "Research Methodology",
@@ -253,6 +323,76 @@ export const SITE: SiteConfig = {
           "nameAr": "الفصل الثاني",
           "folder": null,
           "subjects": [
+            {
+              "id": "diagnosis",
+              "slug": null,
+              "name": "Diagnosis & Planning",
+              "nameAr": "التشخيص وتخطيط العلاج",
+              "emoji": null,
+              "color": "pink",
+              "base": "4th-year/4th-s1/diagnosis",
+              "practical": null
+            },
+            {
+              "id": "endodontics",
+              "slug": "endo",
+              "name": "Endodontics",
+              "nameAr": "علاج الجذور",
+              "emoji": null,
+              "color": "cyan",
+              "base": "4th-year/4th-s1/endodontics",
+              "practical": null
+            },
+            {
+              "id": "removable",
+              "slug": "rpd",
+              "name": "Removable Prosthodontics",
+              "nameAr": "التعويضات المتحركة",
+              "emoji": null,
+              "color": "purple",
+              "base": "4th-year/4th-s1/removable",
+              "practical": null
+            },
+            {
+              "id": "fixed",
+              "slug": "fpd",
+              "name": "Fixed Prosthodontics",
+              "nameAr": "التعويضات الثابتة",
+              "emoji": null,
+              "color": "yellow",
+              "base": "4th-year/4th-s1/fixed",
+              "practical": null
+            },
+            {
+              "id": "periodontics",
+              "slug": "perio",
+              "name": "Periodontics",
+              "nameAr": "طب اللثة",
+              "emoji": null,
+              "color": "green",
+              "base": "4th-year/4th-s1/periodontics",
+              "practical": null
+            },
+            {
+              "id": "oral-surgery",
+              "slug": "surg",
+              "name": "Oral Surgery",
+              "nameAr": "جراحة الفم",
+              "emoji": null,
+              "color": "blue",
+              "base": "4th-year/4th-s1/oral-surgery",
+              "practical": null
+            },
+            {
+              "id": "operative",
+              "slug": "oper",
+              "name": "Operative Dentistry",
+              "nameAr": "طب الأسنان الترميمي",
+              "emoji": null,
+              "color": "pink",
+              "base": "4th-year/4th-s1/operative",
+              "practical": null
+            },
             {
               "id": "pediatric",
               "slug": "pedo",
@@ -290,84 +430,6 @@ export const SITE: SiteConfig = {
               "nameAr": "مشروع البحث",
               "emoji": null,
               "color": "purple",
-              "base": null,
-              "practical": null
-            }
-          ]
-        },
-        {
-          "id": "full",
-          "name": "Full year",
-          "nameAr": "السنة كاملة",
-          "folder": null,
-          "subjects": [
-            {
-              "id": "diagnosis",
-              "slug": null,
-              "name": "Diagnosis & Planning",
-              "nameAr": "التشخيص وتخطيط العلاج",
-              "emoji": null,
-              "color": "pink",
-              "base": null,
-              "practical": null
-            },
-            {
-              "id": "endodontics",
-              "slug": "endo",
-              "name": "Endodontics",
-              "nameAr": "علاج الجذور",
-              "emoji": null,
-              "color": "cyan",
-              "base": null,
-              "practical": null
-            },
-            {
-              "id": "removable",
-              "slug": "rpd",
-              "name": "Removable Prosthodontics",
-              "nameAr": "التعويضات المتحركة",
-              "emoji": null,
-              "color": "purple",
-              "base": null,
-              "practical": null
-            },
-            {
-              "id": "fixed",
-              "slug": "fpd",
-              "name": "Fixed Prosthodontics",
-              "nameAr": "التعويضات الثابتة",
-              "emoji": null,
-              "color": "yellow",
-              "base": null,
-              "practical": null
-            },
-            {
-              "id": "periodontics",
-              "slug": "perio",
-              "name": "Periodontics",
-              "nameAr": "طب اللثة",
-              "emoji": null,
-              "color": "green",
-              "base": null,
-              "practical": null
-            },
-            {
-              "id": "oral-surgery",
-              "slug": "surg",
-              "name": "Oral Surgery",
-              "nameAr": "جراحة الفم",
-              "emoji": null,
-              "color": "blue",
-              "base": null,
-              "practical": null
-            },
-            {
-              "id": "operative",
-              "slug": "oper",
-              "name": "Operative Dentistry",
-              "nameAr": "طب الأسنان الترميمي",
-              "emoji": null,
-              "color": "pink",
               "base": null,
               "practical": null
             }

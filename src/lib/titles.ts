@@ -2,67 +2,67 @@
    Map "<base>|<n>" -> { e:English, a:Arabic }, e.g. "3rd-year/3rd-s2/ocd|2". Edit freely. */
 export type TitleEntry = { e: string; a: string };
 export const TITLES: Record<string, TitleEntry> = {
-  "4th-year/4th-full/fixed|1": {
+  "4th-year/4th-s1/fixed|1": {
     "e": "Introduction & Fixed Restorations",
     "a": "مقدّمة والتعويضات الثابتة"
   },
-  "4th-year/4th-full/fixed|2": {
+  "4th-year/4th-s1/fixed|2": {
     "e": "Alginate Impressions & Diagnostic Casts",
     "a": "طبعات الألجينات والنماذج التشخيصية"
   },
-  "4th-year/4th-full/fixed|3": {
+  "4th-year/4th-s1/fixed|3": {
     "e": "Articulators & Face-bows",
     "a": "المُطبِقات وأقواس الوجه"
   },
-  "4th-year/4th-full/fixed|4": {
+  "4th-year/4th-s1/fixed|4": {
     "e": "Principles of Tooth Preparation I",
     "a": "مبادئ تحضير السنّ 1"
   },
-  "4th-year/4th-full/fixed|5": {
+  "4th-year/4th-s1/fixed|5": {
     "e": "Principles of Tooth Preparation II",
     "a": "مبادئ تحضير السنّ 2"
   },
-  "4th-year/4th-full/removable|1": {
+  "4th-year/4th-s1/removable|1": {
     "e": "Introduction to Prosthodontics",
     "a": "مقدّمة في الاستعاضة السنّية"
   },
-  "4th-year/4th-full/removable|2": {
+  "4th-year/4th-s1/removable|2": {
     "e": "Anatomy of the Edentulous Mouth",
     "a": "تشريح الفم عديم الأسنان"
   },
-  "4th-year/4th-full/removable|3": {
+  "4th-year/4th-s1/removable|3": {
     "e": "Impression Materials I",
     "a": "مواد الطبعة 1"
   },
-  "4th-year/4th-full/removable|4": {
+  "4th-year/4th-s1/removable|4": {
     "e": "Impression Materials II (Hydrocolloids)",
     "a": "مواد الطبعة 2 (الهيدروكولويد)"
   },
-  "4th-year/4th-full/removable|5": {
+  "4th-year/4th-s1/removable|5": {
     "e": "Stock Trays & Diagnostic Casts",
     "a": "الحوامل الجاهزة والنماذج التشخيصية"
   },
-  "4th-year/4th-full/endodontics|1": {
+  "4th-year/4th-s1/endodontics|1": {
     "e": "Scope of Endodontics & Pulpal Anatomy",
     "a": "مجال علاج الجذور وتشريح اللبّ"
   },
-  "4th-year/4th-full/periodontics|1": {
+  "4th-year/4th-s1/periodontics|1": {
     "e": "Biofilm & Periodontal Microbiology",
     "a": "الغشاء الحيوي وميكروبيولوجيا اللثة"
   },
-  "4th-year/4th-full/periodontics|2": {
+  "4th-year/4th-s1/periodontics|2": {
     "e": "Gingival Inflammation & Clinical Features of Gingivitis",
     "a": "التهاب اللثة والملامح السريرية لالتهاب اللثة"
   },
-  "4th-year/4th-full/oral-surgery|1": {
+  "4th-year/4th-s1/oral-surgery|1": {
     "e": "Instruments in Oral Surgery",
     "a": "أدوات جراحة الفم"
   },
-  "4th-year/4th-full/operative|1": {
+  "4th-year/4th-s1/operative|1": {
     "e": "Examination, Diagnosis & Treatment Planning I",
     "a": "الفحص والتشخيص وتخطيط العلاج 1"
   },
-  "4th-year/4th-full/operative|2": {
+  "4th-year/4th-s1/operative|2": {
     "e": "Examination, Diagnosis & Treatment Planning II",
     "a": "الفحص والتشخيص وتخطيط العلاج 2"
   },
