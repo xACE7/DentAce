@@ -68,7 +68,7 @@ export const SITE: SiteConfig = {
               "slug": null,
               "name": "Oral Cavity",
               "nameAr": "تجويف الفم",
-              "emoji": "👄",
+              "emoji": null,
               "color": "pink",
               "base": null,
               "practical": {
@@ -105,7 +105,7 @@ export const SITE: SiteConfig = {
               "slug": "rad",
               "name": "Radiology",
               "nameAr": "الأشعة",
-              "emoji": "☢️",
+              "emoji": null,
               "color": "yellow",
               "base": null,
               "practical": null
@@ -115,7 +115,7 @@ export const SITE: SiteConfig = {
               "slug": "pre",
               "name": "Preclinical",
               "nameAr": "ما قبل السريري",
-              "emoji": "🔬",
+              "emoji": null,
               "color": "purple",
               "base": null,
               "practical": null
@@ -125,7 +125,7 @@ export const SITE: SiteConfig = {
               "slug": "pha",
               "name": "Pharmacology",
               "nameAr": "علم الأدوية",
-              "emoji": "💊",
+              "emoji": null,
               "color": "cyan",
               "base": null,
               "practical": null
@@ -135,7 +135,7 @@ export const SITE: SiteConfig = {
               "slug": "patho",
               "name": "Pathology",
               "nameAr": "علم الأمراض",
-              "emoji": "🧬",
+              "emoji": null,
               "color": "green",
               "base": null,
               "practical": null
@@ -145,7 +145,7 @@ export const SITE: SiteConfig = {
               "slug": "ps",
               "name": "Patient Safety",
               "nameAr": "سلامة المريض",
-              "emoji": "🛡️",
+              "emoji": null,
               "color": "blue",
               "base": null,
               "practical": null
@@ -163,7 +163,7 @@ export const SITE: SiteConfig = {
               "slug": null,
               "name": "Oral Cavity in Disease",
               "nameAr": "أمراض الفم",
-              "emoji": "👄",
+              "emoji": null,
               "color": "pink",
               "base": null,
               "practical": null
@@ -173,7 +173,7 @@ export const SITE: SiteConfig = {
               "slug": null,
               "name": "Psychology",
               "nameAr": "علم النفس",
-              "emoji": "🧠",
+              "emoji": null,
               "color": "yellow",
               "base": null,
               "practical": null
@@ -183,7 +183,7 @@ export const SITE: SiteConfig = {
               "slug": "pre",
               "name": "Preclinical",
               "nameAr": "ما قبل السريري",
-              "emoji": "🔬",
+              "emoji": null,
               "color": "purple",
               "base": "3rd-year/3rd-s1/preclinical",
               "practical": null
@@ -193,7 +193,7 @@ export const SITE: SiteConfig = {
               "slug": null,
               "name": "Elective",
               "nameAr": "مادة اختيارية",
-              "emoji": "⭐",
+              "emoji": null,
               "color": "cyan",
               "base": null,
               "practical": null
@@ -203,7 +203,7 @@ export const SITE: SiteConfig = {
               "slug": null,
               "name": "Body System in Disease",
               "nameAr": "أمراض أجهزة الجسم",
-              "emoji": "🧬",
+              "emoji": null,
               "color": "green",
               "base": null,
               "practical": null
@@ -213,7 +213,7 @@ export const SITE: SiteConfig = {
               "slug": null,
               "name": "Local Anesthesia",
               "nameAr": "التخدير الموضعي",
-              "emoji": "💉",
+              "emoji": null,
               "color": "blue",
               "base": null,
               "practical": null
@@ -225,7 +225,7 @@ export const SITE: SiteConfig = {
     {
       "id": "4th",
       "name": "4️⃣th year",
-      "nameAr": "4️⃣th year",
+      "nameAr": "السنة الرابعة",
       "header": "🦷 Dentistry 4th year",
       "folder": null,
       "semesters": [
@@ -234,21 +234,144 @@ export const SITE: SiteConfig = {
           "name": "Semester 1",
           "nameAr": "الفصل الأول",
           "folder": null,
-          "subjects": []
+          "subjects": [
+            {
+              "id": "research",
+              "slug": "resm",
+              "name": "Research Methodology",
+              "nameAr": "منهجية البحث والإحصاء",
+              "emoji": null,
+              "color": "blue",
+              "base": null,
+              "practical": null
+            }
+          ]
         },
         {
           "id": "s2",
           "name": "Semester 2",
           "nameAr": "الفصل الثاني",
           "folder": null,
-          "subjects": []
+          "subjects": [
+            {
+              "id": "pediatric",
+              "slug": "pedo",
+              "name": "Pediatric Dentistry",
+              "nameAr": "طب أسنان الأطفال",
+              "emoji": null,
+              "color": "yellow",
+              "base": null,
+              "practical": null
+            },
+            {
+              "id": "public-health",
+              "slug": "dph",
+              "name": "Dental Public Health",
+              "nameAr": "صحة الأسنان العامة",
+              "emoji": null,
+              "color": "green",
+              "base": null,
+              "practical": null
+            },
+            {
+              "id": "elective",
+              "slug": null,
+              "name": "Elective",
+              "nameAr": "مادة اختيارية",
+              "emoji": null,
+              "color": "cyan",
+              "base": null,
+              "practical": null
+            },
+            {
+              "id": "research-project",
+              "slug": "proj",
+              "name": "Research Project",
+              "nameAr": "مشروع البحث",
+              "emoji": null,
+              "color": "purple",
+              "base": null,
+              "practical": null
+            }
+          ]
         },
         {
           "id": "full",
           "name": "Full year",
           "nameAr": "السنة كاملة",
           "folder": null,
-          "subjects": []
+          "subjects": [
+            {
+              "id": "diagnosis",
+              "slug": null,
+              "name": "Diagnosis & Planning",
+              "nameAr": "التشخيص وتخطيط العلاج",
+              "emoji": null,
+              "color": "pink",
+              "base": null,
+              "practical": null
+            },
+            {
+              "id": "endodontics",
+              "slug": "endo",
+              "name": "Endodontics",
+              "nameAr": "علاج الجذور",
+              "emoji": null,
+              "color": "cyan",
+              "base": null,
+              "practical": null
+            },
+            {
+              "id": "removable",
+              "slug": "rpd",
+              "name": "Removable Prosthodontics",
+              "nameAr": "التعويضات المتحركة",
+              "emoji": null,
+              "color": "purple",
+              "base": null,
+              "practical": null
+            },
+            {
+              "id": "fixed",
+              "slug": "fpd",
+              "name": "Fixed Prosthodontics",
+              "nameAr": "التعويضات الثابتة",
+              "emoji": null,
+              "color": "yellow",
+              "base": null,
+              "practical": null
+            },
+            {
+              "id": "periodontics",
+              "slug": "perio",
+              "name": "Periodontics",
+              "nameAr": "طب اللثة",
+              "emoji": null,
+              "color": "green",
+              "base": null,
+              "practical": null
+            },
+            {
+              "id": "oral-surgery",
+              "slug": "surg",
+              "name": "Oral Surgery",
+              "nameAr": "جراحة الفم",
+              "emoji": null,
+              "color": "blue",
+              "base": null,
+              "practical": null
+            },
+            {
+              "id": "operative",
+              "slug": "oper",
+              "name": "Operative Dentistry",
+              "nameAr": "طب الأسنان الترميمي",
+              "emoji": null,
+              "color": "pink",
+              "base": null,
+              "practical": null
+            }
+          ]
         }
       ]
     }

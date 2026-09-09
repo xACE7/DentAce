@@ -128,7 +128,9 @@ export function MembersView() {
               const online = !!p && Date.now() - new Date(p.updated_at).getTime() < ONLINE_MS;
               const [yId0, sId0] = (m.scope || "").split("/");
               const year = SITE.years.find((y) => y.id === yId0) || SITE.years[0];
-              const sem = year.semesters.find((s) => s.id === sId0) || year.semesters[0];
+              // "Full year" is a content tab, not a term — offer only real semesters.
+              const terms = year.semesters.filter((s) => s.id !== "full");
+              const sem = terms.find((s) => s.id === sId0) || terms[0];
               return (
                 <li key={m.id} className={"mb-item" + (m.banned ? " banned" : "")}>
                   <div className="mb-top">
@@ -166,7 +168,7 @@ export function MembersView() {
                     </select>
                     <select className="pf-input mb-sel" aria-label="Semester" value={sem.id}
                       onChange={(e) => void patch(m.id, { scope: `${year.id}/${e.target.value}` })}>
-                      {year.semesters.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
+                      {terms.map((s) => <option key={s.id} value={s.id}>{s.name}</option>)}
                     </select>
                     {m.scope ? null : <span className="mb-unset">not set</span>}
                   </div>

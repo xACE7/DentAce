@@ -20,6 +20,11 @@ export async function openPdf(file: string): Promise<void> {
   const { data, error } = await supabase.storage.from("pdfs").createSignedUrl(key, 120);
 
   if (error || !data?.signedUrl) {
+    // Dev convenience: a PDF may not be uploaded to the bucket yet locally —
+    // serve the static file from /public so it still opens during development.
+    // In production (static export) the static PDFs aren't deployed, so we keep
+    // the bucket as the only source and just close the blank tab on failure.
+    if (win && process.env.NODE_ENV !== "production") { win.location.href = file; return; }
     win?.close();
     return;
   }

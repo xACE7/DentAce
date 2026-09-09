@@ -50,4 +50,21 @@ export function allLectureIds(): string[] {
   return ids;
 }
 
+/** Lecture ids for a chosen scope ("<year>/<sem>"), e.g. the header % when a member
+ *  has picked their term. Includes that term PLUS the year's "Full year" courses
+ *  (studied across both terms). Falls back to the whole site when scope is unset/"all". */
+export function lectureIdsForScope(scope: string | null | undefined): string[] {
+  if (!scope || scope === "all") return allLectureIds();
+  const [yId, sId] = scope.split("/");
+  const y = SITE.years.find((yy) => yy.id === yId);
+  if (!y) return allLectureIds();
+  const sems = y.semesters.filter((s) => s.id === sId || s.id === "full");
+  if (!sems.length) return allLectureIds();
+  const ids: string[] = [];
+  for (const s of sems)
+    for (const sub of s.subjects)
+      for (const t of lectureTokens(y.id, s.id, sub.id)) ids.push(`/lecture/${y.id}/${s.id}/${sub.id}/${t}`);
+  return ids;
+}
+
 export const glowClass = (color?: string | null) => "glow-" + (color || "pink");

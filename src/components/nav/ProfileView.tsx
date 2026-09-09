@@ -66,7 +66,10 @@ function ScopeSelect({ label, lang, value, save }: {
   const [msg, setMsg] = useState<{ ok?: boolean; text: string } | null>(null);
   const [yId, sId] = (value || "").split("/");
   const year = SITE.years.find((y) => y.id === yId) || SITE.years[0];
-  const sem = year.semesters.find((s) => s.id === sId) || year.semesters[0];
+  // "Full year" is a content tab (holds courses that run both terms), not a term a
+  // student is actually in — a person is in S1 or S2, so keep it out of this picker.
+  const terms = year.semesters.filter((s) => s.id !== "full");
+  const sem = terms.find((s) => s.id === sId) || terms[0];
   const pick = async (scope: string) => {
     setBusy(true); setMsg(null);
     const r = await save(scope);
@@ -83,7 +86,7 @@ function ScopeSelect({ label, lang, value, save }: {
         </select>
         <select className="pf-input" aria-label="Semester" disabled={busy} value={sem.id}
           onChange={(e) => void pick(`${year.id}/${e.target.value}`)}>
-          {year.semesters.map((s) => <option key={s.id} value={s.id}>{lang === "ar" ? s.nameAr : s.name}</option>)}
+          {terms.map((s) => <option key={s.id} value={s.id}>{lang === "ar" ? s.nameAr : s.name}</option>)}
         </select>
       </div>
       {msg ? <p className={"pf-msg" + (msg.ok ? " ok" : " err")}>{msg.text}</p> : null}

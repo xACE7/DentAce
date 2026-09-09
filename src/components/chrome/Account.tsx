@@ -7,6 +7,8 @@ import { useAuth } from "@/lib/auth/AuthProvider";
    with email verification on first sign-up. Hidden when Supabase isn't configured. */
 function friendly(msg: string): string {
   const m = msg.toLowerCase();
+  if (m.includes("failed to fetch") || m.includes("load failed") || m.includes("networkerror") || m.includes("timeout") || m.includes("reach the server"))
+    return "Can't reach the server — check your connection (an ad-blocker may be blocking it).";
   if (m.includes("invalid login")) return "Wrong email or password.";
   if (m.includes("not confirmed")) return "Verify your email first — check your inbox.";
   if (m.includes("already registered") || m.includes("already exists")) return "That email already has an account — log in instead.";

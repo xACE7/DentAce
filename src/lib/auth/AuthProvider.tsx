@@ -35,6 +35,15 @@ type AuthCtx = {
 const Ctx = createContext<AuthCtx | null>(null);
 export const useAuth = () => useContext(Ctx);
 
+// Cap a network call so a slow/unreachable backend (e.g. a paused project) surfaces
+// a clear error after a few seconds instead of hanging on a spinner indefinitely.
+function cap<T>(p: PromiseLike<T>, ms = 8000): Promise<T> {
+  return Promise.race([
+    Promise.resolve(p),
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error("timeout")), ms)),
+  ]);
+}
+
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -72,7 +81,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     };
     supabase.auth.getSession().then(({ data }) => void handle(data.session));
     const { data: sub } = supabase.auth.onAuthStateChange((_e, session) => void handle(session));
-    return () => sub.subscription.unsubscribe();
+    // Don't trap the login form behind a hanging session check: if getSession()
+    // can't answer within a couple seconds (server slow / paused / unreachable),
+    // fall back to showing the form. If a session does resolve later, handle()
+    // flips us to "in" and the account view replaces the form.
+    const t = setTimeout(() => setStatus((prev) => (prev === "loading" ? "out" : prev)), 2500);
+    return () => { clearTimeout(t); sub.subscription.unsubscribe(); };
   }, []);
 
   // push local progress changes (debounced) whenever signed in
@@ -88,15 +102,20 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const logIn = async (identifier: string, password: string): Promise<{ error?: string }> => {
     if (!supabase) return { error: "Sync isn't configured." };
-    let email = identifier.trim();
-    if (!email.includes("@")) {
-      // entered a username → resolve it to the account email
-      const { data, error } = await supabase.rpc("email_for_username", { uname: email });
-      if (error || !data) return { error: "No account with that username." };
-      email = data as string;
+    try {
+      let email = identifier.trim();
+      if (!email.includes("@")) {
+        // entered a username → resolve it to the account email
+        const { data, error } = await cap(supabase.rpc("email_for_username", { uname: email }));
+        if (error || !data) return { error: "No account with that username." };
+        email = data as string;
+      }
+      const { error } = await cap(supabase.auth.signInWithPassword({ email, password }));
+      return error ? { error: error.message } : {};
+    } catch {
+      // timed out or network failure (e.g. a paused/unreachable project)
+      return { error: "Can't reach the server — check your connection (an ad-blocker may be blocking it)." };
     }
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return error ? { error: error.message } : {};
   };
 
   const signUp = async (email: string, password: string, username: string): Promise<{ error?: string; verify?: boolean }> => {

@@ -1133,5 +1133,169 @@ export const CONTENT_INDEX: ContentIndex = {
         "file": "/3rd-year/3rd-s2/la/pdf/la-11.pdf"
       }
     ]
+  },
+  "4th/s1/research": {
+    "lecture": [
+      "1",
+      "2"
+    ],
+    "test": [
+      "1",
+      "2"
+    ],
+    "pdf": [
+      {
+        "token": "1",
+        "file": "/4th-year/4th-s1/research/pdf/research-1.pdf"
+      },
+      {
+        "token": "2",
+        "file": "/4th-year/4th-s1/research/pdf/research-2.pdf"
+      }
+    ]
+  },
+  "4th/full/endodontics": {
+    "lecture": [
+      "1"
+    ],
+    "test": [
+      "1"
+    ],
+    "pdf": [
+      {
+        "token": "1",
+        "file": "/4th-year/4th-full/endodontics/pdf/endodontics-1.pdf"
+      }
+    ]
+  },
+  "4th/full/removable": {
+    "lecture": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "test": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "pdf": [
+      {
+        "token": "1",
+        "file": "/4th-year/4th-full/removable/pdf/removable-1.pdf"
+      },
+      {
+        "token": "2",
+        "file": "/4th-year/4th-full/removable/pdf/removable-2.pdf"
+      },
+      {
+        "token": "3",
+        "file": "/4th-year/4th-full/removable/pdf/removable-3.pdf"
+      },
+      {
+        "token": "4",
+        "file": "/4th-year/4th-full/removable/pdf/removable-4.pdf"
+      },
+      {
+        "token": "5",
+        "file": "/4th-year/4th-full/removable/pdf/removable-5.pdf"
+      }
+    ]
+  },
+  "4th/full/fixed": {
+    "lecture": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "test": [
+      "1",
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "pdf": [
+      {
+        "token": "1",
+        "file": "/4th-year/4th-full/fixed/pdf/fixed-1.pdf"
+      },
+      {
+        "token": "2",
+        "file": "/4th-year/4th-full/fixed/pdf/fixed-2.pdf"
+      },
+      {
+        "token": "3",
+        "file": "/4th-year/4th-full/fixed/pdf/fixed-3.pdf"
+      },
+      {
+        "token": "4",
+        "file": "/4th-year/4th-full/fixed/pdf/fixed-4.pdf"
+      },
+      {
+        "token": "5",
+        "file": "/4th-year/4th-full/fixed/pdf/fixed-5.pdf"
+      }
+    ]
+  },
+  "4th/full/periodontics": {
+    "lecture": [
+      "1",
+      "2"
+    ],
+    "test": [
+      "1",
+      "2"
+    ],
+    "pdf": [
+      {
+        "token": "1",
+        "file": "/4th-year/4th-full/periodontics/pdf/periodontics-1.pdf"
+      },
+      {
+        "token": "2",
+        "file": "/4th-year/4th-full/periodontics/pdf/periodontics-2.pdf"
+      }
+    ]
+  },
+  "4th/full/oral-surgery": {
+    "lecture": [
+      "1"
+    ],
+    "test": [
+      "1"
+    ],
+    "pdf": [
+      {
+        "token": "1",
+        "file": "/4th-year/4th-full/oral-surgery/pdf/oral-surgery-1.pdf"
+      }
+    ]
+  },
+  "4th/full/operative": {
+    "lecture": [
+      "1",
+      "2"
+    ],
+    "test": [
+      "1",
+      "2"
+    ],
+    "pdf": [
+      {
+        "token": "1",
+        "file": "/4th-year/4th-full/operative/pdf/operative-1.pdf"
+      },
+      {
+        "token": "2",
+        "file": "/4th-year/4th-full/operative/pdf/operative-2.pdf"
+      }
+    ]
   }
 };
