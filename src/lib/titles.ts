@@ -22,6 +22,10 @@ export const TITLES: Record<string, TitleEntry> = {
     "e": "Principles of Tooth Preparation II",
     "a": "مبادئ تحضير السنّ 2"
   },
+  "4th-year/4th-s1/fixed|6": {
+    "e": "Preparations for Full Metal Crowns",
+    "a": "تحضيرات التيجان المعدنية الكاملة"
+  },
   "4th-year/4th-s1/removable|1": {
     "e": "Introduction to Prosthodontics",
     "a": "مقدّمة في الاستعاضة السنّية"
@@ -42,9 +46,33 @@ export const TITLES: Record<string, TitleEntry> = {
     "e": "Stock Trays & Diagnostic Casts",
     "a": "الحوامل الجاهزة والنماذج التشخيصية"
   },
+  "4th-year/4th-s1/removable|6": {
+    "e": "Gypsum Products",
+    "a": "منتجات الجبس"
+  },
+  "4th-year/4th-s1/removable|7": {
+    "e": "Custom Impression Trays & Master Casts",
+    "a": "الحوامل الخاصّة والنماذج الرئيسية"
+  },
+  "4th-year/4th-s1/removable|8": {
+    "e": "Recording Bases & Occlusion Rims",
+    "a": "القواعد التسجيلية وحواف الإطباق"
+  },
   "4th-year/4th-s1/endodontics|1": {
-    "e": "Scope of Endodontics & Pulpal Anatomy",
-    "a": "مجال علاج الجذور وتشريح اللبّ"
+    "e": "Scope of Endodontics & Root-Canal Treatment",
+    "a": "مجال علاج الجذور ومعالجة القنوات"
+  },
+  "4th-year/4th-s1/endodontics|2": {
+    "e": "Anatomy of the Pulpal Space",
+    "a": "تشريح حجرة اللبّ"
+  },
+  "4th-year/4th-s1/endodontics|3": {
+    "e": "Endodontic Access Opening I",
+    "a": "الفتحة اللبّية 1"
+  },
+  "4th-year/4th-s1/endodontics|4": {
+    "e": "Endodontic Instruments & Rubber Dam Isolation",
+    "a": "الأدوات اللبّية وعزل الحاجز المطّاطي"
   },
   "4th-year/4th-s1/periodontics|1": {
     "e": "Biofilm & Periodontal Microbiology",
@@ -54,9 +82,21 @@ export const TITLES: Record<string, TitleEntry> = {
     "e": "Gingival Inflammation & Clinical Features of Gingivitis",
     "a": "التهاب اللثة والملامح السريرية لالتهاب اللثة"
   },
+  "4th-year/4th-s1/periodontics|3": {
+    "e": "Dental Calculus & Other Predisposing Factors",
+    "a": "القلح السنّي والعوامل المهيّئة الأخرى"
+  },
+  "4th-year/4th-s1/periodontics|4": {
+    "e": "Periodontal Pockets & Bone Loss Patterns",
+    "a": "الجيوب اللثوية وأنماط فقد العظم"
+  },
   "4th-year/4th-s1/oral-surgery|1": {
     "e": "Instruments in Oral Surgery",
     "a": "أدوات جراحة الفم"
+  },
+  "4th-year/4th-s1/oral-surgery|2": {
+    "e": "Principles of Simple Extraction",
+    "a": "مبادئ القلع البسيط"
   },
   "4th-year/4th-s1/operative|1": {
     "e": "Examination, Diagnosis & Treatment Planning I",
@@ -73,6 +113,38 @@ export const TITLES: Record<string, TitleEntry> = {
   "4th-year/4th-s1/research|2": {
     "e": "Concepts of Evidence-Based Medicine",
     "a": "مفاهيم الطب المبني على البيّنة"
+  },
+  "4th-year/4th-s1/research|3": {
+    "e": "Research Ethics",
+    "a": "أخلاقيات البحث العلمي"
+  },
+  "4th-year/4th-s1/research|4": {
+    "e": "The Ethical Approval Process",
+    "a": "عملية الموافقة الأخلاقية"
+  },
+  "4th-year/4th-s1/research|5": {
+    "e": "Literature Review & Searching",
+    "a": "المراجعة الأدبية والبحث"
+  },
+  "4th-year/4th-s1/research|6": {
+    "e": "Information Resources & Referencing",
+    "a": "مصادر المعلومات والتوثيق"
+  },
+  "4th-year/4th-s1/research|7": {
+    "e": "The Research Process",
+    "a": "عملية البحث العلمي"
+  },
+  "4th-year/4th-s1/research|8": {
+    "e": "Types of Data in Medical Research",
+    "a": "أنواع البيانات في البحث الطبي"
+  },
+  "4th-year/4th-s1/research|9": {
+    "e": "Study Design I — Observational Designs",
+    "a": "تصميم الدراسة 1 — التصاميم الرصدية"
+  },
+  "4th-year/4th-s1/research|10": {
+    "e": "Study Design II — Experimental Studies",
+    "a": "تصميم الدراسة 2 — الدراسات التجريبية"
   },
   "3rd-year/3rd-s1/ocih|1": {
     "e": "Anatomy of Salivary Glands",
