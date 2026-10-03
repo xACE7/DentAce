@@ -1139,13 +1139,15 @@ export const CONTENT_INDEX: ContentIndex = {
       "1",
       "2",
       "3",
-      "4"
+      "4",
+      "5"
     ],
     "test": [
       "1",
       "2",
       "3",
-      "4"
+      "4",
+      "5"
     ],
     "pdf": [
       {
@@ -1159,6 +1161,10 @@ export const CONTENT_INDEX: ContentIndex = {
       {
         "token": "4",
         "file": "/4th-year/4th-s1/endodontics/pdf/endodontics-4.pdf"
+      },
+      {
+        "token": "5",
+        "file": "/4th-year/4th-s1/endodontics/pdf/endodontics-5.pdf"
       }
     ]
   },
@@ -1297,11 +1303,13 @@ export const CONTENT_INDEX: ContentIndex = {
   "4th/s1/oral-surgery": {
     "lecture": [
       "1",
-      "2"
+      "2",
+      "3"
     ],
     "test": [
       "1",
-      "2"
+      "2",
+      "3"
     ],
     "pdf": [
       {
@@ -1311,6 +1319,10 @@ export const CONTENT_INDEX: ContentIndex = {
       {
         "token": "2",
         "file": "/4th-year/4th-s1/oral-surgery/pdf/oral-surgery-2.pdf"
+      },
+      {
+        "token": "3",
+        "file": "/4th-year/4th-s1/oral-surgery/pdf/oral-surgery-3.pdf"
       }
     ]
   },
@@ -1417,6 +1429,10 @@ export const CONTENT_INDEX: ContentIndex = {
       {
         "token": "4",
         "file": "/4th-year/4th-s1/endodontics/pdf/endodontics-4.pdf"
+      },
+      {
+        "token": "5",
+        "file": "/4th-year/4th-s1/endodontics/pdf/endodontics-5.pdf"
       }
     ]
   },
@@ -1521,6 +1537,10 @@ export const CONTENT_INDEX: ContentIndex = {
       {
         "token": "2",
         "file": "/4th-year/4th-s1/oral-surgery/pdf/oral-surgery-2.pdf"
+      },
+      {
+        "token": "3",
+        "file": "/4th-year/4th-s1/oral-surgery/pdf/oral-surgery-3.pdf"
       }
     ]
   },

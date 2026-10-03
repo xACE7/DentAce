@@ -74,6 +74,10 @@ export const TITLES: Record<string, TitleEntry> = {
     "e": "Endodontic Instruments & Rubber Dam Isolation",
     "a": "الأدوات اللبّية وعزل الحاجز المطّاطي"
   },
+  "4th-year/4th-s1/endodontics|5": {
+    "e": "Working Length Determination",
+    "a": "تحديد الطول العامل"
+  },
   "4th-year/4th-s1/periodontics|1": {
     "e": "Biofilm & Periodontal Microbiology",
     "a": "الغشاء الحيوي وميكروبيولوجيا اللثة"
@@ -97,6 +101,10 @@ export const TITLES: Record<string, TitleEntry> = {
   "4th-year/4th-s1/oral-surgery|2": {
     "e": "Principles of Simple Extraction",
     "a": "مبادئ القلع البسيط"
+  },
+  "4th-year/4th-s1/oral-surgery|3": {
+    "e": "Extraction Techniques",
+    "a": "تقنيات قلع الأسنان"
   },
   "4th-year/4th-s1/operative|1": {
     "e": "Examination, Diagnosis & Treatment Planning I",
