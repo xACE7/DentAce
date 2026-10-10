@@ -26,6 +26,14 @@ export const TITLES: Record<string, TitleEntry> = {
     "e": "Preparations for Full Metal Crowns",
     "a": "تحضيرات التيجان المعدنية الكاملة"
   },
+  "4th-year/4th-s1/fixed|7": {
+    "e": "Impression Materials III (Elastomeric)",
+    "a": "مواد الطبعة 3 (المطّاطية)"
+  },
+  "4th-year/4th-s1/fixed|8": {
+    "e": "Impression Techniques",
+    "a": "تقنيات الطبعة"
+  },
   "4th-year/4th-s1/removable|1": {
     "e": "Introduction to Prosthodontics",
     "a": "مقدّمة في الاستعاضة السنّية"
@@ -78,6 +86,10 @@ export const TITLES: Record<string, TitleEntry> = {
     "e": "Working Length Determination",
     "a": "تحديد الطول العامل"
   },
+  "4th-year/4th-s1/endodontics|6": {
+    "e": "Cleaning & Shaping I — Instrumentation",
+    "a": "التنظيف والتشكيل 1 — التجهيز"
+  },
   "4th-year/4th-s1/periodontics|1": {
     "e": "Biofilm & Periodontal Microbiology",
     "a": "الغشاء الحيوي وميكروبيولوجيا اللثة"
@@ -94,6 +106,14 @@ export const TITLES: Record<string, TitleEntry> = {
     "e": "Periodontal Pockets & Bone Loss Patterns",
     "a": "الجيوب اللثوية وأنماط فقد العظم"
   },
+  "4th-year/4th-s1/periodontics|5": {
+    "e": "Periodontal Instruments & Sharpening",
+    "a": "أدوات الدواعم وشحذها"
+  },
+  "4th-year/4th-s1/periodontics|6": {
+    "e": "Clinical Risk Assessment",
+    "a": "تقييم الخطورة السريرية"
+  },
   "4th-year/4th-s1/oral-surgery|1": {
     "e": "Instruments in Oral Surgery",
     "a": "أدوات جراحة الفم"
@@ -106,6 +126,10 @@ export const TITLES: Record<string, TitleEntry> = {
     "e": "Extraction Techniques",
     "a": "تقنيات قلع الأسنان"
   },
+  "4th-year/4th-s1/oral-surgery|4": {
+    "e": "Complications of Exodontia",
+    "a": "اختلاطات القلع"
+  },
   "4th-year/4th-s1/operative|1": {
     "e": "Examination, Diagnosis & Treatment Planning I",
     "a": "الفحص والتشخيص وتخطيط العلاج 1"
@@ -113,6 +137,10 @@ export const TITLES: Record<string, TitleEntry> = {
   "4th-year/4th-s1/operative|2": {
     "e": "Examination, Diagnosis & Treatment Planning II",
     "a": "الفحص والتشخيص وتخطيط العلاج 2"
+  },
+  "4th-year/4th-s1/operative|5": {
+    "e": "Pulpal Reaction to Caries & Procedures",
+    "a": "استجابة اللبّ للنخر والإجراءات"
   },
   "4th-year/4th-s1/research|1": {
     "e": "Introduction to Medical Research",

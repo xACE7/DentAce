@@ -1140,14 +1140,16 @@ export const CONTENT_INDEX: ContentIndex = {
       "2",
       "3",
       "4",
-      "5"
+      "5",
+      "6"
     ],
     "test": [
       "1",
       "2",
       "3",
       "4",
-      "5"
+      "5",
+      "6"
     ],
     "pdf": [
       {
@@ -1165,6 +1167,10 @@ export const CONTENT_INDEX: ContentIndex = {
       {
         "token": "5",
         "file": "/4th-year/4th-s1/endodontics/pdf/endodontics-5.pdf"
+      },
+      {
+        "token": "6",
+        "file": "/4th-year/4th-s1/endodontics/pdf/endodontics-6.pdf"
       }
     ]
   },
@@ -1231,7 +1237,9 @@ export const CONTENT_INDEX: ContentIndex = {
       "3",
       "4",
       "5",
-      "6"
+      "6",
+      "7",
+      "8"
     ],
     "test": [
       "1",
@@ -1239,7 +1247,9 @@ export const CONTENT_INDEX: ContentIndex = {
       "3",
       "4",
       "5",
-      "6"
+      "6",
+      "7",
+      "8"
     ],
     "pdf": [
       {
@@ -1265,6 +1275,14 @@ export const CONTENT_INDEX: ContentIndex = {
       {
         "token": "6",
         "file": "/4th-year/4th-s1/fixed/pdf/fixed-6.pdf"
+      },
+      {
+        "token": "7",
+        "file": "/4th-year/4th-s1/fixed/pdf/fixed-7.pdf"
+      },
+      {
+        "token": "8",
+        "file": "/4th-year/4th-s1/fixed/pdf/fixed-8.pdf"
       }
     ]
   },
@@ -1273,13 +1291,17 @@ export const CONTENT_INDEX: ContentIndex = {
       "1",
       "2",
       "3",
-      "4"
+      "4",
+      "5",
+      "6"
     ],
     "test": [
       "1",
       "2",
       "3",
-      "4"
+      "4",
+      "5",
+      "6"
     ],
     "pdf": [
       {
@@ -1297,6 +1319,14 @@ export const CONTENT_INDEX: ContentIndex = {
       {
         "token": "4",
         "file": "/4th-year/4th-s1/periodontics/pdf/periodontics-4.pdf"
+      },
+      {
+        "token": "5",
+        "file": "/4th-year/4th-s1/periodontics/pdf/periodontics-5.pdf"
+      },
+      {
+        "token": "6",
+        "file": "/4th-year/4th-s1/periodontics/pdf/periodontics-6.pdf"
       }
     ]
   },
@@ -1304,12 +1334,14 @@ export const CONTENT_INDEX: ContentIndex = {
     "lecture": [
       "1",
       "2",
-      "3"
+      "3",
+      "4"
     ],
     "test": [
       "1",
       "2",
-      "3"
+      "3",
+      "4"
     ],
     "pdf": [
       {
@@ -1323,17 +1355,23 @@ export const CONTENT_INDEX: ContentIndex = {
       {
         "token": "3",
         "file": "/4th-year/4th-s1/oral-surgery/pdf/oral-surgery-3.pdf"
+      },
+      {
+        "token": "4",
+        "file": "/4th-year/4th-s1/oral-surgery/pdf/oral-surgery-4.pdf"
       }
     ]
   },
   "4th/s1/operative": {
     "lecture": [
       "1",
-      "2"
+      "2",
+      "5"
     ],
     "test": [
       "1",
-      "2"
+      "2",
+      "5"
     ],
     "pdf": [
       {
@@ -1343,6 +1381,10 @@ export const CONTENT_INDEX: ContentIndex = {
       {
         "token": "2",
         "file": "/4th-year/4th-s1/operative/pdf/operative-2.pdf"
+      },
+      {
+        "token": "5",
+        "file": "/4th-year/4th-s1/operative/pdf/operative-5.pdf"
       }
     ]
   },
@@ -1433,6 +1475,10 @@ export const CONTENT_INDEX: ContentIndex = {
       {
         "token": "5",
         "file": "/4th-year/4th-s1/endodontics/pdf/endodontics-5.pdf"
+      },
+      {
+        "token": "6",
+        "file": "/4th-year/4th-s1/endodontics/pdf/endodontics-6.pdf"
       }
     ]
   },
@@ -1501,6 +1547,14 @@ export const CONTENT_INDEX: ContentIndex = {
       {
         "token": "6",
         "file": "/4th-year/4th-s1/fixed/pdf/fixed-6.pdf"
+      },
+      {
+        "token": "7",
+        "file": "/4th-year/4th-s1/fixed/pdf/fixed-7.pdf"
+      },
+      {
+        "token": "8",
+        "file": "/4th-year/4th-s1/fixed/pdf/fixed-8.pdf"
       }
     ]
   },
@@ -1523,6 +1577,14 @@ export const CONTENT_INDEX: ContentIndex = {
       {
         "token": "4",
         "file": "/4th-year/4th-s1/periodontics/pdf/periodontics-4.pdf"
+      },
+      {
+        "token": "5",
+        "file": "/4th-year/4th-s1/periodontics/pdf/periodontics-5.pdf"
+      },
+      {
+        "token": "6",
+        "file": "/4th-year/4th-s1/periodontics/pdf/periodontics-6.pdf"
       }
     ]
   },
@@ -1541,6 +1603,10 @@ export const CONTENT_INDEX: ContentIndex = {
       {
         "token": "3",
         "file": "/4th-year/4th-s1/oral-surgery/pdf/oral-surgery-3.pdf"
+      },
+      {
+        "token": "4",
+        "file": "/4th-year/4th-s1/oral-surgery/pdf/oral-surgery-4.pdf"
       }
     ]
   },
@@ -1555,6 +1621,10 @@ export const CONTENT_INDEX: ContentIndex = {
       {
         "token": "2",
         "file": "/4th-year/4th-s1/operative/pdf/operative-2.pdf"
+      },
+      {
+        "token": "5",
+        "file": "/4th-year/4th-s1/operative/pdf/operative-5.pdf"
       }
     ]
   }
