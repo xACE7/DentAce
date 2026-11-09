@@ -23,6 +23,7 @@ export function emitProgress() {
 /* ---- logical content ids (also used as URL paths) ---- */
 export const lecturePath = (y: string, s: string, sub: string, n: string | number) => `/lecture/${y}/${s}/${sub}/${n}`;
 export const testPath = (y: string, s: string, sub: string, n: string | number) => `/test/${y}/${s}/${sub}/${n}`;
+export const extraPath = (y: string, s: string, sub: string, n: string | number) => `/extra/${y}/${s}/${sub}/${n}`;
 
 /* ---- done (lectures) ---- */
 const doneKey = (id: string) => "dentace-done:" + id;

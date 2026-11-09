@@ -3,28 +3,33 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import { LectureRenderer } from "./LectureRenderer";
-import { findYear, findSem, findSubject, lectureTokens } from "@/lib/content/nav";
-import { isDone, setDone, markToday, pushRecent, lecturePath } from "@/lib/progress";
+import { IxBar } from "./Interactive";
+import { InteractiveProvider, countInteractive } from "@/lib/content/interactive";
+import { findYear, findSem, findSubject, lectureTokens, extraTokens } from "@/lib/content/nav";
+import { isDone, setDone, markToday, pushRecent, lecturePath, extraPath } from "@/lib/progress";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { useLectureActivity } from "@/lib/activity";
 import type { Unit } from "@/lib/content/types";
 
-export function LectureView({ unit, year, sem, sub, n }: { unit: Unit; year: string; sem: string; sub: string; n: string }) {
+/** `kind` lets an extra reuse this view unchanged: extras are authored in the
+ *  lecture shape, so only the route prefix, the progress id and the prev/next
+ *  neighbour list differ. */
+export function LectureView({ unit, year, sem, sub, n, kind = "lecture" }: { unit: Unit; year: string; sem: string; sub: string; n: string; kind?: "lecture" | "extra" }) {
   const router = useRouter();
   const root = useRef<HTMLDivElement>(null);
-  const id = lecturePath(year, sem, sub, n);
+  const id = (kind === "extra" ? extraPath : lecturePath)(year, sem, sub, n);
   const [done, setDoneState] = useState(false);
   const auth = useAuth();
   const actTitle = (() => { const t = unit.meta?.title; const s = typeof t === "string" ? t : (t?.en || ""); return s.replace(/\[br\]/g, " ").trim() || `Lecture ${n}`; })();
   useLectureActivity(auth?.user?.id, `${year}/${sem}/${sub}/${n}`, actTitle);
 
   // ordered neighbours (skip gaps)
-  const toks = lectureTokens(year, sem, sub).map(String);
+  const toks = (kind === "extra" ? extraTokens : lectureTokens)(year, sem, sub).map(String);
   const idx = toks.indexOf(String(n));
   const prevTok = idx > 0 ? toks[idx - 1] : null;
   const nextTok = idx >= 0 && idx < toks.length - 1 ? toks[idx + 1] : null;
-  const prevHref = prevTok ? `/lecture/${year}/${sem}/${sub}/${prevTok}` : null;
-  const nextHref = nextTok ? `/lecture/${year}/${sem}/${sub}/${nextTok}` : null;
+  const prevHref = prevTok ? `/${kind}/${year}/${sem}/${sub}/${prevTok}` : null;
+  const nextHref = nextTok ? `/${kind}/${year}/${sem}/${sub}/${nextTok}` : null;
 
   // body.lecture (RTL) + initial done + record activity
   useEffect(() => {
@@ -91,7 +96,10 @@ export function LectureView({ unit, year, sem, sub, n }: { unit: Unit; year: str
 
   return (
     <div ref={root}>
-      <LectureRenderer unit={unit} />
+      <InteractiveProvider lectureId={id} total={countInteractive(unit)}>
+        <LectureRenderer unit={unit} />
+        <IxBar />
+      </InteractiveProvider>
       <nav className="study-nav">
         {prevHref ? <Link className="study-pg" href={prevHref}>← Prev</Link> : <span className="study-pg off">← Prev</span>}
         <button className={"study-done" + (done ? " on" : "")} type="button" onClick={toggleDone}>

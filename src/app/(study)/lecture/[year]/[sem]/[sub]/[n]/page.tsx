@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { loadUnit, listParams } from "@/lib/content/loader";
 import { LectureView } from "@/components/content/LectureView";
-import { StudyGate } from "@/components/content/StudyGate";
 import type { Bilingual } from "@/lib/content/types";
 
 export async function generateStaticParams() {
@@ -33,8 +32,6 @@ export default async function Page({ params }: { params: Promise<{ year: string;
   const unit = await loadUnit(year, sem, sub, n);
   if (!unit) notFound();
   return (
-    <StudyGate kind="lecture">
-      <LectureView unit={unit} year={year} sem={sem} sub={sub} n={n} />
-    </StudyGate>
+    <LectureView unit={unit} year={year} sem={sem} sub={sub} n={n} />
   );
 }

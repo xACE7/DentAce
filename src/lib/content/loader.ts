@@ -12,9 +12,11 @@ async function readJSON<T>(p: string): Promise<T | null> {
   try { return JSON.parse(await fs.readFile(p, "utf8")) as T; } catch { return null; }
 }
 
-export function loadUnit(year: string, sem: string, sub: string, n: string): Promise<Unit | null> {
+/** Extras are authored in the same shape as a lecture and rendered by the same
+ *  component, so they are read from their own directory with the same loader. */
+export function loadUnit(year: string, sem: string, sub: string, n: string, dir: "lecture" | "extra" = "lecture"): Promise<Unit | null> {
   const a = aliasContent(year, sem, sub);
-  return readJSON<Unit>(path.join(ROOT, a.year, a.sem, a.sub, "lecture", `${n}.json`));
+  return readJSON<Unit>(path.join(ROOT, a.year, a.sem, a.sub, dir, `${n}.json`));
 }
 export function loadQuiz(year: string, sem: string, sub: string, n: string): Promise<Quiz | null> {
   const a = aliasContent(year, sem, sub);

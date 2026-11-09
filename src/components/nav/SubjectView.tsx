@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { findYear, findSem, findSubject, lectureTokens, testTokens, glowClass } from "@/lib/content/nav";
+import { findYear, findSem, findSubject, lectureTokens, testTokens, pdfItems, extraTokens, glowClass } from "@/lib/content/nav";
 import { isDone, getScore, lecturePath, testPath } from "@/lib/progress";
 import { useProgressBump } from "@/lib/useProgressBump";
 import { useAuth } from "@/lib/auth/AuthProvider";
@@ -35,6 +35,10 @@ export function SubjectView({ year: yId, sem: sId, sub: subId }: { year: string;
 
   const g = glowClass(sub.color);
   const q = `${year.id}/${sem.id}/${sub.id}`;
+  const nLec = lectureTokens(year.id, sem.id, sub.id).length;
+  const nTst = testTokens(year.id, sem.id, sub.id).length;
+  const nPdf = pdfItems(year.id, sem.id, sub.id).length;
+  const nExt = extraTokens(year.id, sem.id, sub.id).length;
 
   return (
     <main className="container" id="dmain">
@@ -49,33 +53,48 @@ export function SubjectView({ year: yId, sem: sId, sub: subId }: { year: string;
           </h2>
         </div>
         <div className="board subj-board" id="board">
-          <div className="subj-perf">
-            <div className="perf-item">
-              <div className="perf-lbl"><Emoji e="📘" /><Bi v={{ en: "Lectures", ar: "المحاضرات" }} /></div>
-              <div className="perf-bar"><span style={{ width: `${perf.lp}%` }} /></div>
-              <div className="perf-num">{perf.ld}/{perf.lt} · {perf.lp}%</div>
+          {/* Nothing to track means nothing to show — a 0/0 bar is just noise. */}
+          {nLec || nTst ? (
+            <div className="subj-perf">
+              {nLec ? (
+                <div className="perf-item">
+                  <div className="perf-lbl"><Emoji e="📘" /><Bi v={{ en: "Lectures", ar: "المحاضرات" }} /></div>
+                  <div className="perf-bar"><span style={{ width: `${perf.lp}%` }} /></div>
+                  <div className="perf-num">{perf.ld}/{perf.lt} · {perf.lp}%</div>
+                </div>
+              ) : null}
+              {nTst ? (
+                <div className="perf-item">
+                  <div className="perf-lbl"><Emoji e="📝" /><Bi v={{ en: "Tests", ar: "الاختبارات" }} /></div>
+                  <div className="perf-bar tests"><span style={{ width: `${perf.ta}%` }} /></div>
+                  <div className="perf-num">
+                    {perf.tk ? `${perf.tk}/${perf.tt} · ${perf.ta}%` : <Bi v={{ en: "not taken", ar: "لم تُختبر" }} />}
+                  </div>
+                </div>
+              ) : null}
             </div>
-            <div className="perf-item">
-              <div className="perf-lbl"><Emoji e="📝" /><Bi v={{ en: "Tests", ar: "الاختبارات" }} /></div>
-              <div className="perf-bar tests"><span style={{ width: `${perf.ta}%` }} /></div>
-              <div className="perf-num">
-                {perf.tk ? `${perf.tk}/${perf.tt} · ${perf.ta}%` : <Bi v={{ en: "not taken", ar: "لم تُختبر" }} />}
-              </div>
-            </div>
-          </div>
-          {auth?.flags.pdfs !== false ? (
+          ) : null}
+          {/* A card is only worth showing when that kind has something behind it:
+              Diagnosis & Planning, for instance, carries extras but no lectures,
+              tests or PDFs, and empty cards lead the reader to empty lists. */}
+          {nPdf && auth?.flags.pdfs !== false ? (
             <Link className={`card ${g}`} href={`/list/${q}/pdf`}>
               <div className="ctitle"><Emoji e="📁" /><Bi v={{ en: "PDFs", ar: "ملفات PDF" }} /></div>
             </Link>
           ) : null}
-          {auth?.flags.lectures !== false ? (
+          {nLec ? (
             <Link className={`card ${g}`} href={`/list/${q}/lecture`}>
               <div className="ctitle"><Emoji e="📘" /><Bi v={{ en: "Lectures", ar: "المحاضرات" }} /></div>
             </Link>
           ) : null}
-          {auth?.flags.tests !== false ? (
+          {nTst ? (
             <Link className={`card ${g}`} href={`/list/${q}/test`}>
               <div className="ctitle"><Emoji e="📝" /><Bi v={{ en: "Tests", ar: "الاختبارات" }} /></div>
+            </Link>
+          ) : null}
+          {nExt ? (
+            <Link className={`card ${g}`} href={`/list/${q}/extra`}>
+              <div className="ctitle"><Emoji e="🧩" /><Bi v={{ en: "Extra", ar: "إضافي" }} /></div>
             </Link>
           ) : null}
         </div>

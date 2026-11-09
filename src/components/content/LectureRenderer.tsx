@@ -3,6 +3,7 @@ import React from "react";
 import parse from "html-react-parser";
 import { Bi } from "@/lib/content/Bi";
 import { asset } from "@/lib/asset";
+import { HotspotView, QuizBlockView, OrderView, MatchView, RevealView, HiddenTable } from "./Interactive";
 import type { Unit, Sheet, Row, Block, Fig, Bilingual } from "@/lib/content/types";
 
 /* React port of render.js — emits the exact chalk-sheet DOM (same classes) from a Unit. */
@@ -74,7 +75,7 @@ function Table({ t }: { t: { head: Bilingual[]; rows: Bilingual[][] } }) {
   );
 }
 
-function BlockView({ b }: { b: Block }) {
+function BlockView({ b, id }: { b: Block; id: string }) {
   if ("p" in b) return <p><Bi v={b.p} /></p>;
   if ("h3" in b) return <h3 className={b.c ? "c-" + b.c : undefined}><Bi v={b.h3} /></h3>;
   if ("ul" in b) return <ul>{b.ul.map((li, i) => <li key={i}><Bi v={li} /></li>)}</ul>;
@@ -93,17 +94,22 @@ function BlockView({ b }: { b: Block }) {
       </div>
     );
   if ("cap" in b) return <p className="cap" style={{ textAlign: "left", marginTop: 12 }}><Bi v={b.cap} /></p>;
-  if ("table" in b) return <Table t={b.table} />;
+  if ("table" in b) return b.table.hide?.length ? <HiddenTable t={b.table} id={id} /> : <Table t={b.table} />;
   if ("fig" in b) return <Figure f={b.fig} />;
+  if ("hotspot" in b) return <HotspotView h={b.hotspot} id={id} />;
+  if ("quiz" in b) return <QuizBlockView q={b.quiz} id={id} />;
+  if ("order" in b) return <OrderView o={b.order} id={id} />;
+  if ("match" in b) return <MatchView m={b.match} id={id} />;
+  if ("reveal" in b) return <RevealView r={b.reveal} id={id} />;
   if ("doodle" in b) return <div className="fill">{parse(b.doodle)}</div>;
   if ("html" in b) return <>{parse(b.html)}</>;
   return null;
 }
 
-function RowView({ row }: { row: Row }) {
+function RowView({ row, pfx }: { row: Row; pfx: string }) {
   return (
     <div className={"row" + (row.reverse ? " r" : "")}>
-      {row.blk && row.blk.length ? <div className="blk">{row.blk.map((b, i) => <BlockView key={i} b={b} />)}</div> : null}
+      {row.blk && row.blk.length ? <div className="blk">{row.blk.map((b, i) => <BlockView key={i} b={b} id={`${pfx}b${i}`} />)}</div> : null}
       {row.figs?.map((f, i) => <Figure key={i} f={f} />)}
     </div>
   );
@@ -155,9 +161,9 @@ function SheetView({ sh, idx }: { sh: Sheet; idx: number }) {
       </header>
       {parse(RULE)}
       {sh.wrap ? (
-        <div className="wrap">{sh.wrap.map((b, i) => <BlockView key={i} b={b} />)}</div>
+        <div className="wrap">{sh.wrap.map((b, i) => <BlockView key={i} b={b} id={`s${idx}w${i}`} />)}</div>
       ) : (
-        <div className="stack">{(sh.rows || []).map((r, i) => <RowView key={i} row={r} />)}</div>
+        <div className="stack">{(sh.rows || []).map((r, i) => <RowView key={i} row={r} pfx={`s${idx}r${i}`} />)}</div>
       )}
       <div className="foot">
         <Legend />

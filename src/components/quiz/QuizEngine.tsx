@@ -2,13 +2,49 @@
 import parse from "html-react-parser";
 import Link from "next/link";
 import { useEffect, useMemo, useRef, useState, type ReactNode } from "react";
-import type { Quiz } from "@/lib/content/types";
+import type { Quiz, SaqPart } from "@/lib/content/types";
 import { findSubject, findSem, findYear, testTokens } from "@/lib/content/nav";
 import { DUAS } from "@/lib/site-config";
 import { testPath, setScore, markToday, pushRecent, getSaqDraft, setSaqDraft, clearSaqDraft, isDone, setDone } from "@/lib/progress";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { logActivity } from "@/lib/activity";
 import { asset } from "@/lib/asset";
+
+
+/* A structured SAQ model answer: a table for compare/contrast, a bulleted list for
+   "list the…", numbered steps for a procedure, a line of prose otherwise. Falls back
+   to the plain `a` string (parsed, so legacy HTML still works) when `ans` is absent. */
+function SaqAnswer({ parts, plain }: { parts?: SaqPart[]; plain: string }) {
+  if (!parts || !parts.length) return <>{parse(plain || "")}</>;
+  return (
+    <>
+      {parts.map((pt, i) => {
+        const head = "h" in pt && pt.h ? <h4 className="saq-h" key={`h${i}`}>{pt.h}</h4> : null;
+        if ("table" in pt)
+          return (
+            <div key={i}>
+              {head}
+              <div className="table-wrap">
+                <table className="tbl saq-tbl">
+                  <tbody>
+                    <tr>{pt.table.head.map((c, j) => <th key={j}>{parse(c)}</th>)}</tr>
+                    {pt.table.rows.map((r, j) => (
+                      <tr key={j}>{r.map((c, k) => <td key={k}>{parse(c)}</td>)}</tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          );
+        if ("steps" in pt)
+          return <div key={i}>{head}<ol className="saq-steps">{pt.steps.map((x, j) => <li key={j}>{parse(x)}</li>)}</ol></div>;
+        if ("list" in pt)
+          return <div key={i}>{head}<ul className="saq-list">{pt.list.map((x, j) => <li key={j}>{parse(x)}</li>)}</ul></div>;
+        return <p className="saq-text" key={i}>{parse(pt.text)}</p>;
+      })}
+    </>
+  );
+}
 
 const RULE = '<svg class="rule" viewBox="0 0 260 11" preserveAspectRatio="none"><path d="M2 7 Q74 1 140 5 T258 4"/></svg>';
 function shuffle(n: number): number[] {
@@ -292,7 +328,7 @@ export function QuizEngine({ quiz, year, sem, sub, n }: { quiz: Quiz; year: stri
                     {saqDone[i] ? "✓ done" : "Mark done"}
                   </button>
                 </div>
-                <div className="saq-ans" hidden={!saqShown[i]}>{parse(s.a || "")}</div>
+                <div className="saq-ans" hidden={!saqShown[i]}><SaqAnswer parts={s.ans} plain={s.a} /></div>
               </article>
             ))}
           </div>

@@ -7,7 +7,7 @@ import { SITE } from "@/lib/site-config";
 
 type Member = {
   id: string; username: string; email: string | null; avatar_url: string | null;
-  banned: boolean; show_pdfs: boolean; show_tests: boolean; show_lectures: boolean;
+  banned: boolean; show_pdfs: boolean;
   scope: string | null; created_at: string;
 };
 type Pres = { page: string | null; updated_at: string };
@@ -50,14 +50,13 @@ export function MembersView() {
     const load = async () => {
       const { data } = await supabase!
         .from("profiles")
-        .select("id, username, email, avatar_url, banned, show_pdfs, show_tests, show_lectures, scope, created_at")
+        .select("id, username, email, avatar_url, banned, show_pdfs, scope, created_at")
         .order("created_at", { ascending: false });
       if (alive && data) {
         setMembers(data.map((m) => ({
           id: m.id, username: m.username, email: m.email, avatar_url: m.avatar_url ?? null,
           created_at: m.created_at, scope: typeof m.scope === "string" ? m.scope : null,
           banned: !!m.banned, show_pdfs: m.show_pdfs === true,
-          show_tests: m.show_tests !== false, show_lectures: m.show_lectures !== false,
         })));
       }
       const { data: pd } = await supabase!.from("presence").select("user_id, page, updated_at");
@@ -175,8 +174,6 @@ export function MembersView() {
 
                   <div className="mb-flags">
                     <button type="button" className={"mb-flag" + (m.show_pdfs ? " on" : "")} onClick={() => patch(m.id, { show_pdfs: !m.show_pdfs })}>PDFs</button>
-                    <button type="button" className={"mb-flag" + (m.show_tests ? " on" : "")} onClick={() => patch(m.id, { show_tests: !m.show_tests })}>Tests</button>
-                    <button type="button" className={"mb-flag" + (m.show_lectures ? " on" : "")} onClick={() => patch(m.id, { show_lectures: !m.show_lectures })}>Lectures</button>
                     <button type="button" className={"mb-flag mb-hist-btn" + (histOpen === m.id ? " on" : "")} onClick={() => toggleHist(m.id)}>History</button>
                     <button type="button" className={"mb-ban" + (m.banned ? " on" : "")} disabled={self} onClick={() => patch(m.id, { banned: !m.banned })}>
                       {m.banned ? "Unban" : "Ban"}

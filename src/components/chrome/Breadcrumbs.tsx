@@ -9,12 +9,12 @@ import type { Kind } from "@/lib/content/types";
 const PLURAL: Record<Kind, [string, string]> = {
   lecture: ["Lectures", "المحاضرات"],
   pdf: ["PDFs", "ملفات PDF"],
-  test: ["Tests", "الاختبارات"],
+  test: ["Tests", "الاختبارات"], extra: ["Extra", "إضافي"],
 };
 const LABEL: Record<Kind, [string, string]> = {
   lecture: ["Lecture", "محاضرة"],
   pdf: ["PDF", "PDF"],
-  test: ["Test", "اختبار"],
+  test: ["Test", "اختبار"], extra: ["Extra", "إضافي"],
 };
 
 function YearSem({ y, s }: { y: string; s: string }) {

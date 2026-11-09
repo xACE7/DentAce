@@ -11,6 +11,7 @@ import "@/styles/lecture/text.css";
 import "@/styles/lecture/recall.css";
 import "@/styles/lecture/callout.css";
 import "@/styles/lecture/table-figure.css";
+import "@/styles/lecture/interactive.css";
 import "@/styles/lecture/layout.css";
 import "@/styles/lecture/deco.css";
 import "@/styles/lecture/cover.css";

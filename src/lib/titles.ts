@@ -27,11 +27,23 @@ export const TITLES: Record<string, TitleEntry> = {
     "a": "تحضيرات التيجان المعدنية الكاملة"
   },
   "4th-year/4th-s1/fixed|7": {
+    "e": "Fundamentals of Occlusion I",
+    "a": "أساسيات الإطباق 1"
+  },
+  "4th-year/4th-s1/fixed|8": {
+    "e": "Fundamentals of Occlusion II",
+    "a": "أساسيات الإطباق 2"
+  },
+  "4th-year/4th-s1/fixed|9": {
+    "e": "Provisional Restorations",
+    "a": "الترميمات المؤقّتة"
+  },
+  "4th-year/4th-s1/fixed|10": {
     "e": "Impression Materials III (Elastomeric)",
     "a": "مواد الطبعة 3 (المطّاطية)"
   },
-  "4th-year/4th-s1/fixed|8": {
-    "e": "Impression Techniques",
+  "4th-year/4th-s1/fixed|11": {
+    "e": "Final Impression Techniques",
     "a": "تقنيات الطبعة"
   },
   "4th-year/4th-s1/removable|1": {
@@ -66,6 +78,30 @@ export const TITLES: Record<string, TitleEntry> = {
     "e": "Recording Bases & Occlusion Rims",
     "a": "القواعد التسجيلية وحواف الإطباق"
   },
+  "4th-year/4th-s1/removable|9": {
+    "e": "Mandibular Movements",
+    "a": "حركات الفكّ السفلي"
+  },
+  "4th-year/4th-s1/removable|10": {
+    "e": "Articulators I — Uses & Average-Value Types",
+    "a": "المطابقات 1 — الاستعمالات والأنواع ذات القيمة المتوسّطة"
+  },
+  "4th-year/4th-s1/removable|11": {
+    "e": "Articulators II — Arcon, Adjustable Types & Facebows",
+    "a": "المطابقات 2 — الأركونية والقابلة للضبط والأقواس الوجهية"
+  },
+  "4th-year/4th-s1/removable|12": {
+    "e": "Arrangement of Anterior Teeth",
+    "a": "ترتيب الأسنان الأمامية"
+  },
+  "4th-year/4th-s1/removable|13": {
+    "e": "Arrangement of Posterior Teeth & Balanced Articulation",
+    "a": "ترتيب الأسنان الخلفية والتمفصل المتوازن"
+  },
+  "4th-year/4th-s1/removable|14": {
+    "e": "Processing Complete Dentures",
+    "a": "تصنيع الأجهزة الكاملة"
+  },
   "4th-year/4th-s1/endodontics|1": {
     "e": "Scope of Endodontics & Root-Canal Treatment",
     "a": "مجال علاج الجذور ومعالجة القنوات"
@@ -89,6 +125,14 @@ export const TITLES: Record<string, TitleEntry> = {
   "4th-year/4th-s1/endodontics|6": {
     "e": "Cleaning & Shaping I — Instrumentation",
     "a": "التنظيف والتشكيل 1 — التجهيز"
+  },
+  "4th-year/4th-s1/endodontics|7": {
+    "e": "Obturation I — Materials & Lateral Compaction",
+    "a": "الحشو 1 — الموادّ والتكثيف الجانبي"
+  },
+  "4th-year/4th-s1/endodontics|8": {
+    "e": "Cleaning & Shaping II — Irrigants",
+    "a": "التنظيف والتشكيل 2 — المرويات"
   },
   "4th-year/4th-s1/periodontics|1": {
     "e": "Biofilm & Periodontal Microbiology",
@@ -114,6 +158,22 @@ export const TITLES: Record<string, TitleEntry> = {
     "e": "Clinical Risk Assessment",
     "a": "تقييم الخطورة السريرية"
   },
+  "4th-year/4th-s1/periodontics|7": {
+    "e": "Classification of Periodontal Diseases 1",
+    "a": "تصنيف الأمراض حول السنّية 1"
+  },
+  "4th-year/4th-s1/periodontics|8": {
+    "e": "Classification of Periodontal Diseases 2",
+    "a": "تصنيف الأمراض حول السنّية 2"
+  },
+  "4th-year/4th-s1/periodontics|9": {
+    "e": "Periodontal Prognosis & Treatment Planning",
+    "a": "الإنذار حول السنّي وتخطيط المعالجة"
+  },
+  "4th-year/4th-s1/periodontics|10": {
+    "e": "Phase 1 Periodontal Therapy",
+    "a": "المعالجة حول السنّية المرحلة 1"
+  },
   "4th-year/4th-s1/oral-surgery|1": {
     "e": "Instruments in Oral Surgery",
     "a": "أدوات جراحة الفم"
@@ -129,6 +189,14 @@ export const TITLES: Record<string, TitleEntry> = {
   "4th-year/4th-s1/oral-surgery|4": {
     "e": "Complications of Exodontia",
     "a": "اختلاطات القلع"
+  },
+  "4th-year/4th-s1/oral-surgery|5": {
+    "e": "Postoperative Complications",
+    "a": "الاختلاطات التالية للعمل الجراحي"
+  },
+  "4th-year/4th-s1/fixed|12": {
+    "e": "Porcelain-Fused-to-Metal Crowns",
+    "a": "التيجان الخزفية الملتحمة بالمعدن"
   },
   "4th-year/4th-s1/operative|1": {
     "e": "Examination, Diagnosis & Treatment Planning I",
@@ -821,5 +889,41 @@ export const TITLES: Record<string, TitleEntry> = {
   "3rd-year/3rd-s2/ocd|20": {
     "e": "Periodontal Health, Gingivitis & Periodontitis",
     "a": "صحة اللثة والتهاب اللثة والأنسجة الداعمة"
-  }
+  },
+  "4th-year/4th-s1/periodontics|extra|1": {
+    "e": "Flipped Class 1 — Gingival Enlargement & Recession",
+    "a": "الصف المقلوب 1 — التضخّم والانحسار اللثوي"
+  },
+  "4th-year/4th-s1/periodontics|extra|2": {
+    "e": "CBL 1 — Cases, Classification, Hygiene & Diabetes",
+    "a": "التعلّم بالحالات 1 — حالات وتصنيف ونظافة وسكّري"
+  },
+  "4th-year/4th-s1/diagnosis|extra|1": {
+    "e": "DTPP Case Sheet Guide",
+    "a": "دليل استمارة الحالة"
+  },
+  "4th-year/4th-s1/periodontics|flipped-1a-gingival-enlargement": {
+    "e": "Flipped 1a — Gingival Enlargement",
+    "a": "الصف المقلوب 1أ — التضخّم اللثوي"
+  },
+  "4th-year/4th-s1/periodontics|flipped-1b-gingival-recession": {
+    "e": "Flipped 1b — Gingival Recession",
+    "a": "الصف المقلوب 1ب — الانحسار اللثوي"
+  },
+  "4th-year/4th-s1/periodontics|cbl-1a-periodontitis": {
+    "e": "CBL 1a — Periodontitis Cases",
+    "a": "التعلّم بالحالات 1أ — حالات التهاب الدواعم"
+  },
+  "4th-year/4th-s1/periodontics|cbl-1b-brushing-flossing": {
+    "e": "CBL 1b — Brushing & Flossing",
+    "a": "التعلّم بالحالات 1ب — التفريش والخيط"
+  },
+  "4th-year/4th-s1/periodontics|cbl-1c-diabetes-mellitus": {
+    "e": "CBL 1c — Diabetes Mellitus",
+    "a": "التعلّم بالحالات 1ج — الداء السكّري"
+  },
+  "4th-year/4th-s1/periodontics|cbl-1d-mouthrinses": {
+    "e": "CBL 1d — Mouthrinses",
+    "a": "التعلّم بالحالات 1د — الغسولات الفموية"
+  },
 };

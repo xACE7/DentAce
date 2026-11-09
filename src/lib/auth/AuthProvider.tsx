@@ -8,11 +8,11 @@ import { pullCloud, schedulePush } from "@/lib/sync";
 type Status = "loading" | "in" | "out";
 export type Profile = {
   username: string; avatar_url: string | null; email: string | null;
-  banned: boolean; show_pdfs: boolean; show_tests: boolean; show_lectures: boolean;
+  banned: boolean; show_pdfs: boolean;
   scope: string | null;
 };
 type Result = { error?: string; info?: string };
-type Flags = { pdfs: boolean; tests: boolean; lectures: boolean };
+type Flags = { pdfs: boolean };
 type AuthCtx = {
   enabled: boolean;
   user: User | null;
@@ -53,12 +53,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   const loadProfile = async (uid: string) => {
     if (!supabase) return;
-    const { data } = await supabase.from("profiles").select("username, avatar_url, email, banned, show_pdfs, show_tests, show_lectures, scope").eq("id", uid).maybeSingle();
+    const { data } = await supabase.from("profiles").select("username, avatar_url, email, banned, show_pdfs, scope").eq("id", uid).maybeSingle();
     setProfile(data ? {
       username: data.username, avatar_url: data.avatar_url, email: data.email,
       banned: !!data.banned,
       // PDFs are hidden by default — only shown when explicitly granted (=== true).
-      show_pdfs: data.show_pdfs === true, show_tests: data.show_tests !== false, show_lectures: data.show_lectures !== false,
+      show_pdfs: data.show_pdfs === true,
       scope: typeof data.scope === "string" ? data.scope : null,
     } : null);
   };
@@ -218,12 +218,13 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // user-editable) and keeps the owner's email out of the published bundle.
   const isAdmin = !!user && user.app_metadata?.role === "admin";
   const banned = !!user && !!profile?.banned;
-  // content visibility: admin sees all; tests/lectures are public by default but
-  // PDFs are HIDDEN by default — only admin or an explicitly-granted member sees them.
+  // Content visibility. Lectures and tests are PUBLIC for everyone, so the only
+  // thing left to gate is PDFs: hidden by default, shown to an admin or to a member
+  // who has been explicitly granted them.
   const flags: Flags = useMemo(() => {
-    if (!supabaseEnabled || isAdmin) return { pdfs: true, tests: true, lectures: true };
-    if (!user || !profile) return { pdfs: false, tests: true, lectures: true };
-    return { pdfs: profile.show_pdfs, tests: profile.show_tests, lectures: profile.show_lectures };
+    if (!supabaseEnabled || isAdmin) return { pdfs: true };
+    if (!user || !profile) return { pdfs: false };
+    return { pdfs: profile.show_pdfs };
   }, [user, isAdmin, profile]);
 
   return (

@@ -1,7 +1,7 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { findYear, findSem, lectureTokens, glowClass } from "@/lib/content/nav";
+import { findYear, findSem, lectureTokens, hasContent, glowClass } from "@/lib/content/nav";
 import { isDone, lecturePath } from "@/lib/progress";
 import { Bi, Emoji } from "@/lib/content/Bi";
 import { Dua } from "./Dua";
@@ -26,6 +26,10 @@ export function SemesterView({ year: yId, sem: sId }: { year: string; sem: strin
 
   if (!year || !sem) return <NotFoundNote msg="Open the semester from DentAce Home." />;
 
+  // Subjects are scaffolded in site-config before their content arrives; show
+  // only the ones that actually have something behind them.
+  const subjects = sem.subjects.filter((sub) => hasContent(year.id, sem.id, sub.id));
+
   return (
     <main className="container" id="dmain">
       <section className="section">
@@ -38,7 +42,7 @@ export function SemesterView({ year: yId, sem: sId }: { year: string; sem: strin
           </h2>
         </div>
         <div className="board list-board" id="board">
-          {sem.subjects.map((sub) => {
+          {subjects.map((sub) => {
             const c = counts[sub.id] || { done: 0, total: 0 };
             return (
               <Link

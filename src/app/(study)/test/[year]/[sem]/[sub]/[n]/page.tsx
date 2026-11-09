@@ -2,7 +2,6 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { loadQuiz, listParams } from "@/lib/content/loader";
 import { QuizEngine } from "@/components/quiz/QuizEngine";
-import { StudyGate } from "@/components/content/StudyGate";
 
 export async function generateStaticParams() {
   return listParams("test");
@@ -27,8 +26,6 @@ export default async function Page({ params }: { params: Promise<{ year: string;
   const quiz = await loadQuiz(year, sem, sub, n);
   if (!quiz) notFound();
   return (
-    <StudyGate kind="test">
-      <QuizEngine quiz={quiz} year={year} sem={sem} sub={sub} n={n} />
-    </StudyGate>
+    <QuizEngine quiz={quiz} year={year} sem={sem} sub={sub} n={n} />
   );
 }

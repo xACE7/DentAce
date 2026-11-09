@@ -19,14 +19,26 @@ export function subjectBase(year: Year, sem: Semester, subject: Subject): string
   return `${yf}/${sf}/${subject.id}`;
 }
 
-export function content(y: string, s: string, sub: string): { lecture: Token[]; test: Token[]; pdf: PdfItem[] } {
+export function content(y: string, s: string, sub: string): { lecture: Token[]; test: Token[]; pdf: PdfItem[]; extra: Token[] } {
   const a = aliasContent(y, s, sub); // mirror e.g. 3rd/s2/preclinical → 3rd/s1/preclinical
-  return CONTENT_INDEX[subjectKey(a.year, a.sem, a.sub)] || { lecture: [], test: [], pdf: [] };
+  const row = CONTENT_INDEX[subjectKey(a.year, a.sem, a.sub)];
+  // `extra` was added after the index shape was first written, so tolerate a row
+  // generated before it existed rather than returning undefined to every caller.
+  return row ? { ...row, extra: row.extra || [] } : { lecture: [], test: [], pdf: [], extra: [] };
 }
 
 export function lectureTokens(y: string, s: string, sub: string): Token[] { return content(y, s, sub).lecture; }
 export function testTokens(y: string, s: string, sub: string): Token[] { return content(y, s, sub).test; }
 export function pdfItems(y: string, s: string, sub: string): PdfItem[] { return content(y, s, sub).pdf; }
+export function extraTokens(y: string, s: string, sub: string): Token[] { return content(y, s, sub).extra; }
+
+/** A subject is only worth navigating to once something has been built for it.
+ *  Subjects are scaffolded in site-config ahead of their content, and an empty
+ *  one otherwise renders a card leading to three empty lists. */
+export function hasContent(y: string, s: string, sub: string): boolean {
+  const c = content(y, s, sub);
+  return c.lecture.length > 0 || c.test.length > 0 || c.pdf.length > 0 || c.extra.length > 0;
+}
 
 export function tokensForKind(y: string, s: string, sub: string, kind: Kind): Token[] {
   if (kind === "pdf") return pdfItems(y, s, sub).map((p) => p.token);
@@ -36,6 +48,7 @@ export function tokensForKind(y: string, s: string, sub: string, kind: Kind): To
 export function isPractical(practical: Practical, kind: Kind, n: Token): boolean {
   if (!practical) return false;
   const num = typeof n === "number" ? n : parseInt(String(n), 10);
+  if (kind === "extra") return false;
   const arr = Array.isArray(practical) ? (kind === "test" ? [] : practical) : practical[kind === "pdf" ? "pdf" : "lecture"] || [];
   return arr.indexOf(num) !== -1;
 }

@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import {
   findYear, findSem, findSubject, subjectBase, tokensForKind, pdfItems, isPractical, glowClass,
 } from "@/lib/content/nav";
-import { isDone, lecturePath, testPath, celebratedOnce } from "@/lib/progress";
+import { isDone, lecturePath, testPath, extraPath, celebratedOnce } from "@/lib/progress";
 import { useProgressBump } from "@/lib/useProgressBump";
 import { useAuth } from "@/lib/auth/AuthProvider";
 import { TITLES } from "@/lib/titles";
@@ -20,9 +20,10 @@ import type { Kind } from "@/lib/content/types";
 
 const PLURAL: Record<Kind, [string, string]> = {
   lecture: ["Lectures", "المحاضرات"], pdf: ["PDFs", "ملفات PDF"], test: ["Tests", "الاختبارات"],
+  extra: ["Extra", "إضافي"],
 };
 const LABEL: Record<Kind, [string, string]> = {
-  lecture: ["Lecture", "محاضرة"], pdf: ["PDF", "PDF"], test: ["Test", "اختبار"],
+  lecture: ["Lecture", "محاضرة"], pdf: ["PDF", "PDF"], test: ["Test", "اختبار"], extra: ["Extra", "إضافي"],
 };
 const PRACTICAL: [string, string] = ["Practical", "عملي"];
 
@@ -76,8 +77,11 @@ export function ListView({ year: yId, sem: sId, sub: subId, kind }: { year: stri
       const href =
         kind === "pdf" ? file || "#"
         : kind === "lecture" ? `/lecture/${year.id}/${sem.id}/${sub.id}/${token}`
+        : kind === "extra" ? `/extra/${year.id}/${sem.id}/${sub.id}/${token}`
         : `/test/${year.id}/${sem.id}/${sub.id}/${token}`;
-      const ti = TITLES[`${base}|${token}`];
+      // Extras are numbered independently of lectures, so extra 1 and lecture 1
+      // would otherwise share one title key; give extras their own namespace.
+      const ti = TITLES[kind === "extra" ? `${base}|extra|${token}` : `${base}|${token}`];
       const topicEn = ti ? ti.e || ti.a : "";
       const topicAr = ti ? ti.a || ti.e : "";
       return {
@@ -94,6 +98,8 @@ export function ListView({ year: yId, sem: sId, sub: subId, kind }: { year: stri
       items.forEach((it) => { d[String(it.token)] = isDone(lecturePath(year.id, sem.id, sub.id, it.token)); });
     else if (kind === "test")
       items.forEach((it) => { d[String(it.token)] = isDone(testPath(year.id, sem.id, sub.id, it.token)); });
+    else if (kind === "extra")
+      items.forEach((it) => { d[String(it.token)] = isDone(extraPath(year.id, sem.id, sub.id, it.token)); });
     setDone(d);
   }, [items, year, sem, sub, kind, bump]);
 
@@ -109,11 +115,8 @@ export function ListView({ year: yId, sem: sId, sub: subId, kind }: { year: stri
 
   if (!year || !sem || !sub) return <NotFoundNote msg="Open the list from a subject card." />;
 
-  // per-member content visibility (admin/guests see everything)
-  const hidden =
-    (kind === "pdf" && auth?.flags.pdfs === false) ||
-    (kind === "test" && auth?.flags.tests === false) ||
-    (kind === "lecture" && auth?.flags.lectures === false);
+  // Only PDFs can be hidden — lectures and tests are public for everyone.
+  const hidden = kind === "pdf" && auth?.flags.pdfs === false;
   if (hidden) {
     return (
       <main className="container" id="dmain">
