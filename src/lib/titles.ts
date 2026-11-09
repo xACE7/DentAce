@@ -1,6 +1,9 @@
 /* Lecture-topic subtitles shown on list/search/plan pages.
-   Map "<base>|<n>" -> { e:English, a:Arabic }, e.g. "3rd-year/3rd-s2/ocd|2". Edit freely. */
-export type TitleEntry = { e: string; a: string };
+   Map "<base>|<n>" -> { e:English, a:Arabic }, e.g. "3rd-year/3rd-s2/ocd|2". Edit freely.
+   `l` overrides the card's heading, which otherwise reads "<Kind> <number>".
+   Extras need it: "CBL 1" and "Flipped Class 1" say what the item is, where
+   "Extra 1" and "Extra 2" only say where it sits in the list. */
+export type TitleEntry = { e: string; a: string; l?: { e: string; a: string } };
 export const TITLES: Record<string, TitleEntry> = {
   "4th-year/4th-s1/fixed|1": {
     "e": "Introduction & Fixed Restorations",
@@ -891,16 +894,19 @@ export const TITLES: Record<string, TitleEntry> = {
     "a": "صحة اللثة والتهاب اللثة والأنسجة الداعمة"
   },
   "4th-year/4th-s1/periodontics|extra|1": {
-    "e": "Flipped Class 1 — Gingival Enlargement & Recession",
-    "a": "الصف المقلوب 1 — التضخّم والانحسار اللثوي"
+    "e": "Gingival Enlargement & Recession",
+    "a": "التضخّم اللثوي والانحسار اللثوي",
+    "l": { "e": "Flipped Class 1", "a": "الصف المقلوب 1" }
   },
   "4th-year/4th-s1/periodontics|extra|2": {
-    "e": "CBL 1 — Cases, Classification, Hygiene & Diabetes",
-    "a": "التعلّم بالحالات 1 — حالات وتصنيف ونظافة وسكّري"
+    "e": "Cases, Classification, Hygiene & Diabetes",
+    "a": "حالات وتصنيف ونظافة وسكّري",
+    "l": { "e": "CBL 1", "a": "التعلّم بالحالات 1" }
   },
   "4th-year/4th-s1/diagnosis|extra|1": {
-    "e": "DTPP Case Sheet Guide",
-    "a": "دليل استمارة الحالة"
+    "e": "Case Sheet Guide — every field, pp. 16–24",
+    "a": "دليل استمارة الحالة — كلّ حقل، ص 16–24",
+    "l": { "e": "DTPP", "a": "DTPP" }
   },
   "4th-year/4th-s1/periodontics|flipped-1a-gingival-enlargement": {
     "e": "Flipped 1a — Gingival Enlargement",

@@ -72,8 +72,6 @@ export function ListView({ year: yId, sem: sId, sub: subId, kind }: { year: stri
     return rows.map(({ token, file }) => {
       const isNum = typeof token === "number" || /^\d+$/.test(String(token));
       const prac = isNum && isPractical(sub.practical, kind, parseInt(String(token), 10));
-      const labelEn = `${LABEL[kind][0]} ${token}${prac ? " (Practical)" : ""}`;
-      const labelAr = `${LABEL[kind][1]} ${token}${prac ? ` (${PRACTICAL[1]})` : ""}`;
       const href =
         kind === "pdf" ? file || "#"
         : kind === "lecture" ? `/lecture/${year.id}/${sem.id}/${sub.id}/${token}`
@@ -84,6 +82,9 @@ export function ListView({ year: yId, sem: sId, sub: subId, kind }: { year: stri
       const ti = TITLES[kind === "extra" ? `${base}|extra|${token}` : `${base}|${token}`];
       const topicEn = ti ? ti.e || ti.a : "";
       const topicAr = ti ? ti.a || ti.e : "";
+      // A title may name the card itself; otherwise fall back to "<Kind> <number>".
+      const labelEn = ti?.l?.e ?? `${LABEL[kind][0]} ${token}${prac ? " (Practical)" : ""}`;
+      const labelAr = ti?.l?.a ?? `${LABEL[kind][1]} ${token}${prac ? ` (${PRACTICAL[1]})` : ""}`;
       return {
         token, href, isLecture: kind === "lecture", labelEn, labelAr, topicEn, topicAr,
         search: `${labelEn} ${labelAr} ${topicEn} ${topicAr}`.toLowerCase(),
